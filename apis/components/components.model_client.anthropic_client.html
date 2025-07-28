@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,162 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="anthropic-client">
-<span id="components-model-client-anthropic-client"></span><h1>anthropic_client<a class="headerlink" href="#anthropic-client" title="Link to this heading">¶</a></h1>
+          <section id="module-components.model_client.anthropic_client">
+<span id="anthropic-client"></span><span id="components-model-client-anthropic-client"></span><h1>anthropic_client<a class="headerlink" href="#module-components.model_client.anthropic_client" title="Link to this heading">¶</a></h1>
+<p>Anthropic ModelClient integration with OpenAI SDK compatibility.</p>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_chat_completion_usage</span></code>(completion)</p></td>
+<td><p>Convert ChatCompletion.usage into our AdalFlowResponseUsage format.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a>([api_key, base_url, ...])</p></td>
+<td><p>A component wrapper for Anthropic API using OpenAI SDK compatibility.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnthropicAPIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://api.anthropic.com/v1/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">non_streaming_chat_completion_parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">ChatCompletion</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streaming_chat_completion_parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">AsyncStream</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
+<p>A component wrapper for Anthropic API using OpenAI SDK compatibility.</p>
+<p>This client leverages Anthropic’s OpenAI SDK compatibility layer to provide
+ChatCompletion-based responses while maintaining AdalFlow’s GeneratorOutput structure.</p>
+<p>Features:
+- Uses OpenAI SDK with Anthropic’s compatibility endpoint
+- Supports both streaming and non-streaming calls
+- Handles ModelType.LLM and ModelType.LLM_REASONING
+- Converts ChatCompletion responses to Response API format for compatibility
+- Maintains backward compatibility with existing AdalFlow parsers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Anthropic API key. Defaults to ANTHROPIC_API_KEY env var.</p></li>
+<li><p><strong>base_url</strong> (<em>str</em>) – Anthropic’s OpenAI compatibility endpoint.</p></li>
+<li><p><strong>non_streaming_chat_completion_parser</strong> (<em>Callable</em>) – Legacy parser for non-streaming
+ChatCompletion objects. Used for backward compatibility with existing code
+that depends on the original AnthropicAPI client’s parsing behavior.</p></li>
+<li><p><strong>streaming_chat_completion_parser</strong> (<em>Callable</em>) – Parser for streaming ChatCompletion
+responses. Handles conversion from ChatCompletion streams to Response API format.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires ANTHROPIC_API_KEY environment variable or api_key parameter.
+Uses OpenAI SDK internally but calls Anthropic’s API via compatibility layer.
+The non_streaming_chat_completion_parser is provided for legacy compatibility only.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">
+<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize synchronous OpenAI client pointing to Anthropic.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">
+<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize asynchronous OpenAI client pointing to Anthropic.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">
+<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatCompletion</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Stream</span><span class="p"><span class="pre">[</span></span><span class="pre">ChatCompletionChunk</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncStream</span><span class="p"><span class="pre">[</span></span><span class="pre">ChatCompletionChunk</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion" title="Link to this definition">¶</a></dt>
+<dd><p>Parse ChatCompletion and convert to GeneratorOutput with Response API compatibility.</p>
+<p>This method uses ChatCompletionToResponseConverter to transform ChatCompletion
+objects into text format compatible with existing Response API parsers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>completion</strong> – ChatCompletion object or stream from OpenAI SDK</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeneratorOutput with converted raw_response text</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.track_completion_usage">
+<span class="sig-name descname"><span class="pre">track_completion_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ChatCompletion</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CompletionUsage</span></span></span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.track_completion_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.track_completion_usage" title="Link to this definition">¶</a></dt>
+<dd><p>Track completion usage from ChatCompletion object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs">
+<span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs" title="Link to this definition">¶</a></dt>
+<dd><p>Convert AdalFlow inputs to OpenAI ChatCompletion API format.</p>
+<p>Converts single input text to OpenAI messages format expected by
+chat.completions.create endpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> – Text input or messages array</p></li>
+<li><p><strong>model_kwargs</strong> – Additional model parameters</p></li>
+<li><p><strong>model_type</strong> – Type of model (LLM or LLM_REASONING)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>API kwargs formatted for OpenAI chat.completions.create</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+<p>convertible with original api of Anthropic’s Message API</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.call" title="Link to this definition">¶</a></dt>
+<dd><p>Synchronous call to Anthropic via OpenAI SDK compatibility.</p>
+<p>Supports both LLM and LLM_REASONING model types with streaming and non-streaming.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_kwargs</strong> – API parameters for chat.completions.create</p></li>
+<li><p><strong>model_type</strong> – ModelType.LLM or ModelType.LLM_REASONING</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ChatCompletion or Stream[ChatCompletionChunk] from Anthropic</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.acall">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.acall" title="Link to this definition">¶</a></dt>
+<dd><p>Asynchronous call to Anthropic via OpenAI SDK compatibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_kwargs</strong> – API parameters for chat.completions.create</p></li>
+<li><p><strong>model_type</strong> – ModelType.LLM or ModelType.LLM_REASONING</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ChatCompletion or AsyncStream[ChatCompletionChunk] from Anthropic</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +677,36 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">anthropic_client</a><ul>
+<li><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a><ul>
+<li><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_sync_client()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_async_client()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.parse_chat_completion()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.track_completion_usage()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient.call"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.call()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.acall()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

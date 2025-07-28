@@ -7,3 +7,20 @@ openai_client
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      estimate_token_count
+      get_response_output_text
+      handle_streaming_response
+      handle_streaming_response_sync
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      OpenAIClient
+

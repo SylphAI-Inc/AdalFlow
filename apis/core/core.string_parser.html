@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,225 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="string-parser">
-<span id="core-string-parser"></span><h1>string_parser<a class="headerlink" href="#string-parser" title="Link to this heading">¶</a></h1>
+          <section id="module-core.string_parser">
+<span id="string-parser"></span><span id="core-string-parser"></span><h1>string_parser<a class="headerlink" href="#module-core.string_parser" title="Link to this heading">¶</a></h1>
+<p>Extract and convert common string to Python objects.</p>
+<p>From simple data types like boolean, integer, and float to more complex data types like JSON, YAML, and list strings.</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.BooleanParser" title="core.string_parser.BooleanParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BooleanParser</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Extracts boolean values from text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.FloatParser" title="core.string_parser.FloatParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FloatParser</span></code></a>()</p></td>
+<td><p>Extracts float values from text.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.IntParser" title="core.string_parser.IntParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IntParser</span></code></a>()</p></td>
+<td><p>Extracts integer values from text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JsonParser</span></code></a>([add_missing_right_brace])</p></td>
+<td><p>Extracts JSON strings <cite>{...}</cite> or <cite>[...]</cite> from text and parses them into a JSON object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.ListParser" title="core.string_parser.ListParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ListParser</span></code></a>([add_missing_right_bracket])</p></td>
+<td><p>Extracts list <cite>[...]</cite> strings from text and parses them into a list object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.YamlParser" title="core.string_parser.YamlParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YamlParser</span></code></a>()</p></td>
+<td><p>To extract YAML strings from text and parse them into a YAML object.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.string_parser.BooleanParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BooleanParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/string_parser.html#BooleanParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.BooleanParser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
+<p>Extracts boolean values from text.</p>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boolean_parser</span> <span class="o">=</span> <span class="n">BooleanParser</span><span class="p">()</span>
+<span class="n">test_input_1</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span> <span class="c1"># or &quot;true&quot; or &quot;...true...&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">boolean_parser</span><span class="p">(</span><span class="n">test_input_1</span><span class="p">))</span>  <span class="c1"># Expected to extract True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.BooleanParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#BooleanParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.BooleanParser.call" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.string_parser.IntParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">IntParser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#IntParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.IntParser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
+<p>Extracts integer values from text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Extracted integer value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the input text does not contain an integer</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">int_parser</span> <span class="o">=</span> <span class="n">IntParser</span><span class="p">()</span>
+<span class="n">test_input_2</span> <span class="o">=</span> <span class="s2">&quot;123&quot;</span> <span class="c1"># or &quot;...123...&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">int_parser</span><span class="p">(</span><span class="n">test_input_2</span><span class="p">))</span>  <span class="c1"># Expected to extract 123</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.IntParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#IntParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.IntParser.call" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.string_parser.FloatParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FloatParser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#FloatParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.FloatParser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
+<p>Extracts float values from text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Extracted float value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the input text does not contain a float</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">float_parser</span> <span class="o">=</span> <span class="n">FloatParser</span><span class="p">()</span>
+<span class="n">test_input_3</span> <span class="o">=</span> <span class="s2">&quot;123.45&quot;</span> <span class="c1"># or &quot;...123.45...&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">float_parser</span><span class="p">(</span><span class="n">test_input_3</span><span class="p">))</span>  <span class="c1"># Expected to extract 123.45</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.FloatParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#FloatParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.FloatParser.call" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.string_parser.ListParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ListParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_missing_right_bracket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/string_parser.html#ListParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.ListParser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
+<p>Extracts list <cite>[…]</cite> strings from text and parses them into a list object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>add_missing_right_bracket</strong> (<em>bool</em><em>, </em><em>optional</em>) – Add a missing right bracket to the list string. Defaults to True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Extracted list object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[object]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the input text does not contain a list</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">list_parser</span> <span class="o">=</span> <span class="n">ListParser</span><span class="p">()</span>
+<span class="n">test_input_4</span> <span class="o">=</span> <span class="s1">&#39;Some random text before [&quot;item1&quot;, &quot;item2&quot;] and more after&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_parser</span><span class="p">(</span><span class="n">test_input_4</span><span class="p">))</span>  <span class="c1"># Expected to extract [&quot;item1&quot;, &quot;item2&quot;]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.ListParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#ListParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.ListParser.call" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.string_parser.JsonParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JsonParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_missing_right_brace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/string_parser.html#JsonParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.JsonParser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
+<p>Extracts JSON strings <cite>{…}</cite> or <cite>[…]</cite> from text and parses them into a JSON object.</p>
+<p>It can output either a dictionary or a list as they are both valid JSON objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>add_missing_right_brace</strong> (<em>bool</em><em>, </em><em>optional</em>) – Add a missing right brace to the JSON string. Defaults to True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Extracted JSON object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[Dict[str, object], List[object]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the input text does not contain a JSON object</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">json_parser</span> <span class="o">=</span> <span class="n">JsonParser</span><span class="p">()</span>
+<span class="n">json_str</span> <span class="o">=</span> <span class="s2">&quot;```json</span><span class="se">\n</span><span class="s2">{</span><span class="se">\&quot;</span><span class="s2">key</span><span class="se">\&quot;</span><span class="s2">: </span><span class="se">\&quot;</span><span class="s2">value</span><span class="se">\&quot;</span><span class="s2">}</span><span class="se">\n</span><span class="s2">```&quot;</span>
+<span class="n">json_obj</span> <span class="o">=</span> <span class="n">json_parser</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json_obj</span><span class="p">)</span>  <span class="c1"># Expected to extract {&quot;key&quot;: &quot;value&quot;}</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.JsonParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#JsonParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.JsonParser.call" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.string_parser.YamlParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">YamlParser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#YamlParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.YamlParser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
+<p>To extract YAML strings from text and parse them into a YAML object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Extracted YAML object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON_PARSER_OUTPUT_TYPE</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the input text does not contain a YAML object</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">yaml_parser</span> <span class="o">=</span> <span class="n">YamlParser</span><span class="p">()</span>
+<span class="n">yaml_str</span> <span class="o">=</span> <span class="s2">&quot;```yaml</span><span class="se">\n</span><span class="s2">key: value</span><span class="se">\n</span><span class="s2">```&quot;</span>
+<span class="n">yaml_obj</span> <span class="o">=</span> <span class="n">yaml_parser</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">yaml_obj</span><span class="p">)</span>  <span class="c1"># Expected to extract {&quot;key&quot;: &quot;value&quot;}</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.YamlParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#YamlParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.YamlParser.call" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +740,50 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">string_parser</a><ul>
+<li><a class="reference internal" href="#core.string_parser.BooleanParser"><code class="docutils literal notranslate"><span class="pre">BooleanParser</span></code></a><ul>
+<li><a class="reference internal" href="#core.string_parser.BooleanParser.call"><code class="docutils literal notranslate"><span class="pre">BooleanParser.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.string_parser.IntParser"><code class="docutils literal notranslate"><span class="pre">IntParser</span></code></a><ul>
+<li><a class="reference internal" href="#core.string_parser.IntParser.call"><code class="docutils literal notranslate"><span class="pre">IntParser.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.string_parser.FloatParser"><code class="docutils literal notranslate"><span class="pre">FloatParser</span></code></a><ul>
+<li><a class="reference internal" href="#core.string_parser.FloatParser.call"><code class="docutils literal notranslate"><span class="pre">FloatParser.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.string_parser.ListParser"><code class="docutils literal notranslate"><span class="pre">ListParser</span></code></a><ul>
+<li><a class="reference internal" href="#core.string_parser.ListParser.call"><code class="docutils literal notranslate"><span class="pre">ListParser.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.string_parser.JsonParser"><code class="docutils literal notranslate"><span class="pre">JsonParser</span></code></a><ul>
+<li><a class="reference internal" href="#core.string_parser.JsonParser.call"><code class="docutils literal notranslate"><span class="pre">JsonParser.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.string_parser.YamlParser"><code class="docutils literal notranslate"><span class="pre">YamlParser</span></code></a><ul>
+<li><a class="reference internal" href="#core.string_parser.YamlParser.call"><code class="docutils literal notranslate"><span class="pre">YamlParser.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

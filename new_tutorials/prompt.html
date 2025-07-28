@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Parser and Structured Output" href="parser.html" /><link rel="prev" title="Core Concepts" href="core_concepts.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Parser and Structured Output" href="parser.html" /><link rel="prev" title="Human in the Loop" href="human_in_the_loop.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Prompt - Build and Optimize LM Workflows</title>
@@ -224,8 +224,6 @@
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -485,7 +495,7 @@
 <h1>Prompt<a class="headerlink" href="#prompt" title="Link to this heading">¶</a></h1>
 <p>AdalFlow leverages <cite>Jinja2</cite> <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>  to programmatically format the prompt for the language model.
 By aggregating different parts of the prompt, it is 10X easier to understand the LLM applications.
-We created a <code class="xref py py-class docutils literal notranslate"><span class="pre">Prompt</span></code> class to allow developers to render the prompt with the string <code class="docutils literal notranslate"><span class="pre">template</span></code> and <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> conveniently and securely.</p>
+We created a <a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prompt</span></code></a> class to allow developers to render the prompt with the string <code class="docutils literal notranslate"><span class="pre">template</span></code> and <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> conveniently and securely.</p>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>A <cite>prompt</cite> is the input text given to a language model(LM) to generate responses.
@@ -560,7 +570,7 @@ Here is one example of using <cite>Jinja2</cite> to format the prompt with comme
 <p>In reality, we barely need to use the raw <code class="docutils literal notranslate"><span class="pre">Prompt</span></code> class directly as it is orchestrated by the <code class="docutils literal notranslate"><span class="pre">Generator</span></code>.</p>
 </div>
 <dl class="simple">
-<dt>Here is the <code class="xref py py-class docutils literal notranslate"><span class="pre">prompt</span> <span class="pre">template</span></code> for REACT agent, it consists of (1)</dt><dd><p>system task description, (2) tools, (3) context variables, (4) output format, (5) user input, and (6) past history.
+<dt>Here is the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">prompt</span> <span class="pre">template</span></code></a> for REACT agent, it consists of (1)</dt><dd><p>system task description, (2) tools, (3) context variables, (4) output format, (5) user input, and (6) past history.
 By reading the prompt structure, developers can easily understand the agent’s behavior and functionalities.</p>
 </dd>
 </dl>
@@ -582,7 +592,7 @@ By reading the prompt structure, developers can easily understand the agent’s 
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></code></a></p></li>
 </ul>
 </div>
@@ -603,14 +613,14 @@ By reading the prompt structure, developers can easily understand the agent’s 
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="core_concepts.html">
+          <a class="prev-page" href="human_in_the_loop.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Core Concepts</div>
+                <div class="title">Human in the Loop</div>
                 
               </div>
             </a>

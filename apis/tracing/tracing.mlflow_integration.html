@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="processor_interface" href="tracing.processor_interface.html" /><link rel="prev" title="generator_state_logger" href="tracing.generator_state_logger.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>mlflow_integration - Build and Optimize LM Workflows</title>
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -303,8 +303,8 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../core/index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.component.html">component</a></li>
@@ -418,10 +418,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tracing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,147 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="mlflow-integration">
-<span id="tracing-mlflow-integration"></span><h1>mlflow_integration<a class="headerlink" href="#mlflow-integration" title="Link to this heading">¶</a></h1>
+          <section id="module-tracing.mlflow_integration">
+<span id="mlflow-integration"></span><span id="tracing-mlflow-integration"></span><h1>mlflow_integration<a class="headerlink" href="#module-tracing.mlflow_integration" title="Link to this heading">¶</a></h1>
+<p>MLflow integration helpers for AdalFlow tracing.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.mlflow_integration.set_trace_processors">
+<span class="sig-name descname"><span class="pre">set_trace_processors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/mlflow_integration.html#set_trace_processors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.mlflow_integration.set_trace_processors" title="Link to this definition">¶</a></dt>
+<dd><p>Set the global trace processors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.mlflow_integration.enable_mlflow_local">
+<span class="sig-name descname"><span class="pre">enable_mlflow_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracking_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AdalFlow-Agent-Experiment'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AdalFlow-Agent-Project'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8080</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/tracing/mlflow_integration.html#enable_mlflow_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.mlflow_integration.enable_mlflow_local" title="Link to this definition">¶</a></dt>
+<dd><p>Enable MLflow local tracing without auto-starting server.</p>
+<p>This function sets up MLflow tracing but does NOT automatically start an MLflow server.
+You need to have an MLflow server already running.</p>
+<p>To start an MLflow server:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">mlflow</span> <span class="pre">server</span> <span class="pre">--host</span> <span class="pre">127.0.0.1</span> <span class="pre">--port</span> <span class="pre">8080</span>
+<span class="pre">`</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tracking_uri</strong> – MLflow tracking server URI. If None, defaults to <a class="reference external" href="http://localhost">http://localhost</a>:{port}</p></li>
+<li><p><strong>experiment_name</strong> – Name of the MLflow experiment to create/use</p></li>
+<li><p><strong>project_name</strong> – Project name for the MLflow tracing processor</p></li>
+<li><p><strong>port</strong> – Port for the default tracking URI if tracking_uri is None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if MLflow was successfully enabled, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">adalflow.tracing</span> <span class="kn">import</span> <span class="n">enable_mlflow_local</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Use with existing MLflow server on default port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enable_mlflow_local</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Or with custom tracking URI:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enable_mlflow_local</span><span class="p">(</span><span class="n">tracking_uri</span><span class="o">=</span><span class="s2">&quot;http://localhost:5000&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.mlflow_integration.enable_mlflow_local_with_server">
+<span class="sig-name descname"><span class="pre">enable_mlflow_local_with_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracking_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AdalFlow-Agent-Experiment'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AdalFlow-Agent-Project'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_adalflow_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_existing_server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/tracing/mlflow_integration.html#enable_mlflow_local_with_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.mlflow_integration.enable_mlflow_local_with_server" title="Link to this definition">¶</a></dt>
+<dd><p>Enable MLflow local tracing with auto-starting server.</p>
+<p>This function sets up MLflow tracing and automatically starts an MLflow server if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tracking_uri</strong> – MLflow tracking server URI. If None, will auto-start server</p></li>
+<li><p><strong>experiment_name</strong> – Name of the MLflow experiment to create/use</p></li>
+<li><p><strong>project_name</strong> – Project name for the MLflow tracing processor</p></li>
+<li><p><strong>use_adalflow_dir</strong> – If True and server fails to start, use ~/.adalflow/mlruns as fallback</p></li>
+<li><p><strong>port</strong> – Port to run MLflow server on</p></li>
+<li><p><strong>kill_existing_server</strong> – If True, kill any existing MLflow server on the port before starting</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if MLflow was successfully enabled, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">adalflow.tracing</span> <span class="kn">import</span> <span class="n">enable_mlflow_local_with_server</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Auto-start server on port 8080</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enable_mlflow_local_with_server</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Or kill existing and start fresh:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enable_mlflow_local_with_server</span><span class="p">(</span><span class="n">kill_existing_server</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Or use custom port:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enable_mlflow_local_with_server</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.mlflow_integration.get_mlflow_server_command">
+<span class="sig-name descname"><span class="pre">get_mlflow_server_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'0.0.0.0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8080</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/mlflow_integration.html#get_mlflow_server_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.mlflow_integration.get_mlflow_server_command" title="Link to this definition">¶</a></dt>
+<dd><p>Get the MLflow server command with AdalFlow backend store.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – Host to bind the server to (default: “0.0.0.0”)</p></li>
+<li><p><strong>port</strong> – Port to run the server on (default: 8080)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The MLflow server command to run</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">adalflow.tracing</span> <span class="kn">import</span> <span class="n">get_mlflow_server_command</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">get_mlflow_server_command</span><span class="p">())</span>
+<span class="go">mlflow server --backend-store-uri file:///Users/yourname/.adalflow/mlruns --host 0.0.0.0 --port 8080</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.mlflow_integration.start_mlflow_server">
+<span class="sig-name descname"><span class="pre">start_mlflow_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'0.0.0.0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_existing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/tracing/mlflow_integration.html#start_mlflow_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.mlflow_integration.start_mlflow_server" title="Link to this definition">¶</a></dt>
+<dd><p>Start MLflow server with AdalFlow backend store.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – Host to bind the server to (default: “0.0.0.0”)</p></li>
+<li><p><strong>port</strong> – Port to run the server on (default: 8080)</p></li>
+<li><p><strong>wait</strong> – If True, wait for server to be ready before returning</p></li>
+<li><p><strong>kill_existing</strong> – If True, kill any existing process on the port before starting</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if server started successfully, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">adalflow.tracing</span> <span class="kn">import</span> <span class="n">start_mlflow_server</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">start_mlflow_server</span><span class="p">()</span>  <span class="c1"># Starts server on http://0.0.0.0:8080</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Or with custom settings:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">start_mlflow_server</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
         </article>
@@ -482,8 +625,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="tracing.processor_interface.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">processor_interface</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tracing.generator_state_logger.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">generator_state_logger</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -501,8 +662,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">mlflow_integration</a><ul>
+<li><a class="reference internal" href="#tracing.mlflow_integration.set_trace_processors"><code class="docutils literal notranslate"><span class="pre">set_trace_processors()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.mlflow_integration.enable_mlflow_local"><code class="docutils literal notranslate"><span class="pre">enable_mlflow_local()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.mlflow_integration.enable_mlflow_local_with_server"><code class="docutils literal notranslate"><span class="pre">enable_mlflow_local_with_server()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.mlflow_integration.get_mlflow_server_command"><code class="docutils literal notranslate"><span class="pre">get_mlflow_server_command()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.mlflow_integration.start_mlflow_server"><code class="docutils literal notranslate"><span class="pre">start_mlflow_server()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

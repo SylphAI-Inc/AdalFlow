@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -479,11 +489,25 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.add_scores"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.add_scores()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.config_shots"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.config_shots()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.config_dataset"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.config_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.num_shots"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.num_shots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.sample"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.samples_to_str"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.samples_to_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.propose"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.propose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.revert"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.revert()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.step"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 <hr class="docutils" />
-</section>
+<span class="target" id="module-optim.few_shot"></span></section>
 </section>
 
         </article>

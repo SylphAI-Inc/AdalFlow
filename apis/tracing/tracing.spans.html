@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="traces" href="tracing.traces.html" /><link rel="prev" title="span_data" href="tracing.span_data.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>spans - Build and Optimize LM Workflows</title>
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -303,8 +303,8 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../core/index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.component.html">component</a></li>
@@ -418,10 +418,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tracing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,255 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="spans">
-<span id="tracing-spans"></span><h1>spans<a class="headerlink" href="#spans" title="Link to this heading">¶</a></h1>
+          <section id="module-tracing.spans">
+<span id="spans"></span><span id="tracing-spans"></span><h1>spans<a class="headerlink" href="#module-tracing.spans" title="Link to this heading">¶</a></h1>
+<p>AdalFlow spans module with OpenAI Agents SDK compatible interface.</p>
+<p>This module provides span implementations for AdalFlow tracing that follow
+the OpenAI Agents SDK patterns for maximum compatibility with existing
+observability backends.</p>
+<p>References:
+- OpenAI Agents SDK: <a class="reference external" href="https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/spans.py">https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/spans.py</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.spans.SpanError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SpanError</span></span><a class="reference internal" href="../../_modules/tracing/spans.html#SpanError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.SpanError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.spans.SpanError.message">
+<span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.spans.SpanError.message" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.spans.SpanError.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.SpanError.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.spans.Span">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Span</span></span><a class="reference internal" href="../../_modules/tracing/spans.html#Span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.Span" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">TSpanData</span></code>]</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.Span.trace_id">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trace_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.spans.Span.trace_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.Span.span_id">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">span_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.spans.Span.span_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.Span.span_data">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">span_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TSpanData</span></em><a class="headerlink" href="#tracing.spans.Span.span_data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.Span.start">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mark_as_current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/spans.html#Span.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.Span.start" title="Link to this definition">¶</a></dt>
+<dd><p>Start the span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mark_as_current</strong> – If true, the span will be marked as the current span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.Span.finish">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset_current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#Span.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.Span.finish" title="Link to this definition">¶</a></dt>
+<dd><p>Finish the span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reset_current</strong> – If true, the span will be reset as the current span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.Span.parent_id">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.Span.parent_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.Span.set_error">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#tracing.spans.SpanError" title="tracing.spans.SpanError"><span class="pre">SpanError</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#Span.set_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.Span.set_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.Span.error">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#tracing.spans.SpanError" title="tracing.spans.SpanError"><span class="pre">SpanError</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.Span.error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.Span.export">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#Span.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.Span.export" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.Span.started_at">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">started_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.Span.started_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.Span.ended_at">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ended_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.Span.ended_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NoOpSpan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TSpanData</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/spans.html#NoOpSpan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.NoOpSpan" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.spans.Span" title="tracing.spans.Span"><code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">TSpanData</span></code>]</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.trace_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trace_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.spans.NoOpSpan.trace_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.span_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">span_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.spans.NoOpSpan.span_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.span_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">span_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TSpanData</span></em><a class="headerlink" href="#tracing.spans.NoOpSpan.span_data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.parent_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.NoOpSpan.parent_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mark_as_current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/spans.html#NoOpSpan.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.NoOpSpan.start" title="Link to this definition">¶</a></dt>
+<dd><p>Start the span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mark_as_current</strong> – If true, the span will be marked as the current span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset_current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#NoOpSpan.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.NoOpSpan.finish" title="Link to this definition">¶</a></dt>
+<dd><p>Finish the span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reset_current</strong> – If true, the span will be reset as the current span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.set_error">
+<span class="sig-name descname"><span class="pre">set_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#tracing.spans.SpanError" title="tracing.spans.SpanError"><span class="pre">SpanError</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#NoOpSpan.set_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.NoOpSpan.set_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.error">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#tracing.spans.SpanError" title="tracing.spans.SpanError"><span class="pre">SpanError</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.NoOpSpan.error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#NoOpSpan.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.NoOpSpan.export" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.started_at">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">started_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.NoOpSpan.started_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.NoOpSpan.ended_at">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ended_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.NoOpSpan.ended_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SpanImpl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">span_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.processor_interface.html#tracing.processor_interface.TracingProcessor" title="tracing.processor_interface.TracingProcessor"><span class="pre">TracingProcessor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">span_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TSpanData</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/spans.html#SpanImpl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.SpanImpl" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.spans.Span" title="tracing.spans.Span"><code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">TSpanData</span></code>]</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.trace_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trace_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.spans.SpanImpl.trace_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.span_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">span_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.spans.SpanImpl.span_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.span_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">span_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TSpanData</span></em><a class="headerlink" href="#tracing.spans.SpanImpl.span_data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.parent_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.SpanImpl.parent_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mark_as_current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/spans.html#SpanImpl.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.SpanImpl.start" title="Link to this definition">¶</a></dt>
+<dd><p>Start the span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mark_as_current</strong> – If true, the span will be marked as the current span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset_current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#SpanImpl.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.SpanImpl.finish" title="Link to this definition">¶</a></dt>
+<dd><p>Finish the span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reset_current</strong> – If true, the span will be reset as the current span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.set_error">
+<span class="sig-name descname"><span class="pre">set_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#tracing.spans.SpanError" title="tracing.spans.SpanError"><span class="pre">SpanError</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#SpanImpl.set_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.SpanImpl.set_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.error">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#tracing.spans.SpanError" title="tracing.spans.SpanError"><span class="pre">SpanError</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.SpanImpl.error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.started_at">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">started_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.SpanImpl.started_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.ended_at">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ended_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.spans.SpanImpl.ended_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.spans.SpanImpl.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/spans.html#SpanImpl.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.spans.SpanImpl.export" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -482,8 +733,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="tracing.traces.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">traces</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tracing.span_data.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">span_data</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -501,8 +770,73 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">spans</a><ul>
+<li><a class="reference internal" href="#tracing.spans.SpanError"><code class="docutils literal notranslate"><span class="pre">SpanError</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.spans.SpanError.message"><code class="docutils literal notranslate"><span class="pre">SpanError.message</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanError.data"><code class="docutils literal notranslate"><span class="pre">SpanError.data</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.spans.Span"><code class="docutils literal notranslate"><span class="pre">Span</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.spans.Span.trace_id"><code class="docutils literal notranslate"><span class="pre">Span.trace_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.span_id"><code class="docutils literal notranslate"><span class="pre">Span.span_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.span_data"><code class="docutils literal notranslate"><span class="pre">Span.span_data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.start"><code class="docutils literal notranslate"><span class="pre">Span.start()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.finish"><code class="docutils literal notranslate"><span class="pre">Span.finish()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.parent_id"><code class="docutils literal notranslate"><span class="pre">Span.parent_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.set_error"><code class="docutils literal notranslate"><span class="pre">Span.set_error()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.error"><code class="docutils literal notranslate"><span class="pre">Span.error</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.export"><code class="docutils literal notranslate"><span class="pre">Span.export()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.started_at"><code class="docutils literal notranslate"><span class="pre">Span.started_at</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.Span.ended_at"><code class="docutils literal notranslate"><span class="pre">Span.ended_at</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan"><code class="docutils literal notranslate"><span class="pre">NoOpSpan</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.trace_id"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.trace_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.span_id"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.span_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.span_data"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.span_data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.parent_id"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.parent_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.start"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.start()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.finish"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.finish()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.set_error"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.set_error()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.error"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.error</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.export"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.export()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.started_at"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.started_at</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.NoOpSpan.ended_at"><code class="docutils literal notranslate"><span class="pre">NoOpSpan.ended_at</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl"><code class="docutils literal notranslate"><span class="pre">SpanImpl</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.trace_id"><code class="docutils literal notranslate"><span class="pre">SpanImpl.trace_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.span_id"><code class="docutils literal notranslate"><span class="pre">SpanImpl.span_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.span_data"><code class="docutils literal notranslate"><span class="pre">SpanImpl.span_data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.parent_id"><code class="docutils literal notranslate"><span class="pre">SpanImpl.parent_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.start"><code class="docutils literal notranslate"><span class="pre">SpanImpl.start()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.finish"><code class="docutils literal notranslate"><span class="pre">SpanImpl.finish()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.set_error"><code class="docutils literal notranslate"><span class="pre">SpanImpl.set_error()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.error"><code class="docutils literal notranslate"><span class="pre">SpanImpl.error</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.started_at"><code class="docutils literal notranslate"><span class="pre">SpanImpl.started_at</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.ended_at"><code class="docutils literal notranslate"><span class="pre">SpanImpl.ended_at</span></code></a></li>
+<li><a class="reference internal" href="#tracing.spans.SpanImpl.export"><code class="docutils literal notranslate"><span class="pre">SpanImpl.export()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

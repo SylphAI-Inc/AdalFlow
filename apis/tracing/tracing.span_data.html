@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="spans" href="tracing.spans.html" /><link rel="prev" title="setup" href="tracing.setup.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>span_data - Build and Optimize LM Workflows</title>
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -303,8 +303,8 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../core/index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.component.html">component</a></li>
@@ -418,10 +418,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tracing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.setup.html">setup</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,813 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="span-data">
-<span id="tracing-span-data"></span><h1>span_data<a class="headerlink" href="#span-data" title="Link to this heading">¶</a></h1>
+          <section id="module-tracing.span_data">
+<span id="span-data"></span><span id="tracing-span-data"></span><h1>span_data<a class="headerlink" href="#module-tracing.span_data" title="Link to this heading">¶</a></h1>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData" title="tracing.span_data.AdalFlowGeneratorSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData</span></code></a>([generator_id, ...])</p></td>
+<td><p>Represents Generator execution spans in AdalFlow.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData" title="tracing.span_data.AdalFlowResponseSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData</span></code></a>([answer, ...])</p></td>
+<td><p>Represents AdalFlow Response spans that track the final result.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData" title="tracing.span_data.AdalFlowRunnerSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData</span></code></a>([runner_id, ...])</p></td>
+<td><p>Represents the top-level Runner execution span in AdalFlow.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData" title="tracing.span_data.AdalFlowStepSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AdalFlowStepSpanData</span></code></a>([step_number, ...])</p></td>
+<td><p>Represents a Step Span in AdalFlow workflow execution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData" title="tracing.span_data.AdalFlowToolSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AdalFlowToolSpanData</span></code></a>([tool_name, ...])</p></td>
+<td><p>Represents Tool execution spans in AdalFlow.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.span_data.AgentSpanData" title="tracing.span_data.AgentSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AgentSpanData</span></code></a>(name[, handoffs, tools, ...])</p></td>
+<td><p>Represents an Agent Span in the trace.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.CustomSpanData" title="tracing.span_data.CustomSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomSpanData</span></code></a>(name, data)</p></td>
+<td><p>Represents a Custom Span in the trace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.span_data.FunctionSpanData" title="tracing.span_data.FunctionSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionSpanData</span></code></a>(name, input, output[, mcp_data])</p></td>
+<td><p>Represents a Function Span in the trace.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.GenerationSpanData" title="tracing.span_data.GenerationSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GenerationSpanData</span></code></a>([input, output, model, ...])</p></td>
+<td><p>Represents a Generation Span in the trace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.span_data.GuardrailSpanData" title="tracing.span_data.GuardrailSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GuardrailSpanData</span></code></a>(name[, triggered])</p></td>
+<td><p>Represents a Guardrail Span in the trace.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.HandoffSpanData" title="tracing.span_data.HandoffSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HandoffSpanData</span></code></a>(from_agent, to_agent)</p></td>
+<td><p>Represents a Handoff Span in the trace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.span_data.MCPListToolsSpanData" title="tracing.span_data.MCPListToolsSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCPListToolsSpanData</span></code></a>([server, result])</p></td>
+<td><p>Represents an MCP List Tools Span in the trace.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.ResponseSpanData" title="tracing.span_data.ResponseSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResponseSpanData</span></code></a>([response, input])</p></td>
+<td><p>Represents a Response Span in the trace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpanData</span></code></a>()</p></td>
+<td><p>Represents span data in the trace.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.SpeechGroupSpanData" title="tracing.span_data.SpeechGroupSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpeechGroupSpanData</span></code></a>([input])</p></td>
+<td><p>Represents a Speech Group Span in the trace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.span_data.SpeechSpanData" title="tracing.span_data.SpeechSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpeechSpanData</span></code></a>([input, output, ...])</p></td>
+<td><p>Represents a Speech Span in the trace.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData" title="tracing.span_data.TranscriptionSpanData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TranscriptionSpanData</span></code></a>([input, input_format, ...])</p></td>
+<td><p>Represents a Transcription Span in the trace.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.SpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SpanData</span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#SpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.SpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Represents span data in the trace.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.SpanData.export">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#SpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.SpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.SpanData.type">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.SpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.AgentSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AgentSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handoffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#AgentSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AgentSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents an Agent Span in the trace.
+Includes name, handoffs, tools, and output type.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AgentSpanData.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#tracing.span_data.AgentSpanData.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AgentSpanData.handoffs">
+<span class="sig-name descname"><span class="pre">handoffs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.span_data.AgentSpanData.handoffs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AgentSpanData.tools">
+<span class="sig-name descname"><span class="pre">tools</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.span_data.AgentSpanData.tools" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AgentSpanData.output_type">
+<span class="sig-name descname"><span class="pre">output_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#tracing.span_data.AgentSpanData.output_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.AgentSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.AgentSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AgentSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AgentSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AgentSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.FunctionSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunctionSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcp_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#FunctionSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.FunctionSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Function Span in the trace.
+Includes input, output and MCP data (if applicable).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.FunctionSpanData.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#tracing.span_data.FunctionSpanData.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.FunctionSpanData.input">
+<span class="sig-name descname"><span class="pre">input</span></span><a class="headerlink" href="#tracing.span_data.FunctionSpanData.input" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.FunctionSpanData.output">
+<span class="sig-name descname"><span class="pre">output</span></span><a class="headerlink" href="#tracing.span_data.FunctionSpanData.output" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.FunctionSpanData.mcp_data">
+<span class="sig-name descname"><span class="pre">mcp_data</span></span><a class="headerlink" href="#tracing.span_data.FunctionSpanData.mcp_data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.FunctionSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.FunctionSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.FunctionSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#FunctionSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.FunctionSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.GenerationSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GenerationSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#GenerationSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.GenerationSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Generation Span in the trace.
+Includes input, output, model, model configuration, and usage.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.GenerationSpanData.input">
+<span class="sig-name descname"><span class="pre">input</span></span><a class="headerlink" href="#tracing.span_data.GenerationSpanData.input" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.GenerationSpanData.output">
+<span class="sig-name descname"><span class="pre">output</span></span><a class="headerlink" href="#tracing.span_data.GenerationSpanData.output" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.GenerationSpanData.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#tracing.span_data.GenerationSpanData.model" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.GenerationSpanData.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><a class="headerlink" href="#tracing.span_data.GenerationSpanData.model_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.GenerationSpanData.usage">
+<span class="sig-name descname"><span class="pre">usage</span></span><a class="headerlink" href="#tracing.span_data.GenerationSpanData.usage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.GenerationSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.GenerationSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.GenerationSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#GenerationSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.GenerationSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.ResponseSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResponseSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Response</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ResponseInputItemParam</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#ResponseSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.ResponseSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Response Span in the trace.
+Includes response and input.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.ResponseSpanData.response">
+<span class="sig-name descname"><span class="pre">response</span></span><a class="headerlink" href="#tracing.span_data.ResponseSpanData.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.ResponseSpanData.input">
+<span class="sig-name descname"><span class="pre">input</span></span><a class="headerlink" href="#tracing.span_data.ResponseSpanData.input" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.ResponseSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.ResponseSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.ResponseSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#ResponseSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.ResponseSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.HandoffSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HandoffSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#HandoffSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.HandoffSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Handoff Span in the trace.
+Includes source and destination agents.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.HandoffSpanData.from_agent">
+<span class="sig-name descname"><span class="pre">from_agent</span></span><a class="headerlink" href="#tracing.span_data.HandoffSpanData.from_agent" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.HandoffSpanData.to_agent">
+<span class="sig-name descname"><span class="pre">to_agent</span></span><a class="headerlink" href="#tracing.span_data.HandoffSpanData.to_agent" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.HandoffSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.HandoffSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.HandoffSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#HandoffSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.HandoffSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.CustomSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CustomSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#CustomSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.CustomSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Custom Span in the trace.
+Includes name and data property bag.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.CustomSpanData.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#tracing.span_data.CustomSpanData.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.CustomSpanData.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#tracing.span_data.CustomSpanData.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.CustomSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.CustomSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.CustomSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#CustomSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.CustomSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.GuardrailSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GuardrailSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triggered</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#GuardrailSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.GuardrailSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Guardrail Span in the trace.
+Includes name and triggered status.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.GuardrailSpanData.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#tracing.span_data.GuardrailSpanData.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.GuardrailSpanData.triggered">
+<span class="sig-name descname"><span class="pre">triggered</span></span><a class="headerlink" href="#tracing.span_data.GuardrailSpanData.triggered" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.GuardrailSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.GuardrailSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.GuardrailSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#GuardrailSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.GuardrailSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.TranscriptionSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TranscriptionSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pcm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#TranscriptionSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.TranscriptionSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Transcription Span in the trace.
+Includes input, output, model, and model configuration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.TranscriptionSpanData.input">
+<span class="sig-name descname"><span class="pre">input</span></span><a class="headerlink" href="#tracing.span_data.TranscriptionSpanData.input" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.TranscriptionSpanData.input_format">
+<span class="sig-name descname"><span class="pre">input_format</span></span><a class="headerlink" href="#tracing.span_data.TranscriptionSpanData.input_format" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.TranscriptionSpanData.output">
+<span class="sig-name descname"><span class="pre">output</span></span><a class="headerlink" href="#tracing.span_data.TranscriptionSpanData.output" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.TranscriptionSpanData.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#tracing.span_data.TranscriptionSpanData.model" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.TranscriptionSpanData.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><a class="headerlink" href="#tracing.span_data.TranscriptionSpanData.model_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.TranscriptionSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.TranscriptionSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.TranscriptionSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#TranscriptionSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.TranscriptionSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SpeechSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pcm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_content_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#SpeechSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.SpeechSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Speech Span in the trace.
+Includes input, output, model, model configuration, and first content timestamp.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData.input">
+<span class="sig-name descname"><span class="pre">input</span></span><a class="headerlink" href="#tracing.span_data.SpeechSpanData.input" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData.output">
+<span class="sig-name descname"><span class="pre">output</span></span><a class="headerlink" href="#tracing.span_data.SpeechSpanData.output" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData.output_format">
+<span class="sig-name descname"><span class="pre">output_format</span></span><a class="headerlink" href="#tracing.span_data.SpeechSpanData.output_format" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#tracing.span_data.SpeechSpanData.model" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><a class="headerlink" href="#tracing.span_data.SpeechSpanData.model_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData.first_content_at">
+<span class="sig-name descname"><span class="pre">first_content_at</span></span><a class="headerlink" href="#tracing.span_data.SpeechSpanData.first_content_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.SpeechSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#SpeechSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.SpeechSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechGroupSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SpeechGroupSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#SpeechGroupSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.SpeechGroupSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents a Speech Group Span in the trace.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechGroupSpanData.input">
+<span class="sig-name descname"><span class="pre">input</span></span><a class="headerlink" href="#tracing.span_data.SpeechGroupSpanData.input" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechGroupSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.SpeechGroupSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.SpeechGroupSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#SpeechGroupSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.SpeechGroupSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.MCPListToolsSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MCPListToolsSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#MCPListToolsSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.MCPListToolsSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.SpanData" title="tracing.span_data.SpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanData</span></code></a></p>
+<p>Represents an MCP List Tools Span in the trace.
+Includes server and result.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.MCPListToolsSpanData.server">
+<span class="sig-name descname"><span class="pre">server</span></span><a class="headerlink" href="#tracing.span_data.MCPListToolsSpanData.server" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.MCPListToolsSpanData.result">
+<span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#tracing.span_data.MCPListToolsSpanData.result" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.span_data.MCPListToolsSpanData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.span_data.MCPListToolsSpanData.type" title="Link to this definition">¶</a></dt>
+<dd><p>Return the type of the span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.MCPListToolsSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#MCPListToolsSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.MCPListToolsSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AdalFlowRunnerSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runner_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_executed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_answer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowRunnerSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.CustomSpanData" title="tracing.span_data.CustomSpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSpanData</span></code></a></p>
+<p>Represents the top-level Runner execution span in AdalFlow.
+Tracks complete lifecycle of multi-step agent workflows.
+Maps to OpenAI’s AgentSpanData format.</p>
+<p>The caller should update span attributes by using update_attributes() method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.runner_id">
+<span class="sig-name descname"><span class="pre">runner_id</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.runner_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.max_steps">
+<span class="sig-name descname"><span class="pre">max_steps</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.max_steps" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.steps_executed">
+<span class="sig-name descname"><span class="pre">steps_executed</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.steps_executed" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.final_answer">
+<span class="sig-name descname"><span class="pre">final_answer</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.final_answer" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.workflow_status">
+<span class="sig-name descname"><span class="pre">workflow_status</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.workflow_status" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.execution_time">
+<span class="sig-name descname"><span class="pre">execution_time</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.execution_time" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowRunnerSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowRunnerSpanData.update_attributes">
+<span class="sig-name descname"><span class="pre">update_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowRunnerSpanData.update_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowRunnerSpanData.update_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Update span attributes directly for MLflow compatibility.
+Note: MLflow’s OpenAI Trace processor reads attributes directly from the data attribute
+instead of using export(). This is a known limitation of the current MLflow implementation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AdalFlowGeneratorSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_state_logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_template_with_keywords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation_time_in_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowGeneratorSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.CustomSpanData" title="tracing.span_data.CustomSpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSpanData</span></code></a></p>
+<p>Represents Generator execution spans in AdalFlow.
+Tracks LLM generation, processing, and output formatting using generator_state_logger.
+Maps to OpenAI’s CustomSpanData format.</p>
+<p>The caller should update span attributes by using update_attributes() method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.generator_id">
+<span class="sig-name descname"><span class="pre">generator_id</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.generator_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.model_kwargs">
+<span class="sig-name descname"><span class="pre">model_kwargs</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.model_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.generator_state_logger">
+<span class="sig-name descname"><span class="pre">generator_state_logger</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.generator_state_logger" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.prompt_kwargs">
+<span class="sig-name descname"><span class="pre">prompt_kwargs</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.prompt_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.prompt_template_with_keywords">
+<span class="sig-name descname"><span class="pre">prompt_template_with_keywords</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.prompt_template_with_keywords" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.raw_response">
+<span class="sig-name descname"><span class="pre">raw_response</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.raw_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.api_response">
+<span class="sig-name descname"><span class="pre">api_response</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.api_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.generation_time_in_seconds">
+<span class="sig-name descname"><span class="pre">generation_time_in_seconds</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.generation_time_in_seconds" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.token_usage">
+<span class="sig-name descname"><span class="pre">token_usage</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.token_usage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.final_response">
+<span class="sig-name descname"><span class="pre">final_response</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.final_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.api_kwargs">
+<span class="sig-name descname"><span class="pre">api_kwargs</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.api_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.update_attributes">
+<span class="sig-name descname"><span class="pre">update_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowGeneratorSpanData.update_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.update_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Update span attributes directly for MLflow compatibility.
+Note: MLflow’s OpenAI Trace processor reads attributes directly from the data attribute
+instead of using export(). This is a known limitation of the current MLflow implementation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowGeneratorSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowGeneratorSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowGeneratorSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowResponseSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AdalFlowResponseSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">answer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowResponseSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowResponseSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.CustomSpanData" title="tracing.span_data.CustomSpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSpanData</span></code></a></p>
+<p>Represents AdalFlow Response spans that track the final result.
+Based on CustomSpanData but specialized for AdalFlow final outputs.</p>
+<p>The caller should update span attributes by using update_attributes() method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowResponseSpanData.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowResponseSpanData.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowResponseSpanData.answer">
+<span class="sig-name descname"><span class="pre">answer</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowResponseSpanData.answer" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowResponseSpanData.result_type">
+<span class="sig-name descname"><span class="pre">result_type</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowResponseSpanData.result_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowResponseSpanData.execution_metadata">
+<span class="sig-name descname"><span class="pre">execution_metadata</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowResponseSpanData.execution_metadata" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowResponseSpanData.response">
+<span class="sig-name descname"><span class="pre">response</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowResponseSpanData.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowResponseSpanData.update_attributes">
+<span class="sig-name descname"><span class="pre">update_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowResponseSpanData.update_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowResponseSpanData.update_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Update span attributes directly for MLflow compatibility.
+Note: MLflow’s OpenAI Trace processor reads attributes directly from the data attribute
+instead of using export(). This is a known limitation of the current MLflow implementation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowResponseSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowResponseSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowResponseSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AdalFlowStepSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_final</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowStepSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.CustomSpanData" title="tracing.span_data.CustomSpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSpanData</span></code></a></p>
+<p>Represents a Step Span in AdalFlow workflow execution.
+Tracks individual steps within a multi-step agent workflow.</p>
+<p>The caller should update span attributes by using update_attributes() method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.step_number">
+<span class="sig-name descname"><span class="pre">step_number</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.step_number" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.action_type">
+<span class="sig-name descname"><span class="pre">action_type</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.action_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.observation">
+<span class="sig-name descname"><span class="pre">observation</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.observation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.is_final">
+<span class="sig-name descname"><span class="pre">is_final</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.is_final" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.tool_name">
+<span class="sig-name descname"><span class="pre">tool_name</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.tool_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.tool_output">
+<span class="sig-name descname"><span class="pre">tool_output</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.tool_output" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.execution_time">
+<span class="sig-name descname"><span class="pre">execution_time</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.execution_time" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.error_info">
+<span class="sig-name descname"><span class="pre">error_info</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.error_info" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.update_attributes">
+<span class="sig-name descname"><span class="pre">update_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowStepSpanData.update_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.update_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Update span attributes directly for MLflow compatibility.
+Note: MLflow’s OpenAI Trace processor reads attributes directly from the data attribute
+instead of using export(). This is a known limitation of the current MLflow implementation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowStepSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowStepSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowStepSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AdalFlowToolSpanData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowToolSpanData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tracing.span_data.CustomSpanData" title="tracing.span_data.CustomSpanData"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomSpanData</span></code></a></p>
+<p>Represents Tool execution spans in AdalFlow.
+Tracks function calls, tool usage, and external integrations.
+Inherits OpenAI’s CustomSpanData format.</p>
+<p>The caller should update span attributes by using update_attributes() method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.tool_name">
+<span class="sig-name descname"><span class="pre">tool_name</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.tool_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.function_name">
+<span class="sig-name descname"><span class="pre">function_name</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.function_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.input_params">
+<span class="sig-name descname"><span class="pre">input_params</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.input_params" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.function_args">
+<span class="sig-name descname"><span class="pre">function_args</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.function_args" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.function_kwargs">
+<span class="sig-name descname"><span class="pre">function_kwargs</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.function_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.output_result">
+<span class="sig-name descname"><span class="pre">output_result</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.output_result" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.execution_time">
+<span class="sig-name descname"><span class="pre">execution_time</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.execution_time" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.error_info">
+<span class="sig-name descname"><span class="pre">error_info</span></span><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.error_info" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.update_attributes">
+<span class="sig-name descname"><span class="pre">update_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowToolSpanData.update_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.update_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Update span attributes directly for MLflow compatibility.
+Note: MLflow’s OpenAI Trace processor reads attributes directly from the data attribute
+instead of using export(). This is a known limitation of the current MLflow implementation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.span_data.AdalFlowToolSpanData.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/span_data.html#AdalFlowToolSpanData.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.span_data.AdalFlowToolSpanData.export" title="Link to this definition">¶</a></dt>
+<dd><p>Export the span data as a dictionary.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -482,8 +1291,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="tracing.spans.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">spans</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tracing.setup.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">setup</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -501,8 +1328,188 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">span_data</a><ul>
+<li><a class="reference internal" href="#tracing.span_data.SpanData"><code class="docutils literal notranslate"><span class="pre">SpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.SpanData.export"><code class="docutils literal notranslate"><span class="pre">SpanData.export()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpanData.type"><code class="docutils literal notranslate"><span class="pre">SpanData.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.AgentSpanData"><code class="docutils literal notranslate"><span class="pre">AgentSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.AgentSpanData.name"><code class="docutils literal notranslate"><span class="pre">AgentSpanData.name</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AgentSpanData.handoffs"><code class="docutils literal notranslate"><span class="pre">AgentSpanData.handoffs</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AgentSpanData.tools"><code class="docutils literal notranslate"><span class="pre">AgentSpanData.tools</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AgentSpanData.output_type"><code class="docutils literal notranslate"><span class="pre">AgentSpanData.output_type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AgentSpanData.type"><code class="docutils literal notranslate"><span class="pre">AgentSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AgentSpanData.export"><code class="docutils literal notranslate"><span class="pre">AgentSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.FunctionSpanData"><code class="docutils literal notranslate"><span class="pre">FunctionSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.FunctionSpanData.name"><code class="docutils literal notranslate"><span class="pre">FunctionSpanData.name</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.FunctionSpanData.input"><code class="docutils literal notranslate"><span class="pre">FunctionSpanData.input</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.FunctionSpanData.output"><code class="docutils literal notranslate"><span class="pre">FunctionSpanData.output</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.FunctionSpanData.mcp_data"><code class="docutils literal notranslate"><span class="pre">FunctionSpanData.mcp_data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.FunctionSpanData.type"><code class="docutils literal notranslate"><span class="pre">FunctionSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.FunctionSpanData.export"><code class="docutils literal notranslate"><span class="pre">FunctionSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.GenerationSpanData"><code class="docutils literal notranslate"><span class="pre">GenerationSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.GenerationSpanData.input"><code class="docutils literal notranslate"><span class="pre">GenerationSpanData.input</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GenerationSpanData.output"><code class="docutils literal notranslate"><span class="pre">GenerationSpanData.output</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GenerationSpanData.model"><code class="docutils literal notranslate"><span class="pre">GenerationSpanData.model</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GenerationSpanData.model_config"><code class="docutils literal notranslate"><span class="pre">GenerationSpanData.model_config</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GenerationSpanData.usage"><code class="docutils literal notranslate"><span class="pre">GenerationSpanData.usage</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GenerationSpanData.type"><code class="docutils literal notranslate"><span class="pre">GenerationSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GenerationSpanData.export"><code class="docutils literal notranslate"><span class="pre">GenerationSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.ResponseSpanData"><code class="docutils literal notranslate"><span class="pre">ResponseSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.ResponseSpanData.response"><code class="docutils literal notranslate"><span class="pre">ResponseSpanData.response</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.ResponseSpanData.input"><code class="docutils literal notranslate"><span class="pre">ResponseSpanData.input</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.ResponseSpanData.type"><code class="docutils literal notranslate"><span class="pre">ResponseSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.ResponseSpanData.export"><code class="docutils literal notranslate"><span class="pre">ResponseSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.HandoffSpanData"><code class="docutils literal notranslate"><span class="pre">HandoffSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.HandoffSpanData.from_agent"><code class="docutils literal notranslate"><span class="pre">HandoffSpanData.from_agent</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.HandoffSpanData.to_agent"><code class="docutils literal notranslate"><span class="pre">HandoffSpanData.to_agent</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.HandoffSpanData.type"><code class="docutils literal notranslate"><span class="pre">HandoffSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.HandoffSpanData.export"><code class="docutils literal notranslate"><span class="pre">HandoffSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.CustomSpanData"><code class="docutils literal notranslate"><span class="pre">CustomSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.CustomSpanData.name"><code class="docutils literal notranslate"><span class="pre">CustomSpanData.name</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.CustomSpanData.data"><code class="docutils literal notranslate"><span class="pre">CustomSpanData.data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.CustomSpanData.type"><code class="docutils literal notranslate"><span class="pre">CustomSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.CustomSpanData.export"><code class="docutils literal notranslate"><span class="pre">CustomSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.GuardrailSpanData"><code class="docutils literal notranslate"><span class="pre">GuardrailSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.GuardrailSpanData.name"><code class="docutils literal notranslate"><span class="pre">GuardrailSpanData.name</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GuardrailSpanData.triggered"><code class="docutils literal notranslate"><span class="pre">GuardrailSpanData.triggered</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GuardrailSpanData.type"><code class="docutils literal notranslate"><span class="pre">GuardrailSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.GuardrailSpanData.export"><code class="docutils literal notranslate"><span class="pre">GuardrailSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData"><code class="docutils literal notranslate"><span class="pre">TranscriptionSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData.input"><code class="docutils literal notranslate"><span class="pre">TranscriptionSpanData.input</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData.input_format"><code class="docutils literal notranslate"><span class="pre">TranscriptionSpanData.input_format</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData.output"><code class="docutils literal notranslate"><span class="pre">TranscriptionSpanData.output</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData.model"><code class="docutils literal notranslate"><span class="pre">TranscriptionSpanData.model</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData.model_config"><code class="docutils literal notranslate"><span class="pre">TranscriptionSpanData.model_config</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData.type"><code class="docutils literal notranslate"><span class="pre">TranscriptionSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.TranscriptionSpanData.export"><code class="docutils literal notranslate"><span class="pre">TranscriptionSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData.input"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData.input</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData.output"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData.output</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData.output_format"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData.output_format</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData.model"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData.model</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData.model_config"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData.model_config</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData.first_content_at"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData.first_content_at</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData.type"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechSpanData.export"><code class="docutils literal notranslate"><span class="pre">SpeechSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechGroupSpanData"><code class="docutils literal notranslate"><span class="pre">SpeechGroupSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.SpeechGroupSpanData.input"><code class="docutils literal notranslate"><span class="pre">SpeechGroupSpanData.input</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechGroupSpanData.type"><code class="docutils literal notranslate"><span class="pre">SpeechGroupSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.SpeechGroupSpanData.export"><code class="docutils literal notranslate"><span class="pre">SpeechGroupSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.MCPListToolsSpanData"><code class="docutils literal notranslate"><span class="pre">MCPListToolsSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.MCPListToolsSpanData.server"><code class="docutils literal notranslate"><span class="pre">MCPListToolsSpanData.server</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.MCPListToolsSpanData.result"><code class="docutils literal notranslate"><span class="pre">MCPListToolsSpanData.result</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.MCPListToolsSpanData.type"><code class="docutils literal notranslate"><span class="pre">MCPListToolsSpanData.type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.MCPListToolsSpanData.export"><code class="docutils literal notranslate"><span class="pre">MCPListToolsSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.data"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.runner_id"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.runner_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.max_steps"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.max_steps</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.steps_executed"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.steps_executed</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.final_answer"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.final_answer</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.workflow_status"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.workflow_status</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.execution_time"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.execution_time</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.export"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.export()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowRunnerSpanData.update_attributes"><code class="docutils literal notranslate"><span class="pre">AdalFlowRunnerSpanData.update_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.data"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.generator_id"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.generator_id</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.model_kwargs"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.model_kwargs</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.generator_state_logger"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.generator_state_logger</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.prompt_kwargs"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.prompt_kwargs</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.prompt_template_with_keywords"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.prompt_template_with_keywords</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.raw_response"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.raw_response</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.api_response"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.api_response</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.generation_time_in_seconds"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.generation_time_in_seconds</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.token_usage"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.token_usage</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.final_response"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.final_response</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.api_kwargs"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.api_kwargs</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.update_attributes"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.update_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowGeneratorSpanData.export"><code class="docutils literal notranslate"><span class="pre">AdalFlowGeneratorSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData"><code class="docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData.data"><code class="docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData.data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData.answer"><code class="docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData.answer</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData.result_type"><code class="docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData.result_type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData.execution_metadata"><code class="docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData.execution_metadata</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData.response"><code class="docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData.response</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData.update_attributes"><code class="docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData.update_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowResponseSpanData.export"><code class="docutils literal notranslate"><span class="pre">AdalFlowResponseSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.data"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.step_number"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.step_number</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.action_type"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.action_type</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.observation"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.observation</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.is_final"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.is_final</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.tool_name"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.tool_name</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.tool_output"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.tool_output</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.execution_time"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.execution_time</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.error_info"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.error_info</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.update_attributes"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.update_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowStepSpanData.export"><code class="docutils literal notranslate"><span class="pre">AdalFlowStepSpanData.export()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.data"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.data</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.tool_name"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.tool_name</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.function_name"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.function_name</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.input_params"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.input_params</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.function_args"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.function_args</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.function_kwargs"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.function_kwargs</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.output_result"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.output_result</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.execution_time"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.execution_time</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.error_info"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.error_info</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.update_attributes"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.update_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.span_data.AdalFlowToolSpanData.export"><code class="docutils literal notranslate"><span class="pre">AdalFlowToolSpanData.export()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

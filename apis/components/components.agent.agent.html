@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,142 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="agent">
-<span id="components-agent-agent"></span><h1>agent<a class="headerlink" href="#agent" title="Link to this heading">¶</a></h1>
+          <section id="module-components.agent.agent">
+<span id="agent"></span><span id="components-agent-agent"></span><h1>agent<a class="headerlink" href="#module-components.agent.agent" title="Link to this heading">¶</a></h1>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_default_planner</span></code>(tool_manager[, ...])</p></td>
+<td><p>Create a default planner with the given model client, model kwargs, template, task desc, cache path, use cache, max steps.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_default_tool_manager</span></code>([tools, ...])</p></td>
+<td><p>Create a default tool manager with the given tools, context variables, and add_llm_as_fallback.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.agent.agent.Agent" title="components.agent.agent.Agent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Agent</span></code></a>(name, tools, context_variables, ...)</p></td>
+<td><p>A high-level agentic component that orchestrates AI planning and tool execution.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="components.agent.agent.Agent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools:</span> <span class="pre">~typing.List[~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_variables:</span> <span class="pre">~typing.Dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_llm_as_fallback:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client:</span> <span class="pre">~adalflow.core.model_client.ModelClient</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type:</span> <span class="pre">~adalflow.core.types.ModelType</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">ModelType.LLM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_desc:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~adalflow.core.prompt_builder.Prompt</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_path:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer_data_type:</span> <span class="pre">~typing.Type[~components.agent.agent.T]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'str'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_thinking_model:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_manager:</span> <span class="pre">~adalflow.core.tool_manager.ToolManager</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner:</span> <span class="pre">~adalflow.core.generator.Generator</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/agent/agent.html#Agent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.agent.Agent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>A high-level agentic component that orchestrates AI planning and tool execution.</p>
+<p>The Agent combines a Generator-based planner for task decomposition with a ToolManager
+for function calling. It uses a ReAct (Reasoning and Acting) architecture to iteratively
+plan steps and execute tools to solve complex tasks.</p>
+<p>The Agent comes with default prompt templates for agentic reasoning, automatic tool
+definition integration, and step history tracking. It includes built-in helper tools:
+- finish: Terminates execution with the final answer
+- llm_tool: Fallback tool using LLM world knowledge for simple queries</p>
+<dl class="simple">
+<dt>Architecture:</dt><dd><p>Agent contains two main components:
+1. Planner (Generator): Plans and reasons about next actions using an LLM
+2. ToolManager: Manages and executes available tools/functions</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.agent.agent.Agent.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#components.agent.agent.Agent.name" title="Link to this definition">¶</a></dt>
+<dd><p>Unique identifier for the agent instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.agent.agent.Agent.tool_manager">
+<span class="sig-name descname"><span class="pre">tool_manager</span></span><a class="headerlink" href="#components.agent.agent.Agent.tool_manager" title="Link to this definition">¶</a></dt>
+<dd><p>Manages available tools and their execution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager">ToolManager</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.agent.agent.Agent.planner">
+<span class="sig-name descname"><span class="pre">planner</span></span><a class="headerlink" href="#components.agent.agent.Agent.planner" title="Link to this definition">¶</a></dt>
+<dd><p>LLM-based planner for task decomposition and reasoning</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.generator.html#core.generator.Generator" title="core.generator.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.agent.agent.Agent.answer_data_type">
+<span class="sig-name descname"><span class="pre">answer_data_type</span></span><a class="headerlink" href="#components.agent.agent.Agent.answer_data_type" title="Link to this definition">¶</a></dt>
+<dd><p>Expected type for the final answer output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.agent.agent.Agent.max_steps">
+<span class="sig-name descname"><span class="pre">max_steps</span></span><a class="headerlink" href="#components.agent.agent.Agent.max_steps" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum number of planning steps allowed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.agent.agent.Agent.is_thinking_model">
+<span class="sig-name descname"><span class="pre">is_thinking_model</span></span><a class="headerlink" href="#components.agent.agent.Agent.is_thinking_model" title="Link to this definition">¶</a></dt>
+<dd><p>Whether the underlying model supports chain-of-thought</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.agent.Agent.is_training">
+<span class="sig-name descname"><span class="pre">is_training</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/components/agent/agent.html#Agent.is_training"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.agent.Agent.is_training" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.agent.Agent.get_prompt">
+<span class="sig-name descname"><span class="pre">get_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/agent/agent.html#Agent.get_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.agent.Agent.get_prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Get formatted prompt using generator’s prompt template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Additional arguments to pass to the generator’s get_prompt</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted prompt string</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +657,37 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">agent</a><ul>
+<li><a class="reference internal" href="#components.agent.agent.Agent"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
+<li><a class="reference internal" href="#components.agent.agent.Agent.name"><code class="docutils literal notranslate"><span class="pre">Agent.name</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.agent.Agent.tool_manager"><code class="docutils literal notranslate"><span class="pre">Agent.tool_manager</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.agent.Agent.planner"><code class="docutils literal notranslate"><span class="pre">Agent.planner</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.agent.Agent.answer_data_type"><code class="docutils literal notranslate"><span class="pre">Agent.answer_data_type</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.agent.Agent.max_steps"><code class="docutils literal notranslate"><span class="pre">Agent.max_steps</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.agent.Agent.is_thinking_model"><code class="docutils literal notranslate"><span class="pre">Agent.is_thinking_model</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.agent.Agent.is_training"><code class="docutils literal notranslate"><span class="pre">Agent.is_training()</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.agent.Agent.get_prompt"><code class="docutils literal notranslate"><span class="pre">Agent.get_prompt()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

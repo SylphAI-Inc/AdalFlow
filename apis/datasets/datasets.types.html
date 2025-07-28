@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,130 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="types">
-<span id="datasets-types"></span><h1>types<a class="headerlink" href="#types" title="Link to this heading">¶</a></h1>
+          <section id="module-datasets.types">
+<span id="types"></span><span id="datasets-types"></span><h1>types<a class="headerlink" href="#module-datasets.types" title="Link to this heading">¶</a></h1>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datasets.types.BaseData" title="datasets.types.BaseData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseData</span></code></a>([id])</p></td>
+<td><p>A common dataclass for representing examples in a dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datasets.types.Example" title="datasets.types.Example"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Example</span></code></a>([id, question, answer])</p></td>
+<td><p>A common dataclass for representing examples in a dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datasets.types.GSM8KData" title="datasets.types.GSM8KData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GSM8KData</span></code></a>([id, question, answer, ...])</p></td>
+<td><p>A dataclass for representing examples in the GSM8K dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datasets.types.HotPotQAData" title="datasets.types.HotPotQAData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HotPotQAData</span></code></a>([id, question, answer, ...])</p></td>
+<td><p>A dataclass for representing examples in the HotPotQA dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datasets.types.TrecData" title="datasets.types.TrecData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrecData</span></code></a>([id, question, class_name, class_index])</p></td>
+<td><p>A dataclass for representing examples in the TREC dataset.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="datasets.types.BaseData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'3389dd00-c624-46cf-8df9-3457d339abaa'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/types.html#BaseData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.types.BaseData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
+<p>A common dataclass for representing examples in a dataset.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.BaseData.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'3389dd00-c624-46cf-8df9-3457d339abaa'</span></em><a class="headerlink" href="#datasets.types.BaseData.id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="datasets.types.Example">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'3fb70db8-1f12-41c9-a157-55e8bd3ee0de'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">question</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/types.html#Example"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.types.Example" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
+<p>A common dataclass for representing examples in a dataset.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.Example.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'3fb70db8-1f12-41c9-a157-55e8bd3ee0de'</span></em><a class="headerlink" href="#datasets.types.Example.id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.Example.question">
+<span class="sig-name descname"><span class="pre">question</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#datasets.types.Example.question" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.Example.answer">
+<span class="sig-name descname"><span class="pre">answer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#datasets.types.Example.answer" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="datasets.types.GSM8KData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GSM8KData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'3fb70db8-1f12-41c9-a157-55e8bd3ee0de'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">question</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gold_reasoning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reasoning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/types.html#GSM8KData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.types.GSM8KData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#datasets.types.Example" title="datasets.types.Example"><code class="xref py py-class docutils literal notranslate"><span class="pre">Example</span></code></a></p>
+<p>A dataclass for representing examples in the GSM8K dataset.</p>
+<p>You can reset the output fields:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">GSM8KData</span><span class="o">.</span><span class="n">set_output_fields</span><span class="p">([</span><span class="s2">&quot;answer&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.GSM8KData.gold_reasoning">
+<span class="sig-name descname"><span class="pre">gold_reasoning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#datasets.types.GSM8KData.gold_reasoning" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.GSM8KData.reasoning">
+<span class="sig-name descname"><span class="pre">reasoning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#datasets.types.GSM8KData.reasoning" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="datasets.types.HotPotQAData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HotPotQAData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'3fb70db8-1f12-41c9-a157-55e8bd3ee0de'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">question</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gold_titles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/types.html#HotPotQAData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.types.HotPotQAData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#datasets.types.Example" title="datasets.types.Example"><code class="xref py py-class docutils literal notranslate"><span class="pre">Example</span></code></a></p>
+<p>A dataclass for representing examples in the HotPotQA dataset.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.HotPotQAData.gold_titles">
+<span class="sig-name descname"><span class="pre">gold_titles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#datasets.types.HotPotQAData.gold_titles" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.HotPotQAData.context">
+<span class="sig-name descname"><span class="pre">context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#datasets.types.HotPotQAData.context" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="datasets.types.TrecData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrecData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'3389dd00-c624-46cf-8df9-3457d339abaa'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">question</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/datasets/types.html#TrecData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datasets.types.TrecData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#datasets.types.BaseData" title="datasets.types.BaseData"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseData</span></code></a></p>
+<p>A dataclass for representing examples in the TREC dataset.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.TrecData.question">
+<span class="sig-name descname"><span class="pre">question</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#datasets.types.TrecData.question" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.TrecData.class_name">
+<span class="sig-name descname"><span class="pre">class_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#datasets.types.TrecData.class_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="datasets.types.TrecData.class_index">
+<span class="sig-name descname"><span class="pre">class_index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#datasets.types.TrecData.class_index" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +645,52 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">types</a><ul>
+<li><a class="reference internal" href="#datasets.types.BaseData"><code class="docutils literal notranslate"><span class="pre">BaseData</span></code></a><ul>
+<li><a class="reference internal" href="#datasets.types.BaseData.id"><code class="docutils literal notranslate"><span class="pre">BaseData.id</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#datasets.types.Example"><code class="docutils literal notranslate"><span class="pre">Example</span></code></a><ul>
+<li><a class="reference internal" href="#datasets.types.Example.id"><code class="docutils literal notranslate"><span class="pre">Example.id</span></code></a></li>
+<li><a class="reference internal" href="#datasets.types.Example.question"><code class="docutils literal notranslate"><span class="pre">Example.question</span></code></a></li>
+<li><a class="reference internal" href="#datasets.types.Example.answer"><code class="docutils literal notranslate"><span class="pre">Example.answer</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#datasets.types.GSM8KData"><code class="docutils literal notranslate"><span class="pre">GSM8KData</span></code></a><ul>
+<li><a class="reference internal" href="#datasets.types.GSM8KData.gold_reasoning"><code class="docutils literal notranslate"><span class="pre">GSM8KData.gold_reasoning</span></code></a></li>
+<li><a class="reference internal" href="#datasets.types.GSM8KData.reasoning"><code class="docutils literal notranslate"><span class="pre">GSM8KData.reasoning</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#datasets.types.HotPotQAData"><code class="docutils literal notranslate"><span class="pre">HotPotQAData</span></code></a><ul>
+<li><a class="reference internal" href="#datasets.types.HotPotQAData.gold_titles"><code class="docutils literal notranslate"><span class="pre">HotPotQAData.gold_titles</span></code></a></li>
+<li><a class="reference internal" href="#datasets.types.HotPotQAData.context"><code class="docutils literal notranslate"><span class="pre">HotPotQAData.context</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#datasets.types.TrecData"><code class="docutils literal notranslate"><span class="pre">TrecData</span></code></a><ul>
+<li><a class="reference internal" href="#datasets.types.TrecData.question"><code class="docutils literal notranslate"><span class="pre">TrecData.question</span></code></a></li>
+<li><a class="reference internal" href="#datasets.types.TrecData.class_name"><code class="docutils literal notranslate"><span class="pre">TrecData.class_name</span></code></a></li>
+<li><a class="reference internal" href="#datasets.types.TrecData.class_index"><code class="docutils literal notranslate"><span class="pre">TrecData.class_index</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

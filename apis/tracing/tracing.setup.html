@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="span_data" href="tracing.span_data.html" /><link rel="prev" title="scope" href="tracing.scope.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>setup - Build and Optimize LM Workflows</title>
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -303,8 +303,8 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../core/index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.component.html">component</a></li>
@@ -418,10 +418,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tracing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.scope.html">scope</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,133 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="setup">
-<span id="tracing-setup"></span><h1>setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h1>
+          <section id="module-tracing.setup">
+<span id="setup"></span><span id="tracing-setup"></span><h1>setup<a class="headerlink" href="#module-tracing.setup" title="Link to this heading">¶</a></h1>
+<p>AdalFlow tracing setup and providers module with OpenAI Agents SDK compatibility.</p>
+<p>This module provides the core tracing infrastructure for AdalFlow, including trace providers
+and multi-processor management following OpenAI Agents SDK patterns.</p>
+<p>References:
+- OpenAI Agents SDK: <a class="reference external" href="https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/setup.py">https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/setup.py</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SynchronousMultiTracingProcessor</span></span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="tracing.processor_interface.html#tracing.processor_interface.TracingProcessor" title="tracing.processor_interface.TracingProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TracingProcessor</span></code></a></p>
+<p>Forwards all calls to a list of TracingProcessors, in order of registration.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor.add_tracing_processor">
+<span class="sig-name descname"><span class="pre">add_tracing_processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracing_processor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.processor_interface.html#tracing.processor_interface.TracingProcessor" title="tracing.processor_interface.TracingProcessor"><span class="pre">TracingProcessor</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor.add_tracing_processor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor.add_tracing_processor" title="Link to this definition">¶</a></dt>
+<dd><p>Add a processor to the list of processors. Each processor will receive all traces/spans.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor.set_processors">
+<span class="sig-name descname"><span class="pre">set_processors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tracing.processor_interface.html#tracing.processor_interface.TracingProcessor" title="tracing.processor_interface.TracingProcessor"><span class="pre">TracingProcessor</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor.set_processors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor.set_processors" title="Link to this definition">¶</a></dt>
+<dd><p>Set the list of processors. This will replace the current list of processors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor.on_trace_start">
+<span class="sig-name descname"><span class="pre">on_trace_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor.on_trace_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor.on_trace_start" title="Link to this definition">¶</a></dt>
+<dd><p>Called when a trace is started.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor.on_trace_end">
+<span class="sig-name descname"><span class="pre">on_trace_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor.on_trace_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor.on_trace_end" title="Link to this definition">¶</a></dt>
+<dd><p>Called when a trace is finished.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor.on_span_start">
+<span class="sig-name descname"><span class="pre">on_span_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor.on_span_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor.on_span_start" title="Link to this definition">¶</a></dt>
+<dd><p>Called when a span is started.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor.on_span_end">
+<span class="sig-name descname"><span class="pre">on_span_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor.on_span_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor.on_span_end" title="Link to this definition">¶</a></dt>
+<dd><p>Called when a span is finished.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor.shutdown">
+<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor.shutdown" title="Link to this definition">¶</a></dt>
+<dd><p>Called when the application stops.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.SynchronousMultiTracingProcessor.force_flush">
+<span class="sig-name descname"><span class="pre">force_flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/setup.html#SynchronousMultiTracingProcessor.force_flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.SynchronousMultiTracingProcessor.force_flush" title="Link to this definition">¶</a></dt>
+<dd><p>Force the processors to flush their buffers.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TraceProvider</span></span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider.register_processor">
+<span class="sig-name descname"><span class="pre">register_processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.processor_interface.html#tracing.processor_interface.TracingProcessor" title="tracing.processor_interface.TracingProcessor"><span class="pre">TracingProcessor</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider.register_processor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider.register_processor" title="Link to this definition">¶</a></dt>
+<dd><p>Add a processor to the list of processors. Each processor will receive all traces/spans.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider.set_processors">
+<span class="sig-name descname"><span class="pre">set_processors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tracing.processor_interface.html#tracing.processor_interface.TracingProcessor" title="tracing.processor_interface.TracingProcessor"><span class="pre">TracingProcessor</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider.set_processors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider.set_processors" title="Link to this definition">¶</a></dt>
+<dd><p>Set the list of processors. This will replace the current list of processors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider.get_current_trace">
+<span class="sig-name descname"><span class="pre">get_current_trace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider.get_current_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider.get_current_trace" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the currently active trace, if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider.get_current_span">
+<span class="sig-name descname"><span class="pre">get_current_span</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider.get_current_span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider.get_current_span" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the currently active span, if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider.set_disabled">
+<span class="sig-name descname"><span class="pre">set_disabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider.set_disabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider.set_disabled" title="Link to this definition">¶</a></dt>
+<dd><p>Set whether tracing is disabled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider.create_trace">
+<span class="sig-name descname"><span class="pre">create_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider.create_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider.create_trace" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new trace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider.create_span">
+<span class="sig-name descname"><span class="pre">create_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TSpanData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">span_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">TSpanData</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider.create_span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider.create_span" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new span.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.setup.TraceProvider.shutdown">
+<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/setup.html#TraceProvider.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.TraceProvider.shutdown" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.setup.get_global_trace_provider">
+<span class="sig-name descname"><span class="pre">get_global_trace_provider</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/setup.html#get_global_trace_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.setup.get_global_trace_provider" title="Link to this definition">¶</a></dt>
+<dd><p>Get the global trace provider, creating it if necessary.</p>
+</dd></dl>
+
 </section>
 
         </article>
@@ -482,8 +611,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="tracing.span_data.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">span_data</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tracing.scope.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">scope</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -501,8 +648,49 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">setup</a><ul>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor.add_tracing_processor"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor.add_tracing_processor()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor.set_processors"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor.set_processors()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor.on_trace_start"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor.on_trace_start()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor.on_trace_end"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor.on_trace_end()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor.on_span_start"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor.on_span_start()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor.on_span_end"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor.on_span_end()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor.shutdown"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor.shutdown()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.SynchronousMultiTracingProcessor.force_flush"><code class="docutils literal notranslate"><span class="pre">SynchronousMultiTracingProcessor.force_flush()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider"><code class="docutils literal notranslate"><span class="pre">TraceProvider</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider.register_processor"><code class="docutils literal notranslate"><span class="pre">TraceProvider.register_processor()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider.set_processors"><code class="docutils literal notranslate"><span class="pre">TraceProvider.set_processors()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider.get_current_trace"><code class="docutils literal notranslate"><span class="pre">TraceProvider.get_current_trace()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider.get_current_span"><code class="docutils literal notranslate"><span class="pre">TraceProvider.get_current_span()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider.set_disabled"><code class="docutils literal notranslate"><span class="pre">TraceProvider.set_disabled()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider.create_trace"><code class="docutils literal notranslate"><span class="pre">TraceProvider.create_trace()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider.create_span"><code class="docutils literal notranslate"><span class="pre">TraceProvider.create_span()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.setup.TraceProvider.shutdown"><code class="docutils literal notranslate"><span class="pre">TraceProvider.shutdown()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.setup.get_global_trace_provider"><code class="docutils literal notranslate"><span class="pre">get_global_trace_provider()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

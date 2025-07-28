@@ -7,3 +7,18 @@ agent
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      create_default_planner
+      create_default_tool_manager
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      Agent
+

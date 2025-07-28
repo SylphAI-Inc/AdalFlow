@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,146 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="memory">
-<span id="components-memory-memory"></span><h1>memory<a class="headerlink" href="#memory" title="Link to this heading">¶</a></h1>
+          <section id="module-components.memory.memory">
+<span id="memory"></span><span id="components-memory-memory"></span><h1>memory<a class="headerlink" href="#module-components.memory.memory" title="Link to this heading">¶</a></h1>
+<p>Memory component for user-assistant conversations.</p>
+<p>Memory can include data modeling, in-memory data storage, local file data storage, cloud data persistence, data pipeline, data retriever.
+It is itself an LLM application and different use cases can do it differently.</p>
+<p>This component handles the storage and retrieval of conversation history between users
+and assistants. It provides local memory experience with the ability to format and
+return conversation history.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.memory.memory.current_conversation">
+<span class="sig-name descname"><span class="pre">current_conversation</span></span><a class="headerlink" href="#components.memory.memory.current_conversation" title="Link to this definition">¶</a></dt>
+<dd><p>Stores the current active conversation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.types.html#core.types.Conversation" title="core.types.Conversation">Conversation</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.memory.memory.turn_db">
+<span class="sig-name descname"><span class="pre">turn_db</span></span><a class="headerlink" href="#components.memory.memory.turn_db" title="Link to this definition">¶</a></dt>
+<dd><p>Database for storing all conversation turns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.db.html#core.db.LocalDB" title="core.db.LocalDB">LocalDB</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.memory.memory.conver_db">
+<span class="sig-name descname"><span class="pre">conver_db</span></span><a class="headerlink" href="#components.memory.memory.conver_db" title="Link to this definition">¶</a></dt>
+<dd><p>Database for storing complete conversations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../core/core.db.html#core.db.LocalDB" title="core.db.LocalDB">LocalDB</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.memory.memory.ConversationMemory" title="components.memory.memory.ConversationMemory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConversationMemory</span></code></a>([turn_db])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="components.memory.memory.ConversationMemory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConversationMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turn_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LocalDB</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.ConversationMemory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.memory.ConversationMemory.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.ConversationMemory.call" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the current conversation history as a formatted string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>metadata_filter</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – List of metadata keys to include.
+If None, all metadata is included.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Formatted conversation history with alternating user and assistant messages.</dt><dd><p>Returns empty string if no conversation history exists.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.memory.ConversationMemory.add_dialog_turn">
+<span class="sig-name descname"><span class="pre">add_dialog_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UserQuery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assistant_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AssistantResponse</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory.add_dialog_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.ConversationMemory.add_dialog_turn" title="Link to this definition">¶</a></dt>
+<dd><p>Add a new dialog turn to the current conversation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_query</strong> (<em>str</em>) – The user’s input message.</p></li>
+<li><p><strong>assistant_response</strong> (<em>str</em>) – The assistant’s response message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.memory.ConversationMemory.add_user_query">
+<span class="sig-name descname"><span class="pre">add_user_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UserQuery</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory.add_user_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.ConversationMemory.add_user_query" title="Link to this definition">¶</a></dt>
+<dd><p>Add a user query to start a new dialog turn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_query</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="../core/core.types.html#core.types.UserQuery" title="core.types.UserQuery"><em>UserQuery</em></a><em>]</em>) – The user’s input message.
+If UserQuery object, can include metadata.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ID of the pending dialog turn.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If there’s already a pending user query without an assistant response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.memory.ConversationMemory.add_assistant_response">
+<span class="sig-name descname"><span class="pre">add_assistant_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assistant_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AssistantResponse</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory.add_assistant_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.memory.ConversationMemory.add_assistant_response" title="Link to this definition">¶</a></dt>
+<dd><p>Add an assistant response to complete the current dialog turn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>assistant_response</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="../core/core.types.html#core.types.AssistantResponse" title="core.types.AssistantResponse"><em>AssistantResponse</em></a><em>]</em>) – The assistant’s response message.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ID of the completed dialog turn.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If there’s no pending user query to respond to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +661,36 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">memory</a><ul>
+<li><a class="reference internal" href="#components.memory.memory.current_conversation"><code class="docutils literal notranslate"><span class="pre">current_conversation</span></code></a></li>
+<li><a class="reference internal" href="#components.memory.memory.turn_db"><code class="docutils literal notranslate"><span class="pre">turn_db</span></code></a></li>
+<li><a class="reference internal" href="#components.memory.memory.conver_db"><code class="docutils literal notranslate"><span class="pre">conver_db</span></code></a></li>
+<li><a class="reference internal" href="#components.memory.memory.ConversationMemory"><code class="docutils literal notranslate"><span class="pre">ConversationMemory</span></code></a><ul>
+<li><a class="reference internal" href="#components.memory.memory.ConversationMemory.call"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.call()</span></code></a></li>
+<li><a class="reference internal" href="#components.memory.memory.ConversationMemory.add_dialog_turn"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_dialog_turn()</span></code></a></li>
+<li><a class="reference internal" href="#components.memory.memory.ConversationMemory.add_user_query"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_user_query()</span></code></a></li>
+<li><a class="reference internal" href="#components.memory.memory.ConversationMemory.add_assistant_response"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_assistant_response()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

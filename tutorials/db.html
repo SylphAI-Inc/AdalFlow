@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -506,7 +516,7 @@ However, in real-world LLM applications, we can not avoid dealing with data stor
 <section id="data-models">
 <h2>Data Models<a class="headerlink" href="#data-models" title="Link to this heading">¶</a></h2>
 <p>Besides of having a unified <cite>GeneratorOutput</cite>, <cite>EmbedderOutput</cite>, and <cite>RetrieverOutput</cite> data format,
-we provide mainly <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code> to help with text document and conversational histor processing and data storage.</p>
+we provide mainly <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a> and <a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a> to help with text document and conversational histor processing and data storage.</p>
 <p>We will explain the design of Document and DialogTurn. In this note, we will continue use these simple documents we used in the previous notes:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">org_documents</span> <span class="o">=</span><span class="p">[</span>
     <span class="p">{</span>
@@ -545,7 +555,7 @@ we provide mainly <code class="xref py py-class docutils literal notranslate"><s
 </div>
 <section id="document">
 <h3>Document<a class="headerlink" href="#document" title="Link to this heading">¶</a></h3>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code> is used as Document data structure and to assist text processing in LLM applications.</p>
+<p>The <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a> is used as Document data structure and to assist text processing in LLM applications.</p>
 <ol class="arabic simple">
 <li><p>A general document/text container with fields <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">meta_data</span></code>, and <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p></li>
 <li><p>Assist text splitting with fields <code class="docutils literal notranslate"><span class="pre">parent_doc_id</span></code> and <code class="docutils literal notranslate"><span class="pre">order</span></code>.</p></li>
@@ -567,7 +577,7 @@ we provide mainly <code class="xref py py-class docutils literal notranslate"><s
 </section>
 <section id="dialogturn">
 <h3>DialogTurn<a class="headerlink" href="#dialogturn" title="Link to this heading">¶</a></h3>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code> is only used as a data structure to a user-assistant conversation turn in LLM applications.
+<p>The <a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a> is only used as a data structure to a user-assistant conversation turn in LLM applications.
 <strong>If we need to apply a text processing pipeline to a conversational history, we will use our text container``Document`` to store the text we need to use.</strong></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -936,8 +946,8 @@ Here is the code to prepare the relevant dialog turns.</p>
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.db.LocalDB</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter" title="components.data_process.text_splitter.TextSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.text_splitter.TextSplitter</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.data_process.html#components.data_process.ToEmbeddings" title="components.data_process.ToEmbeddings"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.ToEmbeddings</span></code></a></p></li>

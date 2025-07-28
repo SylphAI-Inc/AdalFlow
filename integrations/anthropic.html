@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -482,14 +492,14 @@
    </a>
 </div><section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
-<p>AdalFlow provides seamless integration with Anthropic’s Claude models through the <code class="xref py py-class docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code>. This integration supports all Claude models including Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus, and the latest Claude Sonnet 4 with advanced reasoning capabilities.</p>
+<p>AdalFlow provides seamless integration with Anthropic’s Claude models through the <a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a>. This integration supports all Claude models including Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus, and the latest Claude Sonnet 4 with advanced reasoning capabilities.</p>
 </section>
 <section id="key-features">
 <h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Model Agnostic</strong>: Easy switching between different Claude models via configuration</p></li>
 <li><p><strong>Reasoning Support</strong>: Built-in support for Claude’s reasoning capabilities with interleaved thinking</p></li>
-<li><p><strong>Tool Usage</strong>: Support Anthropic’s native tool via the <cite>tools</cite> parameter in <cite>model_kwargs</cite> but more powerfully, you can use the <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> to use tools even easier.</p></li>
+<li><p><strong>Tool Usage</strong>: Support Anthropic’s native tool via the <cite>tools</cite> parameter in <cite>model_kwargs</cite> but more powerfully, you can use the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> to use tools even easier.</p></li>
 </ul>
 </section>
 <section id="basic-usage">
@@ -604,7 +614,7 @@ And the <cite>tool_use</cite> field of the <cite>GeneratorOutput</cite> will sho
 </section>
 <section id="react-agent-with-thinking-models">
 <h3>ReAct Agent with Thinking Models<a class="headerlink" href="#react-agent-with-thinking-models" title="Link to this heading">¶</a></h3>
-<p>Instead of using the native tools, you can use the <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> to use tools even easier.
+<p>Instead of using the native tools, you can use the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> to use tools even easier.
 The output is directly parsed into a <cite>ReActAgentOutput</cite> object where you can find both the <cite>answer</cite> and the <cite>steps</cite> of the agent.</p>
 <p>In this case, we are using a thinking model, so inside of <cite>ReActAgent</cite>, the manual CoT is disabled on the reasoning.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.agent.react</span> <span class="kn">import</span> <span class="n">ReActAgent</span>
@@ -658,7 +668,7 @@ You can find the list of available models in the <a class="reference external" h
 </section>
 <section id="configuration-options">
 <h2>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading">¶</a></h2>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code> supports various configuration options:</p>
+<p>The <a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a> supports various configuration options:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">anthropic_client</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">AnthropicAPIClient</span><span class="p">(</span>
     <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">,</span>  <span class="c1"># Optional: uses ANTHROPIC_API_KEY env var</span>
     <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://api.anthropic.com&quot;</span><span class="p">,</span>  <span class="c1"># Optional: custom base URL</span>
@@ -682,10 +692,10 @@ You can find the list of available models in the <a class="reference external" h
 <div class="highlight admonition">
 <p class="admonition-title">API Reference</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
 </ul>
 </div>
 <div class="highlight admonition">

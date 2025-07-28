@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,118 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="react">
-<span id="components-agent-react"></span><h1>react<a class="headerlink" href="#react" title="Link to this heading">¶</a></h1>
+          <section id="module-components.agent.react">
+<span id="react"></span><span id="components-agent-react"></span><h1>react<a class="headerlink" href="#module-components.agent.react" title="Link to this heading">¶</a></h1>
+<p>Implementation and optimization of React agent.
+Note: This will be deprecated soon, use Agent + Runner instead.</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CombineStepHistory</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReActAgent</span></code></a>(tools, ...)</p></td>
+<td><p>ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReActOutput</span></code>(id, step_history, answer)</p></td>
+<td><p>Similar to GeneratorOutput, but with additional step history and final answer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Constants</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT">
+<span class="sig-name descname"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;START_OF_SYSTEM_PROMPT&gt;\n{{task_desc}}\n-</span> <span class="pre">You</span> <span class="pre">cant</span> <span class="pre">use</span> <span class="pre">more</span> <span class="pre">than</span> <span class="pre">{{max_steps}}</span> <span class="pre">steps.</span> <span class="pre">At</span> <span class="pre">the</span> <span class="pre">{{max_steps}}th</span> <span class="pre">current</span> <span class="pre">step,</span> <span class="pre">must</span> <span class="pre">finish</span> <span class="pre">with</span> <span class="pre">answer.\n\n{#</span> <span class="pre">Tools</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">tools</span> <span class="pre">%}\n&lt;START_OF_TOOLS&gt;\nTools</span> <span class="pre">and</span> <span class="pre">instructions:\n{%</span> <span class="pre">for</span> <span class="pre">tool</span> <span class="pre">in</span> <span class="pre">tools</span> <span class="pre">%}\n{{</span> <span class="pre">loop.index</span> <span class="pre">}}.\n{{tool}}\n------------------------\n{%</span> <span class="pre">endfor</span> <span class="pre">%}\n&lt;END_OF_TOOLS&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">Context</span> <span class="pre">Variables</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">context_variables</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">none</span> <span class="pre">%}\n&lt;START_OF_CONTEXT&gt;\nYou</span> <span class="pre">have</span> <span class="pre">access</span> <span class="pre">to</span> <span class="pre">context_variables</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">following</span> <span class="pre">keys:\n{%</span> <span class="pre">for</span> <span class="pre">key,</span> <span class="pre">value</span> <span class="pre">in</span> <span class="pre">context_variables.items()</span> <span class="pre">%}\n{{</span> <span class="pre">key</span> <span class="pre">}}\n------------------------\n{%</span> <span class="pre">endfor</span> <span class="pre">%}\nYou</span> <span class="pre">can</span> <span class="pre">either</span> <span class="pre">pass</span> <span class="pre">context_variables</span> <span class="pre">or</span> <span class="pre">context_variables[\'key\']</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">tools</span> <span class="pre">depending</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">tool\'s</span> <span class="pre">requirements.\n&lt;END_OF_CONTEXT&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">output</span> <span class="pre">format</span> <span class="pre">and</span> <span class="pre">examples</span> <span class="pre">for</span> <span class="pre">output</span> <span class="pre">format</span> <span class="pre">#}\n&lt;START_OF_OUTPUT_FORMAT&gt;\n{{output_format_str}}\n&lt;END_OF_OUTPUT_FORMAT&gt;\n{%</span> <span class="pre">if</span> <span class="pre">examples</span> <span class="pre">%}\n&lt;START_OF_EXAMPLES&gt;\nExamples:\n{%</span> <span class="pre">for</span> <span class="pre">example</span> <span class="pre">in</span> <span class="pre">examples</span> <span class="pre">%}\n{{example}}\n------------------------\n{%</span> <span class="pre">endfor</span> <span class="pre">%}\n&lt;END_OF_EXAMPLES&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#contex#}\n{%</span> <span class="pre">if</span> <span class="pre">context_str</span> <span class="pre">%}\n-------------------------\n&lt;START_OF_CONTEXT&gt;\n{{context_str}}\n&lt;END_OF_CONTEXT&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n&lt;END_OF_SYSTEM_PROMPT&gt;\n-----------------\n&lt;START_OF_USER_PROMPT&gt;\n{#</span> <span class="pre">chat</span> <span class="pre">history</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">chat_history_str</span> <span class="pre">%}\n&lt;START_OF_CHAT_HISTORY&gt;\n{{chat_history_str}}\n&lt;END_OF_CHAT_HISTORY&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">user</span> <span class="pre">query</span> <span class="pre">#}\n&lt;START_OF_USER_QUERY&gt;\nInput</span> <span class="pre">query:\n{{</span> <span class="pre">input_str</span> <span class="pre">}}\n&lt;END_OF_USER_QUERY&gt;\n&lt;START_OF_STEP_HISTORY&gt;\nCurrent</span> <span class="pre">Step/Max</span> <span class="pre">Step:</span> <span class="pre">{{step_history|length</span> <span class="pre">+</span> <span class="pre">1}}</span> <span class="pre">/</span> <span class="pre">{{max_steps}}\n{#</span> <span class="pre">Step</span> <span class="pre">History</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">step_history</span> <span class="pre">%}\n&lt;STEPS&gt;\nYour</span> <span class="pre">previous</span> <span class="pre">steps:\n{%</span> <span class="pre">for</span> <span class="pre">history</span> <span class="pre">in</span> <span class="pre">step_history</span> <span class="pre">%}\nStep</span> <span class="pre">{{</span> <span class="pre">loop.index</span> <span class="pre">}}.\n{%</span> <span class="pre">if</span> <span class="pre">history.action</span> <span class="pre">%}\n{%</span> <span class="pre">if</span> <span class="pre">history.action.thought</span> <span class="pre">%}\n&quot;thought&quot;:</span> <span class="pre">&quot;{{history.action.thought}}&quot;,\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n&quot;name&quot;:</span> <span class="pre">&quot;{{history.action.name}},\n&quot;kwargs&quot;:</span> <span class="pre">{{history.action.kwargs}}&quot;,\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n&quot;Observation&quot;:</span> <span class="pre">&quot;{{history.observation}}&quot;\n------------------------\n{%</span> <span class="pre">endfor</span> <span class="pre">%}\n&lt;/STEPS&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n&lt;END_OF_USER_PROMPT&gt;\n'</span></em><a class="headerlink" href="#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="Link to this definition">¶</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="components.agent.react.ReActAgent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ReActAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tools:</span> <span class="pre">~typing.List[~typing.Callable</span> <span class="pre">|</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~typing.Awaitable[~typing.Any]]</span> <span class="pre">|</span> <span class="pre">~adalflow.core.func_tool.FunctionTool]</span> <span class="pre">=</span> <span class="pre">[],</span> <span class="pre">max_steps:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10,</span> <span class="pre">add_llm_as_fallback:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">examples:</span> <span class="pre">~typing.List[~adalflow.core.types.Function]</span> <span class="pre">|</span> <span class="pre">~typing.List[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">*,</span> <span class="pre">model_client:</span> <span class="pre">~adalflow.core.model_client.ModelClient,</span> <span class="pre">model_kwargs:</span> <span class="pre">~typing.Dict</span> <span class="pre">=</span> <span class="pre">{},</span> <span class="pre">template:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">role_desc:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'You</span> <span class="pre">are</span> <span class="pre">an</span> <span class="pre">excellent</span> <span class="pre">task</span> <span class="pre">planner.',</span> <span class="pre">context_variables:</span> <span class="pre">~typing.Dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">is_thinking_model:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">use_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">debug:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">answer_data_type:</span> <span class="pre">~typing.Type[~components.agent.react.T]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'str'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.react.ReActAgent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.
+The planner will generate a Function data class as action for each step that includes a “thought” field.
+The execution result is stored in the “observation” field of the StepOutput data class.
+If the execution failed, it will store the error message in the “observation” field so that we can auto-optimize it to correct the error.</p>
+<p>The final answer can be different in training and eval mode:
+- Training: the final answer will be
+Users need to set up:
+- tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
+- max_steps: the maximum number of steps the agent can take to complete the task.
+- add_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
+- model_client: the model client to use to generate the response.
+- model_kwargs: the model kwargs to use to generate the response.
+- template: the template to use to generate the prompt. Default is DEFAULT_REACT_AGENT_SYSTEM_PROMPT.
+- context_variables: the context variables to use in the prompt.
+- use_cache: a boolean to decide whether to use the cache to store the generated responses for the planner.
+- debug: a boolean to decide whether to print debug information.</p>
+<p>For the generator, the default arguments are:
+(1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT
+(2) default output_processors: JsonParser</p>
+<p>There are <cite>examples</cite> which is optional, a list of string examples in the prompt.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">core.openai_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">components.agent.react</span> <span class="kn">import</span> <span class="n">ReActAgent</span>
+<span class="kn">from</span> <span class="nn">core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
+<span class="c1"># define the tools</span>
+<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Multiply two numbers.&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Add two numbers.&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">ReActAgent</span><span class="p">(</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">multiply</span><span class="p">,</span> <span class="n">add</span><span class="p">],</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="c1"># Using examples:</span>
+
+<span class="n">call_multiply</span> <span class="o">=</span> <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_function</span><span class="p">(</span>
+    <span class="n">thought</span><span class="o">=</span><span class="s2">&quot;I want to multiply 3 and 4.&quot;</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>Reference:
+[1] <a class="reference external" href="https://arxiv.org/abs/2210.03629">https://arxiv.org/abs/2210.03629</a>, published in Mar, 2023.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.react.ReActAgent.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ReActOutput</span></span></span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.react.ReActAgent.call" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.react.ReActAgent.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span></span></span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.react.ReActAgent.forward" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the training scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.react.ReActAgent.bicall">
+<span class="sig-name descname"><span class="pre">bicall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Parameter</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ReActOutput</span></span></span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent.bicall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.react.ReActAgent.bicall" title="Link to this definition">¶</a></dt>
+<dd><p>prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +633,33 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">react</a><ul>
+<li><a class="reference internal" href="#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.react.ReActAgent"><code class="docutils literal notranslate"><span class="pre">ReActAgent</span></code></a><ul>
+<li><a class="reference internal" href="#components.agent.react.ReActAgent.call"><code class="docutils literal notranslate"><span class="pre">ReActAgent.call()</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.react.ReActAgent.forward"><code class="docutils literal notranslate"><span class="pre">ReActAgent.forward()</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.react.ReActAgent.bicall"><code class="docutils literal notranslate"><span class="pre">ReActAgent.bicall()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,102 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="answer-match-acc">
-<span id="eval-answer-match-acc"></span><h1>answer_match_acc<a class="headerlink" href="#answer-match-acc" title="Link to this heading">¶</a></h1>
+          <section id="module-eval.answer_match_acc">
+<span id="answer-match-acc"></span><span id="eval-answer-match-acc"></span><h1>answer_match_acc<a class="headerlink" href="#module-eval.answer_match_acc" title="Link to this heading">¶</a></h1>
+<p>This is the metric for QA generation. It compares the predicted answer with the ground truth answer.</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eval.answer_match_acc.AnswerMatchAcc" title="eval.answer_match_acc.AnswerMatchAcc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a>([type])</p></td>
+<td><p>Metric for answer matching.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="eval.answer_match_acc.AnswerMatchAcc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnswerMatchAcc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'exact_match'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fuzzy_match'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rouge_score'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bleu_score'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bert_score'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'f1_score'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'exact_match'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/answer_match_acc.html#AnswerMatchAcc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.answer_match_acc.AnswerMatchAcc" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></p>
+<p>Metric for answer matching. It compares the predicted answer with the ground truth answer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>type</strong> (<em>str</em>) – Type of matching evaluation. Can be “exact_match” or “fuzzy_match”. “exact_match” requires the predicted answer to be exactly the same as the ground truth answer. “fuzzy_match” requires the predicted answer to contain the ground truth answer.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pred_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;negative&quot;</span><span class="p">,</span> <span class="s2">&quot;this is neutral&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;negative&quot;</span><span class="p">,</span> <span class="s2">&quot;neutral&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">answer_match_acc</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;exact_match&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_acc</span><span class="p">,</span> <span class="n">acc_list</span> <span class="o">=</span> <span class="n">answer_match_acc</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">all_pred_answer</span><span class="p">,</span> <span class="n">all_gt_answer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_acc</span>
+<span class="go">2 / 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc_list</span>
+<span class="go">[1.0, 1.0, 0.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">answer_match_acc</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;fuzzy_match&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_acc</span><span class="p">,</span> <span class="n">acc_list</span> <span class="o">=</span> <span class="n">answer_match_acc</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">all_pred_answer</span><span class="p">,</span> <span class="n">all_gt_answer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_acc</span>
+<span class="go">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acc_list</span>
+<span class="go">[1.0, 1.0, 1.0]</span>
+</pre></div>
+</div>
+<p>References:
+1. HotpotQA: <a class="reference external" href="https://github.com/hotpotqa/hotpot/blob/master/hotpot_evaluate_v1.py">https://github.com/hotpotqa/hotpot/blob/master/hotpot_evaluate_v1.py</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eval.answer_match_acc.AnswerMatchAcc.compute_single_item">
+<span class="sig-name descname"><span class="pre">compute_single_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/eval/answer_match_acc.html#AnswerMatchAcc.compute_single_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.answer_match_acc.AnswerMatchAcc.compute_single_item" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the match accuracy of the predicted answer for a single query.</p>
+<p>Allow any type of input for pred_answer and gt_answer.
+When evaluating, the input will be converted to string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred_answer</strong> (<em>object</em>) – Predicted answer.</p></li>
+<li><p><strong>gt_answer</strong> (<em>object</em>) – Ground truth answer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Match accuracy.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eval.answer_match_acc.AnswerMatchAcc.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_answers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_answers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/eval/answer_match_acc.html#AnswerMatchAcc.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.answer_match_acc.AnswerMatchAcc.compute" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the match accuracy of the predicted answer for a list of queries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred_answers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of predicted answer strings.</p></li>
+<li><p><strong>gt_answers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of ground truth answer strings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>float: Average match accuracy.</p></li>
+<li><p>List[float]: Match accuracy values for each query.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +617,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">answer_match_acc</a><ul>
+<li><a class="reference internal" href="#eval.answer_match_acc.AnswerMatchAcc"><code class="docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a><ul>
+<li><a class="reference internal" href="#eval.answer_match_acc.AnswerMatchAcc.compute_single_item"><code class="docutils literal notranslate"><span class="pre">AnswerMatchAcc.compute_single_item()</span></code></a></li>
+<li><a class="reference internal" href="#eval.answer_match_acc.AnswerMatchAcc.compute"><code class="docutils literal notranslate"><span class="pre">AnswerMatchAcc.compute()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

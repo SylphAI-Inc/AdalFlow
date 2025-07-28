@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="setup" href="tracing.setup.html" /><link rel="prev" title="processor_interface" href="tracing.processor_interface.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>scope - Build and Optimize LM Workflows</title>
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -303,8 +303,8 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../core/index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.component.html">component</a></li>
@@ -418,10 +418,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tracing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,92 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="scope">
-<span id="tracing-scope"></span><h1>scope<a class="headerlink" href="#scope" title="Link to this heading">¶</a></h1>
+          <section id="module-tracing.scope">
+<span id="scope"></span><span id="tracing-scope"></span><h1>scope<a class="headerlink" href="#module-tracing.scope" title="Link to this heading">¶</a></h1>
+<p>AdalFlow tracing scope management module with OpenAI Agents SDK compatibility.</p>
+<p>This module provides context management for traces and spans, maintaining current
+execution context following OpenAI Agents SDK patterns.</p>
+<p>References:
+- OpenAI Agents SDK: <a class="reference external" href="https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/scope.py">https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/scope.py</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.scope.Scope">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Scope</span></span><a class="reference internal" href="../../_modules/tracing/scope.html#Scope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.Scope" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Manages the current span and trace in the context.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.scope.Scope.get_current_span">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_current_span</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#Scope.get_current_span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.Scope.get_current_span" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.scope.Scope.set_current_span">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_current_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Token</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#Scope.set_current_span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.Scope.set_current_span" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.scope.Scope.reset_current_span">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reset_current_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Token</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#Scope.reset_current_span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.Scope.reset_current_span" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.scope.Scope.get_current_trace">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_current_trace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#Scope.get_current_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.Scope.get_current_trace" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.scope.Scope.set_current_trace">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_current_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Token</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#Scope.set_current_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.Scope.set_current_trace" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.scope.Scope.reset_current_trace">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reset_current_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Token</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#Scope.reset_current_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.Scope.reset_current_trace" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.scope.get_current_span">
+<span class="sig-name descname"><span class="pre">get_current_span</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#get_current_span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.get_current_span" title="Link to this definition">¶</a></dt>
+<dd><p>Get the current span from context.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.scope.set_current_span">
+<span class="sig-name descname"><span class="pre">set_current_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Token</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tracing.spans.html#tracing.spans.Span" title="tracing.spans.Span"><span class="pre">Span</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#set_current_span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.set_current_span" title="Link to this definition">¶</a></dt>
+<dd><p>Set the current span in context.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.scope.get_current_trace">
+<span class="sig-name descname"><span class="pre">get_current_trace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#get_current_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.get_current_trace" title="Link to this definition">¶</a></dt>
+<dd><p>Get the current trace from context.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.scope.set_current_trace">
+<span class="sig-name descname"><span class="pre">set_current_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Token</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tracing.traces.html#tracing.traces.Trace" title="tracing.traces.Trace"><span class="pre">Trace</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#set_current_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.set_current_trace" title="Link to this definition">¶</a></dt>
+<dd><p>Set the current trace in context.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.scope.gen_span_id">
+<span class="sig-name descname"><span class="pre">gen_span_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#gen_span_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.gen_span_id" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a unique span ID.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.scope.gen_trace_id">
+<span class="sig-name descname"><span class="pre">gen_trace_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/scope.html#gen_trace_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.scope.gen_trace_id" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a unique trace ID.</p>
+</dd></dl>
+
 </section>
 
         </article>
@@ -482,8 +570,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="tracing.setup.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">setup</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tracing.processor_interface.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">processor_interface</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -501,8 +607,41 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">scope</a><ul>
+<li><a class="reference internal" href="#tracing.scope.Scope"><code class="docutils literal notranslate"><span class="pre">Scope</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.scope.Scope.get_current_span"><code class="docutils literal notranslate"><span class="pre">Scope.get_current_span()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.Scope.set_current_span"><code class="docutils literal notranslate"><span class="pre">Scope.set_current_span()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.Scope.reset_current_span"><code class="docutils literal notranslate"><span class="pre">Scope.reset_current_span()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.Scope.get_current_trace"><code class="docutils literal notranslate"><span class="pre">Scope.get_current_trace()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.Scope.set_current_trace"><code class="docutils literal notranslate"><span class="pre">Scope.set_current_trace()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.Scope.reset_current_trace"><code class="docutils literal notranslate"><span class="pre">Scope.reset_current_trace()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.scope.get_current_span"><code class="docutils literal notranslate"><span class="pre">get_current_span()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.set_current_span"><code class="docutils literal notranslate"><span class="pre">set_current_span()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.get_current_trace"><code class="docutils literal notranslate"><span class="pre">get_current_trace()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.set_current_trace"><code class="docutils literal notranslate"><span class="pre">set_current_trace()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.gen_span_id"><code class="docutils literal notranslate"><span class="pre">gen_span_id()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.scope.gen_trace_id"><code class="docutils literal notranslate"><span class="pre">gen_trace_id()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

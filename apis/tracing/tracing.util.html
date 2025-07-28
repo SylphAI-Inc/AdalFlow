@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Utils" href="../utils/index.html" /><link rel="prev" title="traces" href="tracing.traces.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>util - Build and Optimize LM Workflows</title>
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -303,8 +303,8 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../core/index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.component.html">component</a></li>
@@ -418,10 +418,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tracing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.traces.html">traces</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,62 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="util">
-<span id="tracing-util"></span><h1>util<a class="headerlink" href="#util" title="Link to this heading">¶</a></h1>
+          <section id="module-tracing.util">
+<span id="util"></span><span id="tracing-util"></span><h1>util<a class="headerlink" href="#module-tracing.util" title="Link to this heading">¶</a></h1>
+<p>AdalFlow tracing utilities module with OpenAI Agents SDK compatibility.</p>
+<p>This module provides utility functions for tracing such as ID generation and
+time formatting following OpenAI Agents SDK patterns.</p>
+<p>References:
+- OpenAI Tracing Interface: <a class="reference external" href="https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/util.py">https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/util.py</a></p>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.util.gen_group_id" title="tracing.util.gen_group_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_group_id</span></code></a>()</p></td>
+<td><p>Generates a new group ID.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.util.gen_span_id" title="tracing.util.gen_span_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_span_id</span></code></a>()</p></td>
+<td><p>Generates a new span ID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.util.gen_trace_id" title="tracing.util.gen_trace_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_trace_id</span></code></a>()</p></td>
+<td><p>Generates a new trace ID.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.util.time_iso" title="tracing.util.time_iso"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_iso</span></code></a>()</p></td>
+<td><p>Returns the current time in ISO 8601 format.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.util.time_iso">
+<span class="sig-name descname"><span class="pre">time_iso</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/util.html#time_iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.util.time_iso" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the current time in ISO 8601 format.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.util.gen_trace_id">
+<span class="sig-name descname"><span class="pre">gen_trace_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/util.html#gen_trace_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.util.gen_trace_id" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a new trace ID.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.util.gen_span_id">
+<span class="sig-name descname"><span class="pre">gen_span_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/util.html#gen_span_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.util.gen_span_id" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a new span ID.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tracing.util.gen_group_id">
+<span class="sig-name descname"><span class="pre">gen_group_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/util.html#gen_group_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.util.gen_group_id" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a new group ID.</p>
+</dd></dl>
+
 </section>
 
         </article>
@@ -482,8 +540,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="../utils/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Utils</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tracing.traces.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">traces</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -501,8 +577,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">util</a><ul>
+<li><a class="reference internal" href="#tracing.util.time_iso"><code class="docutils literal notranslate"><span class="pre">time_iso()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.util.gen_trace_id"><code class="docutils literal notranslate"><span class="pre">gen_trace_id()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.util.gen_span_id"><code class="docutils literal notranslate"><span class="pre">gen_span_id()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.util.gen_group_id"><code class="docutils literal notranslate"><span class="pre">gen_group_id()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

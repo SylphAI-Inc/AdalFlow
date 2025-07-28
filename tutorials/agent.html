@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -500,7 +510,7 @@ When it comes to implementation, AdalFlow has simplified it down to a generator 
 </ul>
 <section id="prompt-and-data-models">
 <h3>Prompt and Data Models<a class="headerlink" href="#prompt-and-data-models" title="Link to this heading">¶</a></h3>
-<p><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code> is the default prompt for React agent’s LLM planner.
+<p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a> is the default prompt for React agent’s LLM planner.
 We can categorize the prompt template into four parts:</p>
 <ol class="arabic simple">
 <li><p>Task description</p></li>
@@ -556,7 +566,7 @@ Additionally, we teach it how to handle simple queries and complex queries.</p>
 <ol class="arabic simple" start="4">
 <li><p>Agent step history.</p></li>
 </ol>
-<p>We use <code class="xref py py-class docutils literal notranslate"><span class="pre">StepOutput</span></code> to record the agent’s step history, including:</p>
+<p>We use <a class="reference internal" href="../apis/core/core.types.html#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepOutput</span></code></a> to record the agent’s step history, including:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">action</span></code>: This will be the <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instance predicted by the agent.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">observation</span></code>: The execution result of the action.</p></li>
@@ -616,11 +626,11 @@ This LLM will use the same model client and model arguments as the agent’s pla
 </section>
 <section id="id3">
 <h3>React Agent<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
-<p>We define the class <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> to put everything together.
+<p>We define the class <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> to put everything together.
 It will orchestrate two components:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">planner</span></code>: A <code class="docutils literal notranslate"><span class="pre">Generator</span></code> that works with a <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> to parse the output format and examples of the function calls using <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code>.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ToolManager</span></code>: Manages a given list of tools, the finish function, and the LLM tool. It is responsible for parsing and executing the functions.</p></li>
+<li><p><a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToolManager</span></code></a>: Manages a given list of tools, the finish function, and the LLM tool. It is responsible for parsing and executing the functions.</p></li>
 </ul>
 <p>Additionally, it manages <cite>step_history</cite> as a list of <code class="docutils literal notranslate"><span class="pre">StepOutput</span></code> instances for the agent’s internal state.</p>
 <div class="table-wrapper colwidths-given docutils container">
@@ -873,7 +883,7 @@ However, using it on general queries might be an overkill, as it might take more
 <p><strong>Template</strong></p>
 <p>The first thing you want to customize is the template itself.
 You can do this by passing your own template to the agent’s constructor.
-We suggest you to modify our default template: <code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code>.</p>
+We suggest you to modify our default template: <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a>.</p>
 <p><strong>Examples for Better Output Format</strong></p>
 <p>Secondly, the <code class="docutils literal notranslate"><span class="pre">examples</span></code> in the constructor allow you to provide more examples to enforce the correct output format.
 For instance, if we want it to learn how to correctly call <cite>multiply</cite>, we can pass in a list of <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instances with the correct format.
@@ -926,7 +936,7 @@ ________
 </pre></div>
 </div>
 <p><strong>Subclass ReActAgent</strong></p>
-<p>If you want to customize the agent further, you can subclass the <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> and override the methods you want to change.</p>
+<p>If you want to customize the agent further, you can subclass the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> and override the methods you want to change.</p>
 <div class="highlight admonition">
 <p class="admonition-title">References</p>
 <aside class="footnote-list brackets">
@@ -943,9 +953,9 @@ ________
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.StepOutput</span></code></p></li>
-<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.StepOutput</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a></p></li>
 </ul>
 </div>
 </section>

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Prompt" href="prompt.html" /><link rel="prev" title="Tutorials" href="index.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Generator" href="generator.html" /><link rel="prev" title="Tutorials" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Core Concepts - Build and Optimize LM Workflows</title>
@@ -224,8 +224,6 @@
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -547,14 +557,14 @@ and (2) a <cite>forward</cite> method, which will be called during the <cite>tra
 </section>
 <section id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code> are used to save (1) intermediate forward data and (2) gradients/feedback, and (3) graph information such as <cite>predecessors</cite>.
+<p><a class="reference internal" href="../apis/optim/optim.parameter.html#optim.parameter.Parameter" title="optim.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> are used to save (1) intermediate forward data and (2) gradients/feedback, and (3) graph information such as <cite>predecessors</cite>.
 It also has function like <cite>draw_graph</cite> to help you visualize the structure of your computation graph.</p>
 </section>
 <section id="dataclass-and-structured-output">
 <h2>DataClass and Structured Output<a class="headerlink" href="#dataclass-and-structured-output" title="Link to this heading">¶</a></h2>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code> is used for developers to define a data model.
+<p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> is used for developers to define a data model.
 Similar to <cite>Pydantic</cite>, it has methods like <cite>to_yaml_signature</cite>, <cite>to_json_signature</cite>, <cite>to_yaml</cite>, <cite>to_json</cite> to help you generate the data model schema and to generate the json/yaml data representation as strings.
-It can be best used together with <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code> for structured output.</p>
+It can be best used together with <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> for structured output.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
 <span class="nd">@dataclass</span>
@@ -582,12 +592,12 @@ It can be best used together with <code class="xref py py-class docutils literal
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="prompt.html">
+          <a class="next-page" href="generator.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Prompt</div>
+                <div class="title">Generator</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

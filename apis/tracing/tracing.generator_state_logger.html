@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="generator_call_logger" href="tracing.generator_call_logger.html" /><link rel="prev" title="decorators" href="tracing.decorators.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="mlflow_integration" href="tracing.mlflow_integration.html" /><link rel="prev" title="generator_call_logger" href="tracing.generator_call_logger.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>generator_state_logger - Build and Optimize LM Workflows</title>
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tracing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,88 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="generator-state-logger">
-<span id="tracing-generator-state-logger"></span><h1>generator_state_logger<a class="headerlink" href="#generator-state-logger" title="Link to this heading">¶</a></h1>
+          <section id="module-tracing.generator_state_logger">
+<span id="generator-state-logger"></span><span id="tracing-generator-state-logger"></span><h1>generator_state_logger<a class="headerlink" href="#module-tracing.generator_state_logger" title="Link to this heading">¶</a></h1>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStateLogger" title="tracing.generator_state_logger.GeneratorStateLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorStateLogger</span></code></a>([save_dir, ...])</p></td>
+<td><p>Log the generator states especially the prompt states update history to a file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStatesRecord" title="tracing.generator_state_logger.GeneratorStatesRecord"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorStatesRecord</span></code></a>(prompt_states, Any] =, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStatesRecord">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorStatesRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_states:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stamp:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_state_logger.html#GeneratorStatesRecord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStatesRecord" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStatesRecord.prompt_states">
+<span class="sig-name descname"><span class="pre">prompt_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStatesRecord.prompt_states" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStatesRecord.time_stamp">
+<span class="sig-name descname"><span class="pre">time_stamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStatesRecord.time_stamp" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStateLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorStateLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_state_logger.html#GeneratorStateLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStateLogger" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Log the generator states especially the prompt states update history to a file.</p>
+<p>Each generator should has its unique and identifiable name to be logged.
+One file can log multiple generators’ states.</p>
+<p>We use _trace_map to store the states and track any changes and updates and save it to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – The directory to save the trace file. Default is “./traces/”</p></li>
+<li><p><strong>project_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The project name. Default is None.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – The file path to save the trace. Default is “generator_state_trace.json”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStateLogger.get_log_location">
+<span class="sig-name descname"><span class="pre">get_log_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/tracing/generator_state_logger.html#GeneratorStateLogger.get_log_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStateLogger.get_log_location" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStateLogger.generator_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generator_names</span></span><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStateLogger.generator_names" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStateLogger.log_prompt">
+<span class="sig-name descname"><span class="pre">log_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><span class="pre">Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_state_logger.html#GeneratorStateLogger.log_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStateLogger.log_prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Log the prompt states of the generator with the given name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStateLogger.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_state_logger.html#GeneratorStateLogger.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStateLogger.save" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tracing.generator_state_logger.GeneratorStateLogger.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/tracing/generator_state_logger.html#GeneratorStateLogger.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tracing.generator_state_logger.GeneratorStateLogger.load" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -482,23 +566,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="tracing.generator_call_logger.html">
+          <a class="next-page" href="tracing.mlflow_integration.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">generator_call_logger</div>
+                <div class="title">mlflow_integration</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="tracing.decorators.html">
+          <a class="prev-page" href="tracing.generator_call_logger.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">decorators</div>
+                <div class="title">generator_call_logger</div>
                 
               </div>
             </a>
@@ -519,8 +603,39 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">generator_state_logger</a><ul>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStatesRecord"><code class="docutils literal notranslate"><span class="pre">GeneratorStatesRecord</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStatesRecord.prompt_states"><code class="docutils literal notranslate"><span class="pre">GeneratorStatesRecord.prompt_states</span></code></a></li>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStatesRecord.time_stamp"><code class="docutils literal notranslate"><span class="pre">GeneratorStatesRecord.time_stamp</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStateLogger"><code class="docutils literal notranslate"><span class="pre">GeneratorStateLogger</span></code></a><ul>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStateLogger.get_log_location"><code class="docutils literal notranslate"><span class="pre">GeneratorStateLogger.get_log_location()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStateLogger.generator_names"><code class="docutils literal notranslate"><span class="pre">GeneratorStateLogger.generator_names</span></code></a></li>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStateLogger.log_prompt"><code class="docutils literal notranslate"><span class="pre">GeneratorStateLogger.log_prompt()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStateLogger.save"><code class="docutils literal notranslate"><span class="pre">GeneratorStateLogger.save()</span></code></a></li>
+<li><a class="reference internal" href="#tracing.generator_state_logger.GeneratorStateLogger.load"><code class="docutils literal notranslate"><span class="pre">GeneratorStateLogger.load()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

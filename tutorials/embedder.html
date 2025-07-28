@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -489,14 +499,14 @@
 <li><p>When to use <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and how to use it?</p></li>
 <li><p>How to batch processing with <code class="docutils literal notranslate"><span class="pre">BatchEmbedder</span></code>?</p></li>
 </ol>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code> class is similar to <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, it is a user-facing component that orchestrates embedding models via <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> and <code class="docutils literal notranslate"><span class="pre">output_processors</span></code>.
+<p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></a> class is similar to <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, it is a user-facing component that orchestrates embedding models via <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> and <code class="docutils literal notranslate"><span class="pre">output_processors</span></code>.
 Compared with using <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> directly, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> further simplify the interface and output a standard <code class="docutils literal notranslate"><span class="pre">EmbedderOutput</span></code> format.</p>
 <p>By switching the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, you can use different embedding models in your task pipeline easily, or even embedd different data such as text, image, etc.</p>
 <section id="embedderoutput">
 <h2>EmbedderOutput<a class="headerlink" href="#embedderoutput" title="Link to this heading">¶</a></h2>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code> is a standard output format of <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>. It is a subclass of <cite>DataClass</cite> and it contains the following core fields:</p>
+<p><a class="reference internal" href="../apis/core/core.types.html#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></a> is a standard output format of <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>. It is a subclass of <cite>DataClass</cite> and it contains the following core fields:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: a list of embeddings, each embedding if of type <code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: a list of embeddings, each embedding if of type <a class="reference internal" href="../apis/core/core.types.html#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">error</span></code>: Error message if any error occurs during the model inference stage. Failure in the output processing stage will raise an exception instead of setting this field.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">raw_response</span></code>: Used for failed model inference.</p></li>
 </ul>
@@ -644,7 +654,7 @@ Putting it all together, we can create a new embedder with the output processor.
 <section id="batchembedder">
 <h2>BatchEmbedder<a class="headerlink" href="#batchembedder" title="Link to this heading">¶</a></h2>
 <p>Especially in data processing pipelines, you can often have more than 1000 queries to embed. We need to chunk our queries into smaller batches to avoid memory overflow.
-<code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.</p>
+<a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.</p>
 <p>The BatchEmbedder orchestrates the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and handles the batching process. To use it, you need to pass the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and the batch size to the constructor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">BatchEmbedder</span>
 
@@ -670,13 +680,13 @@ Putting it all together, we can create a new embedder with the output processor.
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.Embedder</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.EmbedderOutput</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Embedding</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.functional.normalize_vector</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.normalize_vector" title="core.functional.normalize_vector"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.functional.normalize_vector</span></code></a></p></li>
 </ul>
 </div>
 </section>

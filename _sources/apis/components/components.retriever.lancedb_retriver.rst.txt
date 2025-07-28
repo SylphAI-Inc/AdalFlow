@@ -7,3 +7,11 @@ lancedb_retriver
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      LanceDBRetriever
+

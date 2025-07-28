@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -515,7 +525,7 @@ In the long term, this model can also help bootstrap the training of a more cost
 <h2>Task Pipeline with Structured Output<a class="headerlink" href="#task-pipeline-with-structured-output" title="Link to this heading">¶</a></h2>
 <p>We will use the following overall template with <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">output_format_str</span></code>, and <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code> varaibles.
 <code class="docutils literal notranslate"><span class="pre">task_desc_template</span></code> will be used to render the final classification task description from class names and each label’s description.
-<code class="docutils literal notranslate"><span class="pre">TRECExtendedData</span></code> is a dataclass that extends <code class="xref py py-class docutils literal notranslate"><span class="pre">TrecData</span></code> with a rationale field. This will ensure our generator to first levarage ‘Chain-of-Thought’ reasoning before predicting the final class_name.</p>
+<code class="docutils literal notranslate"><span class="pre">TRECExtendedData</span></code> is a dataclass that extends <a class="reference internal" href="../apis/datasets/datasets.types.html#datasets.types.TrecData" title="datasets.types.TrecData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrecData</span></code></a> with a rationale field. This will ensure our generator to first levarage ‘Chain-of-Thought’ reasoning before predicting the final class_name.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_MESSAGE&gt;</span>
 <span class="s2"> {{system_prompt}}</span>
 <span class="s2"> {</span><span class="si">% i</span><span class="s2">f output_format_str is not none %}</span>
@@ -554,7 +564,7 @@ In the long term, this model can also help bootstrap the training of a more cost
 </pre></div>
 </div>
 <p>We will subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code> for our final task pipeline.
-We use <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code> to streamline the process of output formatting and parsing.</p>
+We use <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> to streamline the process of output formatting and parsing.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TRECClassifierStructuredOutput</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
 
      <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
@@ -625,7 +635,7 @@ We use <code class="xref py py-class docutils literal notranslate"><span class="
 </pre></div>
 </div>
 <p>In this taske pipeline, we have prepared two trainable prameters: <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> and <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code> and each is of type <code class="docutils literal notranslate"><span class="pre">adal.ParameterType.PROMPT</span></code> and <code class="docutils literal notranslate"><span class="pre">adal.ParameterType.DEMOS</span></code> respectively.
-We will need <code class="xref py py-class docutils literal notranslate"><span class="pre">TGDOptimizer</span></code> to optimize <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">BootstrapOptimizer</span></code>
+We will need <a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer" title="optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TGDOptimizer</span></code></a> to optimize <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> and <a class="reference internal" href="../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot" title="optim.few_shot.bootstrap_optimizer.BootstrapFewShot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BootstrapOptimizer</span></code></a>
 to optimize <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code>.</p>
 </section>
 <section id="define-the-adalcomponent">
@@ -864,12 +874,12 @@ We trained to train a joined <code class="docutils literal notranslate"><span cl
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.parameter.Parameter</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.trainer.trainer.Trainer</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.trainer.adal.AdalComponent</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.text_grad.tgd_optimizer.TGDOptimizer</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.few_shot.bootstrap_optimizer.BootstrapFewShot</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.parameter.html#optim.parameter.Parameter" title="optim.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.parameter.Parameter</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer" title="optim.trainer.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.trainer.trainer.Trainer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent" title="optim.trainer.adal.AdalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.trainer.adal.AdalComponent</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer" title="optim.text_grad.tgd_optimizer.TGDOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.text_grad.tgd_optimizer.TGDOptimizer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot" title="optim.few_shot.bootstrap_optimizer.BootstrapFewShot"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.few_shot.bootstrap_optimizer.BootstrapFewShot</span></code></a></p></li>
 </ul>
 </div>
 </section>

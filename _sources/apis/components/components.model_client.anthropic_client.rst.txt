@@ -7,3 +7,17 @@ anthropic_client
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      get_chat_completion_usage
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      AnthropicAPIClient
+

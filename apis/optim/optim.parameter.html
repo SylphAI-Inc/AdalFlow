@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,535 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="parameter">
-<span id="optim-parameter"></span><h1>parameter<a class="headerlink" href="#parameter" title="Link to this heading">¶</a></h1>
+          <section id="module-optim.parameter">
+<span id="parameter"></span><span id="optim-parameter"></span><h1>parameter<a class="headerlink" href="#module-optim.parameter" title="Link to this heading">¶</a></h1>
+<p>Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#optim.parameter.ComponentNode" title="optim.parameter.ComponentNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComponentNode</span></code></a>(id, name[, type])</p></td>
+<td><p>Used to represent a node in the component graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#optim.parameter.ComponentTrace" title="optim.parameter.ComponentTrace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComponentTrace</span></code></a>([name, id, input_args, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="index.html#optim.OutputParameter" title="optim.parameter.OutputParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OutputParameter</span></code></a>(*, id, data, data_id, ...)</p></td>
+<td><p>The output parameter is the most complex type of parameter in the system.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Parameter</span></code></a>(*, id, data, data_id, ...)</p></td>
+<td><p>A data container to represent a parameter used for optimization.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#optim.parameter.ScoreTrace" title="optim.parameter.ScoreTrace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScoreTrace</span></code></a>([score, eval_comp_id, eval_comp_name])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.parameter.Parameter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~optim.parameter.T</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_id:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_opt:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_desc:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_type:</span> <span class="pre">~adalflow.optim.types.ParameterType</span> <span class="pre">=</span> <span class="pre">&lt;ParameterType.NONE:</span> <span class="pre">none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">''&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction_to_optimizer:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction_to_backward_engine:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_input:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">successor_map_fn:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Callable]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_in_prompt:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>A data container to represent a parameter used for optimization.</p>
+<p>A parameter enforce a specific data type and can be updated in-place.
+When parameters are used in a component - when they are assigned as Component attributes
+they are automatically added to the list of its parameters, and  will
+appear in the <code class="xref py py-meth docutils literal notranslate"><span class="pre">parameters()</span></code> or <code class="xref py py-meth docutils literal notranslate"><span class="pre">named_parameters()</span></code> method.</p>
+<p>Args:</p>
+<p>End users only need to create the Parameter with four arguments and pass it to the
+prompt_kwargs in the Generator.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>data (str): the data of the parameter</p></li>
+<li><p>requires_opt (bool, optional): if the parameter requires optimization. Default: <cite>True</cite></p></li>
+<li><p>role_desc.</p></li>
+<li><p>param_type, incuding ParameterType.PROMPT for instruction optimization, ParameterType.DEMOS</p></li>
+</ul>
+<p>for few-shot optimization.
+- instruction_to_optimizer (str, optional): instruction to the optimizer. Default: <cite>None</cite>
+- instruction_to_backward_engine (str, optional): instruction to the backward engine. Default: <cite>None</cite></p>
+</div></blockquote>
+<p>The parameter users created will be automatically assigned to the variable_name/key in the prompt_kwargs
+for easy reading and debugging in the trace_graph.</p>
+<p>References:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py">https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py</a></p></li>
+</ol>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.allowed_types">
+<span class="sig-name descname"><span class="pre">allowed_types</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;ParameterType.DEMOS:</span> <span class="pre">demos,</span> <span class="pre">'A</span> <span class="pre">few</span> <span class="pre">examples</span> <span class="pre">to</span> <span class="pre">guide</span> <span class="pre">the</span> <span class="pre">language</span> <span class="pre">model.'&gt;,</span> <span class="pre">&lt;ParameterType.HYPERPARAM:</span> <span class="pre">hyperparam,</span> <span class="pre">'Hyperparameters/args</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">component.'&gt;,</span> <span class="pre">&lt;ParameterType.INPUT:</span> <span class="pre">input,</span> <span class="pre">'The</span> <span class="pre">input</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">component.'&gt;,</span> <span class="pre">&lt;ParameterType.NONE:</span> <span class="pre">none,</span> <span class="pre">''&gt;,</span> <span class="pre">&lt;ParameterType.PROMPT:</span> <span class="pre">prompt,</span> <span class="pre">'Instruction</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">language</span> <span class="pre">model</span> <span class="pre">on</span> <span class="pre">task,</span> <span class="pre">data,</span> <span class="pre">and</span> <span class="pre">format.'&gt;}</span></em><a class="headerlink" href="#optim.parameter.Parameter.allowed_types" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.proposing">
+<span class="sig-name descname"><span class="pre">proposing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.parameter.Parameter.proposing" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.predecessors">
+<span class="sig-name descname"><span class="pre">predecessors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#optim.parameter.Parameter.predecessors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.peers">
+<span class="sig-name descname"><span class="pre">peers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#optim.parameter.Parameter.peers" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.tgd_optimizer_trace">
+<span class="sig-name descname"><span class="pre">tgd_optimizer_trace</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizerTrace" title="optim.text_grad.tgd_optimizer.TGDOptimizerTrace"><span class="pre">TGDOptimizerTrace</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.tgd_optimizer_trace" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.data_id">
+<span class="sig-name descname"><span class="pre">data_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.data_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.role_desc">
+<span class="sig-name descname"><span class="pre">role_desc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#optim.parameter.Parameter.role_desc" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.param_type">
+<span class="sig-name descname"><span class="pre">param_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ParameterType</span></em><a class="headerlink" href="#optim.parameter.Parameter.param_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.gradients">
+<span class="sig-name descname"><span class="pre">gradients</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="index.html#optim.Gradient" title="optim.Gradient"><span class="pre">Gradient</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.parameter.Parameter.gradients" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.instruction_to_optimizer">
+<span class="sig-name descname"><span class="pre">instruction_to_optimizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.Parameter.instruction_to_optimizer" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.instruction_to_backward_engine">
+<span class="sig-name descname"><span class="pre">instruction_to_backward_engine</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.Parameter.instruction_to_backward_engine" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.score">
+<span class="sig-name descname"><span class="pre">score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#optim.parameter.Parameter.score" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.eval_input">
+<span class="sig-name descname"><span class="pre">eval_input</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.eval_input" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.successor_map_fn">
+<span class="sig-name descname"><span class="pre">successor_map_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.successor_map_fn" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.data_in_prompt">
+<span class="sig-name descname"><span class="pre">data_in_prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.data_in_prompt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.gt">
+<span class="sig-name descname"><span class="pre">gt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.gt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.map_to_successor">
+<span class="sig-name descname"><span class="pre">map_to_successor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">successor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.map_to_successor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.map_to_successor" title="Link to this definition">¶</a></dt>
+<dd><p>Apply the map function to the successor based on the successor’s id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.add_successor_map_fn">
+<span class="sig-name descname"><span class="pre">add_successor_map_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">successor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.add_successor_map_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.add_successor_map_fn" title="Link to this definition">¶</a></dt>
+<dd><p>Add or update a map function of the value for a specific successor using its id.
+succssor will know the value of the current parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.check_if_already_computed_gradient_respect_to">
+<span class="sig-name descname"><span class="pre">check_if_already_computed_gradient_respect_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.check_if_already_computed_gradient_respect_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.check_if_already_computed_gradient_respect_to" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_gt">
+<span class="sig-name descname"><span class="pre">set_gt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_gt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_gt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_gt">
+<span class="sig-name descname"><span class="pre">get_gt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_gt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_gt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.add_gradient">
+<span class="sig-name descname"><span class="pre">add_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Gradient</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.add_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.add_gradient" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.reset_gradients">
+<span class="sig-name descname"><span class="pre">reset_gradients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.reset_gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.reset_gradients" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_gradients_names">
+<span class="sig-name descname"><span class="pre">get_gradients_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_gradients_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_gradients_names" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_prompt_data">
+<span class="sig-name descname"><span class="pre">get_prompt_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_prompt_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_prompt_data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_gradients_str">
+<span class="sig-name descname"><span class="pre">get_gradients_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_gradients_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_gradients_str" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_gradient_and_context_text">
+<span class="sig-name descname"><span class="pre">get_gradient_and_context_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_correct_sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_gradient_and_context_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_gradient_and_context_text" title="Link to this definition">¶</a></dt>
+<dd><p>Aggregates and returns:
+1. the gradients
+2. the context text for which the gradients are computed</p>
+<p>Sort the gradients from the lowest score to the highest score.
+Highlight the gradients with the lowest score to the optimizer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_gradients_component_schema">
+<span class="sig-name descname"><span class="pre">get_gradients_component_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_correct_sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_gradients_component_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_gradients_component_schema" title="Link to this definition">¶</a></dt>
+<dd><p>Aggregates and returns:
+1. the gradients
+2. the context text for which the gradients are computed</p>
+<p>Sort the gradients from the lowest score to the highest score.
+Highlight the gradients with the lowest score to the optimizer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.merge_gradients_for_cycle_components">
+<span class="sig-name descname"><span class="pre">merge_gradients_for_cycle_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.merge_gradients_for_cycle_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.merge_gradients_for_cycle_components" title="Link to this definition">¶</a></dt>
+<dd><p>Merge data_id, from_response_component_id into the same gradient</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.sort_gradients">
+<span class="sig-name descname"><span class="pre">sort_gradients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.sort_gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.sort_gradients" title="Link to this definition">¶</a></dt>
+<dd><p>With rules mentioned in Graient class, we will track the gradients by data_id, then response_component_id, then score</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_predecessors">
+<span class="sig-name descname"><span class="pre">set_predecessors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predecessors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_predecessors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_predecessors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_grad_fn">
+<span class="sig-name descname"><span class="pre">set_grad_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_grad_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_grad_fn" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_param_info">
+<span class="sig-name descname"><span class="pre">get_param_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_param_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_param_info" title="Link to this definition">¶</a></dt>
+<dd><p>Used to represent the parameter in the prompt.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_peers">
+<span class="sig-name descname"><span class="pre">set_peers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_peers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_peers" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.trace_optimizer">
+<span class="sig-name descname"><span class="pre">trace_optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDData" title="optim.text_grad.tgd_optimizer.TGDData"><span class="pre">TGDData</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.trace_optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.trace_optimizer" title="Link to this definition">¶</a></dt>
+<dd><p>Trace the inputs and output of a TGD optimizer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_eval_fn_input">
+<span class="sig-name descname"><span class="pre">set_eval_fn_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_eval_fn_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_eval_fn_input" title="Link to this definition">¶</a></dt>
+<dd><p>Set the input for the eval_fn.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_score">
+<span class="sig-name descname"><span class="pre">set_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_score" title="Link to this definition">¶</a></dt>
+<dd><p>Set the score of the parameter in the backward pass
+For intermediate nodes, there is only one score per each eval fn behind this node.
+For leaf nodes, like DEMO or PROMPT, it will have [batch_size] of scores.</p>
+<p>But this score is only used to relay the score to the demo parametr.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.add_dataclass_to_trace">
+<span class="sig-name descname"><span class="pre">add_dataclass_to_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataClass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_teacher</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.add_dataclass_to_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.add_dataclass_to_trace" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the generator.forward to add a trace to the parameter.</p>
+<p>It is important to allow updating to the trace, as this will give different sampling weight.
+If the score increases as the training going on, it will become less likely to be sampled,
+allowing the samples to be more diverse. Or else, it will keep sampling failed examples.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.add_score_to_trace">
+<span class="sig-name descname"><span class="pre">add_score_to_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_teacher</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.add_score_to_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.add_score_to_trace" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the generator.backward to add the eval score to the trace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.propose_data">
+<span class="sig-name descname"><span class="pre">propose_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DataClass</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.propose_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.propose_data" title="Link to this definition">¶</a></dt>
+<dd><p>Used by optimizer to put the new data, and save the previous data in case of revert.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.revert_data">
+<span class="sig-name descname"><span class="pre">revert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_demos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.revert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.revert_data" title="Link to this definition">¶</a></dt>
+<dd><p>Revert the data to the previous data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.step_data">
+<span class="sig-name descname"><span class="pre">step_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_demos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.step_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.step_data" title="Link to this definition">¶</a></dt>
+<dd><p>Use PyTorch’s optimizer syntax to finalize the update of the data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_grad_fn">
+<span class="sig-name descname"><span class="pre">get_grad_fn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_grad_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_grad_fn" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.update_value">
+<span class="sig-name descname"><span class="pre">update_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.update_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.update_value" title="Link to this definition">¶</a></dt>
+<dd><p>Update the parameter’s value in-place, checking for type correctness.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_short_value">
+<span class="sig-name descname"><span class="pre">get_short_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_words_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_short_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_short_value" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don’t want to see the entire value.
+This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.
+:param n_words_offset: The number of words to show from the beginning and the end of the value.
+:type n_words_offset: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.reset_all_gradients">
+<span class="sig-name descname"><span class="pre">reset_all_gradients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.reset_all_gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.reset_all_gradients" title="Link to this definition">¶</a></dt>
+<dd><p>Traverse the graph and reset the gradients for all nodes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.trace_graph">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trace_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.trace_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.trace_graph" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.backward" title="Link to this definition">¶</a></dt>
+<dd><p>Apply backward pass for for all nodes in the graph by reversing the topological order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.generate_node_html">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_node_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'node_pages'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.generate_node_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.generate_node_html" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an HTML page for a specific node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.draw_interactive_html_graph">
+<span class="sig-name descname"><span class="pre">draw_interactive_html_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.draw_interactive_html_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.draw_interactive_html_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an interactive graph with pyvis and save as an HTML file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>list</em>) – A list of Parameter objects.</p></li>
+<li><p><strong>edges</strong> (<em>list</em>) – A list of edges as tuples (source, target).</p></li>
+<li><p><strong>filepath</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to save the graph file. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the graph file path.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.wrap_and_escape">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap_and_escape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.wrap_and_escape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.wrap_and_escape" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap text to the specified width, considering HTML breaks, and escape special characters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.draw_graph">
+<span class="sig-name descname"><span class="pre">draw_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_grads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'png'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'svg'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rankdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'LR'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'TB'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'TB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.draw_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.draw_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Draw the graph of the parameter and its gradients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>add_grads</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to add gradients to the graph. Defaults to True.</p></li>
+<li><p><strong>format</strong> (<em>str</em><em>, </em><em>optional</em>) – The format of the output file. Defaults to “png”.</p></li>
+<li><p><strong>rankdir</strong> (<em>str</em><em>, </em><em>optional</em>) – The direction of the graph. Defaults to “TB”.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the graph. Defaults to None.</p></li>
+<li><p><strong>full_trace</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include more detailed trace such as api_kwargs. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.draw_output_subgraph">
+<span class="sig-name descname"><span class="pre">draw_output_subgraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_grads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rankdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'TB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.draw_output_subgraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.draw_output_subgraph" title="Link to this definition">¶</a></dt>
+<dd><p>Build and visualize a subgraph containing only OUTPUT parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>add_grads</strong> (<em>bool</em>) – Whether to include gradient edges.</p></li>
+<li><p><strong>format</strong> (<em>str</em>) – Format for output (e.g., png, svg).</p></li>
+<li><p><strong>rankdir</strong> (<em>str</em>) – Graph layout direction (“LR” or “TB”).</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – Path to save the graph.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.draw_component_subgraph">
+<span class="sig-name descname"><span class="pre">draw_component_subgraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rankdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'TB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.draw_component_subgraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.draw_component_subgraph" title="Link to this definition">¶</a></dt>
+<dd><p>Build and visualize a subgraph containing only OUTPUT parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>format</strong> (<em>str</em>) – Format for output (e.g., png, svg).</p></li>
+<li><p><strong>rankdir</strong> (<em>str</em>) – Graph layout direction (“LR” or “TB”).</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – Path to save the graph.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.to_dict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.from_dict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.parameter.ComponentNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ComponentNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'INPUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'COMPONENT'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'COMPONENT'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#ComponentNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.ComponentNode" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
+<p>Used to represent a node in the component graph.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentNode.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.ComponentNode.id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentNode.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.ComponentNode.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentNode.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'INPUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'COMPONENT'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'COMPONENT'</span></em><a class="headerlink" href="#optim.parameter.ComponentNode.type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.parameter.ComponentTrace">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ComponentTrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#ComponentTrace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.ComponentTrace" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentTrace.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ComponentTrace.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentTrace.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ComponentTrace.id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentTrace.input_args">
+<span class="sig-name descname"><span class="pre">input_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ComponentTrace.input_args" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentTrace.full_response">
+<span class="sig-name descname"><span class="pre">full_response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ComponentTrace.full_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentTrace.raw_response">
+<span class="sig-name descname"><span class="pre">raw_response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ComponentTrace.raw_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ComponentTrace.api_kwargs">
+<span class="sig-name descname"><span class="pre">api_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ComponentTrace.api_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.ComponentTrace.to_context_str">
+<span class="sig-name descname"><span class="pre">to_context_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#ComponentTrace.to_context_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.ComponentTrace.to_context_str" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.parameter.ScoreTrace">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ScoreTrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_comp_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_comp_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#ScoreTrace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.ScoreTrace" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ScoreTrace.score">
+<span class="sig-name descname"><span class="pre">score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ScoreTrace.score" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ScoreTrace.eval_comp_id">
+<span class="sig-name descname"><span class="pre">eval_comp_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ScoreTrace.eval_comp_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.ScoreTrace.eval_comp_name">
+<span class="sig-name descname"><span class="pre">eval_comp_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.ScoreTrace.eval_comp_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +1050,110 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">parameter</a><ul>
+<li><a class="reference internal" href="#optim.parameter.Parameter"><code class="docutils literal notranslate"><span class="pre">Parameter</span></code></a><ul>
+<li><a class="reference internal" href="#optim.parameter.Parameter.allowed_types"><code class="docutils literal notranslate"><span class="pre">Parameter.allowed_types</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.proposing"><code class="docutils literal notranslate"><span class="pre">Parameter.proposing</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.predecessors"><code class="docutils literal notranslate"><span class="pre">Parameter.predecessors</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.peers"><code class="docutils literal notranslate"><span class="pre">Parameter.peers</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.tgd_optimizer_trace"><code class="docutils literal notranslate"><span class="pre">Parameter.tgd_optimizer_trace</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.id"><code class="docutils literal notranslate"><span class="pre">Parameter.id</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.data_id"><code class="docutils literal notranslate"><span class="pre">Parameter.data_id</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.role_desc"><code class="docutils literal notranslate"><span class="pre">Parameter.role_desc</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.name"><code class="docutils literal notranslate"><span class="pre">Parameter.name</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.param_type"><code class="docutils literal notranslate"><span class="pre">Parameter.param_type</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.data"><code class="docutils literal notranslate"><span class="pre">Parameter.data</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.gradients"><code class="docutils literal notranslate"><span class="pre">Parameter.gradients</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.instruction_to_optimizer"><code class="docutils literal notranslate"><span class="pre">Parameter.instruction_to_optimizer</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.instruction_to_backward_engine"><code class="docutils literal notranslate"><span class="pre">Parameter.instruction_to_backward_engine</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.score"><code class="docutils literal notranslate"><span class="pre">Parameter.score</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.eval_input"><code class="docutils literal notranslate"><span class="pre">Parameter.eval_input</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.successor_map_fn"><code class="docutils literal notranslate"><span class="pre">Parameter.successor_map_fn</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.data_in_prompt"><code class="docutils literal notranslate"><span class="pre">Parameter.data_in_prompt</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.gt"><code class="docutils literal notranslate"><span class="pre">Parameter.gt</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.map_to_successor"><code class="docutils literal notranslate"><span class="pre">Parameter.map_to_successor()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.add_successor_map_fn"><code class="docutils literal notranslate"><span class="pre">Parameter.add_successor_map_fn()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.check_if_already_computed_gradient_respect_to"><code class="docutils literal notranslate"><span class="pre">Parameter.check_if_already_computed_gradient_respect_to()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.set_gt"><code class="docutils literal notranslate"><span class="pre">Parameter.set_gt()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_gt"><code class="docutils literal notranslate"><span class="pre">Parameter.get_gt()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.add_gradient"><code class="docutils literal notranslate"><span class="pre">Parameter.add_gradient()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.reset_gradients"><code class="docutils literal notranslate"><span class="pre">Parameter.reset_gradients()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_gradients_names"><code class="docutils literal notranslate"><span class="pre">Parameter.get_gradients_names()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_prompt_data"><code class="docutils literal notranslate"><span class="pre">Parameter.get_prompt_data()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_gradients_str"><code class="docutils literal notranslate"><span class="pre">Parameter.get_gradients_str()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_gradient_and_context_text"><code class="docutils literal notranslate"><span class="pre">Parameter.get_gradient_and_context_text()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_gradients_component_schema"><code class="docutils literal notranslate"><span class="pre">Parameter.get_gradients_component_schema()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.merge_gradients_for_cycle_components"><code class="docutils literal notranslate"><span class="pre">Parameter.merge_gradients_for_cycle_components()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.sort_gradients"><code class="docutils literal notranslate"><span class="pre">Parameter.sort_gradients()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.set_predecessors"><code class="docutils literal notranslate"><span class="pre">Parameter.set_predecessors()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.set_grad_fn"><code class="docutils literal notranslate"><span class="pre">Parameter.set_grad_fn()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_param_info"><code class="docutils literal notranslate"><span class="pre">Parameter.get_param_info()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.set_peers"><code class="docutils literal notranslate"><span class="pre">Parameter.set_peers()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.trace_optimizer"><code class="docutils literal notranslate"><span class="pre">Parameter.trace_optimizer()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.set_eval_fn_input"><code class="docutils literal notranslate"><span class="pre">Parameter.set_eval_fn_input()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.set_score"><code class="docutils literal notranslate"><span class="pre">Parameter.set_score()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.add_dataclass_to_trace"><code class="docutils literal notranslate"><span class="pre">Parameter.add_dataclass_to_trace()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.add_score_to_trace"><code class="docutils literal notranslate"><span class="pre">Parameter.add_score_to_trace()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.propose_data"><code class="docutils literal notranslate"><span class="pre">Parameter.propose_data()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.revert_data"><code class="docutils literal notranslate"><span class="pre">Parameter.revert_data()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.step_data"><code class="docutils literal notranslate"><span class="pre">Parameter.step_data()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_grad_fn"><code class="docutils literal notranslate"><span class="pre">Parameter.get_grad_fn()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.update_value"><code class="docutils literal notranslate"><span class="pre">Parameter.update_value()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.get_short_value"><code class="docutils literal notranslate"><span class="pre">Parameter.get_short_value()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.reset_all_gradients"><code class="docutils literal notranslate"><span class="pre">Parameter.reset_all_gradients()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.trace_graph"><code class="docutils literal notranslate"><span class="pre">Parameter.trace_graph()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.backward"><code class="docutils literal notranslate"><span class="pre">Parameter.backward()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.generate_node_html"><code class="docutils literal notranslate"><span class="pre">Parameter.generate_node_html()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.draw_interactive_html_graph"><code class="docutils literal notranslate"><span class="pre">Parameter.draw_interactive_html_graph()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.wrap_and_escape"><code class="docutils literal notranslate"><span class="pre">Parameter.wrap_and_escape()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.draw_graph"><code class="docutils literal notranslate"><span class="pre">Parameter.draw_graph()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.draw_output_subgraph"><code class="docutils literal notranslate"><span class="pre">Parameter.draw_output_subgraph()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.draw_component_subgraph"><code class="docutils literal notranslate"><span class="pre">Parameter.draw_component_subgraph()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.to_dict"><code class="docutils literal notranslate"><span class="pre">Parameter.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.Parameter.from_dict"><code class="docutils literal notranslate"><span class="pre">Parameter.from_dict()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optim.parameter.ComponentNode"><code class="docutils literal notranslate"><span class="pre">ComponentNode</span></code></a><ul>
+<li><a class="reference internal" href="#optim.parameter.ComponentNode.id"><code class="docutils literal notranslate"><span class="pre">ComponentNode.id</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ComponentNode.name"><code class="docutils literal notranslate"><span class="pre">ComponentNode.name</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ComponentNode.type"><code class="docutils literal notranslate"><span class="pre">ComponentNode.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optim.parameter.ComponentTrace"><code class="docutils literal notranslate"><span class="pre">ComponentTrace</span></code></a><ul>
+<li><a class="reference internal" href="#optim.parameter.ComponentTrace.name"><code class="docutils literal notranslate"><span class="pre">ComponentTrace.name</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ComponentTrace.id"><code class="docutils literal notranslate"><span class="pre">ComponentTrace.id</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ComponentTrace.input_args"><code class="docutils literal notranslate"><span class="pre">ComponentTrace.input_args</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ComponentTrace.full_response"><code class="docutils literal notranslate"><span class="pre">ComponentTrace.full_response</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ComponentTrace.raw_response"><code class="docutils literal notranslate"><span class="pre">ComponentTrace.raw_response</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ComponentTrace.api_kwargs"><code class="docutils literal notranslate"><span class="pre">ComponentTrace.api_kwargs</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ComponentTrace.to_context_str"><code class="docutils literal notranslate"><span class="pre">ComponentTrace.to_context_str()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optim.parameter.ScoreTrace"><code class="docutils literal notranslate"><span class="pre">ScoreTrace</span></code></a><ul>
+<li><a class="reference internal" href="#optim.parameter.ScoreTrace.score"><code class="docutils literal notranslate"><span class="pre">ScoreTrace.score</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ScoreTrace.eval_comp_id"><code class="docutils literal notranslate"><span class="pre">ScoreTrace.eval_comp_id</span></code></a></li>
+<li><a class="reference internal" href="#optim.parameter.ScoreTrace.eval_comp_name"><code class="docutils literal notranslate"><span class="pre">ScoreTrace.eval_comp_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

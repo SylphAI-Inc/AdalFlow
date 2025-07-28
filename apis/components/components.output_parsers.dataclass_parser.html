@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,105 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dataclass-parser">
-<span id="components-output-parsers-dataclass-parser"></span><h1>dataclass_parser<a class="headerlink" href="#dataclass-parser" title="Link to this heading">¶</a></h1>
+          <section id="module-components.output_parsers.dataclass_parser">
+<span id="dataclass-parser"></span><span id="components-output-parsers-dataclass-parser"></span><h1>dataclass_parser<a class="headerlink" href="#module-components.output_parsers.dataclass_parser" title="Link to this heading">¶</a></h1>
+<p>DataClassParser will help users interact with LLMs even better than JsonOutputParser and YamlOutputParser with DataClass.</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataClassParser</span></code></a>(data_class[, ...])</p></td>
+<td><p>Made the structured output even simpler compared with JsonOutputParser and YamlOutputParser.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="components.output_parsers.dataclass_parser.DataClassParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataClassParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataClass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_data_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'yaml'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'json'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/output_parsers/dataclass_parser.html#DataClassParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.output_parsers.dataclass_parser.DataClassParser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataComponent</span></code></p>
+<p>Made the structured output even simpler compared with JsonOutputParser and YamlOutputParser.</p>
+<ol class="arabic simple">
+<li><p>Understands __input_fields__ and __output_fields__ from the DataClass (no need to use include/exclude to decide fields).</p></li>
+<li><p>User can choose to save the <cite>task_desc</cite> in the DataClass and use it in the prompt.</p></li>
+</ol>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">BasicQAOutput</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="n">explanation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A brief explanation of the concept in one sentence.&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">example</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;An example of the concept in a sentence.&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="c1"># Control output fields order</span>
+    <span class="n">__output_fields__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;explanation&quot;</span><span class="p">,</span> <span class="s2">&quot;example&quot;</span><span class="p">]</span>
+
+<span class="c1"># Define the template using jinja2 syntax</span>
+<span class="n">qa_template</span> <span class="o">=</span> <span class="s2">&quot;&lt;SYS&gt;</span>
+<span class="n">You</span> <span class="n">are</span> <span class="n">a</span> <span class="n">helpful</span> <span class="n">assistant</span><span class="o">.</span>
+<span class="o">&lt;</span><span class="n">OUTPUT_FORMAT</span><span class="o">&gt;</span>
+<span class="p">{{</span><span class="n">output_format_str</span><span class="p">}}</span>
+<span class="o">&lt;/</span><span class="n">OUTPUT_FORMAT</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">SYS</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">USER</span><span class="o">&gt;</span> <span class="p">{{</span><span class="n">input_str</span><span class="p">}}</span> <span class="o">&lt;/</span><span class="n">USER</span><span class="o">&gt;</span><span class="s2">&quot;</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">DataClassParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">BasicQAOutput</span><span class="p">,</span> <span class="n">return_data_class</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Set up the generator with model, template, and parser</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+    <span class="n">template</span><span class="o">=</span><span class="n">qa_template</span><span class="p">,</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;output_format_str&quot;</span><span class="p">:</span> <span class="n">parser</span><span class="o">.</span><span class="n">get_output_format_str</span><span class="p">()},</span>
+    <span class="n">output_processors</span><span class="o">=</span><span class="n">parser</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.output_parsers.dataclass_parser.DataClassParser.get_input_format_str">
+<span class="sig-name descname"><span class="pre">get_input_format_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/output_parsers/dataclass_parser.html#DataClassParser.get_input_format_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.output_parsers.dataclass_parser.DataClassParser.get_input_format_str" title="Link to this definition">¶</a></dt>
+<dd><p>Return the formatted instructions to use in prompt for the input format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.output_parsers.dataclass_parser.DataClassParser.get_output_format_str">
+<span class="sig-name descname"><span class="pre">get_output_format_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/output_parsers/dataclass_parser.html#DataClassParser.get_output_format_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.output_parsers.dataclass_parser.DataClassParser.get_output_format_str" title="Link to this definition">¶</a></dt>
+<dd><p>Return the formatted instructions to use in prompt for the output format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.output_parsers.dataclass_parser.DataClassParser.get_input_str">
+<span class="sig-name descname"><span class="pre">get_input_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataClass</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/output_parsers/dataclass_parser.html#DataClassParser.get_input_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.output_parsers.dataclass_parser.DataClassParser.get_input_str" title="Link to this definition">¶</a></dt>
+<dd><p>Return the formatted input string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.output_parsers.dataclass_parser.DataClassParser.get_task_desc_str">
+<span class="sig-name descname"><span class="pre">get_task_desc_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/output_parsers/dataclass_parser.html#DataClassParser.get_task_desc_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.output_parsers.dataclass_parser.DataClassParser.get_task_desc_str" title="Link to this definition">¶</a></dt>
+<dd><p>Return the task description string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.output_parsers.dataclass_parser.DataClassParser.get_examples_str">
+<span class="sig-name descname"><span class="pre">get_examples_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">examples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DataClass</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/output_parsers/dataclass_parser.html#DataClassParser.get_examples_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.output_parsers.dataclass_parser.DataClassParser.get_examples_str" title="Link to this definition">¶</a></dt>
+<dd><p>Return the examples string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.output_parsers.dataclass_parser.DataClassParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/components/output_parsers/dataclass_parser.html#DataClassParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.output_parsers.dataclass_parser.DataClassParser.call" title="Link to this definition">¶</a></dt>
+<dd><p>Parse the output string to the desired format and return the parsed output.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +620,35 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">dataclass_parser</a><ul>
+<li><a class="reference internal" href="#components.output_parsers.dataclass_parser.DataClassParser"><code class="docutils literal notranslate"><span class="pre">DataClassParser</span></code></a><ul>
+<li><a class="reference internal" href="#components.output_parsers.dataclass_parser.DataClassParser.get_input_format_str"><code class="docutils literal notranslate"><span class="pre">DataClassParser.get_input_format_str()</span></code></a></li>
+<li><a class="reference internal" href="#components.output_parsers.dataclass_parser.DataClassParser.get_output_format_str"><code class="docutils literal notranslate"><span class="pre">DataClassParser.get_output_format_str()</span></code></a></li>
+<li><a class="reference internal" href="#components.output_parsers.dataclass_parser.DataClassParser.get_input_str"><code class="docutils literal notranslate"><span class="pre">DataClassParser.get_input_str()</span></code></a></li>
+<li><a class="reference internal" href="#components.output_parsers.dataclass_parser.DataClassParser.get_task_desc_str"><code class="docutils literal notranslate"><span class="pre">DataClassParser.get_task_desc_str()</span></code></a></li>
+<li><a class="reference internal" href="#components.output_parsers.dataclass_parser.DataClassParser.get_examples_str"><code class="docutils literal notranslate"><span class="pre">DataClassParser.get_examples_str()</span></code></a></li>
+<li><a class="reference internal" href="#components.output_parsers.dataclass_parser.DataClassParser.call"><code class="docutils literal notranslate"><span class="pre">DataClassParser.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

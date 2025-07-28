@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,43 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="prompts">
-<span id="components-agent-prompts"></span><h1>prompts<a class="headerlink" href="#prompts" title="Link to this heading">¶</a></h1>
+          <section id="module-components.agent.prompts">
+<span id="prompts"></span><span id="components-agent-prompts"></span><h1>prompts<a class="headerlink" href="#module-components.agent.prompts" title="Link to this heading">¶</a></h1>
+<p class="rubric">Constants</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="components.agent.prompts.default_role_desc">
+<span class="sig-name descname"><span class="pre">default_role_desc</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'You</span> <span class="pre">are</span> <span class="pre">an</span> <span class="pre">excellent</span> <span class="pre">task</span> <span class="pre">planner.'</span></em><a class="headerlink" href="#components.agent.prompts.default_role_desc" title="Link to this definition">¶</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="components.agent.prompts.adalflow_agent_task_desc">
+<span class="sig-name descname"><span class="pre">adalflow_agent_task_desc</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\n&lt;START_OF_TASK_SPEC&gt;\n{{role_desc}}\n\nAnswer</span> <span class="pre">the</span> <span class="pre">input</span> <span class="pre">query</span> <span class="pre">using</span> <span class="pre">the</span> <span class="pre">tools</span> <span class="pre">provided</span> <span class="pre">below</span> <span class="pre">with</span> <span class="pre">maximum</span> <span class="pre">accuracy.\n\nEach</span> <span class="pre">step</span> <span class="pre">you</span> <span class="pre">will</span> <span class="pre">read</span> <span class="pre">the</span> <span class="pre">previous</span> <span class="pre">thought,</span> <span class="pre">Action(name,</span> <span class="pre">kwargs),</span> <span class="pre">and</span> <span class="pre">Observation(execution</span> <span class="pre">result</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">action)</span> <span class="pre">and</span> <span class="pre">then</span> <span class="pre">provide</span> <span class="pre">the</span> <span class="pre">next</span> <span class="pre">Thought</span> <span class="pre">and</span> <span class="pre">Action\nfollowing</span> <span class="pre">the</span> <span class="pre">output</span> <span class="pre">format</span> <span class="pre">in</span> <span class="pre">&lt;START_OF_OUTPUT_FORMAT&gt;</span> <span class="pre">&lt;END_OF_OUTPUT_FORMAT&gt;.\n\nFollow</span> <span class="pre">function</span> <span class="pre">docstring</span> <span class="pre">to</span> <span class="pre">best</span> <span class="pre">call</span> <span class="pre">the</span> <span class="pre">tool.\n</span>&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">For</span> <span class="pre">simple</span> <span class="pre">queries:</span> <span class="pre">You</span> <span class="pre">can</span> <span class="pre">directly</span> <span class="pre">answer</span> <span class="pre">by</span> <span class="pre">setting</span> <span class="pre">`_is_answer_final`</span> <span class="pre">to</span> <span class="pre">True</span> <span class="pre">and</span> <span class="pre">generate</span> <span class="pre">the</span> <span class="pre">answer</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">`_answer`</span> <span class="pre">field.\n</span>&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">For</span> <span class="pre">complex</span> <span class="pre">queries:\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Step</span> <span class="pre">1:</span> <span class="pre">Read</span> <span class="pre">the</span> <span class="pre">user</span> <span class="pre">query</span> <span class="pre">and</span> <span class="pre">divide</span> <span class="pre">it</span> <span class="pre">into</span> <span class="pre">multisteps.</span> <span class="pre">Start</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">first</span> <span class="pre">tool/subquery.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Call</span> <span class="pre">one</span> <span class="pre">tool</span> <span class="pre">at</span> <span class="pre">a</span> <span class="pre">time</span> <span class="pre">to</span> <span class="pre">solve</span> <span class="pre">each</span> <span class="pre">subquery/subquestion.</span> <span class="pre">Set</span> <span class="pre">`_is_answer_final`</span> <span class="pre">to</span> <span class="pre">False</span> <span class="pre">for</span> <span class="pre">intermediate</span> <span class="pre">steps.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">To</span> <span class="pre">end</span> <span class="pre">the</span> <span class="pre">call,</span> <span class="pre">set</span> <span class="pre">the</span> <span class="pre">`_is_answer_final`</span> <span class="pre">to</span> <span class="pre">True</span> <span class="pre">and</span> <span class="pre">generate</span> <span class="pre">the</span> <span class="pre">final</span> <span class="pre">answer</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">`_answer`</span> <span class="pre">field.</span> <span class="pre">Note</span> <span class="pre">that</span> <span class="pre">the</span> <span class="pre">function</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">called</span> <span class="pre">at</span> <span class="pre">the</span> <span class="pre">final</span> <span class="pre">step.\n\nREMEMBER:\n</span>&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Action</span> <span class="pre">MUST</span> <span class="pre">call</span> <span class="pre">one</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">tools</span> <span class="pre">other</span> <span class="pre">than</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">final</span> <span class="pre">answer.\n</span>&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">The</span> <span class="pre">`_answer`</span> <span class="pre">field</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">either</span> <span class="pre">a</span> <span class="pre">python</span> <span class="pre">builtin</span> <span class="pre">type</span> <span class="pre">or</span> <span class="pre">a</span> <span class="pre">json</span> <span class="pre">deserialiable</span> <span class="pre">string</span> <span class="pre">based</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">schema</span> <span class="pre">in</span> <span class="pre">&lt;START_OF_ANSWER_TYPE_SCHEMA&gt;&lt;END_OF_ANSWER_TYPE_SCHEMA&gt;.\n&lt;END_OF_TASK_SPEC&gt;\n'</span></em><a class="headerlink" href="#components.agent.prompts.adalflow_agent_task_desc" title="Link to this definition">¶</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +558,28 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">prompts</a><ul>
+<li><a class="reference internal" href="#components.agent.prompts.default_role_desc"><code class="docutils literal notranslate"><span class="pre">default_role_desc</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.prompts.adalflow_agent_task_desc"><code class="docutils literal notranslate"><span class="pre">adalflow_agent_task_desc</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

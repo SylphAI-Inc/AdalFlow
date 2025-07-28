@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -484,7 +494,7 @@
 </div><section id="dataclass">
 <h1>DataClass<a class="headerlink" href="#dataclass" title="Link to this heading">¶</a></h1>
 <p>In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs’ text prediction.
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code> is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).
+<a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a> is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).
 It is even more convenient to use together with <a class="reference internal" href="output_parsers.html"><span class="doc">Parser</span></a> to parse the output from LLMs.</p>
 <figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="../_images/dataclass.png"><img alt="DataClass" src="../_images/dataclass.png" style="width: 680px;" />
@@ -500,7 +510,7 @@ To interact with LLM, we need great way to describe the data format and the data
 This overlaps with the serialization and deserialization of the data in the conventional programming.
 Packages like <code class="docutils literal notranslate"><span class="pre">Pydantic</span></code> or <code class="docutils literal notranslate"><span class="pre">Marshmallow</span></code> can covers the seralization and deserialization, but it will end up with more complexity and less transparency to users.
 LLM prompts are known to be sensitive, the details, controllability, and transparency of the data format are crucial here.</p>
-<p>We eventually created a base class <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code>  to handle data that will interact with LLMs, which builds on top of Python’s native <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> module.
+<p>We eventually created a base class <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></a>  to handle data that will interact with LLMs, which builds on top of Python’s native <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> module.
 Here are our reasoning:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> module is lightweight, flexible, and is already widely used in Python for data classes.</p></li>
@@ -529,7 +539,7 @@ Here are our reasoning:</p>
 </ol>
 <p>We also made the effort to provide more control:</p>
 <ol class="arabic simple">
-<li><p><strong>Keep the ordering of your data fields.</strong> We provided <code class="xref py py-func docutils literal notranslate"><span class="pre">required_field</span></code> with <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> to mark the field as required even if it is after optional fields. We also has to do customization to preserve their ordering while being converted to dictionary, json and yaml string.</p></li>
+<li><p><strong>Keep the ordering of your data fields.</strong> We provided <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.required_field" title="core.base_data_class.required_field"><code class="xref py py-func docutils literal notranslate"><span class="pre">required_field</span></code></a> with <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> to mark the field as required even if it is after optional fields. We also has to do customization to preserve their ordering while being converted to dictionary, json and yaml string.</p></li>
 <li><p><strong>Signal the output/input fields.</strong> We allow you to use <code class="docutils literal notranslate"><span class="pre">__output_fields__</span></code> and <code class="docutils literal notranslate"><span class="pre">__input_fields__</span></code> to explicitly signal the output and input fields. (1) It can be a subset of the fields in the data class. (2) You can specify the ordering in the <cite>__output_fields__</cite>.</p></li>
 <li><p><strong>Exclude some fields from the output.</strong>  All serialization methods support <cite>exclude</cite> parameter to exclude some fields even for nested dataclasses.</p></li>
 <li><p><strong>Allow nested dataclasses, lists, and dictionaries.</strong> All methods support nested dataclasses, lists, and dictionaries.</p></li>
@@ -618,7 +628,7 @@ Here are our reasoning:</p>
 </tbody>
 </table>
 </div>
-<p>We have <code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassFormatType</span></code> to specify the format type for the data format methods.</p>
+<p>We have <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType" title="core.base_data_class.DataClassFormatType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassFormatType</span></code></a> to specify the format type for the data format methods.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>To use <code class="docutils literal notranslate"><span class="pre">DataClass</span></code>, you have to decorate your class with the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorator from the <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> module.</p>
@@ -654,7 +664,7 @@ Here are our reasoning:</p>
 <p>We will create <code class="docutils literal notranslate"><span class="pre">TrecData2</span></code> class that subclasses from <cite>DataClass</cite>.
 You decide to add a field <code class="docutils literal notranslate"><span class="pre">metadata</span></code> to the <code class="docutils literal notranslate"><span class="pre">TrecData</span></code> class to store the metadata of the question.
 For your own reason, you want <code class="docutils literal notranslate"><span class="pre">metadata</span></code> to be a required field and you want to keep the ordering of your fields while being converted to strings.
-<code class="docutils literal notranslate"><span class="pre">DataClass</span></code> will help you achieve this using <code class="xref py py-func docutils literal notranslate"><span class="pre">required_field</span></code> on the <cite>default_factory</cite> of the field.
+<code class="docutils literal notranslate"><span class="pre">DataClass</span></code> will help you achieve this using <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.required_field" title="core.base_data_class.required_field"><code class="xref py py-func docutils literal notranslate"><span class="pre">required_field</span></code></a> on the <cite>default_factory</cite> of the field.
 Normally, this is not possible with the native <cite>dataclasses</cite> module as it will raise an error if you put a required field after an optional field.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -753,7 +763,7 @@ Let’s exclude both the <code class="docutils literal notranslate"><span class=
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter works the same across all methods.</p>
 <p><strong>DataClassFormatType</strong></p>
-<p>For data class format, we have <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassFormatType</span></code> along with <code class="docutils literal notranslate"><span class="pre">format_class_str</span></code> method to specify the format type for the data format methods.</p>
+<p>For data class format, we have <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType" title="core.base_data_class.DataClassFormatType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassFormatType</span></code></a> along with <code class="docutils literal notranslate"><span class="pre">format_class_str</span></code> method to specify the format type for the data format methods.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClassFormatType</span>
 
 <span class="n">json_signature</span> <span class="o">=</span> <span class="n">TrecData2</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span><span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_JSON</span><span class="p">)</span>
@@ -891,8 +901,8 @@ You can simply do a bit customization to map the dataset’s key to the field na
 </section>
 <section id="about-output-fields">
 <h3>About __output_fields__<a class="headerlink" href="#about-output-fields" title="Link to this heading">¶</a></h3>
-<p>Though you can use <cite>exclude</cite> in the <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> to exclude some fields from the output, it is less readable and less convenient than
-directly use <cite>__output_fields__</cite> in the data class to signal the output fields and directly work with <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code>.</p>
+<p>Though you can use <cite>exclude</cite> in the <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonOutputParser</span></code></a> to exclude some fields from the output, it is less readable and less convenient than
+directly use <cite>__output_fields__</cite> in the data class to signal the output fields and directly work with <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a>.</p>
 <div class="highlight admonition">
 <p class="admonition-title">References</p>
 <ol class="arabic simple">
@@ -902,13 +912,13 @@ directly use <cite>__output_fields__</cite> in the data class to signal the outp
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClass</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClassFormatType</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.custom_asdict()</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClass</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType" title="core.base_data_class.DataClassFormatType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.DataClassFormatType</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.custom_asdict" title="core.functional.custom_asdict"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.custom_asdict()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core-base-data-class"><span class="std std-ref">core.base_data_class</span></a></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.required_field</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.required_field" title="core.base_data_class.required_field"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.base_data_class.required_field</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser.DataClassParser</span></code></a></p></li>
 </ul>
 </div>
 </section>

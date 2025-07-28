@@ -1,0 +1,1738 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+        <title>components.agent.runner - Build and Optimize LM Workflows</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #FF6F00;
+  --color-brand-content: #1E2A38;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FF8F00;
+  --color-brand-content: #CFD8DC;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FF8F00;
+  --color-brand-content: #CFD8DC;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">Build and Optimize LM Workflows</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/images/AdalFlow.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/images/AdalFlow_black_bg.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Build and Optimize LM Workflows</span>
+  
+</a><div class="sidebar-github-section">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow" class="sidebar-github-link">
+        <i class="fa-brands fa-github"></i>
+        <span class="github-text">GitHub</span>
+    </a>
+</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/core_concepts.html">Core Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/generator.html">Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/retriever.html">retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/tool.html">Tool Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/agents_runner.html">Agent Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/parser.html">Parser and Structured Output</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/anthropic.html">Anthropic Integration</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../use_cases/index.html">Use Cases</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Use Cases</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../use_cases/question_answering.html">Question Answering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../use_cases/qa_computation_graph.html">Q&amp;A Computation Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../use_cases/qa_text_grad_trace_graph.html">Q&amp;A Text Grad Trace Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../use_cases/qa_demo_trace_graph.html">Q&amp;A Few Shot Demo Trace Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../use_cases/classification.html">Classification Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../use_cases/rag_opt.html">RAG optimization</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../contributor/index.html">Contributor Guide</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Contributor Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../contributor/contribution.html">Contributing Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../contributor/contribute_to_code.html">Development Essentials</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Developer Notes</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Developer Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/class_hierarchy.html">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/trace_graph.html">AdalFlow Trace Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/component.html">Component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/base_data_class.html">DataClass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/model_client.html">ModelClient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/generator.html">Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/generator.html#basic-generator-tutorial">Basic Generator Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/output_parsers.html">Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/embedder.html">Embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/retriever.html">Retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/db.html">Data (Database/Pipeline)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/rag_playbook.html">RAG Playbook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/rag_with_memory.html">RAG with Memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/tool_helper.html">Function calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/agent.html">ReAct Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/agents_runner.html">Agents and Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/streaming.html">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/tracing.html">Tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/evaluation.html">LLM Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/datasets.html">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/logging.html">Logger Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/logging.html#design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/logging.html#use-logger-in-projects">Use Logger in Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/logging_tracing.html">Tracing</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../design/index.html">Blog</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Blog</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../design/ComponentTool.html">Use Class method as a better function tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../design/FunctionTool.html">Designing of AdalFlow FunctionTool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../design/agent-streaming.html">Agent Streaming Architecture in OpenAI Agents SDK</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../apis/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../apis/core/index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.base_data_class.html">base_data_class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.component.html">component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.container.html">container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.default_prompt_template.html">default_prompt_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.embedder.html">embedder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.generator.html">generator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.model_client.html">model_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.prompt_builder.html">prompt_builder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.functional.html">functional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tokenizer.html">tokenizer</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../apis/components/index.html">Components</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Components</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/components/components.model_client.html">model_client</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of model_client</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.azureai_client.html">azureai_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.bedrock_client.html">bedrock_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.deepseek_client.html">deepseek_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.fireworks_client.html">fireworks_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.google_client.html">google_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.mistral_client.html">mistral_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.ollama_client.html">ollama_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.sambanova_client.html">sambanova_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.together_client.html">together_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.utils.html">utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.model_client.xai_client.html">xai_client</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/components/components.retriever.html">retriever</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of retriever</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.retriever.lancedb_retriver.html">lancedb_retriver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/components/components.output_parsers.html">output_parsers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of output_parsers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.output_parsers.outputs.html">outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/components/components.agent.html">agent</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of agent</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.agent.agent.html">agent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.agent.prompts.html">prompts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.agent.react.html">react</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.agent.runner.html">runner</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/components/components.data_process.html">data_process</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of data_process</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.data_process.text_splitter.html">text_splitter</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/components/components.memory.html">memory</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of memory</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/components/components.memory.memory.html">memory</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../apis/datasets/index.html">Datasets</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Datasets</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/datasets/datasets.types.html">types</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../apis/eval/index.html">Evaluation</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Evaluation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/eval/eval.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/eval/eval.answer_match_acc.html">answer_match_acc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/eval/eval.retriever_recall.html">retriever_recall</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/eval/eval.llm_as_judge.html">llm_as_judge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/eval/eval.g_eval.html">g_eval</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../apis/optim/index.html">Optimization</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Optimization</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/optim/optim.parameter.html">parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/optim/optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/optim/optim.types.html">types</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/optim/optim.few_shot.html">few_shot</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of few_shot</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/optim/optim.text_grad.html">text_grad</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of text_grad</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html">tgd_optimizer</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../apis/optim/optim.trainer.html">trainer</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of trainer</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apis/optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.create.html">create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/tracing/tracing.util.html">util</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.data.html">data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.logger.html">logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/utils/utils.cache.html">cache</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for components.agent.runner</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">AsyncIterable</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">TypeAlias</span>
+
+
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.agent.agent</span> <span class="kn">import</span> <span class="n">Agent</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GeneratorOutput</span><span class="p">,</span>
+    <span class="n">FunctionOutput</span><span class="p">,</span>
+    <span class="n">Function</span><span class="p">,</span>
+    <span class="n">StepOutput</span><span class="p">,</span>
+    <span class="n">RawResponsesStreamEvent</span><span class="p">,</span>
+    <span class="n">RunItemStreamEvent</span><span class="p">,</span>
+    <span class="n">ToolCallRunItem</span><span class="p">,</span>
+    <span class="n">ToolOutputRunItem</span><span class="p">,</span>
+    <span class="n">StepRunItem</span><span class="p">,</span>
+    <span class="n">FinalOutputItem</span><span class="p">,</span>
+    <span class="n">RunnerStreamingResult</span><span class="p">,</span>
+    <span class="n">RunnerResult</span><span class="p">,</span>
+    <span class="n">QueueCompleteSentinel</span><span class="p">,</span>
+    <span class="n">ToolOutput</span><span class="p">,</span>
+    <span class="n">ToolCallActivityRunItem</span><span class="p">,</span>
+    <span class="n">UserQuery</span><span class="p">,</span>
+    <span class="n">AssistantResponse</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.apps.permission_manager</span> <span class="kn">import</span> <span class="n">PermissionManager</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.memory.memory</span> <span class="kn">import</span> <span class="n">ConversationMemory</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="n">_is_pydantic_dataclass</span><span class="p">,</span> <span class="n">_is_adalflow_dataclass</span>
+<span class="kn">from</span> <span class="nn">adalflow.tracing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">runner_span</span><span class="p">,</span>
+    <span class="n">tool_span</span><span class="p">,</span>
+    <span class="n">response_span</span><span class="p">,</span>
+    <span class="n">step_span</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Runner&quot;</span><span class="p">]</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseModel</span><span class="p">)</span>  <span class="c1"># Changed to use Pydantic BaseModel</span>
+
+<span class="n">BuiltInType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">PydanticDataClass</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span>
+<span class="n">AdalflowDataClass</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Type</span><span class="p">[</span>
+    <span class="n">Any</span>
+<span class="p">]</span>  <span class="c1"># Replace with your actual Adalflow dataclass type if available</span>
+
+
+<span class="c1"># The runner will create tool call request, add a unique call id.</span>
+<span class="c1"># TODO: move this to repo adalflow/agent</span>
+<div class="viewcode-block" id="Runner">
+<a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner">[docs]</a>
+<span class="k">class</span> <span class="nc">Runner</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Executes Agent instances with multi-step iterative planning and tool execution.</span>
+
+<span class="sd">    The Runner orchestrates the execution of an Agent through multiple reasoning and action</span>
+<span class="sd">    cycles. It manages the step-by-step execution loop where the Agent&#39;s planner generates</span>
+<span class="sd">    Function calls that get executed by the ToolManager, with results fed back into the</span>
+<span class="sd">    planning context for the next iteration.</span>
+
+<span class="sd">    Execution Flow:</span>
+<span class="sd">        1. Initialize step history and prompt context</span>
+<span class="sd">        2. For each step (up to max_steps):</span>
+<span class="sd">           a. Call Agent&#39;s planner to get next Function</span>
+<span class="sd">           b. Execute the Function using ToolManager</span>
+<span class="sd">           c. Add step result to history</span>
+<span class="sd">           d. Check if Function is &quot;finish&quot; to terminate</span>
+<span class="sd">        3. Process final answer to expected output type</span>
+
+<span class="sd">    The Runner supports both synchronous and asynchronous execution modes, as well as</span>
+<span class="sd">    streaming execution with real-time event emission. It includes comprehensive tracing</span>
+<span class="sd">    and error handling throughout the execution pipeline.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        agent (Agent): The Agent instance to execute</span>
+<span class="sd">        max_steps (int): Maximum number of execution steps allowed</span>
+<span class="sd">        answer_data_type (Type): Expected type for final answer processing</span>
+<span class="sd">        step_history (List[StepOutput]): History of all execution steps</span>
+<span class="sd">        ctx (Optional[Dict]): Additional context passed to tools</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span>
+        <span class="n">ctx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">permission_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PermissionManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">conversation_memory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConversationMemory</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize runner with an agent and configuration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent: The agent instance to execute</span>
+<span class="sd">            stream_parser: Optional stream parser</span>
+<span class="sd">            output_type: Optional Pydantic data class type</span>
+<span class="sd">            max_steps: Maximum number of steps to execute</span>
+<span class="sd">            permission_manager: Optional permission manager for tool approval</span>
+<span class="sd">            conversation_memory: Optional conversation memory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">agent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">tool_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span> <span class="o">=</span> <span class="n">permission_manager</span>
+        <span class="c1"># pass the tool_manager to the permission_manager</span>
+        <span class="k">if</span> <span class="n">permission_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">permission_manager</span><span class="o">.</span><span class="n">set_tool_manager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversation_memory</span> <span class="o">=</span> <span class="n">conversation_memory</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_conversation_memory</span> <span class="o">=</span> <span class="n">conversation_memory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="c1"># get agent requirements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span>
+        <span class="k">if</span> <span class="n">max_steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">max_steps</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># overwrite the agent&#39;s max_steps</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">answer_data_type</span> <span class="ow">or</span> <span class="nb">str</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># add ctx (it is just a reference, and only get added to the final response)</span>
+        <span class="c1"># assume intermediate tool is gonna modify the ctx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">ctx</span>
+
+        <span class="c1"># Initialize permission manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_permission_manager</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_permission_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the permission manager and register tools that require approval.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="p">,</span> <span class="s2">&quot;tool_manager&quot;</span><span class="p">):</span>
+            <span class="c1"># Iterate through tools in the ComponentList</span>
+            <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="s2">&quot;definition&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="s2">&quot;require_approval&quot;</span><span class="p">):</span>
+                    <span class="n">tool_name</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="o">.</span><span class="n">register_tool</span><span class="p">(</span>
+                        <span class="n">tool_name</span><span class="p">,</span> <span class="n">tool</span><span class="o">.</span><span class="n">require_approval</span>
+                    <span class="p">)</span>
+
+<div class="viewcode-block" id="Runner.set_permission_manager">
+<a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.set_permission_manager">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_permission_manager</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">permission_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PermissionManager</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or update the permission manager after runner initialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            permission_manager: The permission manager instance to use for tool approval</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span> <span class="o">=</span> <span class="n">permission_manager</span>
+        <span class="c1"># Re-initialize to register tools with the new permission manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_permission_manager</span><span class="p">()</span>
+
+        <span class="c1"># pass the tool_manager to the permission_manager</span>
+        <span class="k">if</span> <span class="n">permission_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">permission_manager</span><span class="o">.</span><span class="n">set_tool_manager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_check_last_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the last step has is_answer_final set to True.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="s2">&quot;_is_answer_final&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">step</span><span class="o">.</span><span class="n">_is_answer_final</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># TODO: improved after the finish function is refactored</span>
+    <span class="k">def</span> <span class="nf">_process_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BuiltInType</span><span class="p">,</span> <span class="n">PydanticDataClass</span><span class="p">,</span> <span class="n">AdalflowDataClass</span><span class="p">],</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the generator output data field and convert to the specified pydantic data class of output_type.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: The data to process</span>
+<span class="sd">            id: Optional identifier for the output</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The processed data as a string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_output</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;answer_data_type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># returns a dictionary in this case</span>
+            <span class="k">if</span> <span class="n">_is_pydantic_dataclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;initial answer returned by finish when user passed a pydantic type: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="c1"># if it has not yet been deserialized then deserialize into dictionary using json loads</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;initial answer after being evaluated using json: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="c1"># data should be a string that represents a dictionary</span>
+                <span class="n">model_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">_is_adalflow_dataclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;initial answer returned by finish when user passed a adalflow type: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;initial answer after being evaluated using json: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="c1"># data should be a string that represents a dictionary</span>
+                <span class="n">model_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># expect data to be a python built_in_type</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;type of answer is neither a pydantic dataclass or adalflow dataclass, answer before being casted again for safety: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">(</span>
+                    <span class="n">data</span>
+                <span class="p">)</span>  <span class="c1"># directly cast using the answer_data_type</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Expected data of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="si">}</span><span class="s2">, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">model_output</span> <span class="o">=</span> <span class="n">data</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">model_output</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse output: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">model_output</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing output: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing output: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_planner_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Function</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the planner output and return the function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            output: The planner output</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected GeneratorOutput, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">function</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected Function in the data field of the GeneratorOutput, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">function</span><span class="p">)</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">function</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">function</span>
+
+<div class="viewcode-block" id="Runner.call">
+<a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># global run id</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunnerResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the planner synchronously for multiple steps with function calling support.</span>
+
+<span class="sd">        At the last step the action should be set to &quot;finish&quot; instead which terminates the sequence</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prompt_kwargs: Dictionary of prompt arguments for the generator</span>
+<span class="sd">            model_kwargs: Optional model parameters to override defaults</span>
+<span class="sd">            use_cache: Whether to use cached results if available</span>
+<span class="sd">            id: Optional unique identifier for the request</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RunnerResult containing step history and final processed output</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create runner span for tracing</span>
+        <span class="k">with</span> <span class="n">runner_span</span><span class="p">(</span>
+            <span class="n">runner_id</span><span class="o">=</span><span class="nb">id</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;runner_</span><span class="si">{</span><span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">max_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+            <span class="n">workflow_status</span><span class="o">=</span><span class="s2">&quot;starting&quot;</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">runner_span_instance</span><span class="p">:</span>
+            <span class="c1"># reset the step history</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># take in the query in prompt_kwargs</span>
+            <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">prompt_kwargs</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;step_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span>
+            <span class="p">)</span>  <span class="c1"># a reference to the step history</span>
+
+            <span class="c1"># set maximum number of steps for the planner into the prompt</span>
+            <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;max_steps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span>
+
+            <span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">model_kwargs</span> <span class="k">else</span> <span class="p">{}</span>
+
+            <span class="n">step_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">last_output</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">while</span> <span class="n">step_count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Create step span for each iteration</span>
+                    <span class="k">with</span> <span class="n">step_span</span><span class="p">(</span>
+                        <span class="n">step_number</span><span class="o">=</span><span class="n">step_count</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s2">&quot;planning&quot;</span>
+                    <span class="p">)</span> <span class="k">as</span> <span class="n">step_span_instance</span><span class="p">:</span>
+                        <span class="n">printc</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;agent planner prompt: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># Call the planner first to get the output</span>
+                        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+                            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+                            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+                            <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
+                            <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;planner output: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+                        <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_planner_function</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+                        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;function: </span><span class="si">{</span><span class="n">function</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_last_step</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+                            <span class="n">processed_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_data</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">_answer</span><span class="p">)</span>
+                            <span class="c1"># Wrap final output in RunnerResult</span>
+                            <span class="n">last_output</span> <span class="o">=</span> <span class="n">RunnerResult</span><span class="p">(</span>
+                                <span class="n">answer</span><span class="o">=</span><span class="n">processed_data</span><span class="p">,</span>
+                                <span class="n">step_history</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                                <span class="c1"># ctx=self.ctx,</span>
+                            <span class="p">)</span>
+                            <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Increment step count before breaking</span>
+                            <span class="k">break</span>
+
+                        <span class="c1"># Create tool span for function execution</span>
+                        <span class="k">with</span> <span class="n">tool_span</span><span class="p">(</span>
+                            <span class="n">tool_name</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">function_name</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">function_args</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                            <span class="n">function_kwargs</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+                        <span class="p">)</span> <span class="k">as</span> <span class="n">tool_span_instance</span><span class="p">:</span>
+                            <span class="n">function_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool_execute_sync</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+                            <span class="c1"># Update span attributes using update_attributes for MLflow compatibility</span>
+                            <span class="n">tool_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                                <span class="p">{</span><span class="s2">&quot;output_result&quot;</span><span class="p">:</span> <span class="n">function_results</span><span class="o">.</span><span class="n">output</span><span class="p">}</span>
+                            <span class="p">)</span>
+
+                        <span class="n">function_output</span> <span class="o">=</span> <span class="n">function_results</span><span class="o">.</span><span class="n">output</span>
+                        <span class="n">function_output_observation</span> <span class="o">=</span> <span class="n">function_output</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function_output</span><span class="p">,</span> <span class="n">ToolOutput</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span>
+                            <span class="n">function_output</span><span class="p">,</span> <span class="s2">&quot;observation&quot;</span>
+                        <span class="p">):</span>
+                            <span class="n">function_output_observation</span> <span class="o">=</span> <span class="n">function_output</span><span class="o">.</span><span class="n">observation</span>
+
+                        <span class="c1"># create a step output</span>
+                        <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span> <span class="o">=</span> <span class="n">StepOutput</span><span class="p">(</span>
+                            <span class="n">step</span><span class="o">=</span><span class="n">step_count</span><span class="p">,</span>
+                            <span class="n">action</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                            <span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                            <span class="n">observation</span><span class="o">=</span><span class="n">function_output_observation</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span>
+
+                        <span class="c1"># Update step span with results</span>
+                        <span class="n">step_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                            <span class="p">{</span>
+                                <span class="s2">&quot;tool_name&quot;</span><span class="p">:</span> <span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                <span class="s2">&quot;tool_output&quot;</span><span class="p">:</span> <span class="n">function_results</span><span class="p">,</span>
+                                <span class="s2">&quot;is_final&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_last_step</span><span class="p">(</span><span class="n">function</span><span class="p">),</span>
+                                <span class="s2">&quot;observation&quot;</span><span class="p">:</span> <span class="n">function_output_observation</span><span class="p">,</span>
+                            <span class="p">}</span>
+                        <span class="p">)</span>
+
+                        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;The prompt with the prompt template is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                        <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error in step </span><span class="si">{</span><span class="n">step_count</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+                    <span class="c1"># Create response span for error tracking</span>
+                    <span class="k">with</span> <span class="n">response_span</span><span class="p">(</span>
+                        <span class="n">answer</span><span class="o">=</span><span class="n">error_msg</span><span class="p">,</span>
+                        <span class="n">result_type</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+                        <span class="n">execution_metadata</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                            <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+                            <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;failed&quot;</span><span class="p">,</span>
+                        <span class="p">},</span>
+                        <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="p">):</span>
+                        <span class="k">pass</span>
+
+                    <span class="c1"># Continue to next step instead of returning</span>
+                    <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Update runner span with final results</span>
+            <span class="c1"># Update runner span with completion info using update_attributes</span>
+            <span class="n">runner_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                    <span class="s2">&quot;final_answer&quot;</span><span class="p">:</span> <span class="n">last_output</span><span class="o">.</span><span class="n">answer</span> <span class="k">if</span> <span class="n">last_output</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;completed&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Create response span for tracking final result</span>
+            <span class="k">with</span> <span class="n">response_span</span><span class="p">(</span>
+                <span class="n">answer</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">last_output</span><span class="o">.</span><span class="n">answer</span>
+                    <span class="k">if</span> <span class="n">last_output</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;No output generated after </span><span class="si">{</span><span class="n">step_count</span><span class="si">}</span><span class="s2"> steps (max_steps: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">),</span>
+                <span class="n">result_type</span><span class="o">=</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">last_output</span><span class="o">.</span><span class="n">answer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">last_output</span> <span class="k">else</span> <span class="s2">&quot;no_output&quot;</span>
+                <span class="p">),</span>
+                <span class="n">execution_metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                    <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+                    <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;completed&quot;</span> <span class="k">if</span> <span class="n">last_output</span> <span class="k">else</span> <span class="s2">&quot;incomplete&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">last_output</span><span class="p">,</span>  <span class="c1"># can be None if Runner has not finished in the max steps</span>
+            <span class="p">):</span>
+                <span class="k">pass</span>
+
+            <span class="c1"># Always return a RunnerResult, even if no successful completion</span>
+            <span class="k">return</span> <span class="n">last_output</span> <span class="ow">or</span> <span class="n">RunnerResult</span><span class="p">(</span>
+                <span class="n">answer</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;No output generated after </span><span class="si">{</span><span class="n">step_count</span><span class="si">}</span><span class="s2"> steps (max_steps: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="n">step_history</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_tool_execute_sync</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this in the call method.</span>
+<span class="sd">        Handles both sync and async functions by running async ones in event loop.</span>
+<span class="sd">        Includes permission checking if permission_manager is configured.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># execute permission and blocking mechanism in check_permission</span>
+        <span class="c1"># TODO: permission manager might be better to be put inside of tool manager</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="o">.</span><span class="n">check_permission</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
+
+            <span class="c1"># Handle both old (2 values) and new (3 values) return formats</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">allowed</span><span class="p">,</span> <span class="n">modified_func</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">allowed</span><span class="p">,</span> <span class="n">modified_func</span> <span class="o">=</span> <span class="n">result</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">allowed</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">FunctionOutput</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="nb">input</span><span class="o">=</span><span class="n">func</span><span class="p">,</span>
+                    <span class="n">output</span><span class="o">=</span><span class="n">ToolOutput</span><span class="p">(</span>
+                        <span class="n">output</span><span class="o">=</span><span class="s2">&quot;Tool execution cancelled by user&quot;</span><span class="p">,</span>
+                        <span class="n">observation</span><span class="o">=</span><span class="s2">&quot;Tool execution cancelled by user&quot;</span><span class="p">,</span>
+                        <span class="n">display</span><span class="o">=</span><span class="s2">&quot;Permission denied&quot;</span><span class="p">,</span>
+                        <span class="n">status</span><span class="o">=</span><span class="s2">&quot;cancelled&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Use modified function if user edited it</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">modified_func</span> <span class="ow">or</span> <span class="n">func</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">execute_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">FunctionOutput</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Result is not a FunctionOutput&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="Runner.acall">
+<a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.acall">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunnerResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the planner asynchronously for multiple steps with function calling support.</span>
+
+<span class="sd">        At the last step the action should be set to &quot;finish&quot; instead which terminates the sequence</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prompt_kwargs: Dictionary of prompt arguments for the generator</span>
+<span class="sd">            model_kwargs: Optional model parameters to override defaults</span>
+<span class="sd">            use_cache: Whether to use cached results if available</span>
+<span class="sd">            id: Optional unique identifier for the request</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RunnerResponse containing step history and final processed output</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create runner span for tracing</span>
+        <span class="k">with</span> <span class="n">runner_span</span><span class="p">(</span>
+            <span class="n">runner_id</span><span class="o">=</span><span class="nb">id</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;async_runner_</span><span class="si">{</span><span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">max_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+            <span class="n">workflow_status</span><span class="o">=</span><span class="s2">&quot;starting&quot;</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">runner_span_instance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">prompt_kwargs</span> <span class="k">else</span> <span class="p">{}</span>
+
+            <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;step_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span>
+            <span class="p">)</span>  <span class="c1"># a reference to the step history</span>
+            <span class="c1"># set maximum number of steps for the planner into the prompt</span>
+            <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;max_steps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span>
+
+            <span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">model_kwargs</span> <span class="k">else</span> <span class="p">{}</span>
+
+            <span class="n">step_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">last_output</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">while</span> <span class="n">step_count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+
+                    <span class="c1"># Create step span for each iteration</span>
+                    <span class="k">with</span> <span class="n">step_span</span><span class="p">(</span>
+                        <span class="n">step_number</span><span class="o">=</span><span class="n">step_count</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s2">&quot;async_planning&quot;</span>
+                    <span class="p">)</span> <span class="k">as</span> <span class="n">step_span_instance</span><span class="p">:</span>
+                        <span class="n">printc</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;agent planner prompt: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># Call the planner first to get the output</span>
+                        <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>
+                            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+                            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+                            <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
+                            <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;planner output: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+                        <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_planner_function</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+                        <span class="c1"># add a function id</span>
+                        <span class="n">function</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+                        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;function: </span><span class="si">{</span><span class="n">function</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_last_step</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+                            <span class="n">processed_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_data</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">_answer</span><span class="p">)</span>
+                            <span class="c1"># Wrap final output in RunnerResult</span>
+                            <span class="n">last_output</span> <span class="o">=</span> <span class="n">RunnerResult</span><span class="p">(</span>
+                                <span class="n">answer</span><span class="o">=</span><span class="n">processed_data</span><span class="p">,</span>
+                                <span class="n">step_history</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                                <span class="c1"># ctx=self.ctx,</span>
+                            <span class="p">)</span>
+                            <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Increment step count before breaking</span>
+                            <span class="k">break</span>
+
+                        <span class="c1"># Create tool span for function execution</span>
+                        <span class="k">with</span> <span class="n">tool_span</span><span class="p">(</span>
+                            <span class="n">tool_name</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">function_name</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">function_args</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                            <span class="n">function_kwargs</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+                        <span class="p">)</span> <span class="k">as</span> <span class="n">tool_span_instance</span><span class="p">:</span>
+                            <span class="n">function_results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool_execute_async</span><span class="p">(</span>
+                                <span class="n">func</span><span class="o">=</span><span class="n">function</span>
+                            <span class="p">)</span>
+                            <span class="n">function_output</span> <span class="o">=</span> <span class="n">function_results</span><span class="o">.</span><span class="n">output</span>
+                            <span class="n">function_output_observation</span> <span class="o">=</span> <span class="n">function_output</span>
+
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function_output</span><span class="p">,</span> <span class="n">ToolOutput</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span>
+                                <span class="n">function_output</span><span class="p">,</span> <span class="s2">&quot;observation&quot;</span>
+                            <span class="p">):</span>
+                                <span class="n">function_output_observation</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">function_output</span><span class="o">.</span><span class="n">observation</span>
+                                <span class="p">)</span>
+
+                            <span class="c1"># Update tool span attributes using update_attributes for MLflow compatibility</span>
+                            <span class="n">tool_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                                <span class="p">{</span><span class="s2">&quot;output_result&quot;</span><span class="p">:</span> <span class="n">function_output</span><span class="p">}</span>
+                            <span class="p">)</span>
+
+                        <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span> <span class="o">=</span> <span class="n">StepOutput</span><span class="p">(</span>
+                            <span class="n">step</span><span class="o">=</span><span class="n">step_count</span><span class="p">,</span>
+                            <span class="n">action</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                            <span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                            <span class="n">observation</span><span class="o">=</span><span class="n">function_output_observation</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span>
+
+                        <span class="c1"># Update step span with results</span>
+                        <span class="n">step_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                            <span class="p">{</span>
+                                <span class="s2">&quot;tool_name&quot;</span><span class="p">:</span> <span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                <span class="s2">&quot;tool_output&quot;</span><span class="p">:</span> <span class="n">function_results</span><span class="p">,</span>
+                                <span class="s2">&quot;is_final&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_last_step</span><span class="p">(</span><span class="n">function</span><span class="p">),</span>
+                                <span class="s2">&quot;observation&quot;</span><span class="p">:</span> <span class="n">function_output_observation</span><span class="p">,</span>
+                            <span class="p">}</span>
+                        <span class="p">)</span>
+
+                        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;The prompt with the prompt template is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                        <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error in step </span><span class="si">{</span><span class="n">step_count</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+                    <span class="c1"># Create response span for error tracking</span>
+                    <span class="k">with</span> <span class="n">response_span</span><span class="p">(</span>
+                        <span class="n">answer</span><span class="o">=</span><span class="n">error_msg</span><span class="p">,</span>
+                        <span class="n">result_type</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+                        <span class="n">execution_metadata</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                            <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+                            <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;failed&quot;</span><span class="p">,</span>
+                        <span class="p">},</span>
+                        <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="p">):</span>
+                        <span class="k">pass</span>
+
+                    <span class="c1"># Continue to next step instead of returning</span>
+                    <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Update runner span with final results</span>
+            <span class="c1"># Update runner span with completion info using update_attributes</span>
+            <span class="n">runner_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                    <span class="s2">&quot;final_answer&quot;</span><span class="p">:</span> <span class="n">last_output</span><span class="o">.</span><span class="n">answer</span> <span class="k">if</span> <span class="n">last_output</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;completed&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Create response span for tracking final result</span>
+            <span class="k">with</span> <span class="n">response_span</span><span class="p">(</span>
+                <span class="n">answer</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">last_output</span><span class="o">.</span><span class="n">answer</span>
+                    <span class="k">if</span> <span class="n">last_output</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;No output generated after </span><span class="si">{</span><span class="n">step_count</span><span class="si">}</span><span class="s2"> steps (max_steps: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">),</span>
+                <span class="n">result_type</span><span class="o">=</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">last_output</span><span class="o">.</span><span class="n">answer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">last_output</span> <span class="k">else</span> <span class="s2">&quot;no_output&quot;</span>
+                <span class="p">),</span>
+                <span class="n">execution_metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                    <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+                    <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;completed&quot;</span> <span class="k">if</span> <span class="n">last_output</span> <span class="k">else</span> <span class="s2">&quot;incomplete&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">last_output</span><span class="p">,</span>  <span class="c1"># can be None if Runner has not finished in the max steps</span>
+            <span class="p">):</span>
+                <span class="k">pass</span>
+
+            <span class="c1"># Always return a RunnerResult, even if no successful completion</span>
+            <span class="k">return</span> <span class="n">last_output</span> <span class="ow">or</span> <span class="n">RunnerResult</span><span class="p">(</span>
+                <span class="n">answer</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;No output generated after </span><span class="si">{</span><span class="n">step_count</span><span class="si">}</span><span class="s2"> steps (max_steps: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="n">step_history</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Runner.astream">
+<a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.astream">[docs]</a>
+    <span class="k">def</span> <span class="nf">astream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunnerStreamingResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the runner asynchronously with streaming support.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RunnerStreamingResult: A streaming result object with stream_events() method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">RunnerStreamingResult</span><span class="p">()</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">_run_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">impl_astream</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="Runner.impl_astream">
+<a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.impl_astream">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">impl_astream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">streaming_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RunnerStreamingResult</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the planner asynchronously for multiple steps with function calling support.</span>
+
+<span class="sd">        At the last step the action should be set to &quot;finish&quot; instead which terminates the sequence</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prompt_kwargs: Dictionary of prompt arguments for the generator</span>
+<span class="sd">            model_kwargs: Optional model parameters to override defaults</span>
+<span class="sd">            use_cache: Whether to use cached results if available</span>
+<span class="sd">            id: Optional unique identifier for the request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create runner span for tracing streaming execution</span>
+        <span class="k">with</span> <span class="n">runner_span</span><span class="p">(</span>
+            <span class="n">runner_id</span><span class="o">=</span><span class="nb">id</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;stream_runner_</span><span class="si">{</span><span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">max_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+            <span class="n">workflow_status</span><span class="o">=</span><span class="s2">&quot;streaming&quot;</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">runner_span_instance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">prompt_kwargs</span> <span class="k">else</span> <span class="p">{}</span>
+
+            <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;step_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_conversation_memory</span><span class="p">:</span>
+                <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;chat_history_str&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conversation_memory</span><span class="p">()</span>
+                <span class="c1"># save the user query to the conversation memory</span>
+
+                <span class="c1"># meta data is all keys in the list of context_str</span>
+                <span class="n">query_metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;context_str&quot;</span><span class="p">:</span> <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;context_str&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conversation_memory</span><span class="o">.</span><span class="n">add_user_query</span><span class="p">(</span>
+                    <span class="n">UserQuery</span><span class="p">(</span>
+                        <span class="n">query_str</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;input_str&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                        <span class="n">metadata</span><span class="o">=</span><span class="n">query_metadata</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="c1"># a reference to the step history</span>
+            <span class="c1"># set maximum number of steps for the planner into the prompt</span>
+            <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;max_steps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span>
+
+            <span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">model_kwargs</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="n">step_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">final_output_item</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">while</span> <span class="n">step_count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Create step span for each streaming iteration</span>
+                    <span class="k">with</span> <span class="n">step_span</span><span class="p">(</span>
+                        <span class="n">step_number</span><span class="o">=</span><span class="n">step_count</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s2">&quot;stream_planning&quot;</span>
+                    <span class="p">)</span> <span class="k">as</span> <span class="n">step_span_instance</span><span class="p">:</span>
+                        <span class="c1"># important to ensure the prompt at each step is correct</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;The prompt with the prompt template is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">printc</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;agent planner prompt: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># when it&#39;s streaming, the output will be an async generator</span>
+                        <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>
+                            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+                            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+                            <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
+                            <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The output is not a GeneratorOutput&quot;</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">raw_response</span><span class="p">,</span> <span class="n">AsyncIterable</span><span class="p">):</span>
+                            <span class="c1"># Streaming llm call - iterate through the async generator</span>
+                            <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">raw_response</span><span class="p">:</span>
+                                <span class="n">wrapped_event</span> <span class="o">=</span> <span class="n">RawResponsesStreamEvent</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
+                                <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">wrapped_event</span><span class="p">)</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># yield the final planner response</span>
+                            <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">wrapped_event</span> <span class="o">=</span> <span class="n">RawResponsesStreamEvent</span><span class="p">(</span>
+                                    <span class="n">error</span><span class="o">=</span><span class="n">output</span><span class="o">.</span><span class="n">error</span>
+                                <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">wrapped_event</span> <span class="o">=</span> <span class="n">RawResponsesStreamEvent</span><span class="p">(</span>
+                                    <span class="n">data</span><span class="o">=</span><span class="n">output</span><span class="o">.</span><span class="n">data</span>
+                                <span class="p">)</span>  <span class="c1"># wrap on the data field to be the final output, the data might be null</span>
+                            <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">wrapped_event</span><span class="p">)</span>
+
+                        <span class="c1"># asychronously consuming the raw response will</span>
+                        <span class="c1"># update the data field of output with the result of the output processor</span>
+
+                        <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_planner_function</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+                        <span class="n">function</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+                        <span class="c1"># TODO: simplify this</span>
+                        <span class="n">tool_call_id</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">id</span>
+                        <span class="n">tool_call_name</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">name</span>
+                        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;function: </span><span class="si">{</span><span class="n">function</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_last_step</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+                            <span class="n">processed_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_data</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">_answer</span><span class="p">)</span>
+                            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;processed_data: </span><span class="si">{</span><span class="n">processed_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+
+                            <span class="c1"># Create RunnerResult for the final output</span>
+                            <span class="c1"># TODO: this is over complicated!</span>
+                            <span class="c1"># Need to make the relation between runner result and runner streaming result more clear</span>
+                            <span class="n">runner_result</span> <span class="o">=</span> <span class="n">RunnerResult</span><span class="p">(</span>
+                                <span class="n">answer</span><span class="o">=</span><span class="n">processed_data</span><span class="p">,</span>
+                                <span class="n">step_history</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                                <span class="c1"># ctx=self.ctx,</span>
+                            <span class="p">)</span>
+
+                            <span class="c1"># Update runner span with final results</span>
+                            <span class="n">runner_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                                <span class="p">{</span>
+                                    <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                                    <span class="s2">&quot;final_answer&quot;</span><span class="p">:</span> <span class="n">processed_data</span><span class="p">,</span>
+                                    <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;stream_completed&quot;</span><span class="p">,</span>
+                                <span class="p">}</span>
+                            <span class="p">)</span>
+
+                            <span class="c1"># Create response span for tracking final streaming result</span>
+                            <span class="k">with</span> <span class="n">response_span</span><span class="p">(</span>
+                                <span class="n">answer</span><span class="o">=</span><span class="n">processed_data</span><span class="p">,</span>
+                                <span class="n">result_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">processed_data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                <span class="n">execution_metadata</span><span class="o">=</span><span class="p">{</span>
+                                    <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                                    <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+                                    <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;stream_completed&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;streaming&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                                <span class="p">},</span>
+                                <span class="n">response</span><span class="o">=</span><span class="n">runner_result</span><span class="p">,</span>
+                            <span class="p">):</span>
+                                <span class="k">pass</span>
+
+                            <span class="c1"># Emit execution complete event</span>
+                            <span class="n">final_output_item</span> <span class="o">=</span> <span class="n">FinalOutputItem</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">runner_result</span><span class="p">)</span>
+                            <span class="n">final_output_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent.execution_complete&quot;</span><span class="p">,</span>
+                                <span class="n">item</span><span class="o">=</span><span class="n">final_output_item</span><span class="p">,</span>
+                            <span class="p">)</span>
+                            <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">final_output_event</span><span class="p">)</span>
+
+                            <span class="c1"># Store final result and completion status</span>
+                            <span class="n">streaming_result</span><span class="o">.</span><span class="n">answer</span> <span class="o">=</span> <span class="n">processed_data</span>
+                            <span class="n">streaming_result</span><span class="o">.</span><span class="n">step_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                            <span class="n">streaming_result</span><span class="o">.</span><span class="n">_is_complete</span> <span class="o">=</span> <span class="kc">True</span>
+
+                            <span class="c1"># add the assistant response to the conversation memory</span>
+                            <span class="c1"># TODO: create a string for the step history</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_conversation_memory</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">conversation_memory</span><span class="o">.</span><span class="n">add_assistant_response</span><span class="p">(</span>
+                                    <span class="n">AssistantResponse</span><span class="p">(</span>
+                                        <span class="n">response_str</span><span class="o">=</span><span class="n">processed_data</span><span class="p">,</span>
+                                        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                                            <span class="s2">&quot;step_history&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                                        <span class="p">},</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+                            <span class="k">break</span>
+
+                        <span class="c1"># Check if permission is required and emit permission event</span>
+                        <span class="c1"># TODO: trace the permission event</span>
+
+                        <span class="n">function_output_observation</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">function_result</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span>
+                            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="o">.</span><span class="n">is_approval_required</span><span class="p">(</span>
+                                <span class="n">function</span><span class="o">.</span><span class="n">name</span>
+                            <span class="p">)</span>
+                        <span class="p">):</span>
+                            <span class="n">permission_event</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="o">.</span><span class="n">create_permission_event</span><span class="p">(</span>
+                                    <span class="n">function</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">permission_event</span><span class="p">,</span> <span class="n">ToolOutput</span><span class="p">):</span>
+                                <span class="c1"># need a tool complete event </span>
+                                <span class="n">function_result</span> <span class="o">=</span> <span class="n">FunctionOutput</span><span class="p">(</span>
+                                    <span class="n">name</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                    <span class="nb">input</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                                    <span class="n">output</span><span class="o">=</span><span class="n">permission_event</span><span class="p">,</span>
+                                <span class="p">)</span>
+                                <span class="n">tool_complete_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent.tool_call_complete&quot;</span><span class="p">,</span>
+                                    <span class="c1"># error is already tracked in output</span>
+                                    <span class="c1"># TODO: error tracking is not needed in RunItem, it is tracked in the tooloutput status.</span>
+                                    <span class="n">item</span><span class="o">=</span><span class="n">ToolOutputRunItem</span><span class="p">(</span>
+                                        <span class="n">data</span><span class="o">=</span><span class="n">function_result</span><span class="p">,</span>
+                                        <span class="nb">id</span><span class="o">=</span><span class="n">tool_call_id</span><span class="p">,</span>
+                                        <span class="n">error</span><span class="o">=</span><span class="n">permission_event</span><span class="o">.</span><span class="n">observation</span> <span class="k">if</span> <span class="n">permission_event</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># error message sent to the frontend </span>
+                                    <span class="p">),</span>
+                                <span class="p">)</span>
+                                <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">tool_complete_event</span><span class="p">)</span>
+                                <span class="n">function_output_observation</span> <span class="o">=</span> <span class="n">permission_event</span><span class="o">.</span><span class="n">observation</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">permission_stream_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent.tool_permission_request&quot;</span><span class="p">,</span>
+                                    <span class="n">item</span><span class="o">=</span><span class="n">permission_event</span><span class="p">,</span>
+                                <span class="p">)</span>
+                                <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">permission_stream_event</span><span class="p">)</span>
+
+                                <span class="c1"># Execute the tool with streaming support</span>
+                                <span class="n">function_result</span><span class="p">,</span> <span class="n">function_output</span><span class="p">,</span> <span class="n">function_output_observation</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_tool_execution</span><span class="p">(</span>
+                                    <span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                                    <span class="n">tool_call_id</span><span class="o">=</span><span class="n">tool_call_id</span><span class="p">,</span>
+                                    <span class="n">tool_call_name</span><span class="o">=</span><span class="n">tool_call_name</span><span class="p">,</span>
+                                    <span class="n">streaming_result</span><span class="o">=</span><span class="n">streaming_result</span><span class="p">,</span>
+                                <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">function_result</span><span class="p">,</span> <span class="n">function_output</span><span class="p">,</span> <span class="n">function_output_observation</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_tool_execution</span><span class="p">(</span>
+                                <span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                                <span class="n">tool_call_id</span><span class="o">=</span><span class="n">tool_call_id</span><span class="p">,</span>
+                                <span class="n">tool_call_name</span><span class="o">=</span><span class="n">tool_call_name</span><span class="p">,</span>
+                                <span class="n">streaming_result</span><span class="o">=</span><span class="n">streaming_result</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="c1"># llm only takes observation as feedback</span>
+                        <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span> <span class="o">=</span> <span class="n">StepOutput</span><span class="p">(</span>
+                            <span class="n">step</span><span class="o">=</span><span class="n">step_count</span><span class="p">,</span>
+                            <span class="n">action</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                            <span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                            <span class="n">observation</span><span class="o">=</span><span class="n">function_output_observation</span><span class="p">,</span>
+                            <span class="c1"># ctx=self.ctx,</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span>
+
+                        <span class="c1"># Update step span with results</span>
+                        <span class="n">step_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                            <span class="p">{</span>
+                                <span class="s2">&quot;tool_name&quot;</span><span class="p">:</span> <span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                <span class="s2">&quot;tool_output&quot;</span><span class="p">:</span> <span class="n">function_result</span><span class="p">,</span>
+                                <span class="s2">&quot;is_final&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_last_step</span><span class="p">(</span><span class="n">function</span><span class="p">),</span>
+                                <span class="s2">&quot;observation&quot;</span><span class="p">:</span> <span class="n">function_output_observation</span><span class="p">,</span>
+                            <span class="p">}</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># Emit step completion event</span>
+                        <span class="n">step_item</span> <span class="o">=</span> <span class="n">StepRunItem</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">step_output</span><span class="p">)</span>
+                        <span class="n">step_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent.step_complete&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">step_item</span>
+                        <span class="p">)</span>
+                        <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">step_event</span><span class="p">)</span>
+
+                        <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error in step </span><span class="si">{</span><span class="n">step_count</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+                    <span class="c1"># Update runner span with error info</span>
+                    <span class="n">runner_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;final_answer&quot;</span><span class="p">:</span> <span class="n">error_msg</span><span class="p">,</span>
+                            <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;stream_failed&quot;</span><span class="p">,</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># Create response span for error tracking in streaming</span>
+                    <span class="k">with</span> <span class="n">response_span</span><span class="p">(</span>
+                        <span class="n">answer</span><span class="o">=</span><span class="n">error_msg</span><span class="p">,</span>
+                        <span class="n">result_type</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+                        <span class="n">execution_metadata</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                            <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+                            <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;stream_failed&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;streaming&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                        <span class="p">},</span>
+                        <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="p">):</span>
+                        <span class="k">pass</span>
+
+                    <span class="c1"># Store error result and completion status</span>
+                    <span class="n">streaming_result</span><span class="o">.</span><span class="n">step_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="n">streaming_result</span><span class="o">.</span><span class="n">_is_complete</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">streaming_result</span><span class="o">.</span><span class="n">exception</span> <span class="o">=</span> <span class="n">error_msg</span>
+
+                    <span class="c1"># Emit error as FinalOutputItem to queue</span>
+                    <span class="n">error_final_item</span> <span class="o">=</span> <span class="n">FinalOutputItem</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">error_msg</span><span class="p">)</span>
+                    <span class="n">error_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;runner_finished&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">error_final_item</span>
+                    <span class="p">)</span>
+                    <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">error_event</span><span class="p">)</span>
+
+                    <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># If loop terminated without creating a final output item, create our own</span>
+            <span class="c1"># TODO this might be redundant</span>
+            <span class="k">if</span> <span class="n">final_output_item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Create a RunnerResult with incomplete status</span>
+                <span class="n">runner_result</span> <span class="o">=</span> <span class="n">RunnerResult</span><span class="p">(</span>
+                    <span class="n">answer</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;No output generated after </span><span class="si">{</span><span class="n">step_count</span><span class="si">}</span><span class="s2"> steps (max_steps: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                    <span class="n">step_history</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Update runner span for incomplete execution</span>
+                <span class="n">runner_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                        <span class="s2">&quot;final_answer&quot;</span><span class="p">:</span> <span class="n">runner_result</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+                        <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;stream_incomplete&quot;</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Create response span for incomplete streaming result</span>
+                <span class="k">with</span> <span class="n">response_span</span><span class="p">(</span>
+                    <span class="n">answer</span><span class="o">=</span><span class="n">runner_result</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+                    <span class="n">result_type</span><span class="o">=</span><span class="s2">&quot;incomplete&quot;</span><span class="p">,</span>
+                    <span class="n">execution_metadata</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;steps_executed&quot;</span><span class="p">:</span> <span class="n">step_count</span><span class="p">,</span>
+                        <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+                        <span class="s2">&quot;workflow_status&quot;</span><span class="p">:</span> <span class="s2">&quot;stream_incomplete&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;streaming&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="n">response</span><span class="o">=</span><span class="n">runner_result</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="k">pass</span>
+
+                <span class="c1"># Create and emit our own FinalOutputItem</span>
+                <span class="n">final_output_item</span> <span class="o">=</span> <span class="n">FinalOutputItem</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">runner_result</span><span class="p">)</span>
+                <span class="n">final_output_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent.execution_complete&quot;</span><span class="p">,</span>
+                    <span class="n">item</span><span class="o">=</span><span class="n">final_output_item</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">final_output_event</span><span class="p">)</span>
+
+                <span class="c1"># Store final result and completion status</span>
+                <span class="n">streaming_result</span><span class="o">.</span><span class="n">answer</span> <span class="o">=</span> <span class="n">runner_result</span><span class="o">.</span><span class="n">answer</span>
+                <span class="n">streaming_result</span><span class="o">.</span><span class="n">step_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">streaming_result</span><span class="o">.</span><span class="n">_is_complete</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># Signal completion of streaming</span>
+            <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">QueueCompleteSentinel</span><span class="p">())</span></div>
+
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_tool_execute_async</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span>
+        <span class="n">streaming_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RunnerStreamingResult</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this in the acall method.</span>
+<span class="sd">        Handles both sync and async functions.</span>
+<span class="sd">        Note: this version has no support for streaming.</span>
+<span class="sd">        Includes permission checking if permission_manager is configured.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check permission before execution</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="o">.</span><span class="n">check_permission</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+            <span class="c1"># Handle both old (2 values) and new (3 values) return formats</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">allowed</span><span class="p">,</span> <span class="n">modified_func</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">allowed</span><span class="p">,</span> <span class="n">modified_func</span> <span class="o">=</span> <span class="n">result</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">allowed</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">FunctionOutput</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="nb">input</span><span class="o">=</span><span class="n">func</span><span class="p">,</span>
+                    <span class="n">output</span><span class="o">=</span><span class="n">ToolOutput</span><span class="p">(</span>
+                        <span class="n">output</span><span class="o">=</span><span class="s2">&quot;Tool execution cancelled by user&quot;</span><span class="p">,</span>
+                        <span class="n">observation</span><span class="o">=</span><span class="s2">&quot;Tool execution cancelled by user&quot;</span><span class="p">,</span>
+                        <span class="n">display</span><span class="o">=</span><span class="s2">&quot;Permission denied&quot;</span><span class="p">,</span>
+                        <span class="n">status</span><span class="o">=</span><span class="s2">&quot;cancelled&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Use modified function if user edited it</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">modified_func</span> <span class="ow">or</span> <span class="n">func</span>
+
+        <span class="c1"># Emit tool call event</span>
+        <span class="k">if</span> <span class="n">streaming_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tool_call_item</span> <span class="o">=</span> <span class="n">ToolCallRunItem</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">tool_call_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent.tool_call_start&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">tool_call_item</span>
+            <span class="p">)</span>
+            <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">tool_call_event</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">tool_manager</span><span class="o">.</span><span class="n">execute_func_async</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">FunctionOutput</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Result is not a FunctionOutput&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="Runner.stream_tool_execution">
+<a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.stream_tool_execution">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_tool_execution</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">function</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span>
+        <span class="n">tool_call_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">tool_call_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">streaming_result</span><span class="p">:</span> <span class="n">RunnerStreamingResult</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a tool/function call with streaming support and proper event handling.</span>
+<span class="sd">        </span>
+<span class="sd">        This method handles:</span>
+<span class="sd">        - Tool span creation for tracing</span>
+<span class="sd">        - Async generator support for streaming results</span>
+<span class="sd">        - Tool activity events</span>
+<span class="sd">        - Tool completion events</span>
+<span class="sd">        - Error handling and observation extraction</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            function: The Function object to execute</span>
+<span class="sd">            tool_call_id: Unique identifier for this tool call</span>
+<span class="sd">            tool_call_name: Name of the tool being called</span>
+<span class="sd">            streaming_result: Queue for streaming events</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: (function_output, function_output_observation)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create tool span for streaming function execution</span>
+        <span class="k">with</span> <span class="n">tool_span</span><span class="p">(</span>
+            <span class="n">tool_name</span><span class="o">=</span><span class="n">tool_call_name</span><span class="p">,</span>
+            <span class="n">function_name</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>  <span class="c1"># TODO fix attributes</span>
+            <span class="n">function_args</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">function_kwargs</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">tool_span_instance</span><span class="p">:</span>
+
+            <span class="c1"># TODO: inside of FunctionTool execution, it should ensure the types of async generator item</span>
+            <span class="c1"># to be either ToolCallActivityRunItem or ToolOutput(maybe)</span>
+            <span class="c1"># Call activity might be better designed</span>
+
+            <span class="n">function_result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool_execute_async</span><span class="p">(</span>
+                <span class="n">func</span><span class="o">=</span><span class="n">function</span><span class="p">,</span> <span class="n">streaming_result</span><span class="o">=</span><span class="n">streaming_result</span>
+            <span class="p">)</span>  <span class="c1"># everything must be wrapped in FunctionOutput</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function_result</span><span class="p">,</span> <span class="n">FunctionOutput</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Result must be wrapped in FunctionOutput, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">function_result</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">function_output</span> <span class="o">=</span> <span class="n">function_result</span><span class="o">.</span><span class="n">output</span>
+            <span class="n">real_function_output</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># TODO: validate when the function is a generator</span>
+
+            <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutine</span><span class="p">(</span><span class="n">function_output</span><span class="p">):</span>
+                <span class="n">real_function_output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">function_output</span>
+            <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isasyncgen</span><span class="p">(</span><span class="n">function_output</span><span class="p">):</span>
+                <span class="n">real_function_output</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">function_output</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ToolCallActivityRunItem</span><span class="p">):</span>
+                        <span class="c1"># add the tool_call_id to the item</span>
+                        <span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">tool_call_id</span>
+                        <span class="n">tool_call_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent.tool_call_activity&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span>
+                        <span class="p">)</span>
+                        <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">tool_call_event</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">real_function_output</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">real_function_output</span> <span class="o">=</span> <span class="n">function_output</span>
+
+            <span class="c1"># create call complete</span>
+            <span class="n">call_complete_event</span> <span class="o">=</span> <span class="n">RunItemStreamEvent</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent.tool_call_complete&quot;</span><span class="p">,</span>
+                <span class="n">item</span><span class="o">=</span><span class="n">ToolOutputRunItem</span><span class="p">(</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="n">tool_call_id</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="nb">input</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
+                        <span class="n">output</span><span class="o">=</span><span class="n">real_function_output</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">call_complete_event</span><span class="p">)</span>
+
+            <span class="n">function_output</span> <span class="o">=</span> <span class="n">real_function_output</span>
+            <span class="n">function_output_observation</span> <span class="o">=</span> <span class="n">function_output</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function_output</span><span class="p">,</span> <span class="n">ToolOutput</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span>
+                <span class="n">function_output</span><span class="p">,</span> <span class="s2">&quot;observation&quot;</span>
+            <span class="p">):</span>
+                <span class="n">function_output_observation</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">function_output</span><span class="o">.</span><span class="n">observation</span>
+                <span class="p">)</span>
+            <span class="c1"># Update tool span attributes using update_attributes for MLflow compatibility</span>
+
+            <span class="n">tool_span_instance</span><span class="o">.</span><span class="n">span_data</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;output_result&quot;</span><span class="p">:</span> <span class="n">real_function_output</span><span class="p">}</span>
+            <span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">function_result</span><span class="p">,</span> <span class="n">function_output</span><span class="p">,</span> <span class="n">function_output_observation</span></div>
+</div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, SylphAI, Inc
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">mermaid.initialize({startOnLoad:true});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    </body>
+</html>

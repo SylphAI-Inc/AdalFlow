@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -479,16 +489,308 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="components.retriever.bm25_retriever.html">bm25_retriever</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.retriever.faiss_retriever.html">faiss_retriever</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.retriever.lancedb_retriver.html">lancedb_retriver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.retriever.llm_retriever.html">llm_retriever</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.retriever.postgres_retriever.html">postgres_retriever</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.retriever.qdrant_retriever.html">qdrant_retriever</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.retriever.reranker_retriever.html">reranker_retriever</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.retriever.bm25_retriever.html">bm25_retriever</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_by_word_fn"><code class="docutils literal notranslate"><span class="pre">split_text_by_word_fn()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_by_word_fn_then_lower_tokenized"><code class="docutils literal notranslate"><span class="pre">split_text_by_word_fn_then_lower_tokenized()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_tokenized"><code class="docutils literal notranslate"><span class="pre">split_text_tokenized()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever"><code class="docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.reset_index"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.reset_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.build_index_from_documents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.call"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.save_to_file"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.save_to_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.load_from_file"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.load_from_file()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.retriever.faiss_retriever.html">faiss_retriever</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.reset_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.build_index_from_documents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.retrieve_embedding_queries"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.retrieve_embedding_queries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.retrieve_string_queries"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.retrieve_string_queries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.call"><code class="docutils literal notranslate"><span class="pre">FAISSRetriever.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.retriever.lancedb_retriver.html">lancedb_retriver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever"><code class="docutils literal notranslate"><span class="pre">LanceDBRetriever</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever.add_documents"><code class="docutils literal notranslate"><span class="pre">LanceDBRetriever.add_documents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.lancedb_retriver.html#components.retriever.lancedb_retriver.LanceDBRetriever.retrieve"><code class="docutils literal notranslate"><span class="pre">LanceDBRetriever.retrieve()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.retriever.llm_retriever.html">llm_retriever</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever"><code class="docutils literal notranslate"><span class="pre">LLMRetriever</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">LLMRetriever.reset_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">LLMRetriever.build_index_from_documents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.call"><code class="docutils literal notranslate"><span class="pre">LLMRetriever.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.retriever.postgres_retriever.html">postgres_retriever</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.L2"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator.L2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.INNER_PRODUCT"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator.INNER_PRODUCT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.COSINE"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator.COSINE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.L1"><code class="docutils literal notranslate"><span class="pre">DistanceToOperator.L1</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever"><code class="docutils literal notranslate"><span class="pre">PostgresRetriever</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.format_vector_search_query"><code class="docutils literal notranslate"><span class="pre">PostgresRetriever.format_vector_search_query()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql"><code class="docutils literal notranslate"><span class="pre">PostgresRetriever.retrieve_by_sql()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.call"><code class="docutils literal notranslate"><span class="pre">PostgresRetriever.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.retriever.qdrant_retriever.html">qdrant_retriever</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.qdrant_retriever.html#components.retriever.qdrant_retriever.QdrantRetriever"><code class="docutils literal notranslate"><span class="pre">QdrantRetriever</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.qdrant_retriever.html#components.retriever.qdrant_retriever.QdrantRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">QdrantRetriever.reset_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.qdrant_retriever.html#components.retriever.qdrant_retriever.QdrantRetriever.call"><code class="docutils literal notranslate"><span class="pre">QdrantRetriever.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.retriever.reranker_retriever.html">reranker_retriever</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.reset_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.build_index_from_documents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.call"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 <hr class="docutils" />
+<dl class="py class" id="module-components.retriever">
+<dt class="sig sig-object py" id="components.retriever.BM25Retriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BM25Retriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/bm25_retriever.html#BM25Retriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.BM25Retriever" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+<p>Fast Implementation of Best Matching 25 ranking function.</p>
+<p>It expects str as the final document type after <code class="docutils literal notranslate"><span class="pre">document_map_func</span></code> if the given document is not already in the format of List[str].
+It expects Union[str, Sequence[str]] as the input in <code class="xref py py-meth docutils literal notranslate"><span class="pre">retrieve()</span></code> method.</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\text{idf}(q_i) = \log\left(\frac{N - n(q_i) + 0.5}{n(q_i) + 0.5}\right)\\\text{score}(q, d) = \sum_{i=1}^{n} \text{idf}(q_i) \cdot \frac{f(q_i, d) \cdot (k1 + 1)}{f(q_i, d) + k1 \cdot \left(1 - b + b \cdot \frac{|d|}{\text{avgdl}}\right)}\end{aligned}\end{align} \]</div>
+</div>
+<dl class="simple">
+<dt>Explanation:</dt><dd><ul class="simple">
+<li><p>IDF(q_i) is the inverse document frequency of term q_i, which measures how important the term is. To avoid division by zero, 0.5 is added to the denominator, also for diminishing the weight of terms that occur very frequently in the document set and increase the weight of terms that occur rarely.</p></li>
+<li><p>f(q_i, d) is the term frequency of term q_i in document d, which measures how often the term occurs in the document. The term frequency is normalized by dividing the raw term frequency by the document length.</p></li>
+<li><p><a href="#id3"><span class="problematic" id="id4">|d|</span></a> is the length of the document d in words or tokens.</p></li>
+<li><p>avgdl is the average document length in the corpus.</p></li>
+<li><p>N is the total number of documents in the corpus.</p></li>
+<li><p>n(q_i) is the number of documents containing term q_i.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] <a class="reference external" href="https://en.wikipedia.org/wiki/Okapi_BM25">https://en.wikipedia.org/wiki/Okapi_BM25</a>
+[2] <a class="reference external" href="https://github.com/dorianbrown/rank_bm25">https://github.com/dorianbrown/rank_bm25</a>
+[3] Improvements to BM25 and Language Models Examined: <a class="reference external" href="https://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf">https://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_k</strong> – (int): The number of documents to return</p></li>
+<li><p><strong>k1</strong> – (float, optional): Constant used for influencing the term frequency saturation. After saturation is reached, additional
+presence for the term adds a significantly less additional score. According to <a href="#id5"><span class="problematic" id="id1">[1]_</span></a>, experiments suggest
+that 1.2 &lt; k1 &lt; 2 yields reasonably good results, although the optimal value depends on factors such as
+the type of documents or queries.</p></li>
+<li><p><strong>b</strong> – (float, optional): Constant used for influencing the effects of different document lengths relative to average document length.
+When b is bigger, lengthier documents (compared to average) have more impact on its effect. According to
+<a href="#id6"><span class="problematic" id="id2">[1]_</span></a>, experiments suggest that 0.5 &lt; b &lt; 0.8 yields reasonably good results, although the optimal value
+depends on factors such as the type of documents or queries.</p></li>
+<li><p><strong>epsilon</strong> – (float, optional): Used to adapt the negative idf score to epilon * average_idf. Default is 0.25</p></li>
+<li><p><strong>documents</strong> – (List[Any], optional): The list of documents to build the index from. Default is None.</p></li>
+<li><p><strong>document_map_func</strong> – (Callable, optional): The function to transform the document into <cite>List[str]</cite>.
+You don’t need it if your documents are already in format <cite>List[str]</cite>.</p></li>
+<li><p><strong>use_tokenizer</strong> – (bool, optional): Whether to use the default tokenizer to split the text into words. Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever.bm25_retriever</span> <span class="kn">import</span> <span class="n">BM25Retriever</span>
+
+<span class="n">documents</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hello world&quot;</span><span class="p">,</span> <span class="s2">&quot;world is beautiful&quot;</span><span class="p">,</span> <span class="s2">&quot;today is a good day&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Pass the documents from the __init__ method:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">retriever</span> <span class="o">=</span> <span class="n">BM25Retriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">retriever</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="c1"># Output:</span>
+<span class="c1"># [RetrieverOutput(doc_indices=[0], doc_scores=[0.6229580777634034], query=None, documents=None)]</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Pass the documents from the <a class="reference internal" href="#components.retriever.BM25Retriever.build_index_from_documents" title="components.retriever.BM25Retriever.build_index_from_documents"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_index_from_documents()</span></code></a> method:</p></li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p>Save the index to file and load it back:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">retriever</span><span class="o">.</span><span class="n">save_to_file</span><span class="p">(</span><span class="s2">&quot;bm25_index.json&quot;</span><span class="p">)</span>
+<span class="n">retriever2</span> <span class="o">=</span> <span class="n">BM25Retriever</span><span class="o">.</span><span class="n">load_from_file</span><span class="p">(</span><span class="s2">&quot;bm25_index.json&quot;</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">retriever2</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>note:
+The retriever only fill in the <code class="docutils literal notranslate"><span class="pre">doc_indices</span></code> and <code class="docutils literal notranslate"><span class="pre">doc_scores</span></code>. The <code class="docutils literal notranslate"><span class="pre">documents</span></code> needs to be filled in by the user.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.BM25Retriever.reset_index">
+<span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/bm25_retriever.html#BM25Retriever.reset_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.BM25Retriever.reset_index" title="Link to this definition">¶</a></dt>
+<dd><p>Used for both initializing and resetting the index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.BM25Retriever.build_index_from_documents">
+<span class="sig-name descname"><span class="pre">build_index_from_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/bm25_retriever.html#BM25Retriever.build_index_from_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.BM25Retriever.build_index_from_documents" title="Link to this definition">¶</a></dt>
+<dd><p>Built index from the <cite>text</cite> field of each document in the list of documents</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.BM25Retriever.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/components/retriever/bm25_retriever.html#BM25Retriever.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.BM25Retriever.call" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the top n documents for the query and return only the indexes of the documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> – Union[str, List[str]]: The query or list of queries</p></li>
+<li><p><strong>top_k</strong> – Optional[int]: The number of documents to return</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.BM25Retriever.save_to_file">
+<span class="sig-name descname"><span class="pre">save_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/bm25_retriever.html#BM25Retriever.save_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.BM25Retriever.save_to_file" title="Link to this definition">¶</a></dt>
+<dd><p>Save the state, including the index to a file.</p>
+<p>Optional for subclass to implement a default persistence method.
+Subclass can leverge component’s <cite>to_dict</cite> method to get the states and choose to save them in any file format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.BM25Retriever.load_from_file">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/bm25_retriever.html#BM25Retriever.load_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.BM25Retriever.load_from_file" title="Link to this definition">¶</a></dt>
+<dd><p>Load the state, including index from a file to restore the retriever.</p>
+<p>Subclass can leverge component’s <cite>from_dict</cite> method to restore the states from the file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="components.retriever.LLMRetriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LLMRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/llm_retriever.html#LLMRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.LLMRetriever" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+<p>Use LLM to access the query and the documents to retrieve the top k relevant indices of the documents.</p>
+<p>Users can follow this example and to customize the prompt or additionally ask it to output score along with the indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_k</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – top k documents to fetch. Defaults to 1.</p></li>
+<li><p><strong>model_client</strong> (<a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – the model client to use.</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – the model kwargs. Defaults to {}.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is chance some queries might fail, which will lead to empty response None for that query in the List of RetrieverOutput. Users should handle this case.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.LLMRetriever.reset_index">
+<span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/llm_retriever.html#LLMRetriever.reset_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.LLMRetriever.reset_index" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize/reset any attributes/states for the index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.LLMRetriever.build_index_from_documents">
+<span class="sig-name descname"><span class="pre">build_index_from_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/llm_retriever.html#LLMRetriever.build_index_from_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.LLMRetriever.build_index_from_documents" title="Link to this definition">¶</a></dt>
+<dd><p>prepare the user query input for the retriever</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.LLMRetriever.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/components/retriever/llm_retriever.html#LLMRetriever.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.LLMRetriever.call" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the k relevant documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_or_queries</strong> (<em>RetrieverStrQueriesType</em>) – a string or a list of strings.</p></li>
+<li><p><strong>top_k</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – top k documents to fetch. Defaults to None.</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – the model kwargs.
+You can switch to another model provided by the same model client without reinitializing the retriever. Defaults to {}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the developers should be aware that the returned <code class="docutils literal notranslate"><span class="pre">LLMRetrieverOutputType</span></code> is actually a list of GeneratorOutput(<code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratorOutput</span></code>), post processing is required depends on how you instruct the model to output in the prompt and what <code class="docutils literal notranslate"><span class="pre">output_processors</span></code> you set up.
+E.g. If the prompt is to output a list of indices and the <code class="docutils literal notranslate"><span class="pre">output_processors</span></code> is <code class="docutils literal notranslate"><span class="pre">ListParser()</span></code>, then it return: GeneratorOutput(data=[indices], error=None, raw_response=’[indices]’)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RetrieverOutputType</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="components.retriever.RerankerRetriever">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RerankerRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/reranker_retriever.html#RerankerRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.RerankerRetriever" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</p>
+<p>A retriever that uses a reranker model to rank the documents and retrieve the top-k documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of top documents to retrieve. Defaults to 5.</p></li>
+<li><p><strong>model_client</strong> (<a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – The model client that has a reranker model,
+such as <code class="docutils literal notranslate"><span class="pre">CohereAPIClient</span></code> or <code class="docutils literal notranslate"><span class="pre">TransformersClient</span></code>.</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Dict</em>) – The model kwargs to pass to the model client.</p></li>
+<li><p><strong>documents</strong> (<em>Optional</em><em>[</em><em>RetrieverDocumentsType</em><em>]</em><em>, </em><em>optional</em>) – The documents to build the index from. Defaults to None.</p></li>
+<li><p><strong>document_map_func</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The function to map the document of Any type to the specific type <code class="docutils literal notranslate"><span class="pre">RetrieverDocumentType</span></code> that the retriever expects. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Examples:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.RerankerRetriever.reset_index">
+<span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/reranker_retriever.html#RerankerRetriever.reset_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.RerankerRetriever.reset_index" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize/reset any attributes/states for the index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.RerankerRetriever.build_index_from_documents">
+<span class="sig-name descname"><span class="pre">build_index_from_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverDocumentType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_map_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/retriever/reranker_retriever.html#RerankerRetriever.build_index_from_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.RerankerRetriever.build_index_from_documents" title="Link to this definition">¶</a></dt>
+<dd><p>Built index from the [document_map_func(doc) for doc in documents].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.retriever.RerankerRetriever.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RetrieverOutput</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RetrieverOutput</span></span></span><a class="reference internal" href="../../_modules/components/retriever/reranker_retriever.html#RerankerRetriever.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.RerankerRetriever.call" title="Link to this definition">¶</a></dt>
+<dd><p>User must override this for the inference scenario
+if bicall is not defined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.retriever.split_text_by_word_fn">
+<span class="sig-name descname"><span class="pre">split_text_by_word_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/retriever/bm25_retriever.html#split_text_by_word_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.split_text_by_word_fn" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.retriever.split_text_by_word_fn_then_lower_tokenized">
+<span class="sig-name descname"><span class="pre">split_text_by_word_fn_then_lower_tokenized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/retriever/bm25_retriever.html#split_text_by_word_fn_then_lower_tokenized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.retriever.split_text_by_word_fn_then_lower_tokenized" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 </section>
 
@@ -547,7 +849,31 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">retriever</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li><a class="reference internal" href="#components.retriever.BM25Retriever"><code class="docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a><ul>
+<li><a class="reference internal" href="#components.retriever.BM25Retriever.reset_index"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.reset_index()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.BM25Retriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.build_index_from_documents()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.BM25Retriever.call"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.call()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.BM25Retriever.save_to_file"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.save_to_file()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.BM25Retriever.load_from_file"><code class="docutils literal notranslate"><span class="pre">BM25Retriever.load_from_file()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#components.retriever.LLMRetriever"><code class="docutils literal notranslate"><span class="pre">LLMRetriever</span></code></a><ul>
+<li><a class="reference internal" href="#components.retriever.LLMRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">LLMRetriever.reset_index()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.LLMRetriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">LLMRetriever.build_index_from_documents()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.LLMRetriever.call"><code class="docutils literal notranslate"><span class="pre">LLMRetriever.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#components.retriever.RerankerRetriever"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever</span></code></a><ul>
+<li><a class="reference internal" href="#components.retriever.RerankerRetriever.reset_index"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.reset_index()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.RerankerRetriever.build_index_from_documents"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.build_index_from_documents()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.RerankerRetriever.call"><code class="docutils literal notranslate"><span class="pre">RerankerRetriever.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#components.retriever.split_text_by_word_fn"><code class="docutils literal notranslate"><span class="pre">split_text_by_word_fn()</span></code></a></li>
+<li><a class="reference internal" href="#components.retriever.split_text_by_word_fn_then_lower_tokenized"><code class="docutils literal notranslate"><span class="pre">split_text_by_word_fn_then_lower_tokenized()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -569,5 +895,7 @@
     <script src="../../_static/js/rtd_search_config.js"></script>
     <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

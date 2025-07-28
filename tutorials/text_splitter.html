@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -497,7 +507,7 @@
 Shorter content is more manageable and fits memory constraint.
 The goal of the <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> is to chunk large data into smaller ones, potentially improving embedding and retrieving.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> is designed to efficiently process and chunk <strong>plain text</strong>.
-It leverages configurable separators to facilitate the splitting of <code class="xref py py-obj docutils literal notranslate"><span class="pre">document</span> <span class="pre">object</span></code> into smaller manageable document chunks.</p>
+It leverages configurable separators to facilitate the splitting of <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-obj docutils literal notranslate"><span class="pre">document</span> <span class="pre">object</span></code></a> into smaller manageable document chunks.</p>
 </section>
 <section id="how-does-it-work">
 <h2>How does it work<a class="headerlink" href="#how-does-it-work" title="Link to this heading">¶</a></h2>
@@ -515,7 +525,7 @@ Here are sample examples and you will see the real output of <code class="docuti
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>Type 2:</strong> Use <code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code>. It works as:</p></li>
+<li><p><strong>Type 2:</strong> Use <a class="reference internal" href="../apis/core/core.tokenizer.html#core.tokenizer.Tokenizer" title="core.tokenizer.Tokenizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code></a>. It works as:</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Hello, world!&quot;</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; world&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">]</span>
 </pre></div>
@@ -711,7 +721,7 @@ AdalFlow’s future implementations will introduce splitters for <code class="do
 <section id="customization-tips">
 <h2>Customization Tips<a class="headerlink" href="#customization-tips" title="Link to this heading">¶</a></h2>
 <p>You can also customize the <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code>. For example, by defining <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code> = <code class="docutils literal notranslate"><span class="pre">{&quot;question&quot;:</span> <span class="pre">&quot;?&quot;}</span> <span class="pre">``and</span> <span class="pre">setting</span> <span class="pre">``split_by</span> <span class="pre">=</span> <span class="pre">&quot;question&quot;</span></code>, the document will be split at each <code class="docutils literal notranslate"><span class="pre">?</span></code>, ideal for processing text structured
-as a series of questions. If you need to customize <code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code>, please check <a class="reference external" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">Reference</a>.</p>
+as a series of questions. If you need to customize <a class="reference internal" href="../apis/core/core.tokenizer.html#core.tokenizer.Tokenizer" title="core.tokenizer.Tokenizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code></a>, please check <a class="reference external" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">Reference</a>.</p>
 </section>
 </section>
 

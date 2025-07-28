@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,131 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="gradient">
-<span id="optim-gradient"></span><h1>gradient<a class="headerlink" href="#gradient" title="Link to this heading">¶</a></h1>
+          <section id="module-optim.gradient">
+<span id="gradient"></span><span id="optim-gradient"></span><h1>gradient<a class="headerlink" href="#module-optim.gradient" title="Link to this heading">¶</a></h1>
+<p>GradientContext and Gradient</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#optim.gradient.Gradient" title="optim.gradient.Gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gradient</span></code></a>(*, from_response, to_pred[, id, ...])</p></td>
+<td><p>It will handle gradients and feedbacks.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#optim.gradient.GradientContext" title="optim.gradient.GradientContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GradientContext</span></code></a>(variable_desc, input_output, ...)</p></td>
+<td><p>GradientContext is used to describe the component's function and trace its input and output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.gradient.GradientContext">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GradientContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/gradient.html#GradientContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.gradient.GradientContext" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
+<p>GradientContext is used to describe the component’s function and trace its input and output.</p>
+<p>To get the component’s function desc, use GradientContext.to_yaml_signature()
+To get the data: use instance.to_yaml()</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.GradientContext.variable_desc">
+<span class="sig-name descname"><span class="pre">variable_desc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.gradient.GradientContext.variable_desc" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.GradientContext.input_output">
+<span class="sig-name descname"><span class="pre">input_output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.gradient.GradientContext.input_output" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.GradientContext.response_desc">
+<span class="sig-name descname"><span class="pre">response_desc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.gradient.GradientContext.response_desc" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.gradient.Gradient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/gradient.html#Gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.gradient.Gradient" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
+<p>It will handle gradients and feedbacks.</p>
+<p>It tracks the d_from_response_id / d_to_pred_id and the score of the whole response.</p>
+<p>if two gradients have the same data_id, different from_response_id, and same from_response_component_id, this is a cycle component structure.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.context">
+<span class="sig-name descname"><span class="pre">context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#optim.gradient.GradientContext" title="optim.gradient.GradientContext"><span class="pre">GradientContext</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.context" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.prompt">
+<span class="sig-name descname"><span class="pre">prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.prompt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.is_default_copy">
+<span class="sig-name descname"><span class="pre">is_default_copy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.gradient.Gradient.is_default_copy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.from_response_component_id">
+<span class="sig-name descname"><span class="pre">from_response_component_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.from_response_component_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.from_response_id">
+<span class="sig-name descname"><span class="pre">from_response_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.from_response_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.to_pred_id">
+<span class="sig-name descname"><span class="pre">to_pred_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.to_pred_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.score">
+<span class="sig-name descname"><span class="pre">score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.score" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.data_id">
+<span class="sig-name descname"><span class="pre">data_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.data_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.order">
+<span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.gradient.Gradient.order" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.add_context">
+<span class="sig-name descname"><span class="pre">add_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#optim.gradient.GradientContext" title="optim.gradient.GradientContext"><span class="pre">GradientContext</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/gradient.html#Gradient.add_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.gradient.Gradient.add_context" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.add_data">
+<span class="sig-name descname"><span class="pre">add_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/gradient.html#Gradient.add_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.gradient.Gradient.add_data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.update_from_to">
+<span class="sig-name descname"><span class="pre">update_from_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/gradient.html#Gradient.update_from_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.gradient.Gradient.update_from_to" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.gradient.Gradient.add_prompt">
+<span class="sig-name descname"><span class="pre">add_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/gradient.html#Gradient.add_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.gradient.Gradient.add_prompt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -501,8 +628,49 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">gradient</a><ul>
+<li><a class="reference internal" href="#optim.gradient.GradientContext"><code class="docutils literal notranslate"><span class="pre">GradientContext</span></code></a><ul>
+<li><a class="reference internal" href="#optim.gradient.GradientContext.variable_desc"><code class="docutils literal notranslate"><span class="pre">GradientContext.variable_desc</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.GradientContext.input_output"><code class="docutils literal notranslate"><span class="pre">GradientContext.input_output</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.GradientContext.response_desc"><code class="docutils literal notranslate"><span class="pre">GradientContext.response_desc</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optim.gradient.Gradient"><code class="docutils literal notranslate"><span class="pre">Gradient</span></code></a><ul>
+<li><a class="reference internal" href="#optim.gradient.Gradient.context"><code class="docutils literal notranslate"><span class="pre">Gradient.context</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.prompt"><code class="docutils literal notranslate"><span class="pre">Gradient.prompt</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.is_default_copy"><code class="docutils literal notranslate"><span class="pre">Gradient.is_default_copy</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.from_response_component_id"><code class="docutils literal notranslate"><span class="pre">Gradient.from_response_component_id</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.from_response_id"><code class="docutils literal notranslate"><span class="pre">Gradient.from_response_id</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.to_pred_id"><code class="docutils literal notranslate"><span class="pre">Gradient.to_pred_id</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.score"><code class="docutils literal notranslate"><span class="pre">Gradient.score</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.data_id"><code class="docutils literal notranslate"><span class="pre">Gradient.data_id</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.data"><code class="docutils literal notranslate"><span class="pre">Gradient.data</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.order"><code class="docutils literal notranslate"><span class="pre">Gradient.order</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.add_context"><code class="docutils literal notranslate"><span class="pre">Gradient.add_context()</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.add_data"><code class="docutils literal notranslate"><span class="pre">Gradient.add_data()</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.update_from_to"><code class="docutils literal notranslate"><span class="pre">Gradient.update_from_to()</span></code></a></li>
+<li><a class="reference internal" href="#optim.gradient.Gradient.add_prompt"><code class="docutils literal notranslate"><span class="pre">Gradient.add_prompt()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

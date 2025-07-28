@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -573,15 +583,15 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a></p></td>
 <td><p>A user-facing orchestration component that handles LLM predictions. It includes a prompt template, model client, and output parser.</p></td>
 <td><p><a class="reference internal" href="../tutorials/generator.html#generator"><span class="std std-ref">Generator</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a></p></td>
 <td><p>An agent that uses large language model reasoning (Re) and actions (Act) to solve queries.</p></td>
 <td><p><a class="reference internal" href="../tutorials/agent.html#tutorials-agent"><span class="std std-ref">Agent</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></a></p></td>
 <td><p>The low-level component managing the actual calls to a chosen LLM (OpenAI, Anthropic, VLLM, etc.).</p></td>
 <td><p><a class="reference internal" href="../tutorials/model_client.html#tutorials-model-client"><span class="std std-ref">ModelClient</span></a></p></td>
 </tr>
@@ -641,11 +651,11 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Embedder</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.Embedder" title="core.embedder.Embedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Embedder</span></code></a></p></td>
 <td><p>A user-facing component that orchestrates embedding models via <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> and <code class="docutils literal notranslate"><span class="pre">output_processors</span></code></p></td>
 <td><p><a class="reference internal" href="../tutorials/embedder.html#tutorials-embedder"><span class="std std-ref">Embedder</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.retriever.html#core.retriever.Retriever" title="core.retriever.Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code></a></p></td>
 <td><p>Each subclass can be a local, a vector-db, a retranker, or an LLM-turned retriever to handle retrieval tasks in RAG.</p></td>
 <td><p><a class="reference internal" href="../tutorials/retriever.html#tutorials-retriever"><span class="std std-ref">Retriever</span></a></p></td>
 </tr>

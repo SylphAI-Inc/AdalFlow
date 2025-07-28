@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,106 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="retriever-recall">
-<span id="eval-retriever-recall"></span><h1>retriever_recall<a class="headerlink" href="#retriever-recall" title="Link to this heading">¶</a></h1>
+          <section id="module-eval.retriever_recall">
+<span id="retriever-recall"></span><span id="eval-retriever-recall"></span><h1>retriever_recall<a class="headerlink" href="#module-eval.retriever_recall" title="Link to this heading">¶</a></h1>
+<p>Retriever Recall &#64;k metric.</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eval.retriever_recall.RetrieverEvaluator" title="eval.retriever_recall.RetrieverEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverEvaluator</span></code></a>()</p></td>
+<td><p>Return Recall&#64;k and Precision&#64;k.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="eval.retriever_recall.RetrieverEvaluator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RetrieverEvaluator</span></span><a class="reference internal" href="../../_modules/eval/retriever_recall.html#RetrieverEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.retriever_recall.RetrieverEvaluator" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></p>
+<p>Return Recall&#64;k and Precision&#64;k.</p>
+<p>Recall&#64;k = Number of relevant retrieved documents/ Total number of relevant documents (len(gt_contexts))
+Precision&#64;k = Number of relevant retrieved documents/ Total number of retrieved documents (len(retrieved_contexts))</p>
+<p>In our implementation, we use exact string matching between each gt context and the joined retrieved context string.
+You can use the longest common subsequence (LCS) or other similarity metrics(or embedding based) to decide if it is a match or not.</p>
+<p>You can also pass ids of retrieved and the reference.</p>
+<p>If you do not even have the ground truth context, but only grounth truth answers, you can consider using
+RAGAS framework for now. It computes the recall as:</p>
+<p>Recall = [GT statements that can be attributed to the retrieved context] / [GT statements]</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_retrieved_context</span> <span class="o">=</span> <span class="p">[</span>
+<span class="go">[&quot;Apple is founded before Google.&quot;,</span>
+<span class="go">&quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;,</span>
+<span class="go">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_gt_context</span> <span class="o">=</span> <span class="p">[</span>
+<span class="go">    [</span>
+<span class="go">        &quot;Apple is founded in 1976.&quot;,</span>
+<span class="go">        &quot;Google is founded in 1998.&quot;,</span>
+<span class="go">        &quot;Apple is founded before Google.&quot;,</span>
+<span class="go">    ],</span>
+<span class="go">    [&quot;Feburary has 28 days in common years&quot;, &quot;Feburary has 29 days in leap years&quot;],</span>
+<span class="go">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">retriever_recall</span> <span class="o">=</span> <span class="n">RetrieverRecall</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_recall</span><span class="p">,</span> <span class="n">recall_list</span> <span class="o">=</span> <span class="n">retriever_recall</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">all_retrieved_context</span><span class="p">,</span> <span class="n">all_gt_context</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_recall</span>
+<span class="go">2 / 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recall_list</span>
+<span class="go">[1 / 3, 1.0]</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<ul class="simple">
+<li><p>RAGAS: <a class="reference external" href="https://docs.ragas.io/en/stable/concepts/metrics/context_recall.html">https://docs.ragas.io/en/stable/concepts/metrics/context_recall.html</a></p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="eval.retriever_recall.RetrieverEvaluator.compute_single_item">
+<span class="sig-name descname"><span class="pre">compute_single_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retrieved_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eval/retriever_recall.html#RetrieverEvaluator.compute_single_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.retriever_recall.RetrieverEvaluator.compute_single_item" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the recall of the retrieved context for a single query.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>retrieved_context</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of retrieved context strings.</p></li>
+<li><p><strong>gt_context</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of ground truth context strings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Recall value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eval.retriever_recall.RetrieverEvaluator.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retrieved_contexts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_contexts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/eval/retriever_recall.html#RetrieverEvaluator.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.retriever_recall.RetrieverEvaluator.compute" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the recall of the retrieved context for a list of queries.
+:param retrieved_context: List of retrieved context strings.
+:param gt_contexts: List of ground truth context strings.
+:type gt_contexts: List[List[str]]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p>float: Average recall value.</p></li>
+<li><p>List[float]: Recall values for each query.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +621,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">retriever_recall</a><ul>
+<li><a class="reference internal" href="#eval.retriever_recall.RetrieverEvaluator"><code class="docutils literal notranslate"><span class="pre">RetrieverEvaluator</span></code></a><ul>
+<li><a class="reference internal" href="#eval.retriever_recall.RetrieverEvaluator.compute_single_item"><code class="docutils literal notranslate"><span class="pre">RetrieverEvaluator.compute_single_item()</span></code></a></li>
+<li><a class="reference internal" href="#eval.retriever_recall.RetrieverEvaluator.compute"><code class="docutils literal notranslate"><span class="pre">RetrieverEvaluator.compute()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

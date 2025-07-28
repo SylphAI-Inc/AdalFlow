@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -467,14 +477,156 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="llm-as-judge">
-<span id="eval-llm-as-judge"></span><h1>llm_as_judge<a class="headerlink" href="#llm-as-judge" title="Link to this heading">¶</a></h1>
+          <section id="module-eval.llm_as_judge">
+<span id="llm-as-judge"></span><span id="eval-llm-as-judge"></span><h1>llm_as_judge<a class="headerlink" href="#module-eval.llm_as_judge" title="Link to this heading">¶</a></h1>
+<p>This is the metric to use an LLM as a judge for evaluating the performance of predicted answers.</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a>([model_client, ...])</p></td>
+<td><p>Demonstrate how to use an LLM/Generator to output True or False for a judgement query.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eval.llm_as_judge.LLMJudgeEvalResult" title="eval.llm_as_judge.LLMJudgeEvalResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LLMJudgeEvalResult</span></code></a>(avg_score, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eval.llm_as_judge.LLMasJudge" title="eval.llm_as_judge.LLMasJudge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a>([llm_judge])</p></td>
+<td><p>LLM as judge for evaluating the performance of a LLM.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="eval.llm_as_judge.DefaultLLMJudge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DefaultLLMJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jugement_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'bool'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'float'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bool'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/llm_as_judge.html#DefaultLLMJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.llm_as_judge.DefaultLLMJudge" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>Demonstrate how to use an LLM/Generator to output True or False for a judgement query.</p>
+<p>You can use any of your template to adapt to more tasks and sometimes you can directly ask LLM to output a score in range [0, 1] instead of only True or False.</p>
+<p>A call on the LLM judge equalize to _compute_single_item method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_client</strong> (<a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><em>ModelClient</em></a>) – The model client to use for the generator.</p></li>
+<li><p><strong>model_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – The model kwargs to pass to the model client. Defaults to {}. Please refer to <a class="reference internal" href="../components/components.model_client.html#components-model-client"><span class="std std-ref">ModelClient</span></a> for the details on how to set the model_kwargs for your specific model if it is from our library.</p></li>
+<li><p><strong>template</strong> (<em>str</em><em>, </em><em>optional</em>) – The template to use for the LLM evaluator. Defaults to None.</p></li>
+<li><p><strong>jugement_query</strong> (<em>str</em><em>, </em><em>optional</em>) – The judgement query string. Defaults to DEFAULT_JUDGEMENT_QUERY.</p></li>
+<li><p><strong>output_type</strong> (<em>Literal</em><em>[</em><em>&quot;bool&quot;</em><em>, </em><em>&quot;float&quot;</em><em>]</em><em>, </em><em>optional</em>) – The output type of the judgement. Defaults to “bool”.</p></li>
+<li><p><strong>use_cache</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use cache for the LLM evaluator. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Must use True/False instead of Yes/No in the judgement_query for response.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="eval.llm_as_judge.DefaultLLMJudge.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">question</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_answer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_answer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/eval/llm_as_judge.html#DefaultLLMJudge.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.llm_as_judge.DefaultLLMJudge.call" title="Link to this definition">¶</a></dt>
+<dd><p>Get the judgement of the predicted answer for a single question.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>question</strong> (<em>str</em>) – Question string.</p></li>
+<li><p><strong>gt_answer</strong> (<em>str</em>) – Ground truth answer string.</p></li>
+<li><p><strong>pred_answer</strong> (<em>str</em>) – Predicted answer string.</p></li>
+<li><p><strong>judgement_query</strong> (<em>str</em>) – Judgement query string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Judgement result.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="eval.llm_as_judge.LLMasJudge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LLMasJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">llm_judge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/llm_as_judge.html#LLMasJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.llm_as_judge.LLMasJudge" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvaluator</span></code></p>
+<p>LLM as judge for evaluating the performance of a LLM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>llm_evaluator</strong> (<a class="reference internal" href="../core/core.component.html#core.component.Component" title="core.component.Component"><em>Component</em></a><em>, </em><em>optional</em>) – The LLM evaluator to use. Defaults to DefaultLLMJudge.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">questions</span> <span class="o">=</span> <span class="p">[</span>
+<span class="go">&quot;Is Beijing in China?&quot;,</span>
+<span class="go">&quot;Is Apple founded before Google?&quot;,</span>
+<span class="go">&quot;Is earth flat?&quot;,</span>
+<span class="go">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pred_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes, Appled is founded before Google&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;No&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">judgement_query</span> <span class="o">=</span> <span class="s2">&quot;For the question, does the predicted answer contain the ground truth answer?&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">llm_judge</span> <span class="o">=</span> <span class="n">LLMasJudge</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_judgement</span><span class="p">,</span> <span class="n">judgement_list</span> <span class="o">=</span> <span class="n">llm_judge</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+<span class="go">questions, gt_answers, pred_answers, judgement_query</span>
+<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_judgement</span>
+<span class="go">2 / 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">judgement_list</span>
+<span class="go">[True, True, False]</span>
+</pre></div>
+</div>
+<p>Customize the LLMJudge</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">llm_judge</span> <span class="o">=</span> <span class="n">Def</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="eval.llm_as_judge.LLMasJudge.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_answers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">questions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_answers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#eval.llm_as_judge.LLMJudgeEvalResult" title="eval.llm_as_judge.LLMJudgeEvalResult"><span class="pre">LLMJudgeEvalResult</span></a></span></span><a class="reference internal" href="../../_modules/eval/llm_as_judge.html#LLMasJudge.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.llm_as_judge.LLMasJudge.compute" title="Link to this definition">¶</a></dt>
+<dd><p>Get the judgement of the predicted answer for a list of questions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>questions</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of question strings.</p></li>
+<li><p><strong>gt_answers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of ground truth answer strings.</p></li>
+<li><p><strong>pred_answers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of predicted answer strings.</p></li>
+<li><p><strong>judgement_query</strong> (<em>str</em>) – Judgement query string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The evaluation result.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>LLMEvalResult</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="eval.llm_as_judge.LLMJudgeEvalResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LLMJudgeEvalResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avg_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">judgement_score_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/llm_as_judge.html#LLMJudgeEvalResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.llm_as_judge.LLMJudgeEvalResult" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eval.llm_as_judge.LLMJudgeEvalResult.avg_score">
+<span class="sig-name descname"><span class="pre">avg_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#eval.llm_as_judge.LLMJudgeEvalResult.avg_score" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eval.llm_as_judge.LLMJudgeEvalResult.judgement_score_list">
+<span class="sig-name descname"><span class="pre">judgement_score_list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#eval.llm_as_judge.LLMJudgeEvalResult.judgement_score_list" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="eval.llm_as_judge.LLMJudgeEvalResult.confidence_interval">
+<span class="sig-name descname"><span class="pre">confidence_interval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#eval.llm_as_judge.LLMJudgeEvalResult.confidence_interval" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -519,8 +671,40 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">llm_as_judge</a><ul>
+<li><a class="reference internal" href="#eval.llm_as_judge.DefaultLLMJudge"><code class="docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a><ul>
+<li><a class="reference internal" href="#eval.llm_as_judge.DefaultLLMJudge.call"><code class="docutils literal notranslate"><span class="pre">DefaultLLMJudge.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#eval.llm_as_judge.LLMasJudge"><code class="docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a><ul>
+<li><a class="reference internal" href="#eval.llm_as_judge.LLMasJudge.compute"><code class="docutils literal notranslate"><span class="pre">LLMasJudge.compute()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#eval.llm_as_judge.LLMJudgeEvalResult"><code class="docutils literal notranslate"><span class="pre">LLMJudgeEvalResult</span></code></a><ul>
+<li><a class="reference internal" href="#eval.llm_as_judge.LLMJudgeEvalResult.avg_score"><code class="docutils literal notranslate"><span class="pre">LLMJudgeEvalResult.avg_score</span></code></a></li>
+<li><a class="reference internal" href="#eval.llm_as_judge.LLMJudgeEvalResult.judgement_score_list"><code class="docutils literal notranslate"><span class="pre">LLMJudgeEvalResult.judgement_score_list</span></code></a></li>
+<li><a class="reference internal" href="#eval.llm_as_judge.LLMJudgeEvalResult.confidence_interval"><code class="docutils literal notranslate"><span class="pre">LLMJudgeEvalResult.confidence_interval</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

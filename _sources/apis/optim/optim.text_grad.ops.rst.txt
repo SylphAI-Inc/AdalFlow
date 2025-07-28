@@ -7,3 +7,17 @@ ops
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      sum_ops
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      Sum
+

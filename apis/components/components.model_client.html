@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -479,7 +489,19 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.anthropic_client.html">anthropic_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_sync_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_async_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.track_completion_usage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.acall()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.azureai_client.html">azureai_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient"><code class="docutils literal notranslate"><span class="pre">AzureAIClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">AzureAIClient.init_sync_client()</span></code></a></li>
@@ -497,7 +519,27 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.bedrock_client.html">bedrock_client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html">chat_completion_to_response_converter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.FAKE_RESPONSES_ID"><code class="docutils literal notranslate"><span class="pre">FAKE_RESPONSES_ID</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.StreamingState"><code class="docutils literal notranslate"><span class="pre">StreamingState</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.StreamingState.started"><code class="docutils literal notranslate"><span class="pre">StreamingState.started</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.StreamingState.text_content_index_and_output"><code class="docutils literal notranslate"><span class="pre">StreamingState.text_content_index_and_output</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.StreamingState.refusal_content_index_and_output"><code class="docutils literal notranslate"><span class="pre">StreamingState.refusal_content_index_and_output</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.StreamingState.function_calls"><code class="docutils literal notranslate"><span class="pre">StreamingState.function_calls</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.SequenceNumber"><code class="docutils literal notranslate"><span class="pre">SequenceNumber</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.SequenceNumber.get_and_increment"><code class="docutils literal notranslate"><span class="pre">SequenceNumber.get_and_increment()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter"><code class="docutils literal notranslate"><span class="pre">ChatCompletionToResponseConverter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter.async_handle_stream"><code class="docutils literal notranslate"><span class="pre">ChatCompletionToResponseConverter.async_handle_stream()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter.sync_handle_stream"><code class="docutils literal notranslate"><span class="pre">ChatCompletionToResponseConverter.sync_handle_stream()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter.get_chat_completion_content"><code class="docutils literal notranslate"><span class="pre">ChatCompletionToResponseConverter.get_chat_completion_content()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.init_sync_client()</span></code></a></li>
@@ -509,8 +551,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.deepseek_client.html">deepseek_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.deepseek_client.html#components.model_client.deepseek_client.DeepSeekClient"><code class="docutils literal notranslate"><span class="pre">DeepSeekClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.fireworks_client.html">fireworks_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.fireworks_client.html#components.model_client.fireworks_client.FireworksClient"><code class="docutils literal notranslate"><span class="pre">FireworksClient</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.google_client.html">google_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.init_sync_client()</span></code></a></li>
@@ -538,7 +586,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.mistral_client.html">mistral_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.mistral_client.html">mistral_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.mistral_client.html#components.model_client.mistral_client.MistralClient"><code class="docutils literal notranslate"><span class="pre">MistralClient</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.parse_stream_response"><code class="docutils literal notranslate"><span class="pre">parse_stream_response()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.parse_generate_response"><code class="docutils literal notranslate"><span class="pre">parse_generate_response()</span></code></a></li>
@@ -556,8 +607,31 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.openai_client.html">openai_client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.sambanova_client.html">sambanova_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.openai_client.html">openai_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.get_response_output_text"><code class="docutils literal notranslate"><span class="pre">get_response_output_text()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.estimate_token_count"><code class="docutils literal notranslate"><span class="pre">estimate_token_count()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response"><code class="docutils literal notranslate"><span class="pre">handle_streaming_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response_sync"><code class="docutils literal notranslate"><span class="pre">handle_streaming_response_sync()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient"><code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_sync_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_async_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.track_completion_usage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_embedding_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_image_generation_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_image_generation_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.acall"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.acall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.from_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.sambanova_client.html">sambanova_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.sambanova_client.html#components.model_client.sambanova_client.SambaNovaClient"><code class="docutils literal notranslate"><span class="pre">SambaNovaClient</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.together_client.html">together_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.transformers_client.html">transformers_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.average_pool"><code class="docutils literal notranslate"><span class="pre">average_pool()</span></code></a></li>
@@ -602,7 +676,10 @@
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">parse_embedding_response()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.xai_client.html">xai_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.xai_client.html">xai_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.xai_client.html#components.model_client.xai_client.XAIClient"><code class="docutils literal notranslate"><span class="pre">XAIClient</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 <hr class="docutils" />

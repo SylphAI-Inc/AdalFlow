@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -480,14 +490,20 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
+<td><p>Anthropic ModelClient integration with OpenAI SDK compatibility.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
 <td><p>Cohere ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
 <td><p>Google GenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
 <td><p>Groq ModelClient integration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
+<td><p>OpenAI ModelClient integration.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
 <td><p>Huggingface transformers ModelClient integration.</p></td>
@@ -507,6 +523,21 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
+<td><p>BM25 retriever implementation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
+<td><p>Semantic search/embedding-based retriever using FAISS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
+<td><p>LLM as retriever module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
+<td><p>Leverage a postgres database to store and retrieve documents.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<td><p>Reranking model using modelclient as a retriever.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -516,6 +547,12 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<td><p>The most commonly used output parsers for the Generator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components.output_parsers.dataclass_parser.html#module-components.output_parsers.dataclass_parser" title="components.output_parsers.dataclass_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.dataclass_parser</span></code></a></p></td>
+<td><p>DataClassParser will help users interact with LLMs even better than JsonOutputParser and YamlOutputParser with DataClass.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -525,6 +562,9 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
+<td><p>Implementation and optimization of React agent.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -549,6 +589,9 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.memory.memory.html#module-components.memory.memory" title="components.memory.memory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.memory.memory</span></code></a></p></td>
+<td><p>Memory component for user-assistant conversations.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -649,5 +692,7 @@
     <script src="../../_static/js/rtd_search_config.js"></script>
     <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

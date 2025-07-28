@@ -7,3 +7,19 @@ trec
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      calculate_class_weights
+      prepare_datasets
+      sample_subset_dataset
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      TrecDataset
+

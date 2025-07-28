@@ -222,8 +222,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/retriever.html">retriever</a></li>
@@ -232,6 +230,8 @@
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -417,9 +417,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -472,7 +482,7 @@
           
 <section class="domainindex-section">
   <h1>Python Module Index</h1>
-  <div class="domainindex-jumpbox"><a href="#cap-c"><strong>c</strong></a> | <a href="#cap-u"><strong>u</strong></a></div>
+  <div class="domainindex-jumpbox"><a href="#cap-c"><strong>c</strong></a> | <a href="#cap-d"><strong>d</strong></a> | <a href="#cap-e"><strong>e</strong></a> | <a href="#cap-o"><strong>o</strong></a> | <a href="#cap-t"><strong>t</strong></a> | <a href="#cap-u"><strong>u</strong></a></div>
 </section>
 <table class="domainindex-table">
   <tr class="pcap">
@@ -486,6 +496,36 @@
               id="toggle-1" style="display: none" alt="-" /></td>
     <td>
         <code class="xref">components</code></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.agent.html#module-components.agent"><code class="xref">components.agent</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.agent.agent.html#module-components.agent.agent"><code class="xref">components.agent.agent</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.agent.prompts.html#module-components.agent.prompts"><code class="xref">components.agent.prompts</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.agent.react.html#module-components.agent.react"><code class="xref">components.agent.react</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.agent.runner.html#module-components.agent.runner"><code class="xref">components.agent.runner</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -509,7 +549,25 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
+        <a href="apis/components/components.memory.html#module-components.memory"><code class="xref">components.memory</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.memory.memory.html#module-components.memory.memory"><code class="xref">components.memory.memory</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
         <a href="apis/components/components.model_client.html#module-components.model_client"><code class="xref">components.model_client</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client"><code class="xref">components.model_client.anthropic_client</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -521,7 +579,25 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
+        <a href="apis/components/components.model_client.chat_completion_to_response_converter.html#module-components.model_client.chat_completion_to_response_converter"><code class="xref">components.model_client.chat_completion_to_response_converter</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
         <a href="apis/components/components.model_client.cohere_client.html#module-components.model_client.cohere_client"><code class="xref">components.model_client.cohere_client</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.model_client.deepseek_client.html#module-components.model_client.deepseek_client"><code class="xref">components.model_client.deepseek_client</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.model_client.fireworks_client.html#module-components.model_client.fireworks_client"><code class="xref">components.model_client.fireworks_client</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -539,7 +615,25 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
+        <a href="apis/components/components.model_client.mistral_client.html#module-components.model_client.mistral_client"><code class="xref">components.model_client.mistral_client</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
         <a href="apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client"><code class="xref">components.model_client.ollama_client</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client"><code class="xref">components.model_client.openai_client</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.model_client.sambanova_client.html#module-components.model_client.sambanova_client"><code class="xref">components.model_client.sambanova_client</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -554,11 +648,89 @@
         <a href="apis/components/components.model_client.utils.html#module-components.model_client.utils"><code class="xref">components.model_client.utils</code></a></td><td>
     <em></em></td>
   </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.model_client.xai_client.html#module-components.model_client.xai_client"><code class="xref">components.model_client.xai_client</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.output_parsers.html#module-components.output_parsers"><code class="xref">components.output_parsers</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.output_parsers.dataclass_parser.html#module-components.output_parsers.dataclass_parser"><code class="xref">components.output_parsers.dataclass_parser</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.output_parsers.outputs.html#module-components.output_parsers.outputs"><code class="xref">components.output_parsers.outputs</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.retriever.html#module-components.retriever"><code class="xref">components.retriever</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever"><code class="xref">components.retriever.bm25_retriever</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever"><code class="xref">components.retriever.faiss_retriever</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.retriever.lancedb_retriver.html#module-components.retriever.lancedb_retriver"><code class="xref">components.retriever.lancedb_retriver</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever"><code class="xref">components.retriever.llm_retriever</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever"><code class="xref">components.retriever.postgres_retriever</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.retriever.qdrant_retriever.html#module-components.retriever.qdrant_retriever"><code class="xref">components.retriever.qdrant_retriever</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever"><code class="xref">components.retriever.reranker_retriever</code></a></td><td>
+    <em></em></td>
+  </tr>
   <tr>
     <td><img src="_static/minus.png" class="toggler"
               id="toggle-2" style="display: none" alt="-" /></td>
     <td>
         <code class="xref">core</code></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.base_data_class.html#module-core.base_data_class"><code class="xref">core.base_data_class</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-2">
@@ -585,6 +757,394 @@
         <a href="apis/core/core.default_prompt_template.html#module-core.default_prompt_template"><code class="xref">core.default_prompt_template</code></a></td><td>
     <em></em></td>
   </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.embedder.html#module-core.embedder"><code class="xref">core.embedder</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.func_tool.html#module-core.func_tool"><code class="xref">core.func_tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.functional.html#module-core.functional"><code class="xref">core.functional</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.generator.html#module-core.generator"><code class="xref">core.generator</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.model_client.html#module-core.model_client"><code class="xref">core.model_client</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.prompt_builder.html#module-core.prompt_builder"><code class="xref">core.prompt_builder</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.retriever.html#module-core.retriever"><code class="xref">core.retriever</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.string_parser.html#module-core.string_parser"><code class="xref">core.string_parser</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.tokenizer.html#module-core.tokenizer"><code class="xref">core.tokenizer</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.tool_manager.html#module-core.tool_manager"><code class="xref">core.tool_manager</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-2">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/core/core.types.html#module-core.types"><code class="xref">core.types</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="pcap">
+    <td></td><td>&#160;</td><td></td>
+  </tr>
+  <tr class="cap" id="cap-d">
+    <td></td><td><strong>d</strong></td><td></td>
+  </tr>
+  <tr>
+    <td><img src="_static/minus.png" class="toggler"
+              id="toggle-3" style="display: none" alt="-" /></td>
+    <td>
+        <a href="apis/datasets/index.html#module-datasets"><code class="xref">datasets</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-3">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/datasets/datasets.big_bench_hard.html#module-datasets.big_bench_hard"><code class="xref">datasets.big_bench_hard</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-3">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/datasets/datasets.gsm8k.html#module-datasets.gsm8k"><code class="xref">datasets.gsm8k</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-3">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/datasets/datasets.hotpot_qa.html#module-datasets.hotpot_qa"><code class="xref">datasets.hotpot_qa</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-3">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/datasets/datasets.trec.html#module-datasets.trec"><code class="xref">datasets.trec</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-3">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/datasets/datasets.types.html#module-datasets.types"><code class="xref">datasets.types</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-3">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/datasets/datasets.utils.html#module-datasets.utils"><code class="xref">datasets.utils</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="pcap">
+    <td></td><td>&#160;</td><td></td>
+  </tr>
+  <tr class="cap" id="cap-e">
+    <td></td><td><strong>e</strong></td><td></td>
+  </tr>
+  <tr>
+    <td><img src="_static/minus.png" class="toggler"
+              id="toggle-4" style="display: none" alt="-" /></td>
+    <td>
+        <a href="apis/eval/index.html#module-eval"><code class="xref">eval</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-4">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc"><code class="xref">eval.answer_match_acc</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-4">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/eval/eval.base.html#module-eval.base"><code class="xref">eval.base</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-4">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/eval/eval.functional.html#module-eval.functional"><code class="xref">eval.functional</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-4">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/eval/eval.g_eval.html#module-eval.g_eval"><code class="xref">eval.g_eval</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-4">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge"><code class="xref">eval.llm_as_judge</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-4">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/eval/eval.retriever_recall.html#module-eval.retriever_recall"><code class="xref">eval.retriever_recall</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-4">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/eval/eval.utils.html#module-eval.utils"><code class="xref">eval.utils</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="pcap">
+    <td></td><td>&#160;</td><td></td>
+  </tr>
+  <tr class="cap" id="cap-o">
+    <td></td><td><strong>o</strong></td><td></td>
+  </tr>
+  <tr>
+    <td><img src="_static/minus.png" class="toggler"
+              id="toggle-5" style="display: none" alt="-" /></td>
+    <td>
+        <a href="apis/optim/index.html#module-optim"><code class="xref">optim</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.few_shot.html#module-optim.few_shot"><code class="xref">optim.few_shot</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#module-optim.few_shot.bootstrap_optimizer"><code class="xref">optim.few_shot.bootstrap_optimizer</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.function.html#module-optim.function"><code class="xref">optim.function</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.grad_component.html#module-optim.grad_component"><code class="xref">optim.grad_component</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.gradient.html#module-optim.gradient"><code class="xref">optim.gradient</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.loss_component.html#module-optim.loss_component"><code class="xref">optim.loss_component</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.optimizer.html#module-optim.optimizer"><code class="xref">optim.optimizer</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.parameter.html#module-optim.parameter"><code class="xref">optim.parameter</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.sampler.html#module-optim.sampler"><code class="xref">optim.sampler</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.text_grad.html#module-optim.text_grad"><code class="xref">optim.text_grad</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.text_grad.backend_engine_prompt.html#module-optim.text_grad.backend_engine_prompt"><code class="xref">optim.text_grad.backend_engine_prompt</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.text_grad.llm_text_loss.html#module-optim.text_grad.llm_text_loss"><code class="xref">optim.text_grad.llm_text_loss</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.text_grad.ops.html#module-optim.text_grad.ops"><code class="xref">optim.text_grad.ops</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.text_grad.text_loss_with_eval_fn.html#module-optim.text_grad.text_loss_with_eval_fn"><code class="xref">optim.text_grad.text_loss_with_eval_fn</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.text_grad.tgd_optimizer.html#module-optim.text_grad.tgd_optimizer"><code class="xref">optim.text_grad.tgd_optimizer</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.trainer.html#module-optim.trainer"><code class="xref">optim.trainer</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.trainer.adal.html#module-optim.trainer.adal"><code class="xref">optim.trainer.adal</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.trainer.trainer.html#module-optim.trainer.trainer"><code class="xref">optim.trainer.trainer</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-5">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/optim/optim.types.html#module-optim.types"><code class="xref">optim.types</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="pcap">
+    <td></td><td>&#160;</td><td></td>
+  </tr>
+  <tr class="cap" id="cap-t">
+    <td></td><td><strong>t</strong></td><td></td>
+  </tr>
+  <tr>
+    <td><img src="_static/minus.png" class="toggler"
+              id="toggle-6" style="display: none" alt="-" /></td>
+    <td>
+        <code class="xref">tracing</code></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.callback_manager.html#module-tracing.callback_manager"><code class="xref">tracing.callback_manager</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.create.html#module-tracing.create"><code class="xref">tracing.create</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.decorators.html#module-tracing.decorators"><code class="xref">tracing.decorators</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.generator_call_logger.html#module-tracing.generator_call_logger"><code class="xref">tracing.generator_call_logger</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.generator_state_logger.html#module-tracing.generator_state_logger"><code class="xref">tracing.generator_state_logger</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.mlflow_integration.html#module-tracing.mlflow_integration"><code class="xref">tracing.mlflow_integration</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.processor_interface.html#module-tracing.processor_interface"><code class="xref">tracing.processor_interface</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.scope.html#module-tracing.scope"><code class="xref">tracing.scope</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.setup.html#module-tracing.setup"><code class="xref">tracing.setup</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.span_data.html#module-tracing.span_data"><code class="xref">tracing.span_data</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.spans.html#module-tracing.spans"><code class="xref">tracing.spans</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.traces.html#module-tracing.traces"><code class="xref">tracing.traces</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-6">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="apis/tracing/tracing.util.html#module-tracing.util"><code class="xref">tracing.util</code></a></td><td>
+    <em></em></td>
+  </tr>
   <tr class="pcap">
     <td></td><td>&#160;</td><td></td>
   </tr>
@@ -593,66 +1153,66 @@
   </tr>
   <tr>
     <td><img src="_static/minus.png" class="toggler"
-              id="toggle-3" style="display: none" alt="-" /></td>
+              id="toggle-7" style="display: none" alt="-" /></td>
     <td>
         <code class="xref">utils</code></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.cache.html#module-utils.cache"><code class="xref">utils.cache</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.config.html#module-utils.config"><code class="xref">utils.config</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.data.html#module-utils.data"><code class="xref">utils.data</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.file_io.html#module-utils.file_io"><code class="xref">utils.file_io</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.global_config.html#module-utils.global_config"><code class="xref">utils.global_config</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.lazy_import.html#module-utils.lazy_import"><code class="xref">utils.lazy_import</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.logger.html#module-utils.logger"><code class="xref">utils.logger</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.registry.html#module-utils.registry"><code class="xref">utils.registry</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.serialization.html#module-utils.serialization"><code class="xref">utils.serialization</code></a></td><td>
     <em></em></td>
   </tr>
-  <tr class="cg-3">
+  <tr class="cg-7">
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="apis/utils/utils.setup_env.html#module-utils.setup_env"><code class="xref">utils.setup_env</code></a></td><td>

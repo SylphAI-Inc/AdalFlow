@@ -224,8 +224,6 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../new_tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/core_concepts.html">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/generator.html">Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/embedder.html">Embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/retriever.html">retriever</a></li>
@@ -234,6 +232,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/streaming.html">Streaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/tracing.html">Tracing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../new_tutorials/human_in_the_loop.html">Human in the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/prompt.html">Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../new_tutorials/parser.html">Parser and Structured Output</a></li>
 </ul>
 </li>
 </ul>
@@ -419,9 +419,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/tracing/index.html">Tracing</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Tracing</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.callback_manager.html">callback_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.create.html">create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.mlflow_integration.html">mlflow_integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.processor_interface.html">processor_interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.setup.html">setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.span_data.html">span_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.spans.html">spans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.traces.html">traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/tracing/tracing.util.html">util</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apis/utils/index.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -847,8 +857,8 @@ To note that the answer is in <cite>str</cite> format.</p>
 </section>
 <section id="diagnose-the-task-pipeline">
 <h3>Diagnose the task pipeline<a class="headerlink" href="#diagnose-the-task-pipeline" title="Link to this heading">¶</a></h3>
-<p>To evaluate the task pipeline using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">diagnose</span></code> method provided by our trainer,
-we can take advantage of the <code class="xref py py-class docutils literal notranslate"><span class="pre">AdalComponent</span></code> interface.
+<p>To evaluate the task pipeline using the <a class="reference internal" href="../apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer" title="optim.trainer.trainer.Trainer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">diagnose</span></code></a> method provided by our trainer,
+we can take advantage of the <a class="reference internal" href="../apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent" title="optim.trainer.adal.AdalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdalComponent</span></code></a> interface.
 This interface class should be subclassed, allowing us to leverage its parallel processing capabilities, callback configuration, optimizer configuration, and built-in support for the teacher/backward engine.
 The AdalComponent works similarly to how PyTorch Lightning’s LightningModule interacts with its Trainer.</p>
 <p>Here’s the minimum code required to get started on evaluating the task pipeline:</p>
@@ -1128,7 +1138,7 @@ Here is how our trace_graph with demos looks like: <a class="reference internal"
 <p>For the text optimizer, we have two training strategy: <code class="docutils literal notranslate"><span class="pre">random</span></code> and <code class="docutils literal notranslate"><span class="pre">constrained</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy runs a batch of loss and backward propagation and then validate it on the <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset at each step.
 This is a standard training strategy, and it is used by libraries like <code class="docutils literal notranslate"><span class="pre">Dspy</span></code> and <code class="docutils literal notranslate"><span class="pre">Text-grad</span></code>.
-You can refer <code class="xref py py-meth docutils literal notranslate"><span class="pre">optim.trainer.Trainer.fit()</span></code> for more details.</p>
+You can refer <a class="reference internal" href="../apis/optim/optim.trainer.html#optim.trainer.Trainer.fit" title="optim.trainer.Trainer.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optim.trainer.Trainer.fit()</span></code></a> for more details.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">constrained</span></code> strategy is unique to AdalFlow library where it runs a moving batch capped at maximum 20 samples, and it subsample the correct and failed samples (each maximum at 4).
 Before it runs the validations on the full <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset, it will run a validation on the moving sampled subset and the moving batch. It will try 5 proposals on the moving batch and only let a proposal that can beat the current subset and moving batch performance before it can be validated on the full dataset.
 We find it often more effective than the <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy.</p>
@@ -1143,7 +1153,7 @@ With file names like:</p>
 </pre></div>
 </div>
 <p>Here is an example of how our ckpt file looks like: <a class="reference internal" href="../tutorials/ckpt_file.html"><span class="doc">ckpt_file</span></a>.
-This file is a direct <cite>to_dict</cite>  (json) representation of <code class="xref py py-class docutils literal notranslate"><span class="pre">TrainerResult</span></code>.</p>
+This file is a direct <cite>to_dict</cite>  (json) representation of <a class="reference internal" href="../apis/optim/optim.types.html#optim.types.TrainerResult" title="optim.types.TrainerResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainerResult</span></code></a>.</p>
 </section>
 <section id="train-with-few-shot-bootstrap">
 <h2>Train with Few-shot Bootstrap<a class="headerlink" href="#train-with-few-shot-bootstrap" title="Link to this heading">¶</a></h2>
