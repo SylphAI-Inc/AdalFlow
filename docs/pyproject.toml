@@ -10,13 +10,14 @@ license = "MIT"
 packages = [{ from = "_dummy", include = "dummy" }] # empty packages
 
 [tool.poetry.dependencies]
-python = ">=3.9, <4.0"
+python = ">=3.10, <4.0"
 adalflow = { path = "../adalflow", develop = true } # Follow latest adalflow version
 pyvis = "^0.3.2"
 sphinx-tabs = "^3.4.7"
 furo = "^2024.8.6"
 sphinxcontrib-mermaid = "^1.0.0"
 sphinx-copybutton = "^0.5.2"
+together = "^1.5.21"
 
 [tool.poetry.group.doc.dependencies]
 # Sphinx documentation dependencies

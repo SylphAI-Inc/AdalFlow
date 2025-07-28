@@ -219,7 +219,6 @@ class Agent(Component):
 
     The Agent comes with default prompt templates for agentic reasoning, automatic tool
     definition integration, and step history tracking. It includes built-in helper tools:
-    - finish: Terminates execution with the final answer
     - llm_tool: Fallback tool using LLM world knowledge for simple queries
 
     Architecture:
