@@ -236,13 +236,12 @@ class PermissionManager:
 
             # check if there is an error field 
             error = None
-            if hasattr(result, "error"):
+            if hasattr(result, "error") and result.error is not None:
                 error = result.error
                 # we need to output a ToolOutput (pre_execute_error)
-                if error is not None:
-                    return ToolOutput(output=error, observation = error, status="error")
+                log.error(f"Pre execute callback result: {result}")
+                return ToolOutput(output=error, observation = error, status="error")
             # we need to present user the error 
-            log.error(f"Pre execute callback result: {result}")
             if result is not None:
                 request.confirmation_details = result            
         return ToolCallPermissionRequest(data=request)
