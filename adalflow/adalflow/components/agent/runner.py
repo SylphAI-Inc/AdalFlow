@@ -118,7 +118,12 @@ class Runner(Component):
         """
         super().__init__(**kwargs)
         self.agent = agent
+        self.tool_manager = agent.tool_manager
         self.permission_manager = permission_manager
+        # pass the tool_manager to the permission_manager
+        if permission_manager is not None:
+            permission_manager.set_tool_manager(self.tool_manager)
+
         self.conversation_memory = conversation_memory
 
         self.use_conversation_memory = conversation_memory is not None
@@ -163,6 +168,10 @@ class Runner(Component):
         self.permission_manager = permission_manager
         # Re-initialize to register tools with the new permission manager
         self._init_permission_manager()
+
+        # pass the tool_manager to the permission_manager
+        if permission_manager is not None:
+            permission_manager.set_tool_manager(self.tool_manager)
 
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step has is_answer_final set to True."""
@@ -449,8 +458,10 @@ class Runner(Component):
         """
 
         # execute permission and blocking mechanism in check_permission
+        # TODO: permission manager might be better to be put inside of tool manager
         if self.permission_manager:
             result = asyncio.run(self.permission_manager.check_permission(func))
+
             # Handle both old (2 values) and new (3 values) return formats
             if len(result) == 3:
                 allowed, modified_func, _ = result
@@ -465,6 +476,7 @@ class Runner(Component):
                         output="Tool execution cancelled by user",
                         observation="Tool execution cancelled by user",
                         display="Permission denied",
+                        status="cancelled",
                     ),
                 )
 
@@ -847,16 +859,11 @@ class Runner(Component):
                                 )
                             break
 
-                        # Emit tool call event
-                        # tool_call_item = ToolCallRunItem(data=function)
-                        # tool_call_id = tool_call_item.id
-                        # tool_call_name = tool_call_item.data.name
-                        # tool_call_event = RunItemStreamEvent(
-                        #     name="agent.tool_call_start", item=tool_call_item
-                        # )
-                        # streaming_result.put_nowait(tool_call_event)
-
                         # Check if permission is required and emit permission event
+                        # TODO: trace the permission event
+
+                        function_output_observation = None
+                        function_result = None
                         if (
                             self.permission_manager
                             and self.permission_manager.is_approval_required(
@@ -868,84 +875,47 @@ class Runner(Component):
                                     function
                                 )
                             )
-                            permission_stream_event = RunItemStreamEvent(
-                                name="agent.tool_permission_request",
-                                item=permission_event,
-                            )
-                            streaming_result.put_nowait(permission_stream_event)
-
-                        # Create tool span for streaming function execution
-                        with tool_span(
-                            tool_name=tool_call_name,
-                            function_name=function.name,  # TODO fix attributes
-                            function_args=function.args,
-                            function_kwargs=function.kwargs,
-                        ) as tool_span_instance:
-
-                            # TODO: inside of FunctionTool execution, it should ensure the types of async generator item
-                            # to be either ToolCallActivityRunItem or ToolOutput(maybe)
-                            # Call activity might be better designed
-
-                            function_result = await self._tool_execute_async(
-                                func=function, streaming_result=streaming_result
-                            )  # everything must be wrapped in FunctionOutput
-
-                            if not isinstance(function_result, FunctionOutput):
-                                raise ValueError(
-                                    f"Result must be wrapped in FunctionOutput, got {type(function_result)}"
+                            if isinstance(permission_event, ToolOutput):
+                                # need a tool complete event 
+                                function_result = FunctionOutput(
+                                    name=function.name,
+                                    input=function,
+                                    output=permission_event,
                                 )
-
-                            function_output = function_result.output
-                            real_function_output = None
-
-                            # TODO: validate when the function is a generator
-
-                            if inspect.iscoroutine(function_output):
-                                real_function_output = await function_output
-                            elif inspect.isasyncgen(function_output):
-                                real_function_output = None
-                                async for item in function_output:
-                                    if isinstance(item, ToolCallActivityRunItem):
-                                        # add the tool_call_id to the item
-                                        item.id = tool_call_id
-                                        tool_call_event = RunItemStreamEvent(
-                                            name="agent.tool_call_activity", item=item
-                                        )
-                                        streaming_result.put_nowait(tool_call_event)
-                                    else:
-                                        real_function_output = item
-                            else:
-                                real_function_output = function_output
-
-                            # create call complete
-                            call_complete_event = RunItemStreamEvent(
-                                name="agent.tool_call_complete",
-                                item=ToolOutputRunItem(
-                                    id=tool_call_id,
-                                    data=FunctionOutput(
-                                        name=function.name,
-                                        input=function,
-                                        output=real_function_output,
+                                tool_complete_event = RunItemStreamEvent(
+                                    name="agent.tool_call_complete",
+                                    # error is already tracked in output
+                                    # TODO: error tracking is not needed in RunItem, it is tracked in the tooloutput status.
+                                    item=ToolOutputRunItem(
+                                        data=function_result,
+                                        id=tool_call_id,
+                                        error=permission_event.observation if permission_event.status == "error" else None, # error message sent to the frontend 
                                     ),
-                                ),
-                            )
-                            streaming_result.put_nowait(call_complete_event)
-
-                            function_output = real_function_output
-                            function_output_observation = function_output
-
-                            if isinstance(function_output, ToolOutput) and hasattr(
-                                function_output, "observation"
-                            ):
-                                function_output_observation = (
-                                    function_output.observation
                                 )
-                            # Update tool span attributes using update_attributes for MLflow compatibility
+                                streaming_result.put_nowait(tool_complete_event)
+                                function_output_observation = permission_event.observation
+                            else:
+                                permission_stream_event = RunItemStreamEvent(
+                                    name="agent.tool_permission_request",
+                                    item=permission_event,
+                                )
+                                streaming_result.put_nowait(permission_stream_event)
 
-                            tool_span_instance.span_data.update_attributes(
-                                {"output_result": real_function_output}
+                                # Execute the tool with streaming support
+                                function_result, function_output, function_output_observation = await self.stream_tool_execution(
+                                    function=function,
+                                    tool_call_id=tool_call_id,
+                                    tool_call_name=tool_call_name,
+                                    streaming_result=streaming_result,
+                                )
+                        else:
+                            function_result, function_output, function_output_observation = await self.stream_tool_execution(
+                                function=function,
+                                tool_call_id=tool_call_id,
+                                tool_call_name=tool_call_name,
+                                streaming_result=streaming_result,
                             )
-
+                        # llm only takes observation as feedback
                         step_output: StepOutput = StepOutput(
                             step=step_count,
                             action=function,
@@ -1091,6 +1061,7 @@ class Runner(Component):
                         output="Tool execution cancelled by user",
                         observation="Tool execution cancelled by user",
                         display="Permission denied",
+                        status="cancelled",
                     ),
                 )
 
@@ -1110,3 +1081,103 @@ class Runner(Component):
         if not isinstance(result, FunctionOutput):
             raise ValueError("Result is not a FunctionOutput")
         return result
+
+    async def stream_tool_execution(
+        self,
+        function: Function,
+        tool_call_id: str,
+        tool_call_name: str,
+        streaming_result: RunnerStreamingResult,
+    ) -> tuple[Any, Any, Any]:
+        """
+        Execute a tool/function call with streaming support and proper event handling.
+        
+        This method handles:
+        - Tool span creation for tracing
+        - Async generator support for streaming results
+        - Tool activity events
+        - Tool completion events
+        - Error handling and observation extraction
+        
+        Args:
+            function: The Function object to execute
+            tool_call_id: Unique identifier for this tool call
+            tool_call_name: Name of the tool being called
+            streaming_result: Queue for streaming events
+            
+        Returns:
+            tuple: (function_output, function_output_observation)
+        """
+        # Create tool span for streaming function execution
+        with tool_span(
+            tool_name=tool_call_name,
+            function_name=function.name,  # TODO fix attributes
+            function_args=function.args,
+            function_kwargs=function.kwargs,
+        ) as tool_span_instance:
+
+            # TODO: inside of FunctionTool execution, it should ensure the types of async generator item
+            # to be either ToolCallActivityRunItem or ToolOutput(maybe)
+            # Call activity might be better designed
+
+            function_result = await self._tool_execute_async(
+                func=function, streaming_result=streaming_result
+            )  # everything must be wrapped in FunctionOutput
+
+            if not isinstance(function_result, FunctionOutput):
+                raise ValueError(
+                    f"Result must be wrapped in FunctionOutput, got {type(function_result)}"
+                )
+
+            function_output = function_result.output
+            real_function_output = None
+
+            # TODO: validate when the function is a generator
+
+            if inspect.iscoroutine(function_output):
+                real_function_output = await function_output
+            elif inspect.isasyncgen(function_output):
+                real_function_output = None
+                async for item in function_output:
+                    if isinstance(item, ToolCallActivityRunItem):
+                        # add the tool_call_id to the item
+                        item.id = tool_call_id
+                        tool_call_event = RunItemStreamEvent(
+                            name="agent.tool_call_activity", item=item
+                        )
+                        streaming_result.put_nowait(tool_call_event)
+                    else:
+                        real_function_output = item
+            else:
+                real_function_output = function_output
+
+            # create call complete
+            call_complete_event = RunItemStreamEvent(
+                name="agent.tool_call_complete",
+                item=ToolOutputRunItem(
+                    id=tool_call_id,
+                    data=FunctionOutput(
+                        name=function.name,
+                        input=function,
+                        output=real_function_output,
+                    ),
+                ),
+            )
+            streaming_result.put_nowait(call_complete_event)
+
+            function_output = real_function_output
+            function_output_observation = function_output
+
+            if isinstance(function_output, ToolOutput) and hasattr(
+                function_output, "observation"
+            ):
+                function_output_observation = (
+                    function_output.observation
+                )
+            # Update tool span attributes using update_attributes for MLflow compatibility
+
+            tool_span_instance.span_data.update_attributes(
+                {"output_result": real_function_output}
+            )
+            
+            return function_result, function_output, function_output_observation
