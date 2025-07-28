@@ -7,11 +7,9 @@ Tutorials
 
 .. toctree::
    :maxdepth: 1
-   :caption: Basics
+   :caption: Core
 
    Core Concepts <core_concepts>
-   prompt
-   parser
    generator
    embedder
    retriever <../tutorials/retriever>
@@ -19,9 +17,18 @@ Tutorials
 
 .. toctree::
    :maxdepth: 1
-   :caption: Advanced Topics
+   :caption: Agent
 
    Agent Runner <agents_runner>
    Streaming <streaming>
    Tracing <tracing>
    Human in the Loop <human_in_the_loop>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Others
+
+   prompt
+   parser
+
+

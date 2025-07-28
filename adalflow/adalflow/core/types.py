@@ -371,7 +371,7 @@ class Function(DataClass):
         default=None, metadata={"desc": "The id of the function call"}
     )
     thought: Optional[str] = field(
-        default=None, metadata={"desc": "Why the function is called"}
+        default=None, metadata={"desc": "Your reasoning for this step. Be short for simple queries. For complex queries, provide a clear chain of thought."}
     )  # if the model itself is a thinking model, disable thought field
     name: str = field(default="", metadata={"desc": "The name of the function"})
     args: Optional[List[object]] = field(

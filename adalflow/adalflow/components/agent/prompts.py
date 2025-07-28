@@ -25,7 +25,7 @@ REMEMBER:
     - The `_answer` field must be either a python builtin type or a json deserialiable string based on the data schema in <START_OF_ANSWER_TYPE_SCHEMA><END_OF_ANSWER_TYPE_SCHEMA>.
 <END_OF_TASK_SPEC>
 """
-
+# TODO: access the max steps in the agent prompt or not
 DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 {{task_desc}}
 - You cant use more than {{max_steps}} steps. At the {{max_steps}}th current step, must set `_is_answer_final` to True and provide the answer.
