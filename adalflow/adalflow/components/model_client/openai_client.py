@@ -367,7 +367,7 @@ class OpenAIClient(ModelClient):
         Fully migrated to Response API only."""
 
         parser = self.response_parser
-        log.debug(f"completion/response: {completion}, parser: {parser}")
+        log.info(f"completion/response: {completion}, parser: {parser}")
 
         data = parser(completion)
         usage = self.track_completion_usage(completion)
@@ -653,6 +653,7 @@ class OpenAIClient(ModelClient):
         }
         """
         log.info(f"api_kwargs: {api_kwargs}")
+        assert(3 == 5)
         self._api_kwargs = api_kwargs
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)

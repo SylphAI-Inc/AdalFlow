@@ -85,7 +85,7 @@ def calculator(expression: str) -> str:
         return f"Error: {e}"
 
 
-def file_writer(filename: str, content: str) -> ToolOutput:
+async def file_writer(filename: str, content: str) -> ToolOutput:
     """Write content to a file - requires permission."""
     try:
         with open(filename, 'w') as f:
@@ -148,7 +148,7 @@ async def live_monitor(system: str):
 
 
 # Human-in-the-Loop Examples
-def human_in_the_loop_basic_example():
+async def human_in_the_loop_basic_example():
     """Demonstrates basic human-in-the-loop with permission management."""
     print("\n=== Human-in-the-Loop Basic Example ===")
     
@@ -168,14 +168,23 @@ def human_in_the_loop_basic_example():
     runner = Runner(agent=agent, permission_manager=permission_handler)
 
     # Tools will now require approval before execution
-    result = runner.call(prompt_kwargs={"input_str": "Create a file called 'test.txt' with some interesting content"})
+    result = runner.astream(prompt_kwargs={"input_str": "Create a file called 'test.txt' with some interesting content"}, model_kwargs={"stream": True})
+
+    async for event in result.stream_events():
+        if isinstance(event, RunItemStreamEvent):
+            if isinstance(event.item, ToolCallRunItem):
+                print(f"🔧 Calling tool: {event.item.data.name}")
+
+            elif isinstance(event.item, ToolOutputRunItem):
+                print(f"✅ Tool completed: {event.item.data.output}")
+
+            elif isinstance(event.item, FinalOutputItem):
+                print(f"🎯 Final answer: {event.item.data.answer}")
     
-    print(f"Result: {result.answer}")
-    print(f"Steps taken: {len(result.step_history)}")
     return result
 
 
-def human_in_the_loop_auto_approve_example():
+async def human_in_the_loop_auto_approve_example():
     """Demonstrates auto-approval mode for development environments."""
     print("\n=== Human-in-the-Loop Auto-Approve Example ===")
     
@@ -194,14 +203,23 @@ def human_in_the_loop_auto_approve_example():
     auto_handler = AutoApprovalHandler()
     runner = Runner(agent=agent, permission_manager=auto_handler)
 
-    result = runner.call(prompt_kwargs={"input_str": "Calculate 25 * 4 and save the result to 'calculation.txt'"})
+    result = runner.astream(prompt_kwargs={"input_str": "Calculate 25 * 4 and save the result to 'calculation.txt'"}, model_kwargs={"stream": True})
     
-    print(f"Result: {result.answer}")
-    print(f"Steps taken: {len(result.step_history)}")
+    async for event in result.stream_events():
+        if isinstance(event, RunItemStreamEvent):
+            if isinstance(event.item, ToolCallRunItem):
+                print(f"🔧 Calling tool: {event.item.data.name}")
+
+            elif isinstance(event.item, ToolOutputRunItem):
+                print(f"✅ Tool completed: {event.item.data.output}")
+
+            elif isinstance(event.item, FinalOutputItem):
+                print(f"🎯 Final answer: {event.item.data.answer}")
+
     return result
 
 
-def human_in_the_loop_yolo_mode_example():
+async def human_in_the_loop_yolo_mode_example():
     """Demonstrates YOLO mode that bypasses all permission checks."""
     print("\n=== Human-in-the-Loop YOLO Mode Example ===")
     
@@ -220,10 +238,19 @@ def human_in_the_loop_yolo_mode_example():
     yolo_handler = CLIPermissionHandler(approval_mode="yolo")
     runner = Runner(agent=agent, permission_manager=yolo_handler)
 
-    result = runner.call(prompt_kwargs={"input_str": "Calculate 15 * 7 + 23 and write it to 'yolo_result.txt'"})
+    result = runner.astream(prompt_kwargs={"input_str": "Calculate 15 * 7 + 23 and write it to 'yolo_result.txt'"}, model_kwargs={"stream": True})
     
-    print(f"Result: {result.answer}")
-    print(f"Steps taken: {len(result.step_history)}")
+    async for event in result.stream_events():
+        if isinstance(event, RunItemStreamEvent):
+            if isinstance(event.item, ToolCallRunItem):
+                print(f"🔧 Calling tool: {event.item.data.name}")
+
+            elif isinstance(event.item, ToolOutputRunItem):
+                print(f"✅ Tool completed: {event.item.data.output}")
+
+            elif isinstance(event.item, FinalOutputItem):
+                print(f"🎯 Final answer: {event.item.data.answer}")
+
     return result
 
 
@@ -497,9 +524,6 @@ def main():
     
     # Run synchronous examples
     sync_examples = [
-        (human_in_the_loop_basic_example, "Human-in-the-Loop Basic"),
-        (human_in_the_loop_auto_approve_example, "Human-in-the-Loop Auto-Approve"),
-        (human_in_the_loop_yolo_mode_example, "Human-in-the-Loop YOLO Mode"),
         # (tracing_basic_example, "Tracing Basic"),
         # (tracing_mlflow_integration_example, "Tracing MLflow Integration"),
     ]
@@ -515,11 +539,14 @@ def main():
     print("🔄 Running Asynchronous Examples...")
     
     async_examples = [
-        (streaming_basic_example, "Streaming Basic"),
-        (streaming_raw_responses_example, "Streaming Raw Responses"),
-        (streaming_agent_events_example, "Streaming Agent Events"),
-        (streaming_anthropic_example, "Streaming Anthropic"),
-        (tracing_async_generator_tools_example, "Tracing Async Generator Tools"),
+        (human_in_the_loop_basic_example, "Human-in-the-Loop Basic"),
+        # (human_in_the_loop_auto_approve_example, "Human-in-the-Loop Auto-Approve"),
+        # (human_in_the_loop_yolo_mode_example, "Human-in-the-Loop YOLO Mode"),
+    #     (streaming_basic_example, "Streaming Basic"),
+    #     (streaming_raw_responses_example, "Streaming Raw Responses"),
+    #     (streaming_agent_events_example, "Streaming Agent Events"),
+    #     (streaming_anthropic_example, "Streaming Anthropic"),
+    #     (tracing_async_generator_tools_example, "Tracing Async Generator Tools"),
     ]
     
     successful_async = 0

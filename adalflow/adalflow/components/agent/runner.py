@@ -460,6 +460,7 @@ class Runner(Component):
         # execute permission and blocking mechanism in check_permission
         # TODO: permission manager might be better to be put inside of tool manager
         if self.permission_manager:
+
             result = asyncio.run(self.permission_manager.check_permission(func))
 
             # Handle both old (2 values) and new (3 values) return formats
@@ -863,7 +864,8 @@ class Runner(Component):
                         # TODO: trace the permission event
 
                         function_output_observation = None
-                        function_result = None
+                        function_result = None 
+                        print("function name", function.name)
                         if (
                             self.permission_manager
                             and self.permission_manager.is_approval_required(
@@ -875,6 +877,7 @@ class Runner(Component):
                                     function
                                 )
                             )
+                            # there is an error 
                             if isinstance(permission_event, ToolOutput):
                                 # need a tool complete event 
                                 function_result = FunctionOutput(
@@ -908,32 +911,52 @@ class Runner(Component):
                                     tool_call_name=tool_call_name,
                                     streaming_result=streaming_result,
                                 )
+                                
+                                # Add step to history for approved tools (same as non-permission branch)
+                                step_output: StepOutput = StepOutput(
+                                    step=step_count,
+                                    action=function,
+                                    function=function,
+                                    observation=function_output_observation,
+                                )
+                                self.step_history.append(step_output)
+
+                                # Update step span with results
+                                step_span_instance.span_data.update_attributes(
+                                    {
+                                        "tool_name": function.name,
+                                        "tool_output": function_result,
+                                        "is_final": self._check_last_step(function),
+                                        "observation": function_output_observation,
+                                    }
+                                )
                         else:
+                            print("permission not required")
                             function_result, function_output, function_output_observation = await self.stream_tool_execution(
                                 function=function,
                                 tool_call_id=tool_call_id,
                                 tool_call_name=tool_call_name,
                                 streaming_result=streaming_result,
                             )
-                        # llm only takes observation as feedback
-                        step_output: StepOutput = StepOutput(
-                            step=step_count,
-                            action=function,
-                            function=function,
-                            observation=function_output_observation,
-                            # ctx=self.ctx,
-                        )
-                        self.step_history.append(step_output)
+                            # llm only takes observation as feedback
+                            step_output: StepOutput = StepOutput(
+                                step=step_count,
+                                action=function,
+                                function=function,
+                                observation=function_output_observation,
+                                # ctx=self.ctx,
+                            )
+                            self.step_history.append(step_output)
 
-                        # Update step span with results
-                        step_span_instance.span_data.update_attributes(
-                            {
-                                "tool_name": function.name,
-                                "tool_output": function_result,
-                                "is_final": self._check_last_step(function),
-                                "observation": function_output_observation,
-                            }
-                        )
+                            # Update step span with results
+                            step_span_instance.span_data.update_attributes(
+                                {
+                                    "tool_name": function.name,
+                                    "tool_output": function_result,
+                                    "is_final": self._check_last_step(function),
+                                    "observation": function_output_observation,
+                                }
+                            )
 
                         # Emit step completion event
                         step_item = StepRunItem(data=step_output)
@@ -1043,7 +1066,7 @@ class Runner(Component):
         Note: this version has no support for streaming.
         Includes permission checking if permission_manager is configured.
         """
-
+        
         # Check permission before execution
         if self.permission_manager:
             result = await self.permission_manager.check_permission(func)
@@ -1137,7 +1160,6 @@ class Runner(Component):
             if inspect.iscoroutine(function_output):
                 real_function_output = await function_output
             elif inspect.isasyncgen(function_output):
-                real_function_output = None
                 async for item in function_output:
                     if isinstance(item, ToolCallActivityRunItem):
                         # add the tool_call_id to the item
