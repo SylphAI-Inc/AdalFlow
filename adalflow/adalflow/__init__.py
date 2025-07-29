@@ -70,10 +70,11 @@ from adalflow.components.model_client import (
     AnthropicAPIClient,
 )
 
-from adalflow.components.agent import ReActAgent
-
 # data pipeline
 from adalflow.components.data_process.text_splitter import TextSplitter
+
+# agents - Import separately to avoid circular imports
+from adalflow.components.agent import Agent, Runner, ReActAgent
 
 __all__ = [
     "Component",
@@ -147,4 +148,6 @@ __all__ = [
     "AnthropicAPIClient",
     # Agent
     "ReActAgent",
+    "Agent",
+    "Runner",
 ]
