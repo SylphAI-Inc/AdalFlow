@@ -55,7 +55,14 @@ from .types import (
     Conversation,
 )
 
-from .mcp_tool import MCPFunctionTool, MCPToolManager
+# Conditional import for MCP tools (requires Python >= 3.10)
+try:
+    from .mcp_tool import MCPFunctionTool, MCPToolManager
+    _MCP_AVAILABLE = True
+except ImportError:
+    MCPFunctionTool = None
+    MCPToolManager = None
+    _MCP_AVAILABLE = False
 
 from adalflow.utils.registry import EntityMapping
 
@@ -114,9 +121,13 @@ __all__ = [
     "FloatParser",
     "ListParser",
     "BooleanParser",
-    "MCPFunctionTool",
-    "MCPToolManager",
 ]
 
+# Add MCP tools to __all__ only if available
+if _MCP_AVAILABLE:
+    __all__.extend(["MCPFunctionTool", "MCPToolManager"])
+
 for name in __all__:
-    EntityMapping.register(name, globals()[name])
+    entity = globals().get(name)
+    if entity is not None:
+        EntityMapping.register(name, entity)
