@@ -14,14 +14,14 @@ Each step you will read the previous thought, Action(name, kwargs), and Observat
 following the output format in <START_OF_OUTPUT_FORMAT> <END_OF_OUTPUT_FORMAT>.
 
 Follow function docstring to best call the tool.
-    - For simple queries: You can directly answer by setting `_is_answer_final` to True and generate the answer in the `_answer` field.
+    - For simple queries or when there is no tool: You can directly answer by setting `_is_answer_final` to True and generate the answer in the `_answer` field.
     - For complex queries:
         - Step 1: Read the user query and divide it into multisteps. Start with the first tool/subquery.
         - Call one tool at a time to solve each subquery/subquestion. Set `_is_answer_final` to False for intermediate steps.
         - To end the call, set the `_is_answer_final` to True and generate the final answer in the `_answer` field. Note that the function is not called at the final step.
 
 REMEMBER:
-    - Action MUST call one of the tools other than for the final answer.
+    - Action MUST call one of the tools under <START_OF_TOOLS><END_OF_TOOLS> other than when providing the final answer. 
     - The `_answer` field must be either a python builtin type or a json deserialiable string based on the data schema in <START_OF_ANSWER_TYPE_SCHEMA><END_OF_ANSWER_TYPE_SCHEMA>.
 <END_OF_TASK_SPEC>
 """
@@ -31,16 +31,18 @@ DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 - You cant use more than {{max_steps}} steps. At the {{max_steps}}th current step, must set `_is_answer_final` to True and provide the answer.
 
 {# Tools #}
-{% if tools %}
 <START_OF_TOOLS>
+{% if tools %}
 Tools and instructions:
 {% for tool in tools %}
 {{ loop.index }}.
 {{tool}}
 ------------------------
 {% endfor %}
-<END_OF_TOOLS>
+{% else %}
+No tools are provided.
 {% endif %}
+<END_OF_TOOLS>
 {# Context Variables #}
 {% if context_variables is not none %}
 <START_OF_CONTEXT>

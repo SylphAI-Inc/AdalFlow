@@ -39,7 +39,7 @@ def setup_mlflow_tracing():
         return
 
     # Point MLflow to the tracking server
-    mlflow.set_tracking_uri("http://localhost:8000")  # Match your server port
+    mlflow.set_tracking_uri("http://localhost:8080")  # Match your server port
 
     # Create or set an experiment to log traces under
     mlflow.set_experiment("AdalFlow-Agent-Tracing-Experiment")

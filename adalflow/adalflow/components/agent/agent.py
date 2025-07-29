@@ -92,8 +92,6 @@ def create_default_tool_manager(
                 )
                 response = output.data if output else None
 
-                print("LLM_Tool", response)
-
                 return response
             except Exception as e:
                 log.error(f"Error using the llm_tool: {e}")
@@ -244,7 +242,8 @@ class Agent(Component):
         # pass this if using default agent config
         tools: Optional[List[Any]] = None,
         context_variables: Optional[Dict] = None,  # context variables
-        add_llm_as_fallback: Optional[bool] = False,
+        # add_llm_as_fallback: Optional[bool] = False, 
+        add_llm_as_fallback: Optional[bool] = False, 
         # Generator parameters
         model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = {},

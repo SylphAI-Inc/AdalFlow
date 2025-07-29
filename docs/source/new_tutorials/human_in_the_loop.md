@@ -1,3 +1,10 @@
+<div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/agent/tutorial_agent_advanced_features.py" target="_blank" style="display: flex; align-items: center;">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+        <span style="vertical-align: middle;"> Open Source Code (Agent Advanced)</span>
+    </a>
+</div>
+
 # Human in the Loop
 
 AdalFlow provides a permission management system that allows you to control and approve tool executions before they run. This is particularly useful for tools that perform sensitive operations like file system access, API calls, or external communications.

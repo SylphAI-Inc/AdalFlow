@@ -78,11 +78,8 @@ async def run_async_example_safely(example_func, example_name):
 # Tool definitions
 def calculator(expression: str) -> str:
     """Evaluate a mathematical expression."""
-    try:
-        result = eval(expression)
-        return f"Result: {result}"
-    except Exception as e:
-        return f"Error: {e}"
+    result = eval(expression)
+    return result 
 
 
 async def file_writer(filename: str, content: str) -> ToolOutput:
@@ -156,7 +153,7 @@ async def human_in_the_loop_basic_example():
     agent = Agent(
         name="PermissionAgent",
         tools=[
-            FunctionTool(calculator),  # Safe tool - no permission needed
+            calculator,  # Safe tool - no permission needed
             FunctionTool(file_writer, require_approval=True),  # Requires permission
         ],
         model_client=OpenAIClient(),
@@ -168,7 +165,7 @@ async def human_in_the_loop_basic_example():
     runner = Runner(agent=agent, permission_manager=permission_handler)
 
     # Tools will now require approval before execution
-    result = runner.astream(prompt_kwargs={"input_str": "Create a file called 'test.txt' with some interesting content"}, model_kwargs={"stream": True})
+    result = runner.astream(prompt_kwargs={"input_str": "call the calculator function and calculate 25 * 4 and create a file called 'test.txt' with some interesting content"}, model_kwargs={"stream": True})
 
     async for event in result.stream_events():
         if isinstance(event, RunItemStreamEvent):
@@ -191,7 +188,7 @@ async def human_in_the_loop_auto_approve_example():
     agent = Agent(
         name="AutoApproveAgent",
         tools=[
-            FunctionTool(calculator),
+            calculator,
             FunctionTool(file_writer, require_approval=True),
         ],
         model_client=OpenAIClient(),
@@ -203,7 +200,7 @@ async def human_in_the_loop_auto_approve_example():
     auto_handler = AutoApprovalHandler()
     runner = Runner(agent=agent, permission_manager=auto_handler)
 
-    result = runner.astream(prompt_kwargs={"input_str": "Calculate 25 * 4 and save the result to 'calculation.txt'"}, model_kwargs={"stream": True})
+    result = runner.astream(prompt_kwargs={"input_str": "Call the calculator function and Calculate 25 * 4 and save the result to 'calculation.txt'"}, model_kwargs={"stream": True})
     
     async for event in result.stream_events():
         if isinstance(event, RunItemStreamEvent):
@@ -525,7 +522,7 @@ def main():
     # Run synchronous examples
     sync_examples = [
         # (tracing_basic_example, "Tracing Basic"),
-        # (tracing_mlflow_integration_example, "Tracing MLflow Integration"),
+        (tracing_mlflow_integration_example, "Tracing MLflow Integration"),
     ]
     
     successful_sync = 0
@@ -540,13 +537,13 @@ def main():
     
     async_examples = [
         (human_in_the_loop_basic_example, "Human-in-the-Loop Basic"),
-        # (human_in_the_loop_auto_approve_example, "Human-in-the-Loop Auto-Approve"),
-        # (human_in_the_loop_yolo_mode_example, "Human-in-the-Loop YOLO Mode"),
-    #     (streaming_basic_example, "Streaming Basic"),
-    #     (streaming_raw_responses_example, "Streaming Raw Responses"),
-    #     (streaming_agent_events_example, "Streaming Agent Events"),
-    #     (streaming_anthropic_example, "Streaming Anthropic"),
-    #     (tracing_async_generator_tools_example, "Tracing Async Generator Tools"),
+        (human_in_the_loop_auto_approve_example, "Human-in-the-Loop Auto-Approve"),
+        (human_in_the_loop_yolo_mode_example, "Human-in-the-Loop YOLO Mode"),
+        (streaming_basic_example, "Streaming Basic"),
+        (streaming_raw_responses_example, "Streaming Raw Responses"),
+        (streaming_agent_events_example, "Streaming Agent Events"),
+        (streaming_anthropic_example, "Streaming Anthropic"),
+        (tracing_async_generator_tools_example, "Tracing Async Generator Tools"),
     ]
     
     successful_async = 0
