@@ -1,8 +1,56 @@
 # Tracing
 
+![mlflow_integration](../_static/images/adalflow_tracing_mlflow.png)
+
+AdalFlow allows you to trace your agent/LLM workflows locally with open-source tools like MLflow without requiring a managed service/api.
+
+It supports all tracing providers that implement [OpenAI's trace provider interface]https://openai.github.io/openai-agents-python/tracing/).
+
+## Quickstart
+1. Install mlflow
+
+```bash
+pip install mlflow
+```
+
+2. Add the following code to your agent/LLM workflow
+
+```python
+import os 
+os.environ["ADALFLOW_DISABLE_TRACING"] = "False"
+# ensure this is set before any adalflow imports
+from adalflow.tracing import enable_mlflow_local, trace
+
+enable_mlflow_local(
+    tracking_uri="http://localhost:8000",
+    experiment_name="AdalFlow-Tracing-Demo",
+    project_name="Agent-Workflows"
+)
+
+with trace(workflow_name="AdalFlow-Agent"):
+    result = runner.call(
+        prompt_kwargs={
+            "input_str": "Analyze the calculation 25 * 4 + 15 and generate a report"
+        }
+    )
+```
+
+3. Start mlflow server
+
+```bash
+mlflow server --host 127.0.0.1 --port 8000
+```
+
+4. Go to http://localhost:8000 and navigate to the experiment "AdalFlow-Tracing-Demo" and project "Agent-Workflows" and go to the `traces` tab to view the traces.
+
+![mlflow_integration](../_static/images/adalflow_tracing_mlflow.png)
+
+
+## How it works
+
 AdalFlow provides a comprehensive tracing system that is **compatible with OpenAI's tracing interface** and supports custom {doc}`TracingProcessor <../apis/tracing/tracing.processor_interface>` for integration with various observability backends like MLflow, Weights & Biases, and other visualization tools.
 
-## Overview
+### Overview
 
 AdalFlow's tracing system follows the OpenAI Agents SDK patterns and provides:
 
@@ -12,9 +60,7 @@ AdalFlow's tracing system follows the OpenAI Agents SDK patterns and provides:
 4. **Automatic Instrumentation**: Built-in tracing for agents, generators, and tools
 5. {doc}`TracingProcessor <../apis/tracing/tracing.processor_interface>`: Support for any visualization library that implements OpenAI's trace provider interface
 
-## Core Concepts
-
-### Traces and Spans
+### Core Concepts
 
 - {doc}`Trace <../apis/tracing/tracing.traces>`: Represents a complete workflow execution (e.g., the high level task to the agent)
 - {doc}`Span <../apis/tracing/tracing.spans>`: Represents individual operations within a trace (e.g., steps of the task, tool calls, LLM requests)
@@ -24,7 +70,7 @@ AdalFlow's tracing system follows the OpenAI Agents SDK patterns and provides:
 
 AdalFlow's tracing system implements the same interface as OpenAI's agents SDK, making it compatible with any visualization tool that supports OpenAI's trace provider format.
 
-## Agent Tracing
+### Agent Tracing
 
 AdalFlow automatically traces agent executions when tracing is enabled:
 
@@ -77,7 +123,7 @@ def agent_tracing_example():
 agent_tracing_example()
 ```
 
-## MLflow Integration
+### MLflow Integration
 
 AdalFlow provides seamless integration with MLflow for enterprise-grade tracing.
 
@@ -142,13 +188,13 @@ The above code results in the following image as shown below
 ![mlflow_integration](../_static/images/adalflow_tracing_mlflow.png)
 
 
-## OpenAI Trace Provider Compatibility
+### OpenAI Trace Provider Compatibility
 
 AdalFlow's tracing system is designed to be compatible with any visualization library that supports OpenAI's trace provider interface one of which is MlFlow as shown above.
 
-## Basic Tracing Patterns
+### Basic Tracing Patterns
 
-### Tracing while Streaming Agent which has Async Generator Tools
+#### Tracing while Streaming Agent which has Async Generator Tools
 
 When agents use async generator tools, its return type can be set to `ToolCallActivityRunItem` which will have it captured by tracing.
 
@@ -247,7 +293,7 @@ async def demo_async_generator_tools_with_tracing():
 asyncio.run(demo_async_generator_tools_with_tracing())
 ```
 
-## Starting MLflow Server
+### Starting MLflow Server
 
 To use MLflow integration, you need to start an MLflow server first:
 
@@ -263,9 +309,9 @@ mlflow server --host 127.0.0.1 --port 8000
 
 **Important**: Start the MLflow server before running any tracing examples that use MLflow integration. The server must be running for the tracing examples to work properly.
 
-## Trace Reference
+### Trace Reference
 
-### Span Types
+#### Span Types
 
 | Span Type | Description | Use Case |
 |-----------|-------------|----------|
