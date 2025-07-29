@@ -54,6 +54,9 @@ from .types import (
     DialogTurn,
     Conversation,
 )
+
+from .mcp_tool import MCPFunctionTool, MCPToolManager
+
 from adalflow.utils.registry import EntityMapping
 
 __all__ = [
@@ -111,6 +114,8 @@ __all__ = [
     "FloatParser",
     "ListParser",
     "BooleanParser",
+    "MCPFunctionTool",
+    "MCPToolManager",
 ]
 
 for name in __all__:

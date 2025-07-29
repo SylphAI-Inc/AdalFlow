@@ -10,11 +10,14 @@ An AdalFlow agent consists of two main components:
 
 This separation allows for flexible customization of both planning and execution logic.
 
-## Quick Start
+## Minimal Example
 
-Here's a minimal example to get you started:
+We have a simple calculator tool that can evaluate mathematical expressions.
 
 ```python
+from adalflow import Agent, Runnerfrom adalflow.components.model_client.openai_client import OpenAIClient
+
+
 def calculator(expression: str) -> str:
     """Evaluate a mathematical expression."""
     try:
@@ -25,9 +28,9 @@ def calculator(expression: str) -> str:
 
 # Create agent with tools that require permission
 agent = Agent(
-    name="PermissionAgent",
+    name="CalculatorAgent",
     tools=[
-        FunctionTool(calculator), 
+        calculator,
     ],
     model_client=OpenAIClient(),
     model_kwargs={"model": "gpt-4o", "temperature": 0.3},
@@ -100,69 +103,9 @@ The `Runner.call()` method returns a `RunnerResult` object that contains compreh
 
 ### Tools
 
-Tools extend your agent's capabilities. AdalFlow supports several tool types:
+Tools extend your agent's capabilities by allowing them to call functions, access APIs, or interact with external systems. AdalFlow supports multiple tool types including FunctionTool (wrapping Python functions) and MCPFunctionTool (for MCP protocol integration). Tools can return various types including basic Python types, custom objects, or `ToolOutput` for enhanced control.
 
-#### Function Tools
-
-Convert regular Python functions into agent tools. Tools can return various types including basic Python types, custom objects, or `ToolOutput` for enhanced control:
-
-```python
-# Basic return types
-def search_web(query: str) -> str:
-    """Search the web for information."""
-    # Implementation here
-    return f"Search results for: {query}"
-
-def send_email(to: str, subject: str, body: str) -> str:
-    """Send an email."""
-    # Implementation here
-    return f"Email sent to {to}"
-
-# Enhanced control with ToolOutput
-def advanced_search(query: str, max_results: int = 5) -> ToolOutput:
-    """Advanced search with enhanced agent feedback."""
-    results = perform_search(query, max_results)
-    return ToolOutput(
-        output=results,                           # The actual data
-        observation=f"Found {len(results)} results for '{query}'",  # For agent reasoning
-        display=f"🔍 Searched: {query}",         # For user display
-        metadata={"query": query, "count": len(results)}
-    )
-
-tools = [
-    FunctionTool(search_web),
-    FunctionTool(send_email),
-    FunctionTool(advanced_search)
-]
-
-# Create the agent
-agent = Agent(
-    name="MathAgent",
-    tools=tools,
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
-    max_steps=5
-)
-```
-
-You can also use synchronous and asynchronous callables (such as a custom function, class method) as tools that are not necessarily FunctionTools. Further information is provided in the [Tool Helper](../tutorials/tool_helper) documentation. For instance, you could have created tools as below without using FunctionTool
-
-```python
-tools = [
-    search_web,
-    send_email,
-    advanced_search
-]
-
-# Create the agent
-agent = Agent(
-    name="MathAgent",
-    tools=tools,
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
-    max_steps=5
-)
-```
+For comprehensive information about tool types, implementation patterns, error handling, and advanced features, see the {doc}`Tool Use <tool>` documentation.
 
 ## Advanced Features
 
@@ -170,11 +113,11 @@ agent = Agent(
 
 You can execute agents with {doc}`RunnerStreamingResult <../apis/core/core.types>` support for real-time updates. See the [Streaming](streaming) tutorial for detailed information and examples.
 
-### Permission Management
+### Human in the Loop
 
 AdalFlow provides a **PermissionManager** system that allows you to control and approve tool executions before they run. This is particularly useful for tools that perform sensitive operations like file system access, API calls, or external communications.
 
-For comprehensive coverage of permission management features including CLI handlers, FastAPI integration, custom permission managers, and security best practices, see the dedicated [Permission Management](permission_management.md) tutorial.
+For comprehensive coverage of permission management features including CLI handlers, FastAPI integration, custom permission managers, and security best practices, see the dedicated [Human in the Loop](permission_management.md) tutorial.
 
 ## Execution Flow
 
@@ -260,20 +203,20 @@ AdalFlow provides comprehensive tracing capabilities to monitor and debug agent 
 :::{admonition} API reference
 :class: highlight
 
-- {doc}`adalflow.components.agent.agent.Agent <../apis/components/components.agent.agent>`
-- {doc}`adalflow.components.agent.runner.Runner <../apis/components/components.agent.runner>`
-- {doc}`adalflow.core.types.RunnerResult <../apis/core/core.types>`
-- {doc}`adalflow.core.types.RunnerStreamingResult <../apis/core/core.types>`
-- {doc}`adalflow.core.types.StepOutput <../apis/core/core.types>`
-- {doc}`adalflow.core.types.FunctionOutput <../apis/core/core.types>`
-- {doc}`adalflow.core.types.ToolOutput <../apis/core/core.types>`
-- {doc}`adalflow.core.func_tool.FunctionTool <../apis/core/core.func_tool>`
-- {doc}`adalflow.core.generator.Generator <../apis/core/core.generator>`
-- {doc}`adalflow.core.tool_manager.ToolManager <../apis/core/core.tool_manager>`
-- {doc}`adalflow.tracing.runner_span <../apis/tracing/tracing.create>`
-- {doc}`adalflow.tracing.tool_span <../apis/tracing/tracing.create>`
-- {doc}`adalflow.tracing.GeneratorStateLogger <../apis/tracing/tracing.generator_state_logger>`
-- {doc}`adalflow.tracing.GeneratorCallLogger <../apis/tracing/tracing.generator_call_logger>`
+- {doc}`components.agent.agent.Agent <../apis/components/components.agent.agent>`
+- {doc}`components.agent.runner.Runner <../apis/components/components.agent.runner>`
+- {doc}`core.types.RunnerResult <../apis/core/core.types>`
+- {doc}`core.types.RunnerStreamingResult <../apis/core/core.types>`
+- {doc}`core.types.StepOutput <../apis/core/core.types>`
+- {doc}`core.types.FunctionOutput <../apis/core/core.types>`
+- {doc}`core.types.ToolOutput <../apis/core/core.types>`
+- {doc}`func_tool.FunctionTool <../apis/core/core.func_tool>`
+- {doc}`generator.Generator <../apis/core/core.generator>`
+- {doc}`tool_manager.ToolManager <../apis/core/core.tool_manager>`
+- {doc}`tracing.runner_span <../apis/tracing/tracing.create>`
+- {doc}`tracing.tool_span <../apis/tracing/tracing.create>`
+- {doc}`tracing.GeneratorStateLogger <../apis/tracing/tracing.generator_state_logger>`
+- {doc}`tracing.GeneratorCallLogger <../apis/tracing/tracing.generator_call_logger>`
 :::
 
 

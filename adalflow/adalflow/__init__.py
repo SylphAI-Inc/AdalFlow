@@ -75,6 +75,9 @@ from adalflow.components.agent import ReActAgent
 # data pipeline
 from adalflow.components.data_process.text_splitter import TextSplitter
 
+# agents 
+from adalflow.components.agent import Agent, Runner
+
 __all__ = [
     "Component",
     "DataComponent",
@@ -147,4 +150,6 @@ __all__ = [
     "AnthropicAPIClient",
     # Agent
     "ReActAgent",
+    "Agent",
+    "Runner",
 ]

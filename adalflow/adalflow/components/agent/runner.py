@@ -488,6 +488,11 @@ class Runner(Component):
         if not isinstance(result, FunctionOutput):
             raise ValueError("Result is not a FunctionOutput")
 
+        # check error 
+        if result.error is not None:
+            log.warning(f"Error in tool execution: {result.error}") 
+        # TODO: specify how to handle this error
+
         return result
 
     async def acall(
