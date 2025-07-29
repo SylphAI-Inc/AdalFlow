@@ -242,8 +242,7 @@ class Agent(Component):
         # pass this if using default agent config
         tools: Optional[List[Any]] = None,
         context_variables: Optional[Dict] = None,  # context variables
-        # add_llm_as_fallback: Optional[bool] = False, 
-        add_llm_as_fallback: Optional[bool] = False, 
+        add_llm_as_fallback: Optional[bool] = True, 
         # Generator parameters
         model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = {},
