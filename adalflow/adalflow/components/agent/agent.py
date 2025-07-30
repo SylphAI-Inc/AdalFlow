@@ -163,7 +163,7 @@ def create_default_planner(
     task_desc = Prompt(
         template=adalflow_agent_task_desc,
         prompt_kwargs={"role_desc": role_desc},
-    )
+    )()
 
     prompt_kwargs = {
         "tools": tool_manager.yaml_definitions,
@@ -176,6 +176,7 @@ def create_default_planner(
             param_type=ParameterType.PROMPT,
             requires_opt=True,
         ),
+        # "task_desc": task_desc,
         # "examples": Parameter(
         #     name="examples",
         #     data=None,
@@ -219,7 +220,6 @@ class Agent(Component):
 
     The Agent comes with default prompt templates for agentic reasoning, automatic tool
     definition integration, and step history tracking. It includes built-in helper tools:
-    - finish: Terminates execution with the final answer
     - llm_tool: Fallback tool using LLM world knowledge for simple queries
 
     Architecture:
@@ -242,7 +242,7 @@ class Agent(Component):
         # pass this if using default agent config
         tools: Optional[List[Any]] = None,
         context_variables: Optional[Dict] = None,  # context variables
-        add_llm_as_fallback: Optional[bool] = True,
+        add_llm_as_fallback: Optional[bool] = False, 
         # Generator parameters
         model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = {},

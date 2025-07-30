@@ -411,6 +411,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
+                    break 
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -460,6 +461,7 @@ class Runner(Component):
         # execute permission and blocking mechanism in check_permission
         # TODO: permission manager might be better to be put inside of tool manager
         if self.permission_manager:
+
             result = asyncio.run(self.permission_manager.check_permission(func))
 
             # Handle both old (2 values) and new (3 values) return formats
@@ -487,6 +489,11 @@ class Runner(Component):
 
         if not isinstance(result, FunctionOutput):
             raise ValueError("Result is not a FunctionOutput")
+
+        # check error 
+        if result.error is not None:
+            log.warning(f"Error in tool execution: {result.error}") 
+        # TODO: specify how to handle this error
 
         return result
 
@@ -638,6 +645,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
+                    break 
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -863,7 +871,7 @@ class Runner(Component):
                         # TODO: trace the permission event
 
                         function_output_observation = None
-                        function_result = None
+                        function_result = None 
                         if (
                             self.permission_manager
                             and self.permission_manager.is_approval_required(
@@ -875,6 +883,7 @@ class Runner(Component):
                                     function
                                 )
                             )
+                            # there is an error 
                             if isinstance(permission_event, ToolOutput):
                                 # need a tool complete event 
                                 function_result = FunctionOutput(
@@ -909,19 +918,20 @@ class Runner(Component):
                                     streaming_result=streaming_result,
                                 )
                         else:
+                            print("permission not required")
                             function_result, function_output, function_output_observation = await self.stream_tool_execution(
                                 function=function,
                                 tool_call_id=tool_call_id,
                                 tool_call_name=tool_call_name,
                                 streaming_result=streaming_result,
                             )
-                        # llm only takes observation as feedback
+
+                        # Add step to history for approved tools (same as non-permission branch)
                         step_output: StepOutput = StepOutput(
                             step=step_count,
                             action=function,
                             function=function,
                             observation=function_output_observation,
-                            # ctx=self.ctx,
                         )
                         self.step_history.append(step_output)
 
@@ -983,6 +993,7 @@ class Runner(Component):
                     streaming_result.put_nowait(error_event)
 
                     step_count += 1
+                    break
 
             # If loop terminated without creating a final output item, create our own
             # TODO this might be redundant
@@ -1043,7 +1054,7 @@ class Runner(Component):
         Note: this version has no support for streaming.
         Includes permission checking if permission_manager is configured.
         """
-
+        
         # Check permission before execution
         if self.permission_manager:
             result = await self.permission_manager.check_permission(func)
@@ -1137,7 +1148,6 @@ class Runner(Component):
             if inspect.iscoroutine(function_output):
                 real_function_output = await function_output
             elif inspect.isasyncgen(function_output):
-                real_function_output = None
                 async for item in function_output:
                     if isinstance(item, ToolCallActivityRunItem):
                         # add the tool_call_id to the item

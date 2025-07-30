@@ -10,7 +10,7 @@ license = "MIT"
 packages = [{ from = "_dummy", include = "dummy" }] # empty packages
 
 [tool.poetry.dependencies]
-python = ">=3.9, <4.0"
+python = ">=3.10, <4.0"
 adalflow = { path = "../adalflow", develop = true } # Follow latest adalflow version
 pyvis = "^0.3.2"
 sphinx-tabs = "^3.4.7"
@@ -28,6 +28,7 @@ nbsphinx = "^0.9.4"
 nbconvert = "^7.16.4"
 pandoc = "^2.3"
 readthedocs-sphinx-search = "^0.3.2"
+together = "^1.5.21"
 
 # Additional dependencies for document compilation
 datasets = "^2.20.0"
@@ -50,6 +51,8 @@ torch = "^2.4.0"
 azure-identity = "^1.18.0"
 azure-core = "^1.31.0"
 myst-parser = "^3.0.0"
+mcp = "^1.12.2"
+mlflow = "^3.1.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
