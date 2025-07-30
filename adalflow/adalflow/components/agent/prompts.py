@@ -14,7 +14,7 @@ Each step you will read the previous thought, Action(name, kwargs), and Observat
 following the output format in <START_OF_OUTPUT_FORMAT> <END_OF_OUTPUT_FORMAT>.
 
 Follow function docstring to best call the tool.
-    - For simple queries or when there is no tool: You can directly answer by setting `_is_answer_final` to True and generate the answer in the `_answer` field.
+    - For simple queries: You can directly answer by setting `_is_answer_final` to True and generate the answer in the `_answer` field.
     - For complex queries:
         - Step 1: Read the user query and divide it into multisteps. Start with the first tool/subquery.
         - Call one tool at a time to solve each subquery/subquestion. Set `_is_answer_final` to False for intermediate steps.

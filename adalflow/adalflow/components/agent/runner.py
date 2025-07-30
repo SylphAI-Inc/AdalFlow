@@ -411,6 +411,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
+                    break 
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -644,6 +645,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
+                    break 
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -870,7 +872,6 @@ class Runner(Component):
 
                         function_output_observation = None
                         function_result = None 
-                        print("function name", function.name)
                         if (
                             self.permission_manager
                             and self.permission_manager.is_approval_required(
@@ -916,25 +917,6 @@ class Runner(Component):
                                     tool_call_name=tool_call_name,
                                     streaming_result=streaming_result,
                                 )
-                                
-                                # Add step to history for approved tools (same as non-permission branch)
-                                step_output: StepOutput = StepOutput(
-                                    step=step_count,
-                                    action=function,
-                                    function=function,
-                                    observation=function_output_observation,
-                                )
-                                self.step_history.append(step_output)
-
-                                # Update step span with results
-                                step_span_instance.span_data.update_attributes(
-                                    {
-                                        "tool_name": function.name,
-                                        "tool_output": function_result,
-                                        "is_final": self._check_last_step(function),
-                                        "observation": function_output_observation,
-                                    }
-                                )
                         else:
                             print("permission not required")
                             function_result, function_output, function_output_observation = await self.stream_tool_execution(
@@ -943,25 +925,25 @@ class Runner(Component):
                                 tool_call_name=tool_call_name,
                                 streaming_result=streaming_result,
                             )
-                            # llm only takes observation as feedback
-                            step_output: StepOutput = StepOutput(
-                                step=step_count,
-                                action=function,
-                                function=function,
-                                observation=function_output_observation,
-                                # ctx=self.ctx,
-                            )
-                            self.step_history.append(step_output)
 
-                            # Update step span with results
-                            step_span_instance.span_data.update_attributes(
-                                {
-                                    "tool_name": function.name,
-                                    "tool_output": function_result,
-                                    "is_final": self._check_last_step(function),
-                                    "observation": function_output_observation,
-                                }
-                            )
+                        # Add step to history for approved tools (same as non-permission branch)
+                        step_output: StepOutput = StepOutput(
+                            step=step_count,
+                            action=function,
+                            function=function,
+                            observation=function_output_observation,
+                        )
+                        self.step_history.append(step_output)
+
+                        # Update step span with results
+                        step_span_instance.span_data.update_attributes(
+                            {
+                                "tool_name": function.name,
+                                "tool_output": function_result,
+                                "is_final": self._check_last_step(function),
+                                "observation": function_output_observation,
+                            }
+                        )
 
                         # Emit step completion event
                         step_item = StepRunItem(data=step_output)
@@ -1011,6 +993,7 @@ class Runner(Component):
                     streaming_result.put_nowait(error_event)
 
                     step_count += 1
+                    break
 
             # If loop terminated without creating a final output item, create our own
             # TODO this might be redundant
