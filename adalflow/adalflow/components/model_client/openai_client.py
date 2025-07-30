@@ -367,7 +367,7 @@ class OpenAIClient(ModelClient):
         Fully migrated to Response API only."""
 
         parser = self.response_parser
-        log.debug(f"completion/response: {completion}, parser: {parser}")
+        log.info(f"completion/response: {completion}, parser: {parser}")
 
         data = parser(completion)
         usage = self.track_completion_usage(completion)

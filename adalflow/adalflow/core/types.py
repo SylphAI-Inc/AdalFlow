@@ -458,6 +458,8 @@ class RawResponsesStreamEvent(DataClass):
     """Streaming event for storing the raw responses from the LLM. These are 'raw' events, i.e. they are directly passed through
     from the LLM.
     """
+    input: Optional[Any] = None
+    """The input to the LLM."""
 
     data: Union[Any, None] = None
     """The raw responses streaming event from the LLM."""
@@ -489,7 +491,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
 
     input: Optional[Any] = field(
         default=None,
-        metadata={"desc": "The input to the generator"},
+        metadata={"desc": "The input to the generator"}, # should use it to save the prompt
     )
 
     data: T_co = field(
@@ -717,6 +719,9 @@ class StepOutput(DataClass, Generic[T]):
     # This action can be in Function, or Function Exptression, or just str
     # it includes the thought and action already
     # directly the output from planner LLMs
+    planner_prompt: Optional[str] = field(
+        default=None, metadata={"desc": "The planner prompt for this step"}
+    )   
     action: T = field(
         default=None, metadata={"desc": "The action the agent takes at this step"}
     )

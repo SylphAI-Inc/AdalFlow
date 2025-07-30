@@ -548,9 +548,9 @@ class TestRunnerTracing(unittest.TestCase):
             ]
             self.assertEqual(len(runner_spans), 1)
             runner_span = runner_spans[0]
-            self.assertEqual(runner_span.span_data.workflow_status, "stream_completed")
-            # In this case, the runner continues after error and gets final result
-            self.assertEqual(runner_span.span_data.final_answer, "default_finish")
+            self.assertEqual(runner_span.span_data.workflow_status, "stream_incomplete")
+            # In this case, the runner exits after error
+            self.assertIn("No output generated after", runner_span.span_data.final_answer)
 
             # Should have multiple response spans (error + final result)
             response_spans = [
@@ -569,11 +569,11 @@ class TestRunnerTracing(unittest.TestCase):
 
             # Check final response span (last one)
             final_response_span = response_spans[1]
-            self.assertEqual(final_response_span.span_data.result_type, "str")
+            self.assertEqual(final_response_span.span_data.result_type, "incomplete")
             self.assertTrue(
                 final_response_span.span_data.execution_metadata.get("streaming")
             )
-            self.assertEqual(final_response_span.span_data.answer, "default_finish")
+            self.assertIn("No output generated after", final_response_span.span_data.answer)
 
         asyncio.run(async_test())
 
