@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="tool_manager" href="core.tool_manager.html" /><link rel="prev" title="func_tool" href="core.func_tool.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>mcp_tool - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -303,9 +303,9 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="index.html">Core</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Core</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.component.html">component</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.container.html">container</a></li>
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.db.html">db</a></li>
@@ -477,14 +478,423 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="mcp-tool">
-<span id="core-mcp-tool"></span><h1>mcp_tool<a class="headerlink" href="#mcp-tool" title="Link to this heading">¶</a></h1>
+          <section id="module-core.mcp_tool">
+<span id="mcp-tool"></span><span id="core-mcp-tool"></span><h1>mcp_tool<a class="headerlink" href="#module-core.mcp_tool" title="Link to this heading">¶</a></h1>
+<p>MCP (Modular Command Protocol) Tools are function tools defined in a unified standard sharing with different models and services. They are served by an MCP server.</p>
+<p>Features:
+- The MCPFunctionTool class, which wraps MCP tools as FunctionTool instances for use in agent workflows.
+- The MCPToolManager class, which manages multiple MCP server connections, loads server configurations from JSON, lists available resources/tools/prompts, and provides all tools as FunctionTool instances.</p>
+<p>The module enables dynamic discovery and invocation of MCP tools for agent-based workflows.</p>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.mcp_tool.execute_mcp_op" title="core.mcp_tool.execute_mcp_op"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_mcp_op</span></code></a>(server_params, tool_name[, id])</p></td>
+<td><p>Executes an operation using a specified MCP tool within a new client session.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.mcp_tool.mcp_session_context" title="core.mcp_tool.mcp_session_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mcp_session_context</span></code></a>(server_params[, name])</p></td>
+<td><p>Asynchronous context manager for establishing an MCP (Modular Communication Protocol) session.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.mcp_tool.MCPFunctionTool" title="core.mcp_tool.MCPFunctionTool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCPFunctionTool</span></code></a>(server_params, mcp_tool)</p></td>
+<td><p>A FunctionTool wrapper for MCP (Modular Command Protocol) tools.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams" title="core.mcp_tool.MCPServerSseParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCPServerSseParams</span></code></a>(url[, headers, timeout, ...])</p></td>
+<td><p>Mirrors the params in <cite>mcp.client.sse.sse_client</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams" title="core.mcp_tool.MCPServerStdioParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCPServerStdioParams</span></code></a>(command[, args, env, ...])</p></td>
+<td><p>Mirrors <cite>mcp.client.stdio.StdioServerParameters</cite>, but lets you pass params without another import.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams" title="core.mcp_tool.MCPServerStreamableHttpParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCPServerStreamableHttpParams</span></code></a>(url[, ...])</p></td>
+<td><p>Mirrors the params in <cite>mcp.client.streamable_http.streamablehttp_client</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.mcp_tool.MCPToolManager" title="core.mcp_tool.MCPToolManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCPToolManager</span></code></a>([cache_tools_list, ...])</p></td>
+<td><p>Manage MCP client connections and resources.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStdioParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MCPServerStdioParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_error_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ignore'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'replace'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strict'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPServerStdioParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPServerStdioParams" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mirrors <cite>mcp.client.stdio.StdioServerParameters</cite>, but lets you pass params without another import.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStdioParams.command">
+<span class="sig-name descname"><span class="pre">command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStdioParams.command" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStdioParams.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStdioParams.args" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStdioParams.env">
+<span class="sig-name descname"><span class="pre">env</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStdioParams.env" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStdioParams.cwd">
+<span class="sig-name descname"><span class="pre">cwd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStdioParams.cwd" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStdioParams.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'utf-8'</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStdioParams.encoding" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStdioParams.encoding_error_handler">
+<span class="sig-name descname"><span class="pre">encoding_error_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ignore'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'replace'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'strict'</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStdioParams.encoding_error_handler" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerSseParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MCPServerSseParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sse_read_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPServerSseParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPServerSseParams" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mirrors the params in <cite>mcp.client.sse.sse_client</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerSseParams.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerSseParams.url" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerSseParams.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerSseParams.headers" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerSseParams.timeout">
+<span class="sig-name descname"><span class="pre">timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerSseParams.timeout" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerSseParams.sse_read_timeout">
+<span class="sig-name descname"><span class="pre">sse_read_timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerSseParams.sse_read_timeout" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStreamableHttpParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MCPServerStreamableHttpParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(seconds=30)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sse_read_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(seconds=300)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminate_on_close</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPServerStreamableHttpParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPServerStreamableHttpParams" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mirrors the params in <cite>mcp.client.streamable_http.streamablehttp_client</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStreamableHttpParams.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStreamableHttpParams.url" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStreamableHttpParams.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStreamableHttpParams.headers" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStreamableHttpParams.timeout">
+<span class="sig-name descname"><span class="pre">timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=30)</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStreamableHttpParams.timeout" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStreamableHttpParams.sse_read_timeout">
+<span class="sig-name descname"><span class="pre">sse_read_timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=300)</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStreamableHttpParams.sse_read_timeout" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPServerStreamableHttpParams.terminate_on_close">
+<span class="sig-name descname"><span class="pre">terminate_on_close</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#core.mcp_tool.MCPServerStreamableHttpParams.terminate_on_close" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.mcp_tool.mcp_session_context">
+<span class="sig-name descname"><span class="pre">mcp_session_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams" title="core.mcp_tool.MCPServerStdioParams"><span class="pre">MCPServerStdioParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams" title="core.mcp_tool.MCPServerSseParams"><span class="pre">MCPServerSseParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams" title="core.mcp_tool.MCPServerStreamableHttpParams"><span class="pre">MCPServerStreamableHttpParams</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#mcp_session_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.mcp_session_context" title="Link to this definition">¶</a></dt>
+<dd><p>Asynchronous context manager for establishing an MCP (Modular Communication Protocol) session.</p>
+<p>Depending on the type of <cite>server_params</cite>, this function initializes a connection to an MCP server
+either via standard I/O or HTTP streaming, and yields an initialized <cite>ClientSession</cite> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>server_params</strong> (<em>MCPServerParameters</em>) – Parameters for connecting to the MCP server.
+- If an instance of <cite>StdioServerParameters</cite>, connects via standard I/O.
+- If a string (interpreted as a URL), connects via HTTP streaming.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ClientSession</em> – An initialized client session for communicating with the MCP server.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <cite>server_params</cite> is not a supported type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.mcp_tool.execute_mcp_op">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">execute_mcp_op</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams" title="core.mcp_tool.MCPServerStdioParams"><span class="pre">MCPServerStdioParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams" title="core.mcp_tool.MCPServerSseParams"><span class="pre">MCPServerSseParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams" title="core.mcp_tool.MCPServerStreamableHttpParams"><span class="pre">MCPServerStreamableHttpParams</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/mcp_tool.html#execute_mcp_op"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.execute_mcp_op" title="Link to this definition">¶</a></dt>
+<dd><p>Executes an operation using a specified MCP tool within a new client session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>server_params</strong> (<em>MCPServerParameters</em>) – Parameters required to connect to the MCP server.</p></li>
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the tool to execute.</p></li>
+<li><p><strong>id</strong> (<em>optional</em>) – An optional identifier for the operation.</p></li>
+<li><p><strong>**params</strong> (<em>dict</em>) – Additional parameters to pass to the tool.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The textual result of the tool operation, or None if the operation failed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – If an error occurs during the tool execution, it is caught and logged, but not re-raised.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><p>Prints the result of the tool operation or an error message to the console, with colored output for emphasis.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function uses an asynchronous context manager to handle the MCP session lifecycle.</p></li>
+<li><p>The result is expected to be accessible via <cite>result.content[0].text</cite>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPFunctionTool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MCPFunctionTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams" title="core.mcp_tool.MCPServerStdioParams"><span class="pre">MCPServerStdioParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams" title="core.mcp_tool.MCPServerSseParams"><span class="pre">MCPServerSseParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams" title="core.mcp_tool.MCPServerStreamableHttpParams"><span class="pre">MCPServerStreamableHttpParams</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcp_tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPFunctionTool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPFunctionTool" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code></p>
+<p>A FunctionTool wrapper for MCP (Modular Command Protocol) tools.</p>
+<p>MCPFunctionTool enables seamless integration of MCP tools into agent workflows by exposing them as FunctionTool instances.
+It automatically translates the <cite>mcp.types.Tool</cite> into a <cite>FunctionTool</cite>.
+It allows dynamic discovery, description, and invocation of MCP tools, making them accessible to LLM-based agents or pipelines.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Different from FunctionTool, MCPFunctionTool only supports <cite>acall</cite> since all
+tools are executed asynchronously in the MCP protocol.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>server_params</strong> (<em>MCPServerParameters</em>) – The parameters required to connect to the MCP server. Could be a mcp.StdioServerParameters instance or a URL string.</p></li>
+<li><p><strong>mcp_tool</strong> (<em>mcp.types.Tool</em>) – The MCP tool instance to be used by this function tool.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Usage Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.mcp_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPFunctionTool</span><span class="p">,</span> <span class="n">mcp_session_context</span><span class="p">,</span> <span class="n">StdioServerParameters</span>
+
+<span class="n">server_params</span> <span class="o">=</span> <span class="n">StdioServerParameters</span><span class="p">(</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mcp_server.py&quot;</span><span class="p">],</span>
+    <span class="n">env</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="n">mcp_session_context</span><span class="p">(</span><span class="n">server_params</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">list_tools</span><span class="p">()</span>
+    <span class="n">tool</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">mcp_func_tool</span> <span class="o">=</span> <span class="n">MCPFunctionTool</span><span class="p">(</span><span class="n">server_params</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">mcp_func_tool</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="n">param1</span><span class="o">=</span><span class="s2">&quot;value1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Features:
+- Wraps an MCP tool (from an MCP server) as a FunctionTool, providing a standardized interface for agent-based workflows.
+- Automatically generates a FunctionDefinition based on the MCP tool’s schema and description.
+- Supports asynchronous execution of the tool via the MCP protocol, using the provided server parameters.
+- Handles both stdio and HTTP-based MCP server connections.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPFunctionTool.acall">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPFunctionTool.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPFunctionTool.acall" title="Link to this definition">¶</a></dt>
+<dd><p>Execute the function asynchronously.</p>
+<p>Need to be called in an async function or using asyncio.run.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="n">server_params</span> <span class="o">=</span> <span class="n">StdioServerParameters</span><span class="p">(</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>  <span class="c1"># Command to run the server</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mcp_server.py&quot;</span><span class="p">],</span>  <span class="c1"># Arguments (path to your server script)</span>
+    <span class="n">env</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># Optional environment variables</span>
+<span class="p">)</span>
+<span class="c1"># Get tools from the server</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">mcp_session_context</span><span class="p">(</span><span class="n">server_params</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">list_tools</span><span class="p">()</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_async_function</span><span class="p">():</span>
+    <span class="n">tool_1</span> <span class="o">=</span> <span class="n">MCPFunctionTool</span><span class="p">(</span><span class="n">server_params</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool_1</span><span class="o">.</span><span class="n">acall</span><span class="p">()</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">call_async_function</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPFunctionTool.bicall">
+<span class="sig-name descname"><span class="pre">bicall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPFunctionTool.bicall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPFunctionTool.bicall" title="Link to this definition">¶</a></dt>
+<dd><p>This function is not supported in MCPFunctionTool.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPFunctionTool.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPFunctionTool.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPFunctionTool.call" title="Link to this definition">¶</a></dt>
+<dd><p>Execute the function synchronously by running the async call method.</p>
+<p>This is a convenience method that wraps the async <cite>acall</cite> method using <cite>asyncio.run()</cite>.
+It allows synchronous usage of MCP tools without requiring async/await syntax.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Positional arguments (not supported, raises assertion error)</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to the MCP tool</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the MCP tool execution</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput">FunctionOutput</a></p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">server_params</span> <span class="o">=</span> <span class="n">StdioServerParameters</span><span class="p">(</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mcp_server.py&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="c1"># Get tools from the server</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">mcp_session_context</span><span class="p">(</span><span class="n">server_params</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">list_tools</span><span class="p">()</span>
+
+<span class="n">tool_1</span> <span class="o">=</span> <span class="n">MCPFunctionTool</span><span class="p">(</span><span class="n">server_params</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">tool_1</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">param1</span><span class="o">=</span><span class="s2">&quot;value1&quot;</span><span class="p">)</span>  <span class="c1"># Synchronous call</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPToolManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MCPToolManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_tools_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_session_timeout_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPToolManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPToolManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>Manage MCP client connections and resources.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.mcp_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPToolManager</span><span class="p">,</span> <span class="n">StdioServerParameters</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">MCPToolManager</span><span class="p">()</span>
+<span class="c1"># Add servers. Here we used a local stdio server defined in `mcp_server.py`.</span>
+<span class="c1"># you can add more servers by calling `add_server` for multiple times.</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_server</span><span class="p">(</span><span class="s2">&quot;calculator_server&quot;</span><span class="p">,</span> <span class="n">StdioServerParameters</span><span class="p">(</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>  <span class="c1"># Command to run the server</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mcp_server.py&quot;</span><span class="p">],</span>  <span class="c1"># Arguments (path to your server script)</span>
+<span class="p">))</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_server</span><span class="p">(</span><span class="s2">&quot;weather_server&quot;</span><span class="p">,</span> <span class="n">StdioServerParameters</span><span class="p">(</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>  <span class="c1"># Command to run the server</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mcp_weather_server.py&quot;</span><span class="p">],</span>  <span class="c1"># Arguments (path to your weather server script)</span>
+<span class="p">))</span>
+<span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">list_all_tools</span><span class="p">()</span>  <span class="c1"># to see all available tools from all servers.</span>
+<span class="n">tools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_all_tools</span><span class="p">()</span>
+<span class="c1"># Add tools to agent</span>
+<span class="n">react</span> <span class="o">=</span> <span class="n">ReActAgent</span><span class="p">(</span>
+    <span class="n">max_steps</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">add_llm_as_fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPToolManager.add_servers_from_json_file">
+<span class="sig-name descname"><span class="pre">add_servers_from_json_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPToolManager.add_servers_from_json_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPToolManager.add_servers_from_json_file" title="Link to this definition">¶</a></dt>
+<dd><p>Read MCP server configurations from a JSON file and add them to the manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>json_path</strong> (<em>str</em>) – Path to the JSON file containing MCP server configurations.</p>
+</dd>
+</dl>
+<p>Example of JSON structure:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;mcp_weather_server&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;mcp_weather_server.py&quot;</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPToolManager.add_server">
+<span class="sig-name descname"><span class="pre">add_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams" title="core.mcp_tool.MCPServerStdioParams"><span class="pre">MCPServerStdioParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams" title="core.mcp_tool.MCPServerSseParams"><span class="pre">MCPServerSseParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams" title="core.mcp_tool.MCPServerStreamableHttpParams"><span class="pre">MCPServerStreamableHttpParams</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPToolManager.add_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPToolManager.add_server" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a new MCP server to the internal server registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The unique identifier for the server to be added.</p></li>
+<li><p><strong>server_params</strong> (<em>MCPServerParameters</em>) – An object containing the configuration parameters for the server. Could be a StdioServerParameters instance or a URL string.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Features:</dt><dd><ul class="simple">
+<li><p>If a server with the specified name does not already exist in the registry, it is added and a confirmation message is printed.</p></li>
+<li><p>If a server with the specified name already exists, the addition is skipped and a ValueError is raised.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If a server with the specified name already exists in the registry.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPToolManager.list_all_tools">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_all_tools</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPToolManager.list_all_tools"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPToolManager.list_all_tools" title="Link to this definition">¶</a></dt>
+<dd><p>Print out all available resources, tools, and prompts from all added servers.
+If <cite>server_names</cite> is provided, only list tools for those specific servers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>server_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A list of server names to filter the tools.
+If None, all servers are listed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.mcp_tool.MCPToolManager.get_all_tools">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_tools</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.mcp_tool.MCPFunctionTool" title="core.mcp_tool.MCPFunctionTool"><span class="pre">MCPFunctionTool</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/mcp_tool.html#MCPToolManager.get_all_tools"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.mcp_tool.MCPToolManager.get_all_tools" title="Link to this definition">¶</a></dt>
+<dd><p>Get all available functions from added servers as FunctionTool instances.
+If <cite>server_names</cite> is provided, only list tools for those specific servers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>server_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A list of server names to filter the tools.
+If None, all servers are listed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -492,8 +902,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="core.tool_manager.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">tool_manager</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="core.func_tool.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">func_tool</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -511,8 +939,65 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">mcp_tool</a><ul>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams"><code class="docutils literal notranslate"><span class="pre">MCPServerStdioParams</span></code></a><ul>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams.command"><code class="docutils literal notranslate"><span class="pre">MCPServerStdioParams.command</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams.args"><code class="docutils literal notranslate"><span class="pre">MCPServerStdioParams.args</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams.env"><code class="docutils literal notranslate"><span class="pre">MCPServerStdioParams.env</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams.cwd"><code class="docutils literal notranslate"><span class="pre">MCPServerStdioParams.cwd</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams.encoding"><code class="docutils literal notranslate"><span class="pre">MCPServerStdioParams.encoding</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStdioParams.encoding_error_handler"><code class="docutils literal notranslate"><span class="pre">MCPServerStdioParams.encoding_error_handler</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams"><code class="docutils literal notranslate"><span class="pre">MCPServerSseParams</span></code></a><ul>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams.url"><code class="docutils literal notranslate"><span class="pre">MCPServerSseParams.url</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams.headers"><code class="docutils literal notranslate"><span class="pre">MCPServerSseParams.headers</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams.timeout"><code class="docutils literal notranslate"><span class="pre">MCPServerSseParams.timeout</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerSseParams.sse_read_timeout"><code class="docutils literal notranslate"><span class="pre">MCPServerSseParams.sse_read_timeout</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams"><code class="docutils literal notranslate"><span class="pre">MCPServerStreamableHttpParams</span></code></a><ul>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams.url"><code class="docutils literal notranslate"><span class="pre">MCPServerStreamableHttpParams.url</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams.headers"><code class="docutils literal notranslate"><span class="pre">MCPServerStreamableHttpParams.headers</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams.timeout"><code class="docutils literal notranslate"><span class="pre">MCPServerStreamableHttpParams.timeout</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams.sse_read_timeout"><code class="docutils literal notranslate"><span class="pre">MCPServerStreamableHttpParams.sse_read_timeout</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPServerStreamableHttpParams.terminate_on_close"><code class="docutils literal notranslate"><span class="pre">MCPServerStreamableHttpParams.terminate_on_close</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.mcp_tool.mcp_session_context"><code class="docutils literal notranslate"><span class="pre">mcp_session_context()</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.execute_mcp_op"><code class="docutils literal notranslate"><span class="pre">execute_mcp_op()</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPFunctionTool"><code class="docutils literal notranslate"><span class="pre">MCPFunctionTool</span></code></a><ul>
+<li><a class="reference internal" href="#core.mcp_tool.MCPFunctionTool.acall"><code class="docutils literal notranslate"><span class="pre">MCPFunctionTool.acall()</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPFunctionTool.bicall"><code class="docutils literal notranslate"><span class="pre">MCPFunctionTool.bicall()</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPFunctionTool.call"><code class="docutils literal notranslate"><span class="pre">MCPFunctionTool.call()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPToolManager"><code class="docutils literal notranslate"><span class="pre">MCPToolManager</span></code></a><ul>
+<li><a class="reference internal" href="#core.mcp_tool.MCPToolManager.add_servers_from_json_file"><code class="docutils literal notranslate"><span class="pre">MCPToolManager.add_servers_from_json_file()</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPToolManager.add_server"><code class="docutils literal notranslate"><span class="pre">MCPToolManager.add_server()</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPToolManager.list_all_tools"><code class="docutils literal notranslate"><span class="pre">MCPToolManager.list_all_tools()</span></code></a></li>
+<li><a class="reference internal" href="#core.mcp_tool.MCPToolManager.get_all_tools"><code class="docutils literal notranslate"><span class="pre">MCPToolManager.get_all_tools()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

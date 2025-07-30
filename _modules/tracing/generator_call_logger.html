@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>tracing.generator_call_logger - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -481,18 +482,18 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for tracing.generator_call_logger</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">append_to_jsonl</span><span class="p">,</span> <span class="n">load_jsonl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneratorOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_to_jsonl</span><span class="p">,</span> <span class="n">load_jsonl</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -501,7 +502,7 @@
 <div class="viewcode-block" id="GeneratorCallRecord">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">GeneratorCallRecord</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeneratorCallRecord</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The prompt kwargs&quot;</span><span class="p">}</span>
     <span class="p">)</span>
@@ -524,7 +525,7 @@
 
 <div class="viewcode-block" id="GeneratorCallLogger">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger">[docs]</a>
-<span class="k">class</span> <span class="nc">GeneratorCallLogger</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeneratorCallLogger</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Log the generator calls.</span>
 
 <span class="s2">    Allow multiple generators to be logged, and each with its own jsonl file.</span>
@@ -540,7 +541,7 @@
     <span class="c1"># TODO: a project will share the same metadata file to record each logger&#39;s metadata</span>
     <span class="n">_metadata_filename</span> <span class="o">=</span> <span class="s2">&quot;logger_metadata.json&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">save_dir</span> <span class="ow">or</span> <span class="s2">&quot;./traces/&quot;</span>
@@ -557,30 +558,30 @@
 
 <div class="viewcode-block" id="GeneratorCallLogger.reset">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.reset">[docs]</a>
-    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">generator_names_to_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generator_names_to_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span>
 
 <div class="viewcode-block" id="GeneratorCallLogger.get_log_location">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_log_location">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_log_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GeneratorCallLogger.get_calls">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_calls">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_calls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GeneratorCallRecord</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_calls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GeneratorCallRecord</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the generator call records for generator with name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GeneratorCallLogger.register_generator">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.register_generator">[docs]</a>
-    <span class="k">def</span> <span class="nf">register_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Register a generator with a name and a jsonl file to log its calls.</span>
 
 <span class="sd">        Args:</span>
@@ -599,7 +600,7 @@
 
 <div class="viewcode-block" id="GeneratorCallLogger.save_meta_data">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.save_meta_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the _generator_names_to_files to a json file.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
@@ -607,7 +608,7 @@
 
 <div class="viewcode-block" id="GeneratorCallLogger.load_meta_data">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.load_meta_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the _generator_names_to_files from a json file.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
@@ -619,7 +620,7 @@
 
 <div class="viewcode-block" id="GeneratorCallLogger.load">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.load">[docs]</a>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GeneratorCallRecord</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GeneratorCallRecord</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load the generator call records.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generator </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not registered.&quot;</span><span class="p">)</span>
@@ -631,7 +632,7 @@
 
 <div class="viewcode-block" id="GeneratorCallLogger.log_call">
 <a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.log_call">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>

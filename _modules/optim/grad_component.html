@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>optim.grad_component - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -483,31 +484,31 @@
           <h1>Source code for optim.grad_component</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Base class for Autograd Components that can be called and backpropagated through.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">BackwardEngine</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackwardEngine</span>
 
-    <span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Parameter</span><span class="p">,</span>
     <span class="n">OutputParameter</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.gradient</span> <span class="kn">import</span> <span class="n">Gradient</span><span class="p">,</span> <span class="n">GradientContext</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">ParameterType</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.gradient</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gradient</span><span class="p">,</span> <span class="n">GradientContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneratorOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">printc</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.function</span> <span class="kn">import</span> <span class="n">BackwardContext</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.text_grad.backend_engine_prompt</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.function</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackwardContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.text_grad.backend_engine_prompt</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">GRAD_COMPONENT_CONVERSATION_TEMPLATE_STRING</span><span class="p">,</span>
     <span class="n">LOSS_CONVERSATION_START_INSTRUCTION_STRING_FN</span><span class="p">,</span>
     <span class="n">OBJECTIVE_INSTRUCTION_BASE</span><span class="p">,</span>
@@ -522,7 +523,7 @@
 
 <div class="viewcode-block" id="GradComponent">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.GradComponent">[docs]</a>
-<span class="k">class</span> <span class="nc">GradComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GradComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;A base class to define interfaces for an auto-grad component/operator.</span>
 
 <span class="s2">    Compared with `Component`, `GradComponent` defines three important interfaces:</span>
@@ -543,7 +544,7 @@
     <span class="n">_component_desc</span> <span class="o">=</span> <span class="s2">&quot;GradComponent&quot;</span>
     <span class="n">_disable_backward_engine</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># what is this component for? Useful for training.</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -576,13 +577,13 @@
 
 <div class="viewcode-block" id="GradComponent.set_backward_engine">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.set_backward_engine">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_backward_engine</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_backward_engine</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">backward_engine</span><span class="p">:</span> <span class="s2">&quot;BackwardEngine&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="s2">&quot;ModelClient&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">BackwardEngine</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackwardEngine</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span> <span class="o">=</span> <span class="n">backward_engine</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">backward_engine</span><span class="p">:</span>
@@ -599,34 +600,34 @@
 
 <div class="viewcode-block" id="GradComponent.disable_backward_engine">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.disable_backward_engine">[docs]</a>
-    <span class="k">def</span> <span class="nf">disable_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disable_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Does not run gradients generation, but still with backward to gain module-context&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disable_backward_engine</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="GradComponent.call">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;call method is not implemented&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GradComponent.acall">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.acall">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement this for your async call.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;acall method is not implemented&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GradComponent.forward">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Default forward method for training:</span>
 <span class="sd">        1. for all args and kwargs, if it is a `Parameter` object, it will be tracked as `Predecessor`.</span>
 <span class="sd">        2. Trace input_args and full_response in the parameter object.</span>
 <span class="sd">        3. Return the parameter object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">OutputParameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">OutputParameter</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Forwarding through </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with args: </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2"> and kwargs: </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -739,7 +740,7 @@
 
 <div class="viewcode-block" id="GradComponent.backward_with_pass_through_gradients">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.backward_with_pass_through_gradients">[docs]</a>
-    <span class="k">def</span> <span class="nf">backward_with_pass_through_gradients</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backward_with_pass_through_gradients</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Pass-through gradient to the predecessors.</span>
@@ -776,7 +777,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_backward_through_one_predecessor</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_backward_through_one_predecessor</span><span class="p">(</span>
         <span class="n">pred</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
         <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
         <span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
@@ -924,7 +925,7 @@
 
 <div class="viewcode-block" id="GradComponent.backward">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.backward">[docs]</a>
-    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">response</span><span class="p">:</span> <span class="s2">&quot;OutputParameter&quot;</span><span class="p">,</span>
@@ -988,9 +989,9 @@
 
 <div class="viewcode-block" id="FunGradComponent">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.FunGradComponent">[docs]</a>
-<span class="k">class</span> <span class="nc">FunGradComponent</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunGradComponent</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">fun</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
         <span class="c1"># afun: Optional[Callable] = None,</span>
@@ -1015,7 +1016,7 @@
 
 <div class="viewcode-block" id="FunGradComponent.call">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.FunGradComponent.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;doc_string&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -1024,14 +1025,14 @@
 
 <div class="viewcode-block" id="FunGradComponent.forward">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.FunGradComponent.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;add func_doc_string to the kwargs before calling the super().forward&quot;&quot;&quot;</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;doc_string&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_string</span>
         <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_extra_repr</span><span class="p">()</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;fun_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="si">}</span><span class="s2">, fun=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, fun_doc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1041,7 +1042,7 @@
 
 <div class="viewcode-block" id="fun_to_grad_component">
 <a class="viewcode-back" href="../../apis/optim/optim.grad_component.html#optim.grad_component.fun_to_grad_component">[docs]</a>
-<span class="k">def</span> <span class="nf">fun_to_grad_component</span><span class="p">(</span><span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_string</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fun_to_grad_component</span><span class="p">(</span><span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">doc_string</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a decorator that, when applied to a function `fun`,</span>
 <span class="sd">    wraps it in a GradComponent with the given `desc`.</span>
@@ -1074,7 +1075,7 @@
 <span class="sd">        my_function_component = fun_to_grad_component(desc=&quot;This is a test function&quot;)(my_function)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">fun</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">fun</span><span class="p">):</span>
         <span class="c1"># 1) build the class name</span>
         <span class="n">class_name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span>
@@ -1098,9 +1099,9 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># Test FunGradComponent</span>
-    <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
-    <span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>  <span class="c1"># noqa F841</span>
             <span class="n">data</span><span class="o">=</span><span class="s2">&quot;Finish the task with verbatim short factoid responses from retrieved context.&quot;</span><span class="p">,</span>
             <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
@@ -1129,7 +1130,7 @@
             <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Instruct how the agent creates the final answer from the step history.&quot;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">my_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
 

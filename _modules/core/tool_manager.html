@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>core.tool_manager - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -485,7 +486,7 @@
 <span class="sd">The ToolManager manages a list of tools, context, and all ways to execute functions.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
@@ -496,28 +497,28 @@
     <span class="n">overload</span><span class="p">,</span>
     <span class="n">Literal</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
-<span class="kn">import</span> <span class="nn">nest_asyncio</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">nest_asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.container</span> <span class="kn">import</span> <span class="n">ComponentList</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">GradComponent</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComponentList</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.grad_component</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.func_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionTool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FunctionDefinition</span><span class="p">,</span>
     <span class="n">FunctionOutput</span><span class="p">,</span>
     <span class="n">Function</span><span class="p">,</span>
     <span class="n">FunctionExpression</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">printc</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">parse_function_call_expr</span><span class="p">,</span>
     <span class="n">sandbox_exec</span><span class="p">,</span>
 <span class="p">)</span>
@@ -533,7 +534,7 @@
 
 <div class="viewcode-block" id="run_async_in_new_loop">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.run_async_in_new_loop">[docs]</a>
-<span class="k">def</span> <span class="nf">run_async_in_new_loop</span><span class="p">(</span><span class="n">coro</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_async_in_new_loop</span><span class="p">(</span><span class="n">coro</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run async function in a new event loop.&quot;&quot;&quot;</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
     <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
@@ -547,28 +548,28 @@
 
 <div class="viewcode-block" id="CallFunctionTool">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.CallFunctionTool">[docs]</a>
-<span class="k">class</span> <span class="nc">CallFunctionTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CallFunctionTool</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Contains other unit gradcomponent such as calling</span>
 <span class="s2">                a FunctionTool&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CallFunctionTool.forward">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.CallFunctionTool.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CallFunctionTool.call">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.CallFunctionTool.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CallFunctionTool.bicall">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.CallFunctionTool.bicall">[docs]</a>
-    <span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bicall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Function</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
         <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
@@ -582,11 +583,11 @@
             <span class="c1"># print(f&quot;tool training: {tool.training}&quot;)</span>
             <span class="n">output</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="n">func_data</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">func_data</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
 
-            <span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">fun_to_grad_component</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.grad_component</span><span class="w"> </span><span class="kn">import</span> <span class="n">fun_to_grad_component</span>
 
             <span class="c1"># this will automatically create the outputparam, and connect output, func to the outputParam</span>
             <span class="nd">@fun_to_grad_component</span><span class="p">()</span>
-            <span class="k">def</span> <span class="nf">func_to_funcoutput</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">func_to_funcoutput</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">output</span>
 
             <span class="c1"># NOTE: for nontrainable function but the overall tool manager is in training mode,</span>
@@ -607,13 +608,13 @@
 
 <div class="viewcode-block" id="FunctionExperssionToFunction">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.FunctionExperssionToFunction">[docs]</a>
-<span class="k">class</span> <span class="nc">FunctionExperssionToFunction</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionExperssionToFunction</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Convert FunctionExpression to Function&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FunctionExperssionToFunction.call">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.FunctionExperssionToFunction.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Function</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Function</span><span class="p">:</span>
 
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">expr</span><span class="p">,</span> <span class="n">FunctionExpression</span>
@@ -637,7 +638,7 @@
 <span class="c1"># Tool manager is a task component</span>
 <div class="viewcode-block" id="ToolManager">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager">[docs]</a>
-<span class="k">class</span> <span class="nc">ToolManager</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolManager</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&quot;Manage a list of tools, context, and all ways to execute functions.</span>
 
 
@@ -647,7 +648,7 @@
 <span class="s2">    If you need more specification, such as using exclude field, you can use the function_definitions.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">tools</span><span class="p">:</span> <span class="n">ToolsType</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">additional_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
@@ -674,13 +675,13 @@
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">context_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">context_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_additional_context</span>
 
 <div class="viewcode-block" id="ToolManager.get_context_index">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.get_context_index">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_context_index</span><span class="p">(</span><span class="n">tool</span><span class="p">:</span> <span class="n">FunctionTool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_index</span><span class="p">(</span><span class="n">tool</span><span class="p">:</span> <span class="n">FunctionTool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">:</span> <span class="n">tool</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">output</span></div>
@@ -689,7 +690,7 @@
 <div class="viewcode-block" id="ToolManager.create_context_map_from_tools">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.create_context_map_from_tools">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_context_map_from_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionTool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_context_map_from_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionTool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">:</span>
             <span class="n">tool_map</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="o">.</span><span class="n">get_context_index</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
@@ -703,26 +704,26 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">yaml_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">yaml_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">output</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">json_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">json_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">output</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">function_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionDefinition</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">function_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionDefinition</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">]</span>
 
 <div class="viewcode-block" id="ToolManager.parse_func_expr">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.parse_func_expr">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_func_expr</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_func_expr</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">expr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
         <span class="n">map_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
@@ -747,28 +748,28 @@
 
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expr_or_fun</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;parse&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;parse&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Function</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expr_or_fun</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;execute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;execute&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expr_or_fun</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;execute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;parse&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Function</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expr_or_fun</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;execute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;execute&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span> <span class="o">...</span>
 
 <div class="viewcode-block" id="ToolManager.call">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">expr_or_fun</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">Function</span><span class="p">],</span>
@@ -793,7 +794,7 @@
 
 <div class="viewcode-block" id="ToolManager.forward">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">expr_or_fun</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">Function</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
@@ -824,7 +825,7 @@
 
 <div class="viewcode-block" id="ToolManager.get_function_tool_by_name">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.get_function_tool_by_name">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_function_tool_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FunctionTool</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_function_tool_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FunctionTool</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">tool</span>
@@ -833,7 +834,7 @@
 
 <div class="viewcode-block" id="ToolManager.execute_func">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func">[docs]</a>
-    <span class="k">def</span> <span class="nf">execute_func</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_func</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Function</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
         <span class="n">map_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
@@ -954,7 +955,7 @@
 
 <div class="viewcode-block" id="ToolManager.execute_func_async">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_async">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">execute_func_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_func_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function. If the function is sync, use await to execute it.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Executing async function: </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
@@ -988,7 +989,7 @@
 
 <div class="viewcode-block" id="ToolManager.execute_func_expr">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr">[docs]</a>
-    <span class="k">def</span> <span class="nf">execute_func_expr</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_func_expr</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">expr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span>
         <span class="n">map_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
@@ -1025,7 +1026,7 @@
 
 <div class="viewcode-block" id="ToolManager.execute_func_expr_async">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_async">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">execute_func_expr_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_func_expr_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function expression. Support both sync and async functions.&quot;&quot;&quot;</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_func_expr</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1038,7 +1039,7 @@
 
 <div class="viewcode-block" id="ToolManager.execute_func_expr_via_sandbox">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_sandbox">[docs]</a>
-    <span class="k">def</span> <span class="nf">execute_func_expr_via_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_func_expr_via_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function expression via sandbox. Only support sync functions.&quot;&quot;&quot;</span>
         <span class="n">func_output</span> <span class="o">=</span> <span class="n">FunctionOutput</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">expr</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">expr</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
@@ -1064,7 +1065,7 @@
 
 <div class="viewcode-block" id="ToolManager.execute_func_expr_via_eval">
 <a class="viewcode-back" href="../../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_eval">[docs]</a>
-    <span class="k">def</span> <span class="nf">execute_func_expr_via_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_func_expr_via_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the function expression via eval. Only support sync functions.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
@@ -1079,7 +1080,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> executing function expression: </span><span class="si">{</span><span class="n">expr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Tools: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="si">}</span><span class="s2">, Additional Context: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_additional_context</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
 
@@ -1087,11 +1088,11 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># test tool manager</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
-    <span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
-    <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
-    <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span><span class="p">,</span> <span class="n">printc</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.func_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionTool</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span><span class="p">,</span> <span class="n">printc</span>
 
     <span class="n">setup_env</span><span class="p">()</span>
 
@@ -1101,7 +1102,7 @@
     <span class="p">)</span>
     <span class="c1"># llm.train()</span>
 
-    <span class="k">def</span> <span class="nf">llm_as_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">llm_as_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used as a calculator tool.&quot;&quot;&quot;</span>
         <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;llm_as_tool: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
 

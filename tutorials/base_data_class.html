@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>DataClass - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -519,10 +520,10 @@ Here are our reasoning:</p>
 <li><p>Getting data class schmea for data class is feasible.</p></li>
 </ol>
 <p>Here is how users typically use the <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> module:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">TrecData</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrecData</span><span class="p">:</span>
     <span class="n">question</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question asked by the user&quot;</span><span class="p">}</span>
     <span class="p">)</span> <span class="c1"># Required field, you have to provide the question field at the instantiation</span>
@@ -638,10 +639,10 @@ Here are our reasoning:</p>
 <section id="dataclass-in-action">
 <h2>DataClass in Action<a class="headerlink" href="#dataclass-in-action" title="Link to this heading">¶</a></h2>
 <p>Say you have a few of <code class="docutils literal notranslate"><span class="pre">TrecData</span></code> structued as follows that you want to engage with LLMs:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Question</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Question</span><span class="p">:</span>
     <span class="n">question</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question asked by the user&quot;</span><span class="p">}</span>
     <span class="p">)</span>
@@ -650,7 +651,7 @@ Here are our reasoning:</p>
     <span class="p">)</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">TrecData</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrecData</span><span class="p">:</span>
     <span class="n">question</span><span class="p">:</span> <span class="n">Question</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question asked by the user&quot;</span><span class="p">}</span>
     <span class="p">)</span> <span class="c1"># Required field, you have to provide the question field at the instantiation</span>
@@ -670,10 +671,10 @@ Normally, this is not possible with the native <cite>dataclasses</cite> module a
 <p class="admonition-title">Note</p>
 <p><strong>Order of the fields</strong> matter as in a typical Chain of Thought, we want the reasoning/thought field to be in the output ahead of the answer.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">TrecData2</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrecData2</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">question</span><span class="p">:</span> <span class="n">Question</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question asked by the user&quot;</span><span class="p">}</span>
     <span class="p">)</span> <span class="c1"># Required field, you have to provide the question field at the instantiation</span>
@@ -764,7 +765,7 @@ Let’s exclude both the <code class="docutils literal notranslate"><span class=
 <p>The <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter works the same across all methods.</p>
 <p><strong>DataClassFormatType</strong></p>
 <p>For data class format, we have <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType" title="core.base_data_class.DataClassFormatType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassFormatType</span></code></a> along with <code class="docutils literal notranslate"><span class="pre">format_class_str</span></code> method to specify the format type for the data format methods.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClassFormatType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClassFormatType</span>
 
 <span class="n">json_signature</span> <span class="o">=</span> <span class="n">TrecData2</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span><span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_JSON</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">json_signature</span><span class="p">)</span>
@@ -850,7 +851,7 @@ True
 </div>
 <p>Similarly, (1) all <code class="docutils literal notranslate"><span class="pre">to_dict</span></code>, <code class="docutils literal notranslate"><span class="pre">to_json</span></code>, and <code class="docutils literal notranslate"><span class="pre">to_yaml</span></code> works with <cite>exclude</cite> parameter to exclude some fields from the output,
 (2) you can use <code class="docutils literal notranslate"><span class="pre">DataClassFormatType</span></code> along with <code class="docutils literal notranslate"><span class="pre">format_example_str</span></code> method to specify the format type for the data example methods.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClassFormatType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClassFormatType</span>
 
 <span class="n">example_str</span> <span class="o">=</span> <span class="n">example</span><span class="o">.</span><span class="n">format_example_str</span><span class="p">(</span><span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">EXAMPLE_JSON</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">example_str</span><span class="p">)</span>
@@ -867,7 +868,7 @@ the form of a dictionary.</p>
 <p>How you want to describe your data format to LLMs might not match to the existing dataset’s key and the field name.
 You can simply do a bit customization to map the dataset’s key to the field name in your data class.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OutputFormat</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputFormat</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">thought</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Your reasoning to classify the question to class_name&quot;</span><span class="p">,</span>
@@ -877,7 +878,7 @@ You can simply do a bit customization to map the dataset’s key to the field na
     <span class="n">class_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;class_index in range[0, 5]&quot;</span><span class="p">})</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]):</span>
         <span class="n">_COARSE_LABELS_DESC</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;Abbreviation&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Entity&quot;</span><span class="p">,</span>

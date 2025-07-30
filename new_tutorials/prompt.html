@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Prompt - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -527,7 +528,7 @@ This includes conditionals, loops, filters, and even comments, which are lacking
 <p>In default, the <code class="docutils literal notranslate"><span class="pre">Prompt</span></code> class uses the <a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_ADALFLOW_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span></code></a> as its string template if no template is provided.
 But it is super easy to create your own template with Jinja2 syntax.
 Here is one example of using <cite>Jinja2</cite> to format the prompt with comments <cite>{# #}</cite> and code blocks <cite>{% %}</cite>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">adalflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">adal</span>
 
 <span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_MESSAGE&gt;{{ task_desc_str }}&lt;END_OF_SYSTEM_MESSAGE&gt;</span>
 <span class="s2">{# tools #}</span>

@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>optim.trainer.trainer - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -483,41 +484,41 @@
           <h1>Source code for optim.trainer.trainer</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Ready to use trainer for LLM task pipeline&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.optimizer</span> <span class="kn">import</span> <span class="n">Optimizer</span><span class="p">,</span> <span class="n">DemoOptimizer</span><span class="p">,</span> <span class="n">TextOptimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span><span class="p">,</span> <span class="n">DemoOptimizer</span><span class="p">,</span> <span class="n">TextOptimizer</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">BackwardPassSetup</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackwardPassSetup</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">OutputParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputParameter</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">PromptData</span><span class="p">,</span>
     <span class="n">TrainerResult</span><span class="p">,</span>
     <span class="n">ParameterType</span><span class="p">,</span>
     <span class="n">TrainerStepResult</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">EvaluationResult</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.trainer.adal</span> <span class="kn">import</span> <span class="n">AdalComponent</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.text_grad.ops</span> <span class="kn">import</span> <span class="n">sum_ops</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvaluationResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.trainer.adal</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdalComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.text_grad.ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">sum_ops</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">save_json</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.file_io</span> <span class="kn">import</span> <span class="n">load_standard_json</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.cache</span> <span class="kn">import</span> <span class="n">hash_text_sha1</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">TrainerValidateStats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.file_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_standard_json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">hash_text_sha1</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">printc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainerValidateStats</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -525,7 +526,7 @@
 
 <div class="viewcode-block" id="Trainer">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer">[docs]</a>
-<span class="k">class</span> <span class="nc">Trainer</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Trainer</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Ready to use trainer for LLM task pipeline to optimize all types of parameters.</span>
 
 
@@ -595,7 +596,7 @@
     <span class="n">disable_backward</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># no backward is run at all.</span>
     <span class="n">text_optimizers_config_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">adaltask</span><span class="p">:</span> <span class="n">AdalComponent</span><span class="p">,</span>
         <span class="n">optimization_order</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sequential&quot;</span><span class="p">,</span> <span class="s2">&quot;mix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sequential&quot;</span><span class="p">,</span>
@@ -678,14 +679,14 @@
 
 <div class="viewcode-block" id="Trainer.set_random_seed">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.set_random_seed">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_random_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_random_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="n">seed</span></div>
 
 
     <span class="c1"># TODO: need to support checkpoint resume too!</span>
 <div class="viewcode-block" id="Trainer.diagnose">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.diagnose">[docs]</a>
-    <span class="k">def</span> <span class="nf">diagnose</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diagnose</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">resume_from_ckpt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent&#39;s default configure_callbacks</span>
@@ -724,7 +725,7 @@
         <span class="n">acc_score</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">avg_score</span>
         <span class="n">acc_per_item_scores</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">per_item_scores</span>
         <span class="c1"># 3. load all completion from the log paths</span>
-        <span class="kn">from</span> <span class="nn">adalflow.utils.file_io</span> <span class="kn">import</span> <span class="n">load_jsonl</span><span class="p">,</span> <span class="n">write_list_to_jsonl</span><span class="p">,</span> <span class="n">save_json</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.file_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_jsonl</span><span class="p">,</span> <span class="n">write_list_to_jsonl</span><span class="p">,</span> <span class="n">save_json</span>
 
         <span class="n">sorted_indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
             <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">acc_per_item_scores</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">acc_per_item_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -808,15 +809,15 @@
 
 <div class="viewcode-block" id="Trainer.diagnose_report">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.diagnose_report">[docs]</a>
-    <span class="k">def</span> <span class="nf">diagnose_report</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diagnose_report</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">acc_score</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">stats_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">log_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">colorama</span>
-        <span class="kn">from</span> <span class="nn">colorama</span> <span class="kn">import</span> <span class="n">Fore</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">colorama</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">colorama</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fore</span>
 
         <span class="c1"># Initialize colorama</span>
         <span class="n">colorama</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">autoreset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -854,13 +855,13 @@
 
 <div class="viewcode-block" id="Trainer.debug_report">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.debug_report">[docs]</a>
-    <span class="k">def</span> <span class="nf">debug_report</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">debug_report</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">text_grad_debug_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">few_shot_demo_debug_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">colorama</span>
-        <span class="kn">from</span> <span class="nn">colorama</span> <span class="kn">import</span> <span class="n">Fore</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">colorama</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">colorama</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fore</span>
 
         <span class="c1"># Initialize colorama</span>
         <span class="n">colorama</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">autoreset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -888,7 +889,7 @@
 
 <div class="viewcode-block" id="Trainer.resume_params_from_ckpt">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.resume_params_from_ckpt">[docs]</a>
-    <span class="k">def</span> <span class="nf">resume_params_from_ckpt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ckpt_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resume_params_from_ckpt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ckpt_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Resume the parameters from the checkpoint file&quot;&quot;&quot;</span>
         <span class="n">dict_data</span> <span class="o">=</span> <span class="n">load_standard_json</span><span class="p">(</span><span class="n">ckpt_file</span><span class="p">)</span>
         <span class="c1"># find the highest val score</span>
@@ -918,7 +919,7 @@
 
 <div class="viewcode-block" id="Trainer.fit">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">adaltask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AdalComponent</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1131,7 +1132,7 @@
 
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># sequential, text first and demo second</span>
 
-            <span class="k">def</span> <span class="nf">run_text_optimizers</span><span class="p">(</span><span class="n">starting_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">run_text_optimizers</span><span class="p">(</span><span class="n">starting_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_fit_text_grad_random</span><span class="p">(</span>
@@ -1153,7 +1154,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Strategy </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
 
-            <span class="k">def</span> <span class="nf">run_demo_optimizers</span><span class="p">(</span><span class="n">starting_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">run_demo_optimizers</span><span class="p">(</span><span class="n">starting_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">configure_teacher_generator</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">disable_backward_engine</span><span class="p">()</span>  <span class="c1"># disable it to avoid backward engine for gradients</span>
@@ -1195,13 +1196,13 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_estimate_num_epochs</span><span class="p">(</span><span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_estimate_num_epochs</span><span class="p">(</span><span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">max_steps</span> <span class="o">//</span> <span class="n">num_samples</span> <span class="o">+</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="Trainer.initial_validation">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.initial_validation">[docs]</a>
-    <span class="k">def</span> <span class="nf">initial_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initial_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 
         <span class="n">val_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
         <span class="n">val_score</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
@@ -1234,7 +1235,7 @@
 
 <div class="viewcode-block" id="Trainer.gather_trainer_states">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.gather_trainer_states">[docs]</a>
-    <span class="k">def</span> <span class="nf">gather_trainer_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gather_trainer_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">trainer_state</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;strategy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span>
         <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;demo_optimizers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_trainable_demo_params</span><span class="p">()</span>
@@ -1259,7 +1260,7 @@
         <span class="p">)</span>
         <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;task_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
 
-        <span class="kn">from</span> <span class="nn">adalflow.utils.serialization</span> <span class="kn">import</span> <span class="n">serialize</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">serialize</span>
 
         <span class="n">hash_key</span> <span class="o">=</span> <span class="n">hash_text_sha1</span><span class="p">(</span><span class="n">serialize</span><span class="p">(</span><span class="n">trainer_state</span><span class="p">))[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
         <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;hash_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hash_key</span>
@@ -1279,7 +1280,7 @@
 
 <div class="viewcode-block" id="Trainer.prep_ckpt_file_path">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.prep_ckpt_file_path">[docs]</a>
-    <span class="k">def</span> <span class="nf">prep_ckpt_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer_state</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prep_ckpt_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer_state</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Prepare the checkpoint root path: ~/.adalflow/ckpt/task_name/.</span>
 
 <span class="sd">        It also generates a unique checkpoint file name based on the strategy, max_steps, and a unique hash key.</span>
@@ -1287,7 +1288,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="kn">from</span> <span class="nn">adalflow.utils.global_config</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.global_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">default_root_path</span> <span class="o">=</span> <span class="n">get_adalflow_default_root_path</span><span class="p">()</span>
@@ -1325,7 +1326,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_pre_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainerResult</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pre_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainerResult</span><span class="p">:</span>
         <span class="c1"># validate first (separate into another function where we can even save the outputs so that we can highlight error predictions)</span>
 
         <span class="n">trainer_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gather_trainer_states</span><span class="p">()</span>
@@ -1338,7 +1339,7 @@
         <span class="k">return</span> <span class="n">trainer_results</span>
         <span class="c1"># end of validation</span>
 
-    <span class="k">def</span> <span class="nf">_fit_demos_one_step_for_debug</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_demos_one_step_for_debug</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Trace both the teacher and the student demos with scores and for sampling.</span>
@@ -1483,7 +1484,7 @@
 
         <span class="k">return</span> <span class="n">demo_debug_result_path</span>
 
-    <span class="k">def</span> <span class="nf">_fit_text_grads_one_step_for_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_text_grads_one_step_for_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="n">printc</span><span class="p">(</span>
             <span class="s2">&quot;Debugging fitting one step with batch size 2 for text optimizer&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span>
         <span class="p">)</span>
@@ -1572,68 +1573,68 @@
 
         <span class="k">return</span> <span class="n">debug_files</span>
 
-    <span class="k">def</span> <span class="nf">_set_demo_optimizers_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_demo_optimizers_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
         <span class="c1"># init the dataset</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">set_dataset</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_demo_optimizers_propose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_demo_optimizers_propose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">propose</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_demo_optimizers_add_scores</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_demo_optimizers_add_scores</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">):</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
             <span class="c1"># opt = cast(DemoOptimizer, opt)</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">add_scores</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">is_teacher</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_demo_optimizers_revert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_demo_optimizers_revert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">revert</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_demo_optimizers_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_demo_optimizers_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_init_demo_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_demo_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># init the dataset</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">init_shots</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_get_trainable_demo_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_trainable_demo_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">params</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">params</span>
 
-    <span class="k">def</span> <span class="nf">_zero_grad_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_zero_grad_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_text_optimizers_set_target_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_text_optimizers_set_target_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">set_target_param</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_propose_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_propose_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">propose</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_add_failed_proposals_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_failed_proposals_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">add_failed_proposal</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_get_trainable_text_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_trainable_text_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">params</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">params</span>
 
-    <span class="k">def</span> <span class="nf">_step_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_step_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_add_history_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_history_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;val_score should be a float, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1641,19 +1642,19 @@
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">add_score_to_params</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_revert_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_revert_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">revert</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_increment_step_from_last_improvement_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_increment_step_from_last_improvement_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">increment_steps_from_last_improvement</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_reset_steps_from_last_improvement_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_steps_from_last_improvement_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">reset_steps_from_last_improvement</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_check_optimizer_proposal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_optimizer_proposal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return True if all optimizers have proposed a new prompt&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
@@ -1661,7 +1662,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="c1"># TODO: mix training teacher should keep updated with the new prompt</span>
-    <span class="k">def</span> <span class="nf">_fit_text_grad_demo_mix_constrained</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_text_grad_demo_mix_constrained</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -1670,7 +1671,7 @@
         <span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">starting_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fitting using Textual Gradient Descent&quot;</span><span class="p">)</span>
         <span class="n">trainer_results</span> <span class="o">=</span> <span class="p">(</span>
@@ -1835,7 +1836,7 @@
                 <span class="c1"># save_json(trainer_results.to_dict(), self.ckpt_file)</span>
             <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>  <span class="c1"># checkpoint</span>
 
-    <span class="k">def</span> <span class="nf">_fit_text_grad_demo_mix_random</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_text_grad_demo_mix_random</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -1979,7 +1980,7 @@
                 <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>
             <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>  <span class="c1"># checkpoint</span>
 
-    <span class="k">def</span> <span class="nf">_fit_demos_random</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_demos_random</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">train_loader</span><span class="p">,</span>
         <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -2155,7 +2156,7 @@
         <span class="k">return</span> <span class="n">trainer_results</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_compute_validate_stats</span><span class="p">(</span><span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_validate_stats</span><span class="p">(</span><span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">):</span>
         <span class="n">attempted_val_scores</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span>
                 <span class="n">step_result</span><span class="o">.</span><span class="n">attempted_val_score</span>
@@ -2176,7 +2177,7 @@
             <span class="n">std_of_score</span><span class="o">=</span><span class="n">std</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_random_propose_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_random_propose_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">current_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">all_samples</span><span class="p">,</span>
@@ -2299,7 +2300,7 @@
         <span class="n">trainer_results</span><span class="o">.</span><span class="n">effective_measure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effective_measure</span>
         <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_fit_text_grad_random</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_text_grad_random</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -2422,7 +2423,7 @@
         <span class="k">return</span> <span class="n">trainer_results</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_add_one_step_in_trainer_results</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_one_step_in_trainer_results</span><span class="p">(</span>
         <span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">,</span>
         <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">test_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -2481,12 +2482,12 @@
     <span class="c1">#     acc_score_list = [acc_score_list[i] for i in new_sample_indices]</span>
     <span class="c1">#     return all_samples, all_losses, all_y_preds, acc_score_list</span>
 
-    <span class="k">def</span> <span class="nf">_downsample_move_batch</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_downsample_move_batch</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">all_samples</span><span class="p">,</span> <span class="n">all_losses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">],</span> <span class="n">all_y_preds</span><span class="p">,</span> <span class="n">acc_score_list</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Downsample the moving batch to a more balanced error and correct samples&quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">score</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">score</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">acc_score_list</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -2552,12 +2553,12 @@
 
         <span class="k">return</span> <span class="n">all_samples</span><span class="p">,</span> <span class="n">all_losses</span><span class="p">,</span> <span class="n">all_y_preds</span><span class="p">,</span> <span class="n">acc_score_list</span>
 
-    <span class="k">def</span> <span class="nf">_moving_batch_sample</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_moving_batch_sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">acc_score_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample from both correct and error samples according to max_error_samples and max_correct_samples&quot;&quot;&quot;</span>
         <span class="c1"># ensure only 0 and 1 in the acc_score_list</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">score</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">acc_score_list</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;acc_score_list should only contain 0 and 1&quot;</span><span class="p">)</span>
@@ -2599,7 +2600,7 @@
 
         <span class="k">return</span> <span class="n">subset_score</span><span class="p">,</span> <span class="n">subset</span>
 
-    <span class="k">def</span> <span class="nf">_track_effectiveness</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_track_effectiveness</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;subset&quot;</span><span class="p">,</span> <span class="s2">&quot;fullset&quot;</span><span class="p">,</span> <span class="s2">&quot;valset&quot;</span><span class="p">,</span> <span class="s2">&quot;demo_valset&quot;</span><span class="p">],</span> <span class="n">pass_</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">stage</span> <span class="o">==</span> <span class="s2">&quot;subset&quot;</span><span class="p">:</span>
@@ -2625,7 +2626,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stage </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2"> not implemented&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_text_grad_constraint_propose_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_text_grad_constraint_propose_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">current_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">all_samples</span><span class="p">,</span>
@@ -2640,7 +2641,7 @@
 <span class="sd">        When include_demo_optimizers is True, the demo optimizers are included in the training</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># comptute moving batch acc</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">all_losses</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
@@ -2839,7 +2840,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">all_samples</span><span class="p">,</span> <span class="n">all_losses</span><span class="p">,</span> <span class="n">all_y_preds</span>
 
-    <span class="k">def</span> <span class="nf">_fit_text_grad_constraint</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_text_grad_constraint</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>

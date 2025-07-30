@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.output_parsers.outputs - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -490,15 +491,15 @@
 <span class="sd">- BooleanOutputParser: Boolean output parser to parse boolean values from the string.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">is_dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">DataComponent</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">YamlParser</span><span class="p">,</span> <span class="n">ListParser</span><span class="p">,</span> <span class="n">JsonParser</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">DataClassFormatType</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">ExcludeType</span><span class="p">,</span> <span class="n">IncludeType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.string_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">YamlParser</span><span class="p">,</span> <span class="n">ListParser</span><span class="p">,</span> <span class="n">JsonParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">DataClassFormatType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExcludeType</span><span class="p">,</span> <span class="n">IncludeType</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -554,7 +555,7 @@
 
 <div class="viewcode-block" id="OutputParser">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.OutputParser">[docs]</a>
-<span class="k">class</span> <span class="nc">OutputParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The abstract class for all output parsers.</span>
 
 <span class="s2">    On top of the basic string Parser, it handles structured data interaction:</span>
@@ -569,20 +570,20 @@
 <span class="s2">    2. A string parser from core.string_parser for response parsing.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="OutputParser.format_instructions">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.OutputParser.format_instructions">[docs]</a>
-    <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the formatted instructions to use in prompt for the output format.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This is an abstract method.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OutputParser.call">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.OutputParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the output string to the desired format and return the parsed output.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This is an abstract method.&quot;</span><span class="p">)</span></div>
 </div>
@@ -591,7 +592,7 @@
 
 <div class="viewcode-block" id="YamlOutputParser">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.YamlOutputParser">[docs]</a>
-<span class="k">class</span> <span class="nc">YamlOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">YamlOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;YAML output parser using dataclass for schema extraction.</span>
 
 <span class="s2">    .. note::</span>
@@ -635,7 +636,7 @@
 <span class="s2">    &gt;&gt;&gt; generator(&quot;Should i be a doctor?&quot;)</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">,</span>
         <span class="n">examples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -668,7 +669,7 @@
 
 <div class="viewcode-block" id="YamlOutputParser.format_instructions">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.YamlOutputParser.format_instructions">[docs]</a>
-    <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_instructions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">format_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataClassFormatType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -710,7 +711,7 @@
 
 <div class="viewcode-block" id="YamlOutputParser.call">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.YamlOutputParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YAML_OUTPUT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YAML_OUTPUT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the YAML string to JSON object and return the JSON object.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">output_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -722,7 +723,7 @@
             <span class="k">raise</span> <span class="n">e</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
 <span class="s2">        include_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span><span class="si">}</span><span class="s2">,</span><span class="se">\r</span><span class="s2">eturn_data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
@@ -731,8 +732,8 @@
 
 <div class="viewcode-block" id="JsonOutputParser">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.JsonOutputParser">[docs]</a>
-<span class="k">class</span> <span class="nc">JsonOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">JsonOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">,</span>
         <span class="n">examples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -768,7 +769,7 @@
 
 <div class="viewcode-block" id="JsonOutputParser.format_instructions">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.JsonOutputParser.format_instructions">[docs]</a>
-    <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_instructions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">format_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataClassFormatType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -807,7 +808,7 @@
 
 <div class="viewcode-block" id="JsonOutputParser.call">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.JsonOutputParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">output_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> output_dict: </span><span class="si">{</span><span class="n">output_dict</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -824,7 +825,7 @@
             <span class="k">raise</span> <span class="n">e</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
 <span class="s2">            include_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span><span class="si">}</span><span class="s2">, return_data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
@@ -833,29 +834,29 @@
 
 <div class="viewcode-block" id="ListOutputParser">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.ListOutputParser">[docs]</a>
-<span class="k">class</span> <span class="nc">ListOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ListOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;List output parser to parse list of objects from the string.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_output_format_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">LIST_OUTPUT_FORMAT</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_output_format_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">LIST_OUTPUT_FORMAT</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">list_output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">list_output_format_template</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">ListParser</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ListOutputParser.format_instructions">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.ListOutputParser.format_instructions">[docs]</a>
-    <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_output_format_prompt</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ListOutputParser.call">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.ListOutputParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
 </div>
 
 
 
-<span class="k">def</span> <span class="nf">_parse_boolean_from_str</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_boolean_from_str</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
     <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">if</span> <span class="s2">&quot;true&quot;</span> <span class="ow">in</span> <span class="nb">input</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -867,22 +868,22 @@
 
 <div class="viewcode-block" id="BooleanOutputParser">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.BooleanOutputParser">[docs]</a>
-<span class="k">class</span> <span class="nc">BooleanOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BooleanOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Boolean output parser to parse boolean values from the string.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="BooleanOutputParser.format_instructions">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.BooleanOutputParser.format_instructions">[docs]</a>
-    <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;The output should be a boolean value. True or False.&quot;</span></div>
 
 
 <div class="viewcode-block" id="BooleanOutputParser.call">
 <a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.BooleanOutputParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">output</span> <span class="o">=</span> <span class="kc">None</span>

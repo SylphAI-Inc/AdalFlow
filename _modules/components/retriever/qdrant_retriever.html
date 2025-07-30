@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.retriever.qdrant_retriever - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -483,15 +484,15 @@
           <h1>Source code for components.retriever.qdrant_retriever</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Leverage a Qdrant collection to retrieve documents.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">qdrant_client</span> <span class="kn">import</span> <span class="n">QdrantClient</span><span class="p">,</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qdrant_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">QdrantClient</span><span class="p">,</span> <span class="n">models</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.retriever</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Retriever</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embedder</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">RetrieverOutput</span><span class="p">,</span>
     <span class="n">RetrieverStrQueryType</span><span class="p">,</span>
     <span class="n">RetrieverStrQueriesType</span><span class="p">,</span>
@@ -501,7 +502,7 @@
 
 <div class="viewcode-block" id="QdrantRetriever">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.qdrant_retriever.html#components.retriever.qdrant_retriever.QdrantRetriever">[docs]</a>
-<span class="k">class</span> <span class="nc">QdrantRetriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">RetrieverStrQueryType</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QdrantRetriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">RetrieverStrQueryType</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Use a Qdrant collection to retrieve documents.</span>
 
 <span class="s2">    Args:</span>
@@ -519,7 +520,7 @@
 <span class="s2">    [2] Documentation: https://qdrant.tech/documentation/</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">collection_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">client</span><span class="p">:</span> <span class="n">QdrantClient</span><span class="p">,</span>
@@ -543,14 +544,14 @@
 
 <div class="viewcode-block" id="QdrantRetriever.reset_index">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.qdrant_retriever.html#components.retriever.qdrant_retriever.QdrantRetriever.reset_index">[docs]</a>
-    <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">collection_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_collection_name</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delete_collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_collection_name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="QdrantRetriever.call">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.qdrant_retriever.html#components.retriever.qdrant_retriever.QdrantRetriever.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverStrQueriesType</span><span class="p">,</span>
         <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -593,7 +594,7 @@
         <span class="k">return</span> <span class="n">retrieved_outputs</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_first_vector_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_first_vector_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">vectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_collection_name</span>
         <span class="p">)</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">vectors</span>
@@ -608,7 +609,7 @@
         <span class="k">return</span> <span class="n">first_vector_name</span> <span class="ow">or</span> <span class="kc">None</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_points_to_output</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_points_to_output</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">ScoredPoint</span><span class="p">],</span>
         <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -630,7 +631,7 @@
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_doc_from_point</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_doc_from_point</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">point</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">ScoredPoint</span><span class="p">,</span>
         <span class="n">text_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

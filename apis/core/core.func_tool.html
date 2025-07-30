@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="tool_manager" href="core.tool_manager.html" /><link rel="prev" title="string_parser" href="core.string_parser.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="mcp_tool" href="core.mcp_tool.html" /><link rel="prev" title="string_parser" href="core.string_parser.html" />
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>func_tool - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core.db.html">db</a></li>
@@ -584,14 +585,14 @@ When component is used, we support both the training and eval mode.</p>
 2. Any class method you wrote in your component. It can call <cite>self</cite> and other methods inside of your component.
 3. When the function is using a trainable component, and you can directly use the component’s method as a tool or wrap it in a function. But you need to make sure to pass the component to the tool.</p>
 <p>Here are some examples:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
-<span class="k">class</span> <span class="nc">AgenticRAG</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.func_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionTool</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AgenticRAG</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retriever</span> <span class="o">=</span> <span class="n">Retriever</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="nf">retriever_as_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">retriever_as_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="sa">r</span><span class="s2">&quot;Used as a retriever tool.&quot;</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">retriever</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
@@ -720,12 +721,12 @@ where the output from function execution is a Parameter.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="core.tool_manager.html">
+          <a class="next-page" href="core.mcp_tool.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">tool_manager</div>
+                <div class="title">mcp_tool</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

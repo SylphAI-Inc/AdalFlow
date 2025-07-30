@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.model_client.google_client - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -483,36 +484,36 @@
           <h1>Source code for components.model_client.google_client</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Google GenAI ModelClient integration.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">import</span> <span class="nn">backoff</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">backoff</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">CompletionUsage</span><span class="p">,</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">GeneratorOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompletionUsage</span><span class="p">,</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">GeneratorOutput</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.lazy_import</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
 
 <span class="c1"># optional import</span>
 <span class="n">google</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span>
     <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">GOOGLE_GENERATIVEAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">GOOGLE_GENERATIVEAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">google.generativeai</span> <span class="k">as</span> <span class="nn">genai</span>
-<span class="kn">from</span> <span class="nn">google.api_core.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">google.generativeai</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">genai</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">google.api_core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">InternalServerError</span><span class="p">,</span>
     <span class="n">BadRequest</span><span class="p">,</span>
     <span class="n">GoogleAPICallError</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">google.generativeai.types</span> <span class="kn">import</span> <span class="n">GenerateContentResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">google.generativeai.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateContentResponse</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="GoogleGenAIClient">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient">[docs]</a>
-<span class="k">class</span> <span class="nc">GoogleGenAIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GoogleGenAIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A component wrapper for the Google GenAI API client.</span>
 
 <span class="s2">    Visit https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference for more api details.</span>
@@ -542,7 +543,7 @@
 <span class="s2">            )</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It is recommended to set the GOOGLE_API_KEY environment variable instead of passing it as an argument.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span>
@@ -552,7 +553,7 @@
 
 <div class="viewcode-block" id="GoogleGenAIClient.init_sync_client">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.init_sync_client">[docs]</a>
-    <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GOOGLE_API_KEY&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable GOOGLE_API_KEY must be set&quot;</span><span class="p">)</span>
@@ -562,7 +563,7 @@
 
 <div class="viewcode-block" id="GoogleGenAIClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.parse_chat_completion">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_chat_completion</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">GenerateContentResponse</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GeneratorOutput&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -582,7 +583,7 @@
 
 <div class="viewcode-block" id="GoogleGenAIClient.track_completion_usage">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.track_completion_usage">[docs]</a>
-    <span class="k">def</span> <span class="nf">track_completion_usage</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">track_completion_usage</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">GenerateContentResponse</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompletionUsage</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">CompletionUsage</span><span class="p">(</span>
@@ -594,7 +595,7 @@
 
 <div class="viewcode-block" id="GoogleGenAIClient.convert_inputs_to_api_kwargs">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.convert_inputs_to_api_kwargs">[docs]</a>
-    <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -631,7 +632,7 @@
         <span class="p">),</span>
         <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        kwargs is the combined input and model_kwargs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -654,7 +655,7 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
 
     <span class="n">setup_env</span><span class="p">()</span>
     <span class="n">google_client</span> <span class="o">=</span> <span class="n">GoogleGenAIClient</span><span class="p">()</span>

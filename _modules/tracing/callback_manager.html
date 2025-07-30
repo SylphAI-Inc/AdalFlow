@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>tracing.callback_manager - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -481,13 +482,13 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for tracing.callback_manager</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span>
 
 
 <div class="viewcode-block" id="CallbackManager">
 <a class="viewcode-back" href="../../apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager">[docs]</a>
-<span class="k">class</span> <span class="nc">CallbackManager</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CallbackManager</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;on_success&quot;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s2">&quot;on_failure&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -496,7 +497,7 @@
 
 <div class="viewcode-block" id="CallbackManager.register_callback">
 <a class="viewcode-back" href="../../apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager.register_callback">[docs]</a>
-    <span class="k">def</span> <span class="nf">register_callback</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_callback</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;on_success&quot;</span><span class="p">,</span> <span class="s2">&quot;on_failure&quot;</span><span class="p">,</span> <span class="s2">&quot;on_complete&quot;</span><span class="p">],</span>
         <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
@@ -510,7 +511,7 @@
 
 <div class="viewcode-block" id="CallbackManager.trigger_callbacks">
 <a class="viewcode-back" href="../../apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager.trigger_callbacks">[docs]</a>
-    <span class="k">def</span> <span class="nf">trigger_callbacks</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trigger_callbacks</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;on_success&quot;</span><span class="p">,</span> <span class="s2">&quot;on_failure&quot;</span><span class="p">,</span> <span class="s2">&quot;on_complete&quot;</span><span class="p">],</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>

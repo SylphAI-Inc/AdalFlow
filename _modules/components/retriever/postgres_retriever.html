@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.retriever.postgres_retriever - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -483,30 +484,30 @@
           <h1>Source code for components.retriever.postgres_retriever</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Leverage a postgres database to store and retrieve documents.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.retriever</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Retriever</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embedder</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">RetrieverOutput</span><span class="p">,</span>
     <span class="n">RetrieverStrQueryType</span><span class="p">,</span>
     <span class="n">RetrieverStrQueriesType</span><span class="p">,</span>
     <span class="n">Document</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.database.sqlalchemy.sqlachemy_manager</span> <span class="kn">import</span> <span class="n">DatabaseManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.database.sqlalchemy.sqlachemy_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseManager</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="DistanceToOperator">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator">[docs]</a>
-<span class="k">class</span> <span class="nc">DistanceToOperator</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DistanceToOperator</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Enum for the distance to operator.</span>
 
 <span class="s2">    About pgvector:</span>
@@ -524,7 +525,7 @@
 
 <div class="viewcode-block" id="PostgresRetriever">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever">[docs]</a>
-<span class="k">class</span> <span class="nc">PostgresRetriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">RetrieverStrQueryType</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PostgresRetriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">RetrieverStrQueryType</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Use a postgres database to store and retrieve documents.</span>
 
 <span class="s2">    Users can follow this example and to customize the prompt or additionally ask it to output score along with the indices.</span>
@@ -537,7 +538,7 @@
 <span class="s2">    [1] pgvector extension: https://github.com/pgvector/pgvector</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">embedder</span><span class="p">:</span> <span class="n">Embedder</span><span class="p">,</span>
         <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -569,7 +570,7 @@
 <div class="viewcode-block" id="PostgresRetriever.format_vector_search_query">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.format_vector_search_query">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">format_vector_search_query</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_vector_search_query</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">vector_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -616,7 +617,7 @@
 
 <div class="viewcode-block" id="PostgresRetriever.retrieve_by_sql">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql">[docs]</a>
-    <span class="k">def</span> <span class="nf">retrieve_by_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_by_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve documents from the postgres database.&quot;&quot;&quot;</span>
 
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_manager</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -624,13 +625,13 @@
         <span class="k">return</span> <span class="n">results</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_convert_cosine_similarity_to_probability</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_cosine_similarity_to_probability</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cosine_similarity</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert cosine similarity to probability.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">cosine_similarity</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">cosine_similarity</span> <span class="ow">in</span> <span class="n">cosine_similarity</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_convert_l2_distance_to_probability</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_l2_distance_to_probability</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">l2_distance</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert L2 distance to probability.</span>
@@ -646,7 +647,7 @@
         <span class="n">prob_score</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">distance</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="k">return</span> <span class="n">prob_score</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_convert_cosine_distance_to_probability</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_cosine_distance_to_probability</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cosine_distance</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert cosine distance to probability.&quot;&quot;&quot;</span>
@@ -654,7 +655,7 @@
 
 <div class="viewcode-block" id="PostgresRetriever.call">
 <a class="viewcode-back" href="../../../apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverStrQueriesType</span><span class="p">,</span>
         <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>components.agent.agent - Build and Optimize LM Workflows</title>
+        <title>components.model_client.together_client - Build and Optimize LM Workflows</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -481,365 +481,174 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for components.agent.agent</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Type</span><span class="p">,</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.func_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionTool</span><span class="p">,</span> <span class="n">AsyncCallable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_type_schema</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.tool_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolManager</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">Function</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.output_parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonOutputParser</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">printc</span>
+          <h1>Source code for components.model_client.together_client</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.agent.prompts</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT</span><span class="p">,</span>
-    <span class="n">adalflow_agent_task_desc</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.lazy_import</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+
+<span class="c1"># Dynamically import the Together SDK components.</span>
+<span class="n">together</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span>
+    <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">TOGETHER</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">TOGETHER</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="p">)</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">together</span><span class="w"> </span><span class="kn">import</span> <span class="n">Together</span><span class="p">,</span> <span class="n">Completion</span><span class="p">,</span> <span class="n">AsyncTogether</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.openai_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TogetherClient&quot;</span><span class="p">]</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Agent&quot;</span><span class="p">]</span>
+<div class="viewcode-block" id="TogetherClient">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.together_client.html#components.model_client.together_client.TogetherClient">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TogetherClient</span><span class="p">(</span><span class="n">OpenAIClient</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    A minimal Together client that inherits from :class:`OpenAIClient`.</span>
 
-<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+<span class="s2">    This client is designed to work with the Together API by overriding the</span>
+<span class="s2">    `init_sync_client` method from :class:`OpenAIClient`. It leverages the official</span>
+<span class="s2">    Together SDK to initialize both synchronous and asynchronous client instances.</span>
 
-<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="s2">    References:</span>
+<span class="s2">    - To get an API key, sign up at https://www.together.ai/</span>
+<span class="s2">    - To list available models, use the command: `together models list`. For setup instructions, see:</span>
+<span class="s2">        https://docs.together.ai/reference/installation</span>
 
-<span class="n">DEFAULT_MAX_STEPS</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">DEFAULT_ROLE_DESC</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an excellent task planner.&quot;&quot;&quot;</span>
+<span class="s2">    **Example usage with the AdalFlow Generator:**</span>
 
+<span class="s2">    .. code-block:: python</span>
 
-<span class="c1"># NOTE: our function call supports component and its method</span>
+<span class="s2">        from adalflow.core import Generator</span>
+<span class="s2">        from adalflow.components.model_client.together_client import TogetherClient</span>
+<span class="s2">        from adalflow.utils import setup_env</span>
 
-<span class="c1"># Tools and instructions:</span>
-<span class="c1"># 1.</span>
-<span class="c1"># class_instance: component</span>
-<span class="c1"># func_name: __call__</span>
-<span class="c1"># func_desc: &#39;__call__(command: &#39;&#39;str&#39;&#39;, **kwargs)</span>
+<span class="s2">        setup_env()</span>
 
-<span class="c1">#   Belongs to class: PermissionTool</span>
+<span class="s2">        generator = Generator(</span>
+<span class="s2">            model_client=TogetherClient(),</span>
+<span class="s2">            model_kwargs={</span>
+<span class="s2">                &quot;model&quot;: &quot;deepseek-ai/DeepSeek-R1&quot;,</span>
+<span class="s2">                &quot;temperature&quot;: 0.7,</span>
+<span class="s2">                &quot;max_tokens&quot;: 2000,</span>
+<span class="s2">            },</span>
+<span class="s2">            output_processors=your_output_processor_function,</span>
+<span class="s2">        )</span>
 
-<span class="c1">#   Docstring: Run bash command with permission check.</span>
+<span class="s2">        prompt_kwargs = {&quot;input_str&quot;: &quot;Hi from AdalFlow! Summarize generative AI briefly.&quot;}</span>
 
-<span class="c1">#   &#39;</span>
-
-
-<span class="c1"># the context will wrap the whole component</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_default_tool_manager</span><span class="p">(</span>
-    <span class="c1"># Tool manager parameters</span>
-    <span class="n">tools</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context_variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># context variables</span>
-    <span class="c1"># set the llm tool</span>
-    <span class="n">add_llm_as_fallback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">model_client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
-    <span class="n">answer_data_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># the data type of the final answer</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ToolManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a default tool manager with the given tools, context variables, and add_llm_as_fallback.&quot;&quot;&quot;</span>
-
-    <span class="c1"># raise error when there is no model_client</span>
-    <span class="k">if</span> <span class="n">add_llm_as_fallback</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_client</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">model_kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model_client and model_kwargs are required&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_init_tools</span><span class="p">(</span>
-        <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">AsyncCallable</span><span class="p">,</span> <span class="n">FunctionTool</span><span class="p">]],</span>
-        <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>
-        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize the tools. Using reference or else with (copy or deepcopy) we can not set the training/eval mode for each tool.&quot;&quot;&quot;</span>
-        <span class="n">processed_tools</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">_additional_llm_tool</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">Generator</span><span class="p">(</span><span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">add_llm_as_fallback</span>
-            <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">llm_tool</span><span class="p">(</span><span class="n">input_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;I answer any input query with llm&#39;s world knowledge. Use me as a fallback tool or when the query is simple.&quot;&quot;&quot;</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">_additional_llm_tool</span><span class="p">(</span>
-                    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">input_str</span><span class="p">}</span>
-                <span class="p">)</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="n">output</span> <span class="k">else</span> <span class="kc">None</span>
-
-                <span class="k">return</span> <span class="n">response</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error using the llm_tool: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error using the llm_tool: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="kc">None</span>
-
-        <span class="n">processed_tools</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">tools</span> <span class="k">else</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">add_llm_as_fallback</span> <span class="ow">and</span> <span class="n">_additional_llm_tool</span><span class="p">:</span>
-            <span class="n">processed_tools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">llm_tool</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">processed_tools</span>
-
-    <span class="c1"># 1. create default ToolManager</span>
-
-    <span class="n">processed_tools</span> <span class="o">=</span> <span class="n">_init_tools</span><span class="p">(</span><span class="n">tools</span><span class="p">,</span> <span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
-
-    <span class="n">tool_manager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span>
-        <span class="n">tools</span><span class="o">=</span><span class="n">processed_tools</span><span class="p">,</span>
-        <span class="n">additional_context</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;context_variables&quot;</span><span class="p">:</span> <span class="n">context_variables</span>
-        <span class="p">},</span>  <span class="c1"># TODO: optimize this</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">tool_manager</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">create_default_planner</span><span class="p">(</span>
-    <span class="c1"># Tool manager parameters</span>
-    <span class="n">tool_manager</span><span class="p">:</span> <span class="n">ToolManager</span><span class="p">,</span>
-    <span class="c1"># Generator parameters</span>
-    <span class="n">model_client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
-    <span class="n">model_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelType</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>
-    <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="nb">str</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># allow users to update the template but cant delete any parameters</span>
-    <span class="n">role_desc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Prompt</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">cache_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="c1"># default agent parameters</span>
-    <span class="n">max_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="n">is_thinking_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">answer_data_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a default planner with the given model client, model kwargs, template, task desc, cache path, use cache, max steps.&quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">model_client</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model_client and model_kwargs are required&quot;</span><span class="p">)</span>
-
-    <span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT</span>
-    <span class="n">role_desc</span> <span class="o">=</span> <span class="n">role_desc</span> <span class="ow">or</span> <span class="n">DEFAULT_ROLE_DESC</span>
-
-    <span class="c1"># define the parser for the intermediate step, which is a Function class</span>
-    <span class="n">ouput_data_class</span> <span class="o">=</span> <span class="n">Function</span>
-    <span class="k">if</span> <span class="n">is_thinking_model</span><span class="p">:</span>
-        <span class="c1"># skip the CoT field</span>
-        <span class="n">include_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">,</span> <span class="s2">&quot;_is_answer_final&quot;</span><span class="p">,</span> <span class="s2">&quot;_answer&quot;</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">include_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">,</span> <span class="s2">&quot;_is_answer_final&quot;</span><span class="p">,</span> <span class="s2">&quot;_answer&quot;</span><span class="p">]</span>
-    <span class="n">output_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span>
-        <span class="n">data_class</span><span class="o">=</span><span class="n">ouput_data_class</span><span class="p">,</span>
-        <span class="n">examples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="c1"># examples=self._examples, # TODO: add examples</span>
-        <span class="n">return_data_class</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">include_fields</span><span class="o">=</span><span class="n">include_fields</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">task_desc</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
-        <span class="n">template</span><span class="o">=</span><span class="n">adalflow_agent_task_desc</span><span class="p">,</span>
-        <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;role_desc&quot;</span><span class="p">:</span> <span class="n">role_desc</span><span class="p">},</span>
-    <span class="p">)()</span>
-
-    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="n">tool_manager</span><span class="o">.</span><span class="n">yaml_definitions</span><span class="p">,</span>
-        <span class="s2">&quot;output_format_str&quot;</span><span class="p">:</span> <span class="n">output_parser</span><span class="o">.</span><span class="n">format_instructions</span><span class="p">(),</span>
-        <span class="s2">&quot;task_desc&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;react_agent_task_desc&quot;</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">task_desc</span><span class="p">,</span>
-            <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Task instruction for the agent to plan steps to solve a question in sequential and multi-steps to get the final answer. </span><span class="se">\</span>
-<span class="s2">            For optimizer: you need to adapt this to the current specific task.&quot;</span><span class="p">,</span>
-            <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
-            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="c1"># &quot;task_desc&quot;: task_desc,</span>
-        <span class="c1"># &quot;examples&quot;: Parameter(</span>
-        <span class="c1">#     name=&quot;examples&quot;,</span>
-        <span class="c1">#     data=None,</span>
-        <span class="c1">#     role_desc=&quot;Examples for the ReAct agent.&quot;,</span>
-        <span class="c1">#     param_type=ParameterType.DEMOS,</span>
-        <span class="c1">#     requires_opt=True,</span>
-        <span class="c1"># ),</span>
-        <span class="s2">&quot;context_variables&quot;</span><span class="p">:</span> <span class="n">tool_manager</span><span class="o">.</span><span class="n">context_variables</span><span class="p">[</span>
-            <span class="s2">&quot;context_variables&quot;</span>
-        <span class="p">],</span>  <span class="c1"># TODO: make it more clear</span>
-        <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="n">max_steps</span><span class="p">,</span>  <span class="c1"># move to the 2nd step</span>
-        <span class="s2">&quot;step_history&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="s2">&quot;answer_type_schema&quot;</span><span class="p">:</span> <span class="n">get_type_schema</span><span class="p">(</span><span class="n">answer_data_type</span><span class="p">),</span>
-    <span class="p">}</span>
-
-    <span class="c1"># 3. create default Generator</span>
-    <span class="n">planner</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
-        <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
-        <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
-        <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">,</span>
-        <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
-        <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
-        <span class="n">output_processors</span><span class="o">=</span><span class="n">output_parser</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;agent planner&quot;</span><span class="p">,</span>
-        <span class="n">cache_path</span><span class="o">=</span><span class="n">cache_path</span><span class="p">,</span>
-        <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;planner use cache: </span><span class="si">{</span><span class="n">planner</span><span class="o">.</span><span class="n">use_cache</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;planner cache path: </span><span class="si">{</span><span class="n">planner</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">planner</span>
-
-
-<div class="viewcode-block" id="Agent">
-<a class="viewcode-back" href="../../../apis/components/components.agent.agent.html#components.agent.Agent">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Agent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A high-level agentic component that orchestrates AI planning and tool execution.</span>
-
-<span class="sd">    The Agent combines a Generator-based planner for task decomposition with a ToolManager</span>
-<span class="sd">    for function calling. It uses a ReAct (Reasoning and Acting) architecture to iteratively</span>
-<span class="sd">    plan steps and execute tools to solve complex tasks.</span>
-
-<span class="sd">    The Agent comes with default prompt templates for agentic reasoning, automatic tool</span>
-<span class="sd">    definition integration, and step history tracking. It includes built-in helper tools:</span>
-<span class="sd">    - llm_tool: Fallback tool using LLM world knowledge for simple queries</span>
-
-<span class="sd">    Architecture:</span>
-<span class="sd">        Agent contains two main components:</span>
-<span class="sd">        1. Planner (Generator): Plans and reasons about next actions using an LLM</span>
-<span class="sd">        2. ToolManager: Manages and executes available tools/functions</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        name (str): Unique identifier for the agent instance</span>
-<span class="sd">        tool_manager (ToolManager): Manages available tools and their execution</span>
-<span class="sd">        planner (Generator): LLM-based planner for task decomposition and reasoning</span>
-<span class="sd">        answer_data_type (Type): Expected type for the final answer output</span>
-<span class="sd">        max_steps (int): Maximum number of planning steps allowed</span>
-<span class="sd">        is_thinking_model (bool): Whether the underlying model supports chain-of-thought</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">        response = generator(prompt_kwargs)</span>
+<span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="c1"># pass this if using default agent config</span>
-        <span class="n">tools</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">context_variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># context variables</span>
-        <span class="n">add_llm_as_fallback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="c1"># Generator parameters</span>
-        <span class="n">model_client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
-        <span class="n">model_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">ModelType</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>  <span class="c1"># by default use LLM reasoning model</span>
-        <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="nb">str</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># allow users to update the template but cant delete any parameters</span>
-        <span class="n">role_desc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Prompt</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># support both str and prompte template</span>
-        <span class="n">cache_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">use_cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="c1"># default agent parameters</span>
-        <span class="n">answer_data_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># the data type of the final answer</span>
-        <span class="n">max_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">is_thinking_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># support thinking model in agent</span>
-        <span class="c1"># for fully customize the agent</span>
-        <span class="n">tool_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">ToolManager</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pass this if using custom tool manager</span>
-        <span class="n">planner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Generator</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pass this if using custom planner</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">non_streaming_chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Completion</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">streaming_chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Completion</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env_api_key_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;TOGETHER_API_KEY&quot;</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize agent with required components.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a TogetherClient instance.</span>
 
-<span class="sd">        The agent internal classes have three main parts:</span>
-<span class="sd">        (1) name</span>
-<span class="sd">        (2) planner</span>
-<span class="sd">        (3) tool_manager</span>
-
-<span class="sd">        These three parts are essential for</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name: Unique identifier for the agent</span>
-
-<span class="sd">            # Tool manager parameters</span>
-<span class="sd">            tools: List of tools to be managed by the ToolManager</span>
-<span class="sd">            additional_context: Additional context to be added to the tool manager</span>
-
-<span class="sd">            # Generator parameters</span>
-<span class="sd">            model_client: Initialized ModelClient instance for the generator</span>
-<span class="sd">            model_kwargs: Model configuration parameters (e.g., model name, temperature)</span>
-<span class="sd">            template: Optional template for the generator prompt</span>
-<span class="sd">            prompt_kwargs: Additional prompt parameters (The prompt_kwargs must incldue details on )</span>
-<span class="sd">            output_processors: Optional output processors for the generator (should haeve Function as the output type)</span>
-<span class="sd">            cache_path: Path for caching generator outputs</span>
-<span class="sd">            use_cache: Whether to use caching for generator outputs</span>
-<span class="sd">            **kwargs: Additional arguments passed to parent class</span>
+<span class="sd">        :param api_key: Together API key. If None, the client attempts to read from the environment variable ``TOGETHER_API_KEY``.</span>
+<span class="sd">        :param chat_completion_parser: Optional function to parse responses from the Together API.</span>
+<span class="sd">        :param input_type: The input format, either ``&quot;text&quot;`` or ``&quot;messages&quot;``. Defaults to ``&quot;text&quot;``.</span>
+<span class="sd">        :param base_url: Optional API endpoint. Defaults to None.</span>
+<span class="sd">        :param env_api_key_name: The name of the environment variable to use for the API key. Defaults to ``&quot;TOGETHER_API_KEY&quot;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># name the agent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-
-        <span class="c1"># planner or model_client exists</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span> <span class="o">=</span> <span class="n">tool_manager</span> <span class="ow">or</span> <span class="n">create_default_tool_manager</span><span class="p">(</span>
-            <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
-            <span class="n">context_variables</span><span class="o">=</span><span class="n">context_variables</span><span class="p">,</span>
-            <span class="n">add_llm_as_fallback</span><span class="o">=</span><span class="n">add_llm_as_fallback</span><span class="p">,</span>
-            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
-            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
-            <span class="n">answer_data_type</span><span class="o">=</span><span class="n">answer_data_type</span><span class="p">,</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">non_streaming_chat_completion_parser</span><span class="o">=</span><span class="n">non_streaming_chat_completion_parser</span><span class="p">,</span>
+            <span class="n">streaming_chat_completion_parser</span><span class="o">=</span><span class="n">streaming_chat_completion_parser</span><span class="p">,</span>
+            <span class="n">input_type</span><span class="o">=</span><span class="n">input_type</span><span class="p">,</span>
+            <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span>
+            <span class="n">env_api_key_name</span><span class="o">=</span><span class="n">env_api_key_name</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">planner</span> <span class="o">=</span> <span class="n">planner</span> <span class="ow">or</span> <span class="n">create_default_planner</span><span class="p">(</span>
-            <span class="n">tool_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">,</span>
-            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
-            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
-            <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">,</span>
-            <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
-            <span class="n">role_desc</span><span class="o">=</span><span class="n">role_desc</span><span class="p">,</span>
-            <span class="n">cache_path</span><span class="o">=</span><span class="n">cache_path</span><span class="p">,</span>
-            <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
-            <span class="n">max_steps</span><span class="o">=</span><span class="n">max_steps</span><span class="p">,</span>
-            <span class="n">is_thinking_model</span><span class="o">=</span><span class="n">is_thinking_model</span><span class="p">,</span>
-            <span class="n">answer_data_type</span><span class="o">=</span><span class="n">answer_data_type</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span> <span class="o">=</span> <span class="n">answer_data_type</span>  <span class="c1"># save the final answer data type for the runner to communicate</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_thinking_model</span> <span class="o">=</span> <span class="n">is_thinking_model</span>
+<div class="viewcode-block" id="TogetherClient.init_sync_client">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.together_client.html#components.model_client.together_client.TogetherClient.init_sync_client">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize and return a synchronous Together client instance.</span>
 
-        <span class="c1"># check</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Tool manager must be provided to the agent.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Planner must be provided to the agent. &quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Max steps must be greater than 0.&quot;</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Agent.is_training">
-<a class="viewcode-back" href="../../../apis/components/components.agent.agent.html#components.agent.Agent.is_training">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">is_training</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">training</span></div>
-
-
-<div class="viewcode-block" id="Agent.get_prompt">
-<a class="viewcode-back" href="../../../apis/components/components.agent.agent.html#components.agent.Agent.get_prompt">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get formatted prompt using generator&#39;s prompt template.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Additional arguments to pass to the generator&#39;s get_prompt</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Formatted prompt string</span>
+<span class="sd">        Retrieves the API key from the provided value or from the environment variable,</span>
+<span class="sd">        and returns a Together client initialized with the proper base URL.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_api_key_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Together</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TogetherClient.init_async_client">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.together_client.html#components.model_client.together_client.TogetherClient.init_async_client">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize and return an asynchronous Together client instance.</span>
+
+<span class="sd">        If the Together SDK supports asynchronous operations, this method returns an</span>
+<span class="sd">        instance of the async client.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">AsyncTogether</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span></div>
 </div>
 
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span><span class="p">,</span> <span class="n">get_logger</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">func_to_data_component</span>
+
+    <span class="nd">@func_to_data_component</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_think_and_answer</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract text enclosed between &lt;think&gt;...&lt;/think&gt; as &#39;think&#39; and the text after &lt;/think&gt; as &#39;answer&#39;.</span>
+
+<span class="sd">        Uses a regular expression to capture:</span>
+<span class="sd">          - The content within the &lt;think&gt;...&lt;/think&gt; tags.</span>
+<span class="sd">          - The content that follows the &lt;/think&gt; tag.</span>
+
+<span class="sd">        :param text: The input string potentially containing &lt;think&gt; tags.</span>
+<span class="sd">        :return: A dictionary with keys &quot;think&quot; and &quot;answer&quot; if a match is found, otherwise None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&lt;think&gt;(.*?)&lt;/think&gt;([\s\S]*)&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;think&quot;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Set up logging and load environment variables.</span>
+    <span class="n">get_logger</span><span class="p">(</span><span class="n">enable_file</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">setup_env</span><span class="p">()</span>
+
+    <span class="c1"># Instantiate the TogetherClient. The API key will be read from the environment if not provided.</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">TogetherClient</span><span class="p">()</span>
+
+    <span class="c1"># Create the Generator using the TogetherClient and specify model parameters.</span>
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+        <span class="n">model_client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+            <span class="c1"># &quot;model&quot;: &quot;meta-llama/Llama-3.3-70B-Instruct-Turbo&quot;,</span>
+            <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;deepseek-ai/DeepSeek-R1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+            <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">output_processors</span><span class="o">=</span><span class="n">extract_think_and_answer</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Define the prompt to be processed.</span>
+    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Hi from AdalFlow! Summarize generative AI briefly.&quot;</span><span class="p">}</span>
+
+    <span class="c1"># Generate and output the response.</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TogetherSDK] Error: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TogetherSDK] Response: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
         </article>
       </div>

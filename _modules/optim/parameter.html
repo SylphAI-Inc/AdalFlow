@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>optim.parameter - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -483,7 +484,7 @@
           <h1>Source code for optim.parameter</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Generic</span><span class="p">,</span>
     <span class="n">TypeVar</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
@@ -496,20 +497,20 @@
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">TYPE_CHECKING</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">ParameterType</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span>
 
-<span class="kn">import</span> <span class="nn">html</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.gradient</span> <span class="kn">import</span> <span class="n">Gradient</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">html</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.gradient</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gradient</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">adalflow.optim.text_grad.tgd_optimizer</span> <span class="kn">import</span> <span class="n">TGDData</span><span class="p">,</span> <span class="n">TGDOptimizerTrace</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.text_grad.tgd_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TGDData</span><span class="p">,</span> <span class="n">TGDOptimizerTrace</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>  <span class="c1"># covariant set to False to allow for in-place updates</span>
 
@@ -521,7 +522,7 @@
 <div class="viewcode-block" id="ComponentTrace">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.ComponentTrace">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ComponentTrace</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComponentTrace</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the component&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the component&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">input_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
@@ -543,7 +544,7 @@
 
 <div class="viewcode-block" id="ComponentTrace.to_context_str">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.ComponentTrace.to_context_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_context_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_context_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;INPUT&gt;: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_args</span><span class="si">}</span><span class="s2">. &lt;OUTPUT&gt;: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">full_response</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">output</span></div>
 </div>
@@ -554,7 +555,7 @@
 <div class="viewcode-block" id="ScoreTrace">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.ScoreTrace">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ScoreTrace</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ScoreTrace</span><span class="p">:</span>
     <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The score of the data point&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">eval_comp_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The id of the evaluation component&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
@@ -568,7 +569,7 @@
 <div class="viewcode-block" id="ComponentNode">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.ComponentNode">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ComponentNode</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComponentNode</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Used to represent a node in the component graph.&quot;&quot;&quot;</span>
 
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the component&quot;</span><span class="p">})</span>
@@ -613,7 +614,7 @@
 
 <div class="viewcode-block" id="Parameter">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter">[docs]</a>
-<span class="k">class</span> <span class="nc">Parameter</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Parameter</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A data container to represent a parameter used for optimization.</span>
 
 <span class="sd">    A parameter enforce a specific data type and can be updated in-place.</span>
@@ -673,7 +674,7 @@
     <span class="p">)</span>
     <span class="n">gt</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Ground truth of the parameter</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># unique id of the parameter</span>
@@ -741,7 +742,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">successor_map_fn</span> <span class="o">=</span> <span class="n">successor_map_fn</span> <span class="ow">or</span> <span class="p">{}</span>
 
-        <span class="k">def</span> <span class="nf">default_prompt_map_fn</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">default_prompt_map_fn</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
             <span class="c1"># if isinstance(param.data, GeneratorOutput):</span>
             <span class="c1">#     return param.data.raw_response</span>
             <span class="k">return</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span>
@@ -751,7 +752,7 @@
 
 <div class="viewcode-block" id="Parameter.map_to_successor">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.map_to_successor">[docs]</a>
-    <span class="k">def</span> <span class="nf">map_to_successor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">successor</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_to_successor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">successor</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the map function to the successor based on the successor&#39;s id.&quot;&quot;&quot;</span>
         <span class="n">successor_id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">successor</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">successor_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">successor_map_fn</span><span class="p">:</span>
@@ -763,7 +764,7 @@
 
 <div class="viewcode-block" id="Parameter.add_successor_map_fn">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.add_successor_map_fn">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_successor_map_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">successor</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">map_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_successor_map_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">successor</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">map_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add or update a map function of the value for a specific successor using its id.</span>
 <span class="sd">        succssor will know the value of the current parameter.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">successor_map_fn</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">successor</span><span class="p">)]</span> <span class="o">=</span> <span class="n">map_fn</span></div>
@@ -771,7 +772,7 @@
 
 <div class="viewcode-block" id="Parameter.check_if_already_computed_gradient_respect_to">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.check_if_already_computed_gradient_respect_to">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_if_already_computed_gradient_respect_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_already_computed_gradient_respect_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">from_response_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">from_response_id</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">response_id</span> <span class="ow">in</span> <span class="n">from_response_ids</span></div>
 
@@ -781,14 +782,14 @@
     <span class="c1">############################################################################################################</span>
 <div class="viewcode-block" id="Parameter.set_gt">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_gt">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_gt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_gt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">gt</span> <span class="o">=</span> <span class="n">gt</span></div>
 
 
 <div class="viewcode-block" id="Parameter.get_gt">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_gt">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_gt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_gt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gt</span></div>
 
 
@@ -797,7 +798,7 @@
     <span class="c1"># ############################################################################################################</span>
 <div class="viewcode-block" id="Parameter.add_gradient">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.add_gradient">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">:</span> <span class="s2">&quot;Gradient&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">:</span> <span class="s2">&quot;Gradient&quot;</span><span class="p">):</span>
         <span class="c1"># if gradient.param_type != ParameterType.GRADIENT:</span>
         <span class="c1">#     raise ValueError(&quot;Cannot add non-gradient parameter to gradients list.&quot;)</span>
 
@@ -814,13 +815,13 @@
 
 <div class="viewcode-block" id="Parameter.reset_gradients">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.reset_gradients">[docs]</a>
-    <span class="k">def</span> <span class="nf">reset_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Parameter.get_gradients_names">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_gradients_names">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_gradients_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_gradients_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">]</span>
         <span class="n">names</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">names</span></div>
@@ -828,13 +829,13 @@
 
 <div class="viewcode-block" id="Parameter.get_prompt_data">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_prompt_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_prompt_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_prompt_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_in_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Parameter.get_gradients_str">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_gradients_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_gradients_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_gradients_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
@@ -847,7 +848,7 @@
 
 <div class="viewcode-block" id="Parameter.get_gradient_and_context_text">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_gradient_and_context_text">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_gradient_and_context_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_correct_sample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_gradient_and_context_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_correct_sample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregates and returns:</span>
 <span class="sd">        1. the gradients</span>
 <span class="sd">        2. the context text for which the gradients are computed</span>
@@ -855,7 +856,7 @@
 <span class="sd">        Sort the gradients from the lowest score to the highest score.</span>
 <span class="sd">        Highlight the gradients with the lowest score to the optimizer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
@@ -923,7 +924,7 @@
 
 <div class="viewcode-block" id="Parameter.get_gradients_component_schema">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_gradients_component_schema">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_gradients_component_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_correct_sample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_gradients_component_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_correct_sample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregates and returns:</span>
 <span class="sd">        1. the gradients</span>
 <span class="sd">        2. the context text for which the gradients are computed</span>
@@ -931,7 +932,7 @@
 <span class="sd">        Sort the gradients from the lowest score to the highest score.</span>
 <span class="sd">        Highlight the gradients with the lowest score to the optimizer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
 
         <span class="c1"># print(</span>
         <span class="c1">#     f&quot;len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}&quot;</span>
@@ -1021,13 +1022,13 @@
 
 <div class="viewcode-block" id="Parameter.merge_gradients_for_cycle_components">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.merge_gradients_for_cycle_components">[docs]</a>
-    <span class="k">def</span> <span class="nf">merge_gradients_for_cycle_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">merge_gradients_for_cycle_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Merge data_id, from_response_component_id into the same gradient&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Parameter.sort_gradients">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.sort_gradients">[docs]</a>
-    <span class="k">def</span> <span class="nf">sort_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sort_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;With rules mentioned in Graient class, we will track the gradients by data_id, then response_component_id, then score&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
@@ -1050,7 +1051,7 @@
 
 <div class="viewcode-block" id="Parameter.set_predecessors">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_predecessors">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_predecessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predecessors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_predecessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predecessors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">predecessors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">predecessors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1064,13 +1065,13 @@
 
 <div class="viewcode-block" id="Parameter.set_grad_fn">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_grad_fn">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_grad_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_grad_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span> <span class="o">=</span> <span class="n">grad_fn</span></div>
 
 
 <div class="viewcode-block" id="Parameter.get_param_info">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_param_info">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_param_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_param_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used to represent the parameter in the prompt.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -1084,7 +1085,7 @@
 
 <div class="viewcode-block" id="Parameter.set_peers">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_peers">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_peers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_peers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">peers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">peers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1101,9 +1102,9 @@
     <span class="c1">############################################################################################################</span>
 <div class="viewcode-block" id="Parameter.trace_optimizer">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.trace_optimizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">trace_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">response</span><span class="p">:</span> <span class="s2">&quot;TGDData&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trace_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">response</span><span class="p">:</span> <span class="s2">&quot;TGDData&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Trace the inputs and output of a TGD optimizer.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.text_grad.tgd_optimizer</span> <span class="kn">import</span> <span class="n">TGDOptimizerTrace</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.text_grad.tgd_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TGDOptimizerTrace</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tgd_optimizer_trace</span> <span class="o">=</span> <span class="n">TGDOptimizerTrace</span><span class="p">(</span>
             <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">response</span>
@@ -1112,7 +1113,7 @@
 
 <div class="viewcode-block" id="Parameter.set_eval_fn_input">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_eval_fn_input">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_eval_fn_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_input</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_eval_fn_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_input</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set the input for the eval_fn.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="n">eval_input</span></div>
 
@@ -1122,7 +1123,7 @@
     <span class="c1">###################################################################################################################</span>
 <div class="viewcode-block" id="Parameter.set_score">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_score">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set the score of the parameter in the backward pass</span>
 <span class="sd">        For intermediate nodes, there is only one score per each eval fn behind this node.</span>
 <span class="sd">        For leaf nodes, like DEMO or PROMPT, it will have [batch_size] of scores.</span>
@@ -1139,7 +1140,7 @@
 
 <div class="viewcode-block" id="Parameter.add_dataclass_to_trace">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.add_dataclass_to_trace">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_dataclass_to_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_dataclass_to_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Called by the generator.forward to add a trace to the parameter.</span>
 
 <span class="sd">        It is important to allow updating to the trace, as this will give different sampling weight.</span>
@@ -1156,7 +1157,7 @@
 
 <div class="viewcode-block" id="Parameter.add_score_to_trace">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.add_score_to_trace">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_score_to_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_score_to_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Called by the generator.backward to add the eval score to the trace.&quot;&quot;&quot;</span>
 
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traces</span> <span class="k">if</span> <span class="n">is_teacher</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_student_traces</span>
@@ -1175,7 +1176,7 @@
     <span class="c1">############################################################################################################</span>
 <div class="viewcode-block" id="Parameter.propose_data">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.propose_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">propose_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="n">demos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">propose_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="n">demos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Used by optimizer to put the new data, and save the previous data in case of revert.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot propose a new data when it is already proposing.&quot;</span><span class="p">)</span>
@@ -1189,7 +1190,7 @@
 
 <div class="viewcode-block" id="Parameter.revert_data">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.revert_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">revert_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">revert_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Revert the data to the previous data.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot revert data without proposing first.&quot;</span><span class="p">)</span>
@@ -1206,7 +1207,7 @@
 
 <div class="viewcode-block" id="Parameter.step_data">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.step_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">step_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Use PyTorch&#39;s optimizer syntax to finalize the update of the data.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot set data without proposing first.&quot;</span><span class="p">)</span>
@@ -1220,11 +1221,11 @@
 
 <div class="viewcode-block" id="Parameter.get_grad_fn">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_grad_fn">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_grad_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_grad_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_check_data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the type of new_data against the expected data type.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -1233,7 +1234,7 @@
 
 <div class="viewcode-block" id="Parameter.update_value">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.update_value">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the parameter&#39;s value in-place, checking for type correctness.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1244,7 +1245,7 @@
     <span class="c1"># TODO: dont use short value</span>
 <div class="viewcode-block" id="Parameter.get_short_value">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_short_value">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_short_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_words_offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_short_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_words_offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don&#39;t want to see the entire value.</span>
 <span class="sd">        This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.</span>
@@ -1269,7 +1270,7 @@
 
 <div class="viewcode-block" id="Parameter.reset_all_gradients">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.reset_all_gradients">[docs]</a>
-    <span class="k">def</span> <span class="nf">reset_all_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_all_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Traverse the graph and reset the gradients for all nodes.&quot;&quot;&quot;</span>
         <span class="n">nodes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Parameter</span><span class="o">.</span><span class="n">trace_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
@@ -1279,12 +1280,12 @@
 <div class="viewcode-block" id="Parameter.trace_graph">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.trace_graph">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">trace_graph</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trace_graph</span><span class="p">(</span>
         <span class="n">root</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]]]:</span>
         <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(),</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="nf">build_graph</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">build_graph</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1300,7 +1301,7 @@
 
 <div class="viewcode-block" id="Parameter.backward">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.backward">[docs]</a>
-    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1313,7 +1314,7 @@
         <span class="n">topo</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="nf">build_topo</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">build_topo</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
@@ -1343,9 +1344,9 @@
 <div class="viewcode-block" id="Parameter.generate_node_html">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.generate_node_html">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">generate_node_html</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;node_pages&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_node_html</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;node_pages&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate an HTML page for a specific node.&quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">json</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
@@ -1423,7 +1424,7 @@
 
 <div class="viewcode-block" id="Parameter.draw_interactive_html_graph">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.draw_interactive_html_graph">[docs]</a>
-    <span class="k">def</span> <span class="nf">draw_interactive_html_graph</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_interactive_html_graph</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1440,8 +1441,8 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: A dictionary containing the graph file path.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
-        <span class="kn">from</span> <span class="nn">pyvis.network</span> <span class="kn">import</span> <span class="n">Network</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyvis.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
 
         <span class="n">output_file</span> <span class="o">=</span> <span class="s2">&quot;interactive_graph.html&quot;</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span> <span class="ow">or</span> <span class="s2">&quot;output&quot;</span>
@@ -1612,16 +1613,16 @@
 <div class="viewcode-block" id="Parameter.wrap_and_escape">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.wrap_and_escape">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">wrap_and_escape</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrap_and_escape</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Wrap text to the specified width, considering HTML breaks, and escape special characters.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">textwrap</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
                 <span class="s2">&quot;Please install textwrap using &#39;pip install textwrap&#39; to use this feature&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
-        <span class="k">def</span> <span class="nf">wrap_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrap_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Wrap text to the specified width, considering HTML breaks.&quot;&quot;&quot;</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span>
                 <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">break_long_words</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replace_whitespace</span><span class="o">=</span><span class="kc">False</span>
@@ -1645,7 +1646,7 @@
 
 <div class="viewcode-block" id="Parameter.draw_graph">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.draw_graph">[docs]</a>
-    <span class="k">def</span> <span class="nf">draw_graph</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_graph</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">add_grads</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">full_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1662,16 +1663,16 @@
 <span class="sd">            filepath (str, optional): The path to save the graph. Defaults to None.</span>
 <span class="sd">            full_trace (bool, optional): Whether to include more detailed trace such as api_kwargs. Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">save_json</span>
-        <span class="kn">from</span> <span class="nn">adalflow.utils.global_config</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_json</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.global_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">graphviz</span> <span class="kn">import</span> <span class="n">Digraph</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">graphviz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digraph</span>
 
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
                 <span class="s2">&quot;Please install graphviz using &#39;pip install graphviz&#39; to use this feature&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
         <span class="k">assert</span> <span class="n">rankdir</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;TB&quot;</span><span class="p">]</span>
 
@@ -1786,7 +1787,7 @@
 
 <div class="viewcode-block" id="Parameter.draw_output_subgraph">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.draw_output_subgraph">[docs]</a>
-    <span class="k">def</span> <span class="nf">draw_output_subgraph</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_output_subgraph</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">add_grads</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
@@ -1804,15 +1805,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">assert</span> <span class="n">rankdir</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;TB&quot;</span><span class="p">]</span>
-        <span class="kn">from</span> <span class="nn">adalflow.utils.global_config</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.global_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">graphviz</span> <span class="kn">import</span> <span class="n">Digraph</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">graphviz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digraph</span>
 
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
                 <span class="s2">&quot;Please install graphviz using &#39;pip install graphviz&#39; to use this feature&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
         <span class="n">root_path</span> <span class="o">=</span> <span class="n">get_adalflow_default_root_path</span><span class="p">()</span>
 
@@ -1871,7 +1872,7 @@
 
 <div class="viewcode-block" id="Parameter.draw_component_subgraph">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.draw_component_subgraph">[docs]</a>
-    <span class="k">def</span> <span class="nf">draw_component_subgraph</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_component_subgraph</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
         <span class="n">rankdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;TB&quot;</span><span class="p">,</span>
@@ -1886,14 +1887,14 @@
 <span class="sd">            filepath (str): Path to save the graph.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">rankdir</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;TB&quot;</span><span class="p">]</span>
-        <span class="kn">from</span> <span class="nn">adalflow.utils.global_config</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.global_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">graphviz</span> <span class="kn">import</span> <span class="n">Digraph</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">graphviz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digraph</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
                 <span class="s2">&quot;Please install graphviz using &#39;pip install graphviz&#39; to use this feature&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
         <span class="c1"># Step 1: Collect OUTPUT nodes and edges</span>
         <span class="n">component_nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">component_nodes_orders</span> <span class="o">=</span> <span class="p">(</span>
@@ -1945,7 +1946,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;component_graph&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_collect_output_subgraph</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_output_subgraph</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1960,7 +1961,7 @@
 
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># check component_trace.id and name</span>
 
-        <span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">traverse</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
@@ -1984,7 +1985,7 @@
         <span class="n">traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output_nodes</span><span class="p">,</span> <span class="n">edges</span>
 
-    <span class="k">def</span> <span class="nf">_collect_component_subgraph</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_component_subgraph</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ComponentNode</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2003,7 +2004,7 @@
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Track visited parameters to avoid cycles</span>
         <span class="n">edge_counter</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Mutable counter for edge order tracking</span>
 
-        <span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">traverse</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
@@ -2066,7 +2067,7 @@
 
 <div class="viewcode-block" id="Parameter.to_dict">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.to_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
@@ -2091,7 +2092,7 @@
 <div class="viewcode-block" id="Parameter.from_dict">
 <a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">predecessors</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;predecessors&quot;</span><span class="p">]]</span>
         <span class="n">param</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
@@ -2113,7 +2114,7 @@
 
 
     <span class="c1"># TODO: very hard to read directly, need to simplify and let users use to_dict for better readability</span>
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Parameter(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, requires_opt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">requires_opt</span><span class="si">}</span><span class="s2">, param_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="si">}</span><span class="s2">, role_desc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span><span class="si">}</span><span class="s2">, data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, predecessors=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">predecessors</span><span class="si">}</span><span class="s2">, gradients=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="si">}</span><span class="s2">,</span><span class="se">\</span>
 <span class="s2">            traces=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_traces</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
@@ -2202,7 +2203,7 @@
 
 <div class="viewcode-block" id="OutputParameter">
 <a class="viewcode-back" href="../../apis/optim/index.html#optim.OutputParameter">[docs]</a>
-<span class="k">class</span> <span class="nc">OutputParameter</span><span class="p">(</span><span class="n">Parameter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputParameter</span><span class="p">(</span><span class="n">Parameter</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The output parameter is the most complex type of parameter in the system.</span>
 
 <span class="s2">    It will trace the predecessors, set up a grad_fn, store gradients, and trace the forward pass by tracking the component_trace.</span>
@@ -2218,7 +2219,7 @@
     <span class="p">)</span>
     <span class="n">full_response</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># The full response from the component</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># unique id of the parameter</span>
@@ -2262,7 +2263,7 @@
     <span class="c1">############################################################################################################</span>
 <div class="viewcode-block" id="OutputParameter.trace_forward_pass">
 <a class="viewcode-back" href="../../apis/optim/index.html#optim.OutputParameter.trace_forward_pass">[docs]</a>
-    <span class="k">def</span> <span class="nf">trace_forward_pass</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trace_forward_pass</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">input_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">full_response</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -2283,14 +2284,14 @@
 
 <div class="viewcode-block" id="OutputParameter.trace_api_kwargs">
 <a class="viewcode-back" href="../../apis/optim/index.html#optim.OutputParameter.trace_api_kwargs">[docs]</a>
-    <span class="k">def</span> <span class="nf">trace_api_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trace_api_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Trace the api_kwargs for components like Generator and Retriever that pass to the model client.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">component_trace</span><span class="o">.</span><span class="n">api_kwargs</span> <span class="o">=</span> <span class="n">api_kwargs</span></div>
 
 
 <div class="viewcode-block" id="OutputParameter.to_dict">
 <a class="viewcode-back" href="../../apis/optim/index.html#optim.OutputParameter.to_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">super_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="n">super_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
@@ -2302,12 +2303,12 @@
 <div class="viewcode-block" id="OutputParameter.from_dict">
 <a class="viewcode-back" href="../../apis/optim/index.html#optim.OutputParameter.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">component_trace</span> <span class="o">=</span> <span class="n">ComponentTrace</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;component_trace&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;component_trace&quot;</span><span class="p">:</span> <span class="n">component_trace</span><span class="p">})</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">super_repr</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
         <span class="n">start</span> <span class="o">=</span> <span class="n">super_repr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Parameter&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>

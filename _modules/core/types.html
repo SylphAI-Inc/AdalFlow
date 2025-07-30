@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>core.types - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -483,8 +484,8 @@
           <h1>Source code for core.types</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Functional data classes to support functional components like Generator, Retriever, and Assistant.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
@@ -502,27 +503,27 @@
     <span class="n">Coroutine</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">TypeAlias</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dataclass</span><span class="p">,</span>
     <span class="n">field</span><span class="p">,</span>
     <span class="n">InitVar</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterable</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.tokenizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tokenizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">is_normalized</span><span class="p">,</span>
     <span class="n">generate_function_call_expression_from_callable</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CohereAPIClient</span><span class="p">,</span>
     <span class="n">TransformersClient</span><span class="p">,</span>
     <span class="n">AnthropicAPIClient</span><span class="p">,</span>
@@ -545,7 +546,7 @@
 <span class="c1">######################################################################################</span>
 <div class="viewcode-block" id="ModelType">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ModelType">[docs]</a>
-<span class="k">class</span> <span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The type of the model, including Embedder, LLM, Reranker.</span>
 <span class="s2">     It helps ModelClient identify the model type required to correctly call the model.&quot;&quot;&quot;</span>
     <span class="n">EMBEDDER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -560,7 +561,7 @@
 <div class="viewcode-block" id="ModelClientType">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ModelClientType">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ModelClientType</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelClientType</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A quick way to access all model clients in the ModelClient module.</span>
 
 <span class="s2">    From this:</span>
@@ -592,7 +593,7 @@
 <span class="c1"># TODO: define standard required outputs</span>
 <div class="viewcode-block" id="get_model_args">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.get_model_args">[docs]</a>
-<span class="k">def</span> <span class="nf">get_model_args</span><span class="p">(</span><span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_model_args</span><span class="p">(</span><span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the required keys in model_kwargs for a specific model type.</span>
 
 <span class="sd">    note:</span>
@@ -621,7 +622,7 @@
 <div class="viewcode-block" id="Embedding">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Embedding">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Embedding</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Embedding</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for a single embedding.</span>
 
@@ -636,7 +637,7 @@
 <div class="viewcode-block" id="Usage">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Usage">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Usage</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Usage</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    In sync with OpenAI embedding api spec, same as openai/types/create_embedding_response.py</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -649,7 +650,7 @@
 <div class="viewcode-block" id="EmbedderOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.EmbedderOutput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">EmbedderOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmbedderOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Container to hold the response from an Embedder datacomponent for a single batch of input.</span>
 
 <span class="s2">    Data standard for Embedder model output to interact with other components.</span>
@@ -668,11 +669,11 @@
     <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Input text&quot;</span><span class="p">})</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">embedding_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embedding_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The dimension of the embedding, assuming all embeddings have the same dimension.</span>
 
 <span class="sd">        Returns:</span>
@@ -683,7 +684,7 @@
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_normalized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_normalized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if the embeddings are normalized to unit vectors.</span>
 
 <span class="sd">        Returns:</span>
@@ -710,7 +711,7 @@
 <div class="viewcode-block" id="TokenLogProb">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.TokenLogProb">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">TokenLogProb</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TokenLogProb</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;similar to openai.ChatCompletionTokenLogprob&quot;&quot;&quot;</span>
 
     <span class="n">token</span><span class="p">:</span> <span class="nb">str</span>
@@ -721,7 +722,7 @@
 <div class="viewcode-block" id="CompletionUsage">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.CompletionUsage">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">CompletionUsage</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CompletionUsage</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;In sync with OpenAI completion usage api spec at openai/types/completion_usage.py&quot;</span>
     <span class="n">completion_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of tokens in the generated completion&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
@@ -741,7 +742,7 @@
 <div class="viewcode-block" id="InputTokensDetails">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.InputTokensDetails">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">InputTokensDetails</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InputTokensDetails</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Details about input tokens used in a response&quot;</span>
     <span class="n">cached_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of cached tokens used&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span>
@@ -752,7 +753,7 @@
 <div class="viewcode-block" id="OutputTokensDetails">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.OutputTokensDetails">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OutputTokensDetails</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputTokensDetails</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Details about output tokens used in a response&quot;</span>
     <span class="n">reasoning_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of tokens used for reasoning&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span>
@@ -763,7 +764,7 @@
 <div class="viewcode-block" id="ResponseUsage">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ResponseUsage">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ResponseUsage</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResponseUsage</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Usage information for a response, including token counts, in sync with OpenAI response usage api spec at openai/types/response_usage.py&quot;</span>
     <span class="n">input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of input tokens used&quot;</span><span class="p">})</span>
     <span class="n">output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of output tokens used&quot;</span><span class="p">})</span>
@@ -796,7 +797,7 @@
 <div class="viewcode-block" id="RetrieverOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RetrieverOutput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RetrieverOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RetrieverOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Save the output of a single query in retrievers.</span>
 
 <span class="s2">    It is up to the subclass of Retriever to specify the type of query and document.</span>
@@ -833,7 +834,7 @@
 <div class="viewcode-block" id="FunctionDefinition">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionDefinition">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FunctionDefinition</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionDefinition</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The data modeling of a function definition, including the name, description, and parameters.&quot;&quot;&quot;</span>
     <span class="c1"># class_instance: Optional[Any] = field(</span>
     <span class="c1">#     default=None,</span>
@@ -852,7 +853,7 @@
 
 <div class="viewcode-block" id="FunctionDefinition.fn_schema_str">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionDefinition.fn_schema_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">fn_schema_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fn_schema_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the function definition str to be used in the prompt.</span>
 
 <span class="sd">        You should also directly use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.</span>
@@ -870,7 +871,7 @@
 <div class="viewcode-block" id="Function">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Function">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Function</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Function</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The data modeling of a function call, including the name and keyword arguments.</span>
 
 <span class="s2">    You can use the exclude in :meth:`to_json` and :meth:`to_yaml` to exclude the `thought` field if you do not want to use chain-of-thought pattern.</span>
@@ -921,7 +922,7 @@
 <div class="viewcode-block" id="Function.from_function">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Function.from_function">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_function</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_function</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">AsyncCallable</span><span class="p">],</span>
         <span class="n">thought</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -979,7 +980,7 @@
 <div class="viewcode-block" id="QueueSentinel">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.QueueSentinel">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">QueueSentinel</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QueueSentinel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Special sentinel object to mark the end of a stream when using asyncio.Queue for stream processing.&quot;&quot;&quot;</span>
 
     <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;queue_sentinel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;queue_sentinel&quot;</span>
@@ -990,7 +991,7 @@
 <div class="viewcode-block" id="RawResponsesStreamEvent">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RawResponsesStreamEvent">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RawResponsesStreamEvent</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RawResponsesStreamEvent</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Streaming event for storing the raw responses from the LLM. These are &#39;raw&#39; events, i.e. they are directly passed through</span>
 <span class="sd">    from the LLM.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1009,7 +1010,7 @@
 <div class="viewcode-block" id="GeneratorOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.GeneratorOutput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">GeneratorOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeneratorOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    The output data class for the Generator component.</span>
 <span class="s2">    We can not control its output 100%, so we use this to track the error_message and</span>
@@ -1064,7 +1065,7 @@
 
 <div class="viewcode-block" id="GeneratorOutput.stream_events">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.GeneratorOutput.stream_events">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T_co</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T_co</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stream raw events from the Generator&#39;s raw response which has the processed version of api_response.</span>
 <span class="sd">        If the raw_response has already been consumed, yield from the data field</span>
@@ -1093,7 +1094,7 @@
 <div class="viewcode-block" id="FunctionExpression">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionExpression">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FunctionExpression</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionExpression</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The data modeling of a function expression for a call, including the name and arguments.</span>
 
 <span class="s2">    Example:</span>
@@ -1137,7 +1138,7 @@
 <div class="viewcode-block" id="FunctionExpression.from_function">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionExpression.from_function">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_function</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_function</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">AsyncCallable</span><span class="p">],</span>
         <span class="n">thought</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1198,7 +1199,7 @@
 <div class="viewcode-block" id="FunctionOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionOutput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FunctionOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The output of a tool, which could be a function, a class, or a module.&quot;&quot;&quot;</span>
     <span class="p">)</span>
@@ -1232,7 +1233,7 @@
 <div class="viewcode-block" id="ToolOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ToolOutput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ToolOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Using ToolOutput means a completed tool call even if it has error&quot;&quot;&quot;</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The output of the tool&quot;</span><span class="p">}</span>
@@ -1265,7 +1266,7 @@
 <div class="viewcode-block" id="StepOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.StepOutput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">StepOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StepOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The output of a single step in the agent. Suits for serial planning agent such as React&quot;&quot;&quot;</span>
     <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The order of the step in the agent&quot;</span><span class="p">}</span>
@@ -1291,7 +1292,7 @@
 
 <div class="viewcode-block" id="StepOutput.to_prompt_str">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.StepOutput.to_prompt_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_prompt_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_prompt_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">FunctionExpression</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">thought</span><span class="p">:</span>
@@ -1314,7 +1315,7 @@
 <div class="viewcode-block" id="Document">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Document">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Document</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A text container with optional metadata and vector representation.</span>
 
 <span class="s2">    It is the data structure to support functions like Retriever, DocumentSplitter, and used with LocalDB.</span>
@@ -1355,7 +1356,7 @@
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimated_num_tokens</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
             <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">estimated_num_tokens</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">count_tokens</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
@@ -1363,7 +1364,7 @@
 <div class="viewcode-block" id="Document.from_dict">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Document.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Document object from a dictionary.</span>
 
 <span class="sd">        Example:</span>
@@ -1389,7 +1390,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom repr method to truncate the text to 100 characters and vector to 10 floats.&quot;&quot;&quot;</span>
         <span class="n">max_chars_to_show</span> <span class="o">=</span> <span class="mi">100</span>
         <span class="n">truncated_text</span> <span class="o">=</span> <span class="p">(</span>
@@ -1414,7 +1415,7 @@
 <div class="viewcode-block" id="UserQuery">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.UserQuery">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">UserQuery</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserQuery</span><span class="p">:</span>
     <span class="n">query_str</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="kc">None</span>  <span class="c1"># context or files can be used in the user queries</span>
@@ -1425,7 +1426,7 @@
 <div class="viewcode-block" id="AssistantResponse">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.AssistantResponse">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">AssistantResponse</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AssistantResponse</span><span class="p">:</span>
     <span class="n">response_str</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for agent, we have step history</span></div>
 
@@ -1435,7 +1436,7 @@
 <div class="viewcode-block" id="DialogTurn">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.DialogTurn">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">DialogTurn</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DialogTurn</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A turn consists of a user query and the assistant response.</span>
 
 <span class="s2">    The dataformat is designed to fit into a relational database, where each turn is a row.</span>
@@ -1501,7 +1502,7 @@
 
 <div class="viewcode-block" id="DialogTurn.set_user_query">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.DialogTurn.set_user_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_user_query</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_user_query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">user_query</span><span class="p">:</span> <span class="n">UserQuery</span><span class="p">,</span> <span class="n">user_query_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_query</span> <span class="o">=</span> <span class="n">user_query</span>
@@ -1512,7 +1513,7 @@
 
 <div class="viewcode-block" id="DialogTurn.set_assistant_response">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.DialogTurn.set_assistant_response">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_assistant_response</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_assistant_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">assistant_response</span><span class="p">:</span> <span class="n">AssistantResponse</span><span class="p">,</span>
         <span class="n">assistant_response_timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1529,7 +1530,7 @@
 <div class="viewcode-block" id="Conversation">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Conversation</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Conversation</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A conversation manages the dialog turns in a whole conversation as a session.</span>
 
 <span class="s2">    This class is mainly used in-memory for the dialog system/app to manage active conversations.</span>
@@ -1566,7 +1567,7 @@
         <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">OrderedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DialogTurn</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">DialogTurn</span><span class="p">]]]</span>
     <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dialog_turns_input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Union</span><span class="p">[</span><span class="n">OrderedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DialogTurn</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">DialogTurn</span><span class="p">]]</span>
@@ -1586,13 +1587,13 @@
 
 <div class="viewcode-block" id="Conversation.get_next_order">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.get_next_order">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_next_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_next_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Conversation.append_dialog_turn">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.append_dialog_turn">[docs]</a>
-    <span class="k">def</span> <span class="nf">append_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dialog_turn</span><span class="p">:</span> <span class="n">DialogTurn</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dialog_turn</span><span class="p">:</span> <span class="n">DialogTurn</span><span class="p">):</span>
         <span class="n">next_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_order</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">dialog_turn</span><span class="o">.</span><span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dialog_turn</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">next_order</span>
@@ -1603,13 +1604,13 @@
 
 <div class="viewcode-block" id="Conversation.get_dialog_turns">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.get_dialog_turns">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_dialog_turns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DialogTurn</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dialog_turns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DialogTurn</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span></div>
 
 
 <div class="viewcode-block" id="Conversation.get_chat_history_str">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.get_chat_history_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_chat_history_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_chat_history_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">chat_history_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">order</span><span class="p">,</span> <span class="n">dialog_turn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">chat_history_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;User: </span><span class="si">{</span><span class="n">dialog_turn</span><span class="o">.</span><span class="n">user_query</span><span class="o">.</span><span class="n">query_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -1621,13 +1622,13 @@
 
 <div class="viewcode-block" id="Conversation.delete_dialog_turn">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.delete_dialog_turn">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">order</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Conversation.update_dialog_turn">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.Conversation.update_dialog_turn">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dialog_turn</span><span class="p">:</span> <span class="n">DialogTurn</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_dialog_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dialog_turn</span><span class="p">:</span> <span class="n">DialogTurn</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dialog_turns</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="n">dialog_turn</span></div>
 </div>
 
@@ -1637,13 +1638,13 @@
 <span class="c1"># Agent runner events</span>
 <span class="c1">##############################</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
 
 <div class="viewcode-block" id="RunItem">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunItem">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RunItem</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunItem</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for streaming execution events in the Runner system.</span>
 
@@ -1698,7 +1699,7 @@
 <div class="viewcode-block" id="ToolCallRunItem">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ToolCallRunItem">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ToolCallRunItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolCallRunItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Event emitted when the Agent is about to execute a function/tool call.</span>
 
@@ -1733,7 +1734,7 @@
 <div class="viewcode-block" id="ToolCallActivityRunItem">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ToolCallActivityRunItem">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ToolCallActivityRunItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolCallActivityRunItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Event emitted during the execution of a function/tool call.</span>
 
@@ -1770,7 +1771,7 @@
 <div class="viewcode-block" id="FunctionRequest">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionRequest">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FunctionRequest</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionRequest</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Event emitted when the Agent is about to execute a function/tool call.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1796,7 +1797,7 @@
 <div class="viewcode-block" id="ToolCallPermissionRequest">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ToolCallPermissionRequest">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ToolCallPermissionRequest</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolCallPermissionRequest</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Event emitted when the Agent is about to execute a function/tool call.</span>
 
@@ -1833,7 +1834,7 @@
 <div class="viewcode-block" id="ToolOutputRunItem">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ToolOutputRunItem">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ToolOutputRunItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ToolOutputRunItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Event emitted after a function/tool call has been executed.</span>
 
@@ -1873,7 +1874,7 @@
 <div class="viewcode-block" id="StepRunItem">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.StepRunItem">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">StepRunItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StepRunItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Event emitted when a complete execution step has finished.</span>
 
@@ -1910,7 +1911,7 @@
 <div class="viewcode-block" id="FinalOutputItem">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FinalOutputItem">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FinalOutputItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FinalOutputItem</span><span class="p">(</span><span class="n">RunItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Event emitted when the entire Runner execution has completed.</span>
 
@@ -1948,7 +1949,7 @@
 <div class="viewcode-block" id="RunItemStreamEvent">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunItemStreamEvent">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RunItemStreamEvent</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunItemStreamEvent</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for streaming RunItem events during Runner execution.</span>
 
@@ -2017,7 +2018,7 @@
 <div class="viewcode-block" id="RunnerResult">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerResult">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RunnerResult</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunnerResult</span><span class="p">:</span>
     <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The step history of the execution&quot;</span><span class="p">},</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
@@ -2040,7 +2041,7 @@
 <div class="viewcode-block" id="QueueCompleteSentinel">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.QueueCompleteSentinel">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">QueueCompleteSentinel</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QueueCompleteSentinel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sentinel to indicate queue completion.&quot;&quot;&quot;</span>
 
     <span class="k">pass</span></div>
@@ -2049,10 +2050,10 @@
 
 <div class="viewcode-block" id="EventEncoder">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.EventEncoder">[docs]</a>
-<span class="k">class</span> <span class="nc">EventEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EventEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
 <div class="viewcode-block" id="EventEncoder.default">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.EventEncoder.default">[docs]</a>
-    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__dict__&quot;</span><span class="p">):</span>
@@ -2068,7 +2069,7 @@
 <div class="viewcode-block" id="RunnerStreamingResult">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerStreamingResult">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RunnerStreamingResult</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunnerStreamingResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for runner streaming results that provides access to the event queue</span>
 <span class="sd">    and allows users to consume streaming events.</span>
@@ -2082,13 +2083,13 @@
     <span class="n">_is_complete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the workflow execution is complete.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_complete</span>
 
 <div class="viewcode-block" id="RunnerStreamingResult.put_nowait">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerStreamingResult.put_nowait">[docs]</a>
-    <span class="k">def</span> <span class="nf">put_nowait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">StreamEvent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put_nowait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">StreamEvent</span><span class="p">):</span>
         <span class="c1"># only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="n">RawResponsesStreamEvent</span><span class="p">,</span> <span class="n">RunItemStreamEvent</span><span class="p">,</span> <span class="n">QueueCompleteSentinel</span><span class="p">)</span>
@@ -2102,7 +2103,7 @@
 
 <div class="viewcode-block" id="RunnerStreamingResult.stream_events">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerStreamingResult.stream_events">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">StreamEvent</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">StreamEvent</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stream events from the runner execution.w</span>
 
@@ -2149,7 +2150,7 @@
 
 <div class="viewcode-block" id="RunnerStreamingResult.stream_to_json">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerStreamingResult.stream_to_json">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_to_json</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_to_json</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent_events_stream.json&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">StreamEvent</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2223,7 +2224,7 @@
 
 <div class="viewcode-block" id="RunnerStreamingResult.stream_to_json_sync">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerStreamingResult.stream_to_json_sync">[docs]</a>
-    <span class="k">def</span> <span class="nf">stream_to_json_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent_events_stream.json&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stream_to_json_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent_events_stream.json&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Synchronous wrapper for stream_to_json that returns an iterator.</span>
 
@@ -2242,9 +2243,9 @@
 <span class="sd">                print(f&quot;Event: {event}&quot;)</span>
 <span class="sd">            ```</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">asyncio</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_collect_events</span><span class="p">():</span>
+        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_collect_events</span><span class="p">():</span>
             <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_to_json</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
                 <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
@@ -2254,7 +2255,7 @@
             <span class="c1"># Get the current event loop if running</span>
             <span class="c1"># loop = asyncio.get_running_loop()</span>
             <span class="c1"># If we&#39;re already in an async context, we need to run in a thread</span>
-            <span class="kn">import</span> <span class="nn">concurrent.futures</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
 
             <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
                 <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">_collect_events</span><span class="p">())</span>
@@ -2266,7 +2267,7 @@
 
 <div class="viewcode-block" id="RunnerStreamingResult.cancel">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerStreamingResult.cancel">[docs]</a>
-    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel the running task.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_run_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
@@ -2274,7 +2275,7 @@
 
 <div class="viewcode-block" id="RunnerStreamingResult.wait_for_completion">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerStreamingResult.wait_for_completion">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for the runner task to complete.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_task</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_task</span></div>

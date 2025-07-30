@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Evaluating RAG - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -529,23 +530,23 @@ You can refer to our <a class="reference internal" href="../tutorials/evaluation
 <p>Let’s walk through the code to evaluate a RAG pipeline step by step.</p>
 <p><strong>Step 1: import dependencies.</strong>
 We import the necessary dependencies for our evaluation script. These include modules for loading datasets, constructing a RAG pipeline, and evaluating the performance of the RAG pipeline.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">yaml</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dataset</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">core.openai_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">core.base_data_class</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
-<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
-<span class="linenos">10</span><span class="kn">from</span> <span class="nn">eval.evaluators</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">core.openai_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+<span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">core.string_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonParser</span>
+<span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
+<span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">eval.evaluators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 <span class="linenos">11</span>    <span class="n">RetrieverEvaluator</span><span class="p">,</span>
 <span class="linenos">12</span>    <span class="n">AnswerMacthEvaluator</span><span class="p">,</span>
 <span class="linenos">13</span>    <span class="n">LLMasJudge</span><span class="p">,</span>
 <span class="linenos">14</span>    <span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span><span class="p">,</span>
 <span class="linenos">15</span><span class="p">)</span>
-<span class="linenos">16</span><span class="kn">from</span> <span class="nn">core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
-<span class="linenos">17</span><span class="kn">from</span> <span class="nn">use_cases.rag</span> <span class="kn">import</span> <span class="n">RAG</span>
+<span class="linenos">16</span><span class="kn">from</span><span class="w"> </span><span class="nn">core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
+<span class="linenos">17</span><span class="kn">from</span><span class="w"> </span><span class="nn">use_cases.rag</span><span class="w"> </span><span class="kn">import</span> <span class="n">RAG</span>
 </pre></div>
 </div>
 <p><strong>Step 2: define the configuration.</strong>

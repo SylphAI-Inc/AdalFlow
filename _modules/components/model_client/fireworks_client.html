@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.model_client.fireworks_client - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -481,16 +482,16 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for components.model_client.fireworks_client</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
-<span class="kn">from</span> <span class="nn">openai.types</span> <span class="kn">import</span> <span class="n">Completion</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client.openai_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Completion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.openai_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
 
 <span class="n">BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;https://api.fireworks.ai/inference/v1/&quot;</span>
 
 
 <div class="viewcode-block" id="FireworksClient">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.fireworks_client.html#components.model_client.fireworks_client.FireworksClient">[docs]</a>
-<span class="k">class</span> <span class="nc">FireworksClient</span><span class="p">(</span><span class="n">OpenAIClient</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FireworksClient</span><span class="p">(</span><span class="n">OpenAIClient</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A component wrapper for Fireworks AI&#39;s OpenAI-compatible API.</span>
 
 <span class="s2">    This class extends :class:`OpenAIClient` by customizing several key parameters:</span>
@@ -521,7 +522,7 @@
 <span class="s2">        response = generator(prompt_kwargs)</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">non_streaming_chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Completion</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

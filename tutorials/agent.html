@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>ReAct Agent - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -593,7 +594,7 @@ Additionally, we teach it how to handle simple queries and complex queries.</p>
 <section id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Link to this heading">¶</a></h3>
 <p>In addition to the tools provided by users, by default, we add a new tool named <code class="docutils literal notranslate"><span class="pre">finish</span></code> to allow the agent to stop and return the final answer.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">finish</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;Finish the task with answer.&quot;&quot;&quot;</span>
    <span class="k">return</span> <span class="n">answer</span>
 </pre></div>
@@ -607,7 +608,7 @@ This LLM will use the same model client and model arguments as the agent’s pla
    <span class="k">else</span> <span class="kc">None</span>
 <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">llm_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">llm_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;I answer any input query with llm&#39;s world knowledge. Use me as a fallback tool or when the query is simple.&quot;&quot;&quot;</span>
    <span class="c1"># use the generator to answer the query</span>
    <span class="k">try</span><span class="p">:</span>
@@ -661,27 +662,27 @@ It will orchestrate two components:</p>
 <p>We will set up two sets of models, <cite>llama3-70b-8192`</cite> by Groq and <cite>gpt-3.5-turbo`</cite> by OpenAI, to test two queries.
 For comparison, we will compare these with a vanilla LLM response without using the agent.
 Here are the code snippets:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.agent</span> <span class="kn">import</span> <span class="n">ReActAgent</span>
-<span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">ModelClientType</span><span class="p">,</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReActAgent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">ModelClientType</span><span class="p">,</span> <span class="n">ModelClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
 
 <span class="n">setup_env</span><span class="p">()</span>
 
 
 <span class="c1"># Define tools</span>
-<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   Multiply two numbers.</span>
 <span class="sd">   &quot;&quot;&quot;</span>
    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
 
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   Add two numbers.</span>
 <span class="sd">   &quot;&quot;&quot;</span>
    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
 
-<span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">divide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">   </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   Divide two numbers.</span>
 <span class="sd">   &quot;&quot;&quot;</span>
@@ -697,7 +698,7 @@ Here are the code snippets:</p>
 <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">test_react_agent</span><span class="p">(</span><span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_react_agent</span><span class="p">(</span><span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
    <span class="n">tools</span> <span class="o">=</span> <span class="p">[</span><span class="n">multiply</span><span class="p">,</span> <span class="n">add</span><span class="p">,</span> <span class="n">divide</span><span class="p">]</span>
    <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
       <span class="s2">&quot;What is the capital of France? and what is 465 times 321 then add 95297 and then divide by 13.2?&quot;</span><span class="p">,</span>
@@ -888,7 +889,7 @@ We suggest you to modify our default template: <a class="reference internal" hre
 <p>Secondly, the <code class="docutils literal notranslate"><span class="pre">examples</span></code> in the constructor allow you to provide more examples to enforce the correct output format.
 For instance, if we want it to learn how to correctly call <cite>multiply</cite>, we can pass in a list of <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instances with the correct format.
 Classmethod <code class="docutils literal notranslate"><span class="pre">from_function</span></code> can be used to create a <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instance from a function and its arguments.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionExpression</span>
 
 <span class="c1"># generate an example of calling multiply with key-word arguments</span>
 <span class="n">example_using_multiply</span> <span class="o">=</span> <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_function</span><span class="p">(</span>

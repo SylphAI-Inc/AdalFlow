@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Function calls - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -507,9 +508,9 @@ Many places use tools and function calls interchangably.</p>
 <section id="quick-walkthrough">
 <h2>Quick Walkthrough<a class="headerlink" href="#quick-walkthrough" title="Link to this heading">¶</a></h2>
 <p>Users might already know of OpenAI’s function call feature via its API (<a class="reference external" href="https://platform.openai.com/docs/guides/function-calling">https://platform.openai.com/docs/guides/function-calling</a>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_current_weather</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;fahrenheit&quot;</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_current_weather</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;fahrenheit&quot;</span><span class="p">):</span>
 <span class="w"> </span><span class="sd">&quot;&quot;&quot;Get the current weather in a given location&quot;&quot;&quot;</span>
- <span class="kn">import</span> <span class="nn">json</span>
+ <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
  <span class="k">if</span> <span class="s2">&quot;tokyo&quot;</span> <span class="ow">in</span> <span class="n">location</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
      <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;Tokyo&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">})</span>
@@ -648,37 +649,37 @@ creating the function definition (2) formatting the prompt with the definitions 
 <section id="function-call-in-action">
 <h2>Function Call in Action<a class="headerlink" href="#function-call-in-action" title="Link to this heading">¶</a></h2>
 <p>We will use the following functions as examples across this note:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
 
-<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Multiply two numbers.&quot;&quot;&quot;</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
 
 
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add two numbers.&quot;&quot;&quot;</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">divide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Divide two numbers.&quot;&quot;&quot;</span>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">b</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for query and return a list of results.&quot;&quot;&quot;</span>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;result1&quot;</span> <span class="o">+</span> <span class="n">query</span><span class="p">,</span> <span class="s2">&quot;result2&quot;</span> <span class="o">+</span> <span class="n">query</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">numpy_sum</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">numpy_sum</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sum the elements of an array.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
 
@@ -686,12 +687,12 @@ creating the function definition (2) formatting the prompt with the definitions 
 <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Point</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Point</span><span class="p">:</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
 
 
-<span class="k">def</span> <span class="nf">add_points</span><span class="p">(</span><span class="n">p1</span><span class="p">:</span> <span class="n">Point</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="n">Point</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_points</span><span class="p">(</span><span class="n">p1</span><span class="p">:</span> <span class="n">Point</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="n">Point</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -701,7 +702,7 @@ We will demonstrate the structure and how to use each data model and component t
 <h3>1. FunctionTool<a class="headerlink" href="#functiontool" title="Link to this heading">¶</a></h3>
 <p>First, let’s see how we help describe the function to LLM.</p>
 <p>Use the above functions as examples, <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> will generate the <code class="docutils literal notranslate"><span class="pre">FunctionDefinition</span></code> for each function automatically if the user did not pass it in.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.func_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionTool</span>
 
 <span class="n">functions</span> <span class="o">=</span><span class="p">[</span><span class="n">multiply</span><span class="p">,</span> <span class="n">add</span><span class="p">,</span> <span class="n">divide</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">numpy_sum</span><span class="p">,</span> <span class="n">add_points</span><span class="p">]</span>
 <span class="n">tools</span> <span class="o">=</span> <span class="p">[</span>
@@ -777,7 +778,7 @@ Check out the API documentation for more details.</p>
 <section id="toolmanager">
 <h3>2. ToolManager<a class="headerlink" href="#toolmanager" title="Link to this heading">¶</a></h3>
 <p>Using <code class="docutils literal notranslate"><span class="pre">ToolManager</span></code> on all the above function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.tool_manager</span> <span class="kn">import</span> <span class="n">ToolManager</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.tool_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolManager</span>
 
 <span class="n">tool_manager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">functions</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tool_manager</span><span class="p">)</span>
@@ -814,7 +815,7 @@ We use the following prompt to do a single function call.</p>
 </div>
 <p><strong>Pass tools in the prompt</strong></p>
 <p>We use <cite>yaml</cite> format here and show an example with less tools.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
 
 <span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
 <span class="n">small_tool_manager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
@@ -879,7 +880,7 @@ We use the following prompt to do a single function call.</p>
 <ol class="arabic simple">
 <li><p>Using the function name and arguments, we will leverage <code class="docutils literal notranslate"><span class="pre">Function</span></code> as LLM’s output data type.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Function</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Function</span>
 
 <span class="n">output_data_class</span> <span class="o">=</span> <span class="n">Function</span>
 <span class="n">output_format_str</span> <span class="o">=</span> <span class="n">output_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">])</span>
@@ -904,7 +905,7 @@ The output is:</p>
 <ol class="arabic simple" start="2">
 <li><p>Using the function call expression for which we will use <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code>.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionExpression</span>
 
 <span class="n">output_data_class</span> <span class="o">=</span> <span class="n">FunctionExpression</span>
 <span class="n">output_format_str</span> <span class="o">=</span> <span class="n">output_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">])</span>
@@ -923,7 +924,7 @@ The output is:</p>
 </pre></div>
 </div>
 <p>We will use <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a> to streamline the formatting of our output data type.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.output_parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonOutputParser</span>
 
 <span class="n">func_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">Function</span><span class="p">,</span> <span class="n">exclude_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">])</span>
 <span class="n">instructions</span> <span class="o">=</span> <span class="n">func_parser</span><span class="o">.</span><span class="n">format_instructions</span><span class="p">()</span>
@@ -946,8 +947,8 @@ The output is:</p>
 <section id="function-output-format">
 <h4>Function Output Format<a class="headerlink" href="#function-output-format" title="Link to this heading">¶</a></h4>
 <p>Now, let’s prepare our generator with the above prompt, <code class="docutils literal notranslate"><span class="pre">Function</span></code> data class, and <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClientType</span>
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">}</span>
 <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -1058,7 +1059,7 @@ We will use FunctionExpression this time in the parser. And we added the necessa
 </pre></div>
 </div>
 <p>This time, let us try to execute all function concurrently and treating them all as async functions.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_async_function_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">tool_manager</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_async_function_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">tool_manager</span><span class="p">):</span>
     <span class="n">answers</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1071,7 +1072,7 @@ We will use FunctionExpression this time in the parser. And we added the necessa
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time taken: </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="w"> </span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">answers</span>
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">process_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">tool_manager</span><span class="p">:</span> <span class="n">ToolManager</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">tool_manager</span><span class="p">:</span> <span class="n">ToolManager</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">50</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1243,7 +1244,7 @@ Do not call multiple functions in one action field.
 Compared to the general function call defined above, MCP provides a unified interface between different tool providers and model vendors.
 Importantly, you don’t need to rewrite every tools. Instead, you can directly re-use the tools from the marketplace like <a class="reference external" href="https://smithery.ai/">smithery.ai</a>.</p>
 <p><strong>Configuring an MCP Client</strong>. To configure a standard input/output (stdio) MCP client with your own server. An example of python server implementation is at <cite>tutorials/mcp_agent/mcp_calculator_server.py</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mcp</span> <span class="kn">import</span> <span class="n">MCPServerStdioParams</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPServerStdioParams</span>
 <span class="n">server_params</span> <span class="o">=</span> <span class="n">MCPServerStdioParams</span><span class="p">(</span>
     <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
     <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mcp_calculator_server.py&quot;</span><span class="p">],</span>
@@ -1257,12 +1258,12 @@ Importantly, you don’t need to rewrite every tools. Instead, you can directly 
 </pre></div>
 </div>
 <p><strong>Executing MCP Tools</strong>. You can execute an MCP tool as an asynchronous function. The <cite>MCPFunctionTool</cite> can be used in the same way as a general <cite>FunctionTool</cite>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.mcp_tool</span> <span class="kn">import</span> <span class="n">MCPFunctionTool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.mcp_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPFunctionTool</span>
 <span class="c1"># Get tools from the server</span>
 <span class="k">async</span> <span class="k">with</span> <span class="n">mcp_session_context</span><span class="p">(</span><span class="n">server_params</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
     <span class="n">tools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">list_tools</span><span class="p">()</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">call_async_function</span><span class="p">():</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_async_function</span><span class="p">():</span>
     <span class="n">tool</span> <span class="o">=</span> <span class="n">MCPFunctionTool</span><span class="p">(</span><span class="n">server_params</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool</span><span class="o">.</span><span class="n">acall</span><span class="p">()</span>
 
@@ -1274,7 +1275,7 @@ Importantly, you don’t need to rewrite every tools. Instead, you can directly 
 <li><p>Find a tool at smithery.ai. For example, <a class="reference external" href="https://smithery.ai/server/&#64;nickclyde/duckduckgo-mcp-server">https://smithery.ai/server/&#64;nickclyde/duckduckgo-mcp-server</a>.</p></li>
 <li><p>Load the server. A MCP server provides multiple tools. With <cite>MCPToolManager</cite>, you can easily load them as <cite>MCPFunctionTool</cite> instances all at once. First, create a client manager:</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.mcp_tool</span> <span class="kn">import</span> <span class="n">MCPToolManager</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.mcp_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPToolManager</span>
 <span class="n">mcp_client_manager</span> <span class="o">=</span> <span class="n">MCPToolManager</span><span class="p">(</span><span class="n">server_params</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1351,11 +1352,11 @@ You can list all tools available on the server and use it with agent. A complete
         <span class="n">ctx</span><span class="p">:</span> <span class="n">MCP</span> <span class="n">context</span> <span class="k">for</span> <span class="n">logging</span>
 
 <span class="err">•</span> <span class="n">fetch_content</span><span class="p">:</span>
-    <span class="n">Fetch</span> <span class="ow">and</span> <span class="n">parse</span> <span class="n">content</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">webpage</span> <span class="n">URL</span><span class="o">.</span>
+    <span class="n">Fetch</span> <span class="ow">and</span> <span class="n">parse</span> <span class="n">content</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a</span> <span class="n">webpage</span> <span class="n">URL</span><span class="o">.</span>
 
     <span class="n">Args</span><span class="p">:</span>
         <span class="n">url</span><span class="p">:</span> <span class="n">The</span> <span class="n">webpage</span> <span class="n">URL</span> <span class="n">to</span> <span class="n">fetch</span> <span class="n">content</span> <span class="kn">from</span>
-        <span class="nn">ctx</span><span class="p">:</span> <span class="n">MCP</span> <span class="n">context</span> <span class="k">for</span> <span class="n">logging</span>
+<span class="w">        </span><span class="nn">ctx</span><span class="p">:</span> <span class="n">MCP</span> <span class="n">context</span> <span class="k">for</span> <span class="n">logging</span>
 </pre></div>
 </div>
 <p>4. Use or optimize prompts or agents with the function as if you are using the FunctionTool.
@@ -1416,8 +1417,8 @@ With the tool, we can create an agent and ask it to search for news.</p>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionExpression</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionOutput</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></a></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.mcp_tool.MCPFunctionTool()</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.mcp_tool.MCPToolManager()</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.mcp_tool.html#core.mcp_tool.MCPFunctionTool" title="core.mcp_tool.MCPFunctionTool"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.mcp_tool.MCPFunctionTool()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.mcp_tool.html#core.mcp_tool.MCPToolManager" title="core.mcp_tool.MCPToolManager"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.mcp_tool.MCPToolManager()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.get_fun_schema()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.parse_function_call_expr()</span></code></a></p></li>

@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Agents and Runner - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -483,7 +484,13 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="agents-and-runner">
+          <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/agent/tutorial_agent_basic.py" target="_blank" style="display: flex; align-items: center;">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+        <span style="vertical-align: middle;"> Open Source Code (Agent Basic)</span>
+    </a>
+</div>
+<section id="agents-and-runner">
 <h1>Agents and Runner<a class="headerlink" href="#agents-and-runner" title="Link to this heading">¶</a></h1>
 <p>Agents are the core building block for creating autonomous AI systems in AdalFlow. An agent combines reasoning capabilities with tool usage, allowing it to break down complex tasks into steps, use available tools, and iteratively work toward solutions. This approach is motivated by the ReAcT (Reasoning and Acting) framework <a class="reference external" href="https://arxiv.org/abs/2210.03629">[Yao et al., 2022]</a>, which combines reasoning traces and task-specific actions in language models.</p>
 <section id="overview">
@@ -495,10 +502,13 @@
 </ul>
 <p>This separation allows for flexible customization of both planning and execution logic.</p>
 </section>
-<section id="quick-start">
-<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
-<p>Here’s a minimal example to get you started:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<section id="minimal-example">
+<h2>Minimal Example<a class="headerlink" href="#minimal-example" title="Link to this heading">¶</a></h2>
+<p>We have a simple calculator tool that can evaluate mathematical expressions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Runnerfrom</span> <span class="n">adalflow</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">openai_client</span> <span class="kn">import</span><span class="w"> </span><span class="nn">OpenAIClient</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculator</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluate a mathematical expression.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span>
@@ -508,9 +518,9 @@
 
 <span class="c1"># Create agent with tools that require permission</span>
 <span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;PermissionAgent&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CalculatorAgent&quot;</span><span class="p">,</span>
     <span class="n">tools</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">FunctionTool</span><span class="p">(</span><span class="n">calculator</span><span class="p">),</span> 
+        <span class="n">calculator</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
     <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
@@ -584,66 +594,8 @@
 </section>
 <section id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Link to this heading">¶</a></h3>
-<p>Tools extend your agent’s capabilities. AdalFlow supports several tool types:</p>
-<section id="function-tools">
-<h4>Function Tools<a class="headerlink" href="#function-tools" title="Link to this heading">¶</a></h4>
-<p>Convert regular Python functions into agent tools. Tools can return various types including basic Python types, custom objects, or <code class="docutils literal notranslate"><span class="pre">ToolOutput</span></code> for enhanced control:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic return types</span>
-<span class="k">def</span> <span class="nf">search_web</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search the web for information.&quot;&quot;&quot;</span>
-    <span class="c1"># Implementation here</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Search results for: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
-
-<span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="n">to</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Send an email.&quot;&quot;&quot;</span>
-    <span class="c1"># Implementation here</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Email sent to </span><span class="si">{</span><span class="n">to</span><span class="si">}</span><span class="s2">&quot;</span>
-
-<span class="c1"># Enhanced control with ToolOutput</span>
-<span class="k">def</span> <span class="nf">advanced_search</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_results</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ToolOutput</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Advanced search with enhanced agent feedback.&quot;&quot;&quot;</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">perform_search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">max_results</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ToolOutput</span><span class="p">(</span>
-        <span class="n">output</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>                           <span class="c1"># The actual data</span>
-        <span class="n">observation</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> results for &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>  <span class="c1"># For agent reasoning</span>
-        <span class="n">display</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;🔍 Searched: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>         <span class="c1"># For user display</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)}</span>
-    <span class="p">)</span>
-
-<span class="n">tools</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">FunctionTool</span><span class="p">(</span><span class="n">search_web</span><span class="p">),</span>
-    <span class="n">FunctionTool</span><span class="p">(</span><span class="n">send_email</span><span class="p">),</span>
-    <span class="n">FunctionTool</span><span class="p">(</span><span class="n">advanced_search</span><span class="p">)</span>
-<span class="p">]</span>
-
-<span class="c1"># Create the agent</span>
-<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MathAgent&quot;</span><span class="p">,</span>
-    <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
-    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
-    <span class="n">max_steps</span><span class="o">=</span><span class="mi">5</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>You can also use synchronous and asynchronous callables (such as a custom function, class method) as tools that are not necessarily FunctionTools. Further information is provided in the <a class="reference internal" href="../tutorials/tool_helper.html"><span class="doc std std-doc">Tool Helper</span></a> documentation. For instance, you could have created tools as below without using FunctionTool</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tools</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">search_web</span><span class="p">,</span>
-    <span class="n">send_email</span><span class="p">,</span>
-    <span class="n">advanced_search</span>
-<span class="p">]</span>
-
-<span class="c1"># Create the agent</span>
-<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MathAgent&quot;</span><span class="p">,</span>
-    <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
-    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
-    <span class="n">max_steps</span><span class="o">=</span><span class="mi">5</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</section>
+<p>Tools extend your agent’s capabilities by allowing them to call functions, access APIs, or interact with external systems. AdalFlow supports multiple tool types including FunctionTool (wrapping Python functions) and MCPFunctionTool (for MCP protocol integration). Tools can return various types including basic Python types, custom objects, or <code class="docutils literal notranslate"><span class="pre">ToolOutput</span></code> for enhanced control.</p>
+<p>For comprehensive information about tool types, implementation patterns, error handling, and advanced features, see the <a class="reference internal" href="tool.html"><span class="doc">Tool Use</span></a> documentation.</p>
 </section>
 </section>
 <section id="advanced-features">
@@ -652,10 +604,10 @@
 <h3>Streaming Execution<a class="headerlink" href="#streaming-execution" title="Link to this heading">¶</a></h3>
 <p>You can execute agents with <a class="reference internal" href="../apis/core/core.types.html"><span class="doc">RunnerStreamingResult</span></a> support for real-time updates. See the <a class="reference internal" href="streaming.html"><span class="doc std std-doc">Streaming</span></a> tutorial for detailed information and examples.</p>
 </section>
-<section id="permission-management">
-<h3>Permission Management<a class="headerlink" href="#permission-management" title="Link to this heading">¶</a></h3>
+<section id="human-in-the-loop">
+<h3>Human in the Loop<a class="headerlink" href="#human-in-the-loop" title="Link to this heading">¶</a></h3>
 <p>AdalFlow provides a <strong>PermissionManager</strong> system that allows you to control and approve tool executions before they run. This is particularly useful for tools that perform sensitive operations like file system access, API calls, or external communications.</p>
-<p>For comprehensive coverage of permission management features including CLI handlers, FastAPI integration, custom permission managers, and security best practices, see the dedicated <a class="reference internal" href="#permission_management.md"><span class="xref myst">Permission Management</span></a> tutorial.</p>
+<p>For comprehensive coverage of permission management features including CLI handlers, FastAPI integration, custom permission managers, and security best practices, see the dedicated <a class="reference internal" href="#permission_management.md"><span class="xref myst">Human in the Loop</span></a> tutorial.</p>
 </section>
 </section>
 <section id="execution-flow">
@@ -679,7 +631,7 @@
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">}</span>
 
 <span class="c1"># Anthropic</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client.anthropic_client</span> <span class="kn">import</span> <span class="n">AnthropicAPIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.anthropic_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnthropicAPIClient</span>
 <span class="n">model_client</span> <span class="o">=</span> <span class="n">AnthropicAPIClient</span><span class="p">()</span>
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;claude-3-sonnet-20240229&quot;</span><span class="p">}</span>
 </pre></div>
@@ -696,9 +648,9 @@
 <span class="p">)</span>
 
 <span class="c1"># Structured output with Pydantic</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
-<span class="k">class</span> <span class="nc">AnalysisResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnalysisResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">summary</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">confidence</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">recommendations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -740,20 +692,20 @@
 <div class="highlight admonition">
 <p class="admonition-title">API reference</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/components/components.agent.agent.html"><span class="doc">adalflow.components.agent.agent.Agent</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.runner.html"><span class="doc">adalflow.components.agent.runner.Runner</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">adalflow.core.types.RunnerResult</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">adalflow.core.types.RunnerStreamingResult</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">adalflow.core.types.StepOutput</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">adalflow.core.types.FunctionOutput</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">adalflow.core.types.ToolOutput</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.func_tool.html"><span class="doc">adalflow.core.func_tool.FunctionTool</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.generator.html"><span class="doc">adalflow.core.generator.Generator</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.tool_manager.html"><span class="doc">adalflow.core.tool_manager.ToolManager</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/tracing/tracing.create.html"><span class="doc">adalflow.tracing.runner_span</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/tracing/tracing.create.html"><span class="doc">adalflow.tracing.tool_span</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html"><span class="doc">adalflow.tracing.GeneratorStateLogger</span></a></p></li>
-<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html"><span class="doc">adalflow.tracing.GeneratorCallLogger</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.agent.agent.html"><span class="doc">components.agent.agent.Agent</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.agent.runner.html"><span class="doc">components.agent.runner.Runner</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">core.types.RunnerResult</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">core.types.RunnerStreamingResult</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">core.types.StepOutput</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">core.types.FunctionOutput</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html"><span class="doc">core.types.ToolOutput</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.func_tool.html"><span class="doc">func_tool.FunctionTool</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.generator.html"><span class="doc">generator.Generator</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.tool_manager.html"><span class="doc">tool_manager.ToolManager</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/tracing/tracing.create.html"><span class="doc">tracing.runner_span</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/tracing/tracing.create.html"><span class="doc">tracing.tool_span</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html"><span class="doc">tracing.GeneratorStateLogger</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html"><span class="doc">tracing.GeneratorCallLogger</span></a></p></li>
 </ul>
 </div>
 </section>
@@ -815,7 +767,7 @@
             <ul>
 <li><a class="reference internal" href="#">Agents and Runner</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li><a class="reference internal" href="#minimal-example">Minimal Example</a></li>
 <li><a class="reference internal" href="#core-components">Core Components</a><ul>
 <li><a class="reference internal" href="#agent">Agent</a><ul>
 <li><a class="reference internal" href="#basic-configuration">Basic Configuration</a></li>
@@ -826,15 +778,12 @@
 <li><a class="reference internal" href="#runnerresult">RunnerResult</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#tools">Tools</a><ul>
-<li><a class="reference internal" href="#function-tools">Function Tools</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#tools">Tools</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#advanced-features">Advanced Features</a><ul>
 <li><a class="reference internal" href="#streaming-execution">Streaming Execution</a></li>
-<li><a class="reference internal" href="#permission-management">Permission Management</a></li>
+<li><a class="reference internal" href="#human-in-the-loop">Human in the Loop</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#execution-flow">Execution Flow</a></li>

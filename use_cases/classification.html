@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Classification Optimization - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -552,7 +553,7 @@ In the long term, this model can also help bootstrap the training of a more cost
 <span class="s2"> &quot;&quot;&quot;</span>
 
  <span class="nd">@dataclass</span>
- <span class="k">class</span> <span class="nc">TRECExtendedData</span><span class="p">(</span><span class="n">TrecData</span><span class="p">):</span>
+ <span class="k">class</span><span class="w"> </span><span class="nc">TRECExtendedData</span><span class="p">(</span><span class="n">TrecData</span><span class="p">):</span>
      <span class="n">rationale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
          <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
              <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Your step-by-step reasoning to classify the question to class_name&quot;</span>
@@ -565,9 +566,9 @@ In the long term, this model can also help bootstrap the training of a more cost
 </div>
 <p>We will subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code> for our final task pipeline.
 We use <a class="reference internal" href="../apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser" title="components.output_parsers.dataclass_parser.DataClassParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassParser</span></code></a> to streamline the process of output formatting and parsing.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TRECClassifierStructuredOutput</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TRECClassifierStructuredOutput</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
 
-     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
          <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
          <span class="n">label_desc</span> <span class="o">=</span> <span class="p">[</span>
@@ -616,7 +617,7 @@ We use <a class="reference internal" href="../apis/components/components.output_
              <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
          <span class="p">)</span>
 
-     <span class="k">def</span> <span class="nf">_prepare_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
          <span class="n">input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
          <span class="n">input_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get_input_str</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
          <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -626,7 +627,7 @@ We use <a class="reference internal" href="../apis/components/components.output_
          <span class="p">}</span>
          <span class="k">return</span> <span class="n">prompt_kwargs</span>
 
-     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
          <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
      <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
          <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_input</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
@@ -643,8 +644,8 @@ to optimize <code class="docutils literal notranslate"><span class="pre">few_sho
 <p>Now, we will define a subclass of <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> to prepare the pipeline for training.
 We have set up the <code class="docutils literal notranslate"><span class="pre">eval_fn</span></code>, <code class="docutils literal notranslate"><span class="pre">loss_fn</span></code>, along with methods to configure backward engine for the text optimizer,
 as well as a method method to configure teacher generator for the demo optimizer.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TrecClassifierAdal</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">AdalComponent</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TrecClassifierAdal</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">AdalComponent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
@@ -667,10 +668,10 @@ as well as a method method to configure teacher generator for the demo optimizer
             <span class="n">teacher_model_config</span><span class="o">=</span><span class="n">teacher_model_config</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">prepare_eval</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_eval</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="n">y_label</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -678,7 +679,7 @@ as well as a method method to configure teacher generator for the demo optimizer
             <span class="n">y_label</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">class_name</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y_label</span><span class="p">,</span> <span class="s2">&quot;y_gt&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">class_name</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">prepare_loss</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_loss</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">TRECExtendedData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="n">full_response</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">full_response</span>
@@ -710,7 +711,7 @@ This training strategy has been working well. With the text optimized, this migh
 With the teacher model’s reasoning, the demo optimizer can learn to reason better even with merefly one demonstration from the teacher.
 When we are at the <code class="docutils literal notranslate"><span class="pre">sequential</span></code> optimization order, we will end up with 24 steps trained.</p>
 <p>In addition, you can try <code class="docutils literal notranslate"><span class="pre">mixed</span></code> for the optimization order, where at each step, it will update both the text optimizer and the demo optimizer.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span>
     <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
     <span class="n">train_batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># larger batch size is not that effective, probably because of llm&#39;s lost in the middle</span>
@@ -781,7 +782,7 @@ The demo prompt is also short, directly from a teacher model teaching the studen
 <h2>Performance &amp; Benchmark<a class="headerlink" href="#performance-benchmark" title="Link to this heading">¶</a></h2>
 <p>We implemented Dspy Boostrap few-shot with random search.</p>
 <p>Here is the DsPy’s Signature (similar to the prompt) where its task description is a direct copy our AdalFlow’s starting prompt:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GenerateAnswer</span><span class="p">(</span><span class="n">dspy</span><span class="o">.</span><span class="n">Signature</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GenerateAnswer</span><span class="p">(</span><span class="n">dspy</span><span class="o">.</span><span class="n">Signature</span><span class="p">):</span>
 <span class="w">     </span><span class="sd">&quot;&quot;&quot;You are a classifier. Given a question, you need to classify it into one of the following classes:</span>
 <span class="sd">     Format: class_index. class_name, class_description</span>
 <span class="sd">     1. ABBR, Abbreviation</span>

@@ -7,3 +7,22 @@ mcp_tool
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      execute_mcp_op
+      mcp_session_context
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      MCPFunctionTool
+      MCPServerSseParams
+      MCPServerStdioParams
+      MCPServerStreamableHttpParams
+      MCPToolManager
+

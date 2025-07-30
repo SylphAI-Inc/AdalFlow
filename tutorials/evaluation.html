@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>LLM Evaluation - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -531,7 +532,7 @@ RRAG <a class="footnote-reference brackets" href="#id59" id="id5" role="doc-note
 <li><p><a class="reference external" href="https://github.com/AlibabaResearch/DAMO-ConvAI/tree/main/api-bank">API-Bank</a>, which evaluates LLMs’ ability to use external tools and APIs to perform tasks.</p></li>
 </ul>
 <p>Please refer to the review papers (<em>Chang et al.</em> <a class="footnote-reference brackets" href="#id39" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, <em>Guo et al.</em> <a class="footnote-reference brackets" href="#id40" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, and <em>Liu et al.</em> <a class="footnote-reference brackets" href="#id44" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>) for a more comprehensive overview of the datasets and benchmarks used in LLM evaluations. Additionally, a lot of datasets are readily accessible via the <a class="reference external" href="https://huggingface.co/datasets">Hugging Face Datasets</a> library. For instance, the MMLU dataset can be easily loaded from the Hub using the following code snippet.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dataset</span>
 <span class="linenos">2</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;cais/mmlu&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;abstract_algebra&#39;</span><span class="p">)</span>
 <span class="linenos">3</span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">])</span>
 </pre></div>
@@ -577,15 +578,15 @@ Or using <a class="reference internal" href="../apis/eval/eval.g_eval.html#modul
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gt</span> <span class="o">=</span> <span class="s2">&quot;Brazil has won 5 FIFA World Cup titles&quot;</span>
 <span class="n">pred</span> <span class="o">=</span> <span class="s2">&quot;Brazil is the five-time champion of the FIFA WorldCup.&quot;</span>
 
-<span class="k">def</span> <span class="nf">compute_rouge</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">torchmetrics.text.rouge</span> <span class="kn">import</span> <span class="n">ROUGEScore</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_rouge</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.rouge</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROUGEScore</span>
 
     <span class="n">rouge</span> <span class="o">=</span> <span class="n">ROUGEScore</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">rouge</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">gt</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">compute_bleu</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">torchmetrics.text.bleu</span> <span class="kn">import</span> <span class="n">BLEUScore</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_bleu</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.bleu</span><span class="w"> </span><span class="kn">import</span> <span class="n">BLEUScore</span>
 
     <span class="n">bleu</span> <span class="o">=</span> <span class="n">BLEUScore</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">bleu</span><span class="p">([</span><span class="n">pred</span><span class="p">],</span> <span class="p">[[</span><span class="n">gt</span><span class="p">]])</span>
@@ -603,11 +604,11 @@ Or using <a class="reference internal" href="../apis/eval/eval.g_eval.html#modul
 <p>To make up for this, embedding-based  metrics or neural evaluators such as BERTScore was created.
 You can find BERTScore in both <a class="reference external" href="https://huggingface.co/metrics">Hugging Face Metrics</a> and <a class="reference external" href="https://lightning.ai/docs/torchmetrics/stable/text/bertscore.html">TorchMetrics</a>.
 BERTScore uses pre-trained contextual embeddings from BERT and matched words in generated text and reference text using cosine similarity.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_bertscore</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_bertscore</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    https://lightning.ai/docs/torchmetrics/stable/text/bert_score.html</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">torchmetrics.text.bert</span> <span class="kn">import</span> <span class="n">BERTScore</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.bert</span><span class="w"> </span><span class="kn">import</span> <span class="n">BERTScore</span>
 
     <span class="n">bertscore</span> <span class="o">=</span> <span class="n">BERTScore</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">bertscore</span><span class="p">([</span><span class="n">pred</span><span class="p">],</span> <span class="p">[</span><span class="n">gt</span><span class="p">])</span>
@@ -661,10 +662,10 @@ The key is to clearly define the metric using text.</p>
 Besides of the score, it computes the confidence interval of the scores.</p>
 <p><strong>Case 1: With References</strong></p>
 <p>Now, you can use the following code to calculate the final score based on the judgment query:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_llm_as_judge</span><span class="p">():</span>
-    <span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
-    <span class="kn">from</span> <span class="nn">adalflow.eval.llm_as_judge</span> <span class="kn">import</span> <span class="n">LLMasJudge</span><span class="p">,</span> <span class="n">DefaultLLMJudge</span>
-    <span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_llm_as_judge</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">adalflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">adal</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.llm_as_judge</span><span class="w"> </span><span class="kn">import</span> <span class="n">LLMasJudge</span><span class="p">,</span> <span class="n">DefaultLLMJudge</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
 
     <span class="n">adal</span><span class="o">.</span><span class="n">setup_env</span><span class="p">()</span>
 
@@ -734,9 +735,9 @@ You can view the prompt we used simply using <cite>print(llm_judge)</cite>:</p>
 </pre></div>
 </div>
 <p><strong>Case 2: Without Question</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_llm_as_judge_wo_questions</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">adalflow.eval.llm_as_judge</span> <span class="kn">import</span> <span class="n">LLMasJudge</span><span class="p">,</span> <span class="n">DefaultLLMJudge</span>
-    <span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_llm_as_judge_wo_questions</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.llm_as_judge</span><span class="w"> </span><span class="kn">import</span> <span class="n">LLMasJudge</span><span class="p">,</span> <span class="n">DefaultLLMJudge</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
 
 
     <span class="n">llm_judge</span> <span class="o">=</span> <span class="n">DefaultLLMJudge</span><span class="p">(</span>
@@ -779,8 +780,8 @@ G-eval provided a way to evaluate:</p>
 <p>In our library, we provides the prompt for task <cite>Summarization</cite> and <cite>Chatbot</cite> as default.
 We also map the score to the range [0, 1] for the ease of optimization.</p>
 <p>Here is the code snippet to compute the G-eval score:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_g_eval_summarization</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">adalflow.eval.g_eval</span> <span class="kn">import</span> <span class="n">GEvalLLMJudge</span><span class="p">,</span> <span class="n">GEvalJudgeEvaluator</span><span class="p">,</span> <span class="n">NLGTask</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_g_eval_summarization</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.g_eval</span><span class="w"> </span><span class="kn">import</span> <span class="n">GEvalLLMJudge</span><span class="p">,</span> <span class="n">GEvalJudgeEvaluator</span><span class="p">,</span> <span class="n">NLGTask</span>
 
     <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
@@ -885,7 +886,7 @@ All of these metrics, you can also find at <a class="reference external" href="h
 <p>For example, you can use the following code snippet to compute the recall&#64;k the retriever component of the RAG pipeline for a single query if
 the ground truth context is provided.
 In this example, the retrieved contexts is a joined string of the retrieved context chunks, and the gt_contexts is a list of ground truth context chunks for each query.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.eval</span> <span class="kn">import</span> <span class="n">RetrieverRecall</span><span class="p">,</span> <span class="n">RetrieverRelevance</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetrieverRecall</span><span class="p">,</span> <span class="n">RetrieverRelevance</span>
 
 <span class="n">retrieved_contexts</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">,</span>

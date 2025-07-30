@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Parser - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -676,7 +677,7 @@ Users do not have to use <cite>exclude/include</cite> fields to specify the outp
 <p>All of the parsers are quite straightforward to use.</p>
 <section id="booleanparser">
 <h3>BooleanParser<a class="headerlink" href="#booleanparser" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">BooleanParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.string_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">BooleanParser</span>
 
 <span class="n">bool_str</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
 <span class="n">bool_str_2</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
@@ -706,7 +707,7 @@ Users do not have to use <cite>exclude/include</cite> fields to specify the outp
 </section>
 <section id="intparser">
 <h3>IntParser<a class="headerlink" href="#intparser" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rom</span> <span class="n">adalflow</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">string_parser</span> <span class="kn">import</span> <span class="nn">IntParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rom</span> <span class="n">adalflow</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">string_parser</span> <span class="kn">import</span><span class="w"> </span><span class="nn">IntParser</span>
 
 <span class="n">int_str</span> <span class="o">=</span> <span class="s2">&quot;42&quot;</span>
 <span class="n">int_str_2</span> <span class="o">=</span> <span class="s2">&quot;42.0&quot;</span>
@@ -732,7 +733,7 @@ Users do not have to use <cite>exclude/include</cite> fields to specify the outp
 </section>
 <section id="floatparser">
 <h3>FloatParser<a class="headerlink" href="#floatparser" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">FloatParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.string_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">FloatParser</span>
 
 <span class="n">float_str</span> <span class="o">=</span> <span class="s2">&quot;42.0&quot;</span>
 <span class="n">float_str_2</span> <span class="o">=</span> <span class="s2">&quot;42&quot;</span>
@@ -758,7 +759,7 @@ Users do not have to use <cite>exclude/include</cite> fields to specify the outp
 </section>
 <section id="listparser">
 <h3>ListParser<a class="headerlink" href="#listparser" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">ListParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.string_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListParser</span>
 
 <span class="n">list_str</span> <span class="o">=</span> <span class="s1">&#39;[&quot;key&quot;, &quot;value&quot;]&#39;</span>
 <span class="n">list_str_2</span> <span class="o">=</span> <span class="s1">&#39;prefix[&quot;key&quot;, 2]...&#39;</span>
@@ -780,7 +781,7 @@ Users do not have to use <cite>exclude/include</cite> fields to specify the outp
 <section id="jsonparser">
 <h3>JsonParser<a class="headerlink" href="#jsonparser" title="Link to this heading">¶</a></h3>
 <p>Even though it can work on lists, it is better to only use it for dictionaries.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.string_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonParser</span>
 
 <span class="n">dict_str</span> <span class="o">=</span> <span class="s1">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span>
 <span class="n">nested_dict_str</span> <span class="o">=</span> <span class="p">(</span>
@@ -808,7 +809,7 @@ Users do not have to use <cite>exclude/include</cite> fields to specify the outp
 <section id="yamlparser">
 <h3>YamlParser<a class="headerlink" href="#yamlparser" title="Link to this heading">¶</a></h3>
 <p>Though it works almost on all of the previous examples, it is better to use it for yaml formatted dictionaries.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">YamlParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.string_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">YamlParser</span>
 
 <span class="n">yaml_dict_str</span> <span class="o">=</span> <span class="s2">&quot;key: value&quot;</span>
 <span class="n">yaml_nested_dict_str</span> <span class="o">=</span> <span class="p">(</span>
@@ -839,11 +840,11 @@ Users do not have to use <cite>exclude/include</cite> fields to specify the outp
 <h2>Output Parsers in Action<a class="headerlink" href="#output-parsers-in-action" title="Link to this heading">¶</a></h2>
 <p>We will create the following simple <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> with one example.
 And we will demonstrate how to use <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> and <code class="docutils literal notranslate"><span class="pre">YamlOutputParser</span></code> to parse another example to dict object.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClass</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span>
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;User ID&quot;</span><span class="p">})</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;User name&quot;</span><span class="p">})</span>
 
@@ -853,7 +854,7 @@ And we will demonstrate how to use <code class="docutils literal notranslate"><s
 <section id="jsonoutputparser">
 <h3>JsonOutputParser<a class="headerlink" href="#jsonoutputparser" title="Link to this heading">¶</a></h3>
 <p>Here is how to use <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.output_parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonOutputParser</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">User</span><span class="p">,</span> <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">user_example</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -916,7 +917,7 @@ ________
 <section id="yamloutputparser">
 <h3>YamlOutputParser<a class="headerlink" href="#yamloutputparser" title="Link to this heading">¶</a></h3>
 <p>The steps are totally the same as the <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">YamlOutputParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.output_parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">YamlOutputParser</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">YamlOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">User</span><span class="p">,</span> <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">user_example</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -980,7 +981,7 @@ ________
 <h2>DataclassParser in Action<a class="headerlink" href="#dataclassparser-in-action" title="Link to this heading">¶</a></h2>
 <p>First, let’s create a new data class with both input and output fields.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">SampleDataClass</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SampleDataClass</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A sample description&quot;</span><span class="p">})</span>
     <span class="n">category</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Category of the sample&quot;</span><span class="p">})</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A sample integer value&quot;</span><span class="p">})</span>
@@ -994,7 +995,7 @@ ________
 </pre></div>
 </div>
 <p>Now, lets’ create a parser that will use the <cite>SampleDataClass</cite> to parse the output json string back to the data class instance.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">DataClassParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.output_parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClassParser</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">DataClassParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">SampleDataClass</span><span class="p">,</span> <span class="n">return_data_class</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_type</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
 </pre></div>

@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>AdalComponent - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -488,9 +489,9 @@
 <p><code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> is where users put together the task pipeline to optimize, the train, validate steps along with optimizers, evaluator, loss function, and backward engine.
 It is inspired by <cite>PyTorch Lightning</cite>’s <cite>LightningModule</cite>. It enables generalized and smooth integration to the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>.</p>
 <p>Here is one example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">HotPotQARAGAdal</span><span class="p">(</span><span class="n">AdalComponent</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">HotPotQARAGAdal</span><span class="p">(</span><span class="n">AdalComponent</span><span class="p">):</span>
     <span class="c1"># TODO: move teacher model or config in the base class so users dont feel customize too much</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Component</span><span class="p">,</span> <span class="n">teacher_model_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Component</span><span class="p">,</span> <span class="n">teacher_model_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span> <span class="o">=</span> <span class="n">teacher_model_config</span>
@@ -498,12 +499,12 @@ It is inspired by <cite>PyTorch Lightning</cite>’s <cite>LightningModule</cite
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="s2">&quot;fuzzy_match&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">compute_single_item</span>
 
-    <span class="k">def</span> <span class="nf">handle_one_task_sample</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_one_task_sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># TODO: auto id, with index in call train examples</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">handle_one_loss_sample</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_one_loss_sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="p">{</span>
@@ -518,7 +519,7 @@ It is inspired by <cite>PyTorch Lightning</cite>’s <cite>LightningModule</cite
             <span class="p">}</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="c1"># TODO: simplify this, make it accept generator</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="p">[]</span>
@@ -528,7 +529,7 @@ It is inspired by <cite>PyTorch Lightning</cite>’s <cite>LightningModule</cite
         <span class="n">do</span> <span class="o">=</span> <span class="n">BootstrapFewShot</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">do</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">evaluate_one_sample</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_one_sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 
@@ -543,10 +544,10 @@ It is inspired by <cite>PyTorch Lightning</cite>’s <cite>LightningModule</cite
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">configure_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_teacher_generator</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">configure_loss_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_loss_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">EvalFnToTextLoss</span><span class="p">(</span>
             <span class="n">eval_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">,</span>
             <span class="n">eval_fn_desc</span><span class="o">=</span><span class="s2">&quot;ObjectCountingEvalFn, Output accuracy score: 1 for correct, 0 for incorrect&quot;</span><span class="p">,</span>

@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>optim.trainer.adal - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -483,28 +484,28 @@
           <h1>Source code for optim.trainer.adal</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;AdalComponent provides an interface to compose different parts, from eval_fn, train_step, loss_step, optimizers, backward engine, teacher generator, etc to work with Trainer.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">import</span> <span class="nn">concurrent</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">logging</span> <span class="k">as</span> <span class="nn">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">concurrent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">log</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">BackwardEngine</span><span class="p">,</span> <span class="n">BackwardPassSetup</span>
-    <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">BackwardEngine</span><span class="p">,</span> <span class="n">BackwardPassSetup</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.optimizer</span> <span class="kn">import</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.loss_component</span> <span class="kn">import</span> <span class="n">LossComponent</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">PromptData</span>
-<span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">EvaluationResult</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">GradComponent</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneratorOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.loss_component</span><span class="w"> </span><span class="kn">import</span> <span class="n">LossComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">PromptData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvaluationResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.grad_component</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">printc</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.optim.optimizer</span> <span class="kn">import</span> <span class="n">DemoOptimizer</span><span class="p">,</span> <span class="n">TextOptimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DemoOptimizer</span><span class="p">,</span> <span class="n">TextOptimizer</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -512,7 +513,7 @@
 
 <div class="viewcode-block" id="AdalComponent">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent">[docs]</a>
-<span class="k">class</span> <span class="nc">AdalComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AdalComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Define a train, eval, and test step for a task pipeline.</span>
 
 <span class="s2">    This serves the following purposes:</span>
@@ -532,7 +533,7 @@
     <span class="n">_demo_optimizers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DemoOptimizer</span><span class="p">]]</span>
     <span class="n">_text_optimizers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TextOptimizer</span><span class="p">]]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">task</span><span class="p">:</span> <span class="n">Component</span><span class="p">,</span>
         <span class="c1"># evaluator: Optional[BaseEvaluator] = None,</span>
@@ -563,7 +564,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_text_optimizers</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_set_param_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PromptData</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_param_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PromptData</span><span class="p">]):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set the parameters for the task. Used to resume from ckpt.&quot;&quot;&quot;</span>
 
         <span class="n">params_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">}</span>
@@ -572,7 +573,7 @@
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">params_dict</span><span class="p">:</span>
                 <span class="n">param</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">params_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_param_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">PromptData</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_param_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">PromptData</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the current values of the parameters.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">PromptData</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">)</span>
@@ -582,7 +583,7 @@
 
 <div class="viewcode-block" id="AdalComponent.prepare_task">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.prepare_task">[docs]</a>
-    <span class="k">def</span> <span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Tell Trainer how to call the task in both training and inference mode.</span>
 
 <span class="sd">        Return a task call and kwargs for one training sample.</span>
@@ -604,7 +605,7 @@
 
 <div class="viewcode-block" id="AdalComponent.prepare_loss">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.prepare_loss">[docs]</a>
-    <span class="k">def</span> <span class="nf">prepare_loss</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_loss</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Tell Trainer how to calculate the loss in the training mode.</span>
@@ -641,7 +642,7 @@
     <span class="c1"># TODO: Support multiple eval_fn with different metrics. using a dict[str, (Callable, Dict)] to store them.</span>
 <div class="viewcode-block" id="AdalComponent.prepare_eval">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.prepare_eval">[docs]</a>
-    <span class="k">def</span> <span class="nf">prepare_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Tell Trainer how to eval in inference mode.</span>
 <span class="sd">        Return the eval_fn and kwargs for one evaluation sample.</span>
 
@@ -654,7 +655,7 @@
 
 <div class="viewcode-block" id="AdalComponent.prepare_loss_eval">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.prepare_loss_eval">[docs]</a>
-    <span class="k">def</span> <span class="nf">prepare_loss_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_loss_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Tell Trainer how to eval in inference mode.</span>
 <span class="sd">        Return the eval_fn and kwargs for one evaluation sample.</span>
 
@@ -671,7 +672,7 @@
 
 <div class="viewcode-block" id="AdalComponent.configure_optimizers">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_optimizers">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">text_optimizer_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optimizer</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">text_optimizer_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optimizer</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configure_demo_optimizer_helper</span><span class="p">()</span>
@@ -691,7 +692,7 @@
 
 <div class="viewcode-block" id="AdalComponent.configure_backward_engine">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_backward_engine">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Configure a backward engine for all GradComponent in the task for bootstrapping examples.&quot;&quot;&quot;</span>
         <span class="c1"># check if backward engine is already configured</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span><span class="p">:</span>
@@ -711,7 +712,7 @@
 
 <div class="viewcode-block" id="AdalComponent.disable_backward_engine">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.disable_backward_engine">[docs]</a>
-    <span class="k">def</span> <span class="nf">disable_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disable_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Disable the backward engine for all GradComponent in the task.</span>
 <span class="sd">        No more gradients generation.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_backward_engine_helper</span><span class="p">()</span></div>
@@ -722,7 +723,7 @@
 
 <div class="viewcode-block" id="AdalComponent.evaluate_samples">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.evaluate_samples">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate_samples</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_samples</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">samples</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">y_preds</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
@@ -747,7 +748,7 @@
         <span class="k">if</span> <span class="n">use_loss_eval_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_eval_fn</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Loss eval function is not configured.&quot;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_preds</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_preds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y_preds is not a list or empty: </span><span class="si">{</span><span class="n">y_preds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -842,7 +843,7 @@
     <span class="c1">#     avg_score = float(np.mean(np.array(acc_list)))</span>
     <span class="c1">#     return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)</span>
 
-    <span class="k">def</span> <span class="nf">_train_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_train_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">batch</span><span class="p">,</span>
         <span class="n">batch_idx</span><span class="p">,</span>
@@ -858,7 +859,7 @@
 <span class="sd">                self.task.train()</span>
 <span class="sd">                return super().train_step(batch, batch_idx, num_workers)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 
@@ -900,7 +901,7 @@
 
 <div class="viewcode-block" id="AdalComponent.pred_step">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.pred_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">pred_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pred_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">batch</span><span class="p">,</span>
         <span class="n">batch_idx</span><span class="p">,</span>
@@ -919,7 +920,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Tuple[List[&quot;Parameter&quot;], List, Dict[int, float]]: The predicted outputs, the samples, and the scores.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 
@@ -1003,7 +1004,7 @@
 
 <div class="viewcode-block" id="AdalComponent.train_step">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.train_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run a training step and return the predicted outputs.</span>
 <span class="sd">        Likely a list of Parameters.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
@@ -1018,14 +1019,14 @@
 
 <div class="viewcode-block" id="AdalComponent.validate_condition">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.validate_condition">[docs]</a>
-    <span class="k">def</span> <span class="nf">validate_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;In default, trainer will validate at every step.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="AdalComponent.validation_step">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.validation_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">validation_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">batch</span><span class="p">,</span>
         <span class="n">batch_idx</span><span class="p">,</span>
@@ -1098,11 +1099,11 @@
 
 <div class="viewcode-block" id="AdalComponent.loss_step">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.loss_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">loss_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">],</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the loss for the batch.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="n">losses</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
@@ -1141,7 +1142,7 @@
     <span class="c1"># use default implementation</span>
 <div class="viewcode-block" id="AdalComponent.configure_teacher_generator">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_teacher_generator">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Configure a teach generator for all generators in the task for bootstrapping examples.</span>
 
 <span class="sd">        You can call `configure_teacher_generator_helper` to easily configure it by passing the model_client and model_kwargs.</span>
@@ -1158,14 +1159,14 @@
 
 <div class="viewcode-block" id="AdalComponent.configure_teacher_generator_helper">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_teacher_generator_helper">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_teacher_generator_helper</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_teacher_generator_helper</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="s2">&quot;ModelClient&quot;</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Configure a teach generator for all generators in the task for bootstrapping examples.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">create_teacher_generator</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_teacher_generator</span>
 
         <span class="n">all_generators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_all_generators</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">generator</span> <span class="ow">in</span> <span class="n">all_generators</span><span class="p">:</span>
@@ -1182,7 +1183,7 @@
 
 <div class="viewcode-block" id="AdalComponent.disable_backward_engine_helper">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.disable_backward_engine_helper">[docs]</a>
-    <span class="k">def</span> <span class="nf">disable_backward_engine_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disable_backward_engine_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Disable the backward engine for all gradcomponents in the task.&quot;&quot;&quot;</span>
         <span class="n">all_grads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_all_grad_components</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">grad</span> <span class="ow">in</span> <span class="n">all_grads</span><span class="p">:</span>
@@ -1202,7 +1203,7 @@
 
 <div class="viewcode-block" id="AdalComponent.configure_backward_engine_helper">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_backward_engine_helper">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_backward_engine_helper</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_backward_engine_helper</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="s2">&quot;ModelClient&quot;</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
@@ -1210,7 +1211,7 @@
         <span class="n">backward_pass_setup</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;BackwardPassSetup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Configure a backward engine for all generators in the task for bootstrapping examples.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">BackwardEngine</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackwardEngine</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span> <span class="o">=</span> <span class="n">BackwardEngine</span><span class="p">(</span>
             <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
@@ -1240,12 +1241,12 @@
 
 <div class="viewcode-block" id="AdalComponent.configure_callbacks">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_callbacks">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_callbacks</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_callbacks</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;traces&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;In default we config the failure generator callback. User can overwrite this method to add more callbacks.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.utils.global_config</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
-        <span class="kn">import</span> <span class="nn">os</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.global_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">save_dir</span><span class="p">:</span>
             <span class="n">save_dir</span> <span class="o">=</span> <span class="s2">&quot;traces&quot;</span>
@@ -1256,7 +1257,7 @@
 
 <div class="viewcode-block" id="AdalComponent.run_one_task_sample">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.run_one_task_sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_one_task_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_one_task_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run one training sample. Used for debugging and testing.&quot;&quot;&quot;</span>
         <span class="n">training</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">training</span>
         <span class="c1"># test training</span>
@@ -1277,15 +1278,15 @@
 
 <div class="viewcode-block" id="AdalComponent.run_one_loss_sample">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.run_one_loss_sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_one_loss_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_one_loss_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run one loss sample. Used for debugging and testing.&quot;&quot;&quot;</span>
         <span class="n">loss_call</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_loss</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss_call</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_find_all_generators</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_all_generators</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find all generators automatically from the task.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 
         <span class="n">all_generators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Generator</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">named_components</span><span class="p">():</span>
@@ -1294,7 +1295,7 @@
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;all_generators: </span><span class="si">{</span><span class="n">all_generators</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">all_generators</span>
 
-    <span class="k">def</span> <span class="nf">_find_all_grad_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GradComponent</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_all_grad_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GradComponent</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find all generators automatically from the task.&quot;&quot;&quot;</span>
         <span class="c1"># from adalflow.core import Generator</span>
 
@@ -1305,19 +1306,19 @@
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;all_grads: </span><span class="si">{</span><span class="n">all_grads</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">all_grads</span>
 
-    <span class="k">def</span> <span class="nf">_auto_generator_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;traces&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_auto_generator_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;traces&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Automatically generate callbacks.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
-        <span class="kn">from</span> <span class="nn">adalflow.tracing.generator_call_logger</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneratorOutput</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.tracing.generator_call_logger</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">GeneratorCallLogger</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 
         <span class="n">all_generators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_all_generators</span><span class="p">()</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;all_generators: </span><span class="si">{</span><span class="n">all_generators</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_on_completion_callback</span><span class="p">(</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_completion_callback</span><span class="p">(</span>
             <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>
             <span class="nb">input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
             <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
@@ -1351,15 +1352,15 @@
 
 <div class="viewcode-block" id="AdalComponent.configure_demo_optimizer_helper">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_demo_optimizer_helper">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_demo_optimizer_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DemoOptimizer</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_demo_optimizer_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DemoOptimizer</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;One demo optimizer can handle multiple demo parameters.</span>
 <span class="sd">        But the demo optimizer will only have one dataset (trainset) configured by the Trainer.</span>
 
 <span class="sd">        If users want to use different trainset for different demo optimizer,</span>
 <span class="sd">        they can configure it by themselves.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.few_shot.bootstrap_optimizer</span> <span class="kn">import</span> <span class="n">BootstrapFewShot</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">ParameterType</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.few_shot.bootstrap_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BootstrapFewShot</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterType</span>
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
@@ -1376,12 +1377,12 @@
 
 <div class="viewcode-block" id="AdalComponent.configure_text_optimizer_helper">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.configure_text_optimizer_helper">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_text_optimizer_helper</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_text_optimizer_helper</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="s2">&quot;ModelClient&quot;</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TextOptimizer</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Text optimizer hands prompt parameter type. One text optimizer can handle multiple text parameters.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.text_grad.tgd_optimizer</span> <span class="kn">import</span> <span class="n">TGDOptimizer</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">ParameterType</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.text_grad.tgd_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TGDOptimizer</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterType</span>
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
@@ -1405,29 +1406,29 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">to</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;eval_fn: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, backward_engine: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine</span><span class="si">}</span><span class="s2">, &quot;</span>
         <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;backward_engine_model_config: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span><span class="si">}</span><span class="s2">, teacher_model_config: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span><span class="si">}</span><span class="s2">, text_optimizer_model_config: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="AdalComponent.bicall">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.bicall">[docs]</a>
-    <span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bicall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="AdalComponent.call">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="AdalComponent.forward">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.adal.html#optim.AdalComponent.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span></div>
 </div>
 

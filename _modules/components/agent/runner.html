@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.agent.runner - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -481,14 +482,14 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for components.agent.runner</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
@@ -498,15 +499,15 @@
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">AsyncIterable</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.agent.agent</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">printc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.agent.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">GeneratorOutput</span><span class="p">,</span>
     <span class="n">FunctionOutput</span><span class="p">,</span>
     <span class="n">Function</span><span class="p">,</span>
@@ -525,10 +526,10 @@
     <span class="n">UserQuery</span><span class="p">,</span>
     <span class="n">AssistantResponse</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.apps.permission_manager</span> <span class="kn">import</span> <span class="n">PermissionManager</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.memory.memory</span> <span class="kn">import</span> <span class="n">ConversationMemory</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="n">_is_pydantic_dataclass</span><span class="p">,</span> <span class="n">_is_adalflow_dataclass</span>
-<span class="kn">from</span> <span class="nn">adalflow.tracing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.apps.permission_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">PermissionManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.memory.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConversationMemory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">_is_pydantic_dataclass</span><span class="p">,</span> <span class="n">_is_adalflow_dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.tracing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">runner_span</span><span class="p">,</span>
     <span class="n">tool_span</span><span class="p">,</span>
     <span class="n">response_span</span><span class="p">,</span>
@@ -553,7 +554,7 @@
 <span class="c1"># TODO: move this to repo adalflow/agent</span>
 <div class="viewcode-block" id="Runner">
 <a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner">[docs]</a>
-<span class="k">class</span> <span class="nc">Runner</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Runner</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Executes Agent instances with multi-step iterative planning and tool execution.</span>
 
 <span class="sd">    The Runner orchestrates the execution of an Agent through multiple reasoning and action</span>
@@ -582,7 +583,7 @@
 <span class="sd">        ctx (Optional[Dict]): Additional context passed to tools</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span>
         <span class="n">ctx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -631,7 +632,7 @@
         <span class="c1"># Initialize permission manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_permission_manager</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_init_permission_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_permission_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the permission manager and register tools that require approval.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="p">,</span> <span class="s2">&quot;tool_manager&quot;</span><span class="p">):</span>
             <span class="c1"># Iterate through tools in the ComponentList</span>
@@ -644,7 +645,7 @@
 
 <div class="viewcode-block" id="Runner.set_permission_manager">
 <a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.set_permission_manager">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_permission_manager</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_permission_manager</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">permission_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PermissionManager</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or update the permission manager after runner initialization.</span>
@@ -661,7 +662,7 @@
             <span class="n">permission_manager</span><span class="o">.</span><span class="n">set_tool_manager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_check_last_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_last_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the last step has is_answer_final set to True.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="s2">&quot;_is_answer_final&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">step</span><span class="o">.</span><span class="n">_is_answer_final</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -669,7 +670,7 @@
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="c1"># TODO: improved after the finish function is refactored</span>
-    <span class="k">def</span> <span class="nf">_process_data</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BuiltInType</span><span class="p">,</span> <span class="n">PydanticDataClass</span><span class="p">,</span> <span class="n">AdalflowDataClass</span><span class="p">],</span>
         <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -736,7 +737,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing output: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_get_planner_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Function</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_planner_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Function</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the planner output and return the function.</span>
 
 <span class="sd">        Args:</span>
@@ -758,7 +759,7 @@
 
 <div class="viewcode-block" id="Runner.call">
 <a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -901,6 +902,7 @@
 
                     <span class="c1"># Continue to next step instead of returning</span>
                     <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">break</span> 
 
             <span class="c1"># Update runner span with final results</span>
             <span class="c1"># Update runner span with completion info using update_attributes</span>
@@ -938,7 +940,7 @@
             <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_tool_execute_sync</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tool_execute_sync</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FunctionOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]:</span>
@@ -951,6 +953,7 @@
         <span class="c1"># execute permission and blocking mechanism in check_permission</span>
         <span class="c1"># TODO: permission manager might be better to be put inside of tool manager</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="p">:</span>
+
             <span class="n">result</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="o">.</span><span class="n">check_permission</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
 
             <span class="c1"># Handle both old (2 values) and new (3 values) return formats</span>
@@ -979,11 +982,16 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">FunctionOutput</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Result is not a FunctionOutput&quot;</span><span class="p">)</span>
 
+        <span class="c1"># check error </span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in tool execution: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> 
+        <span class="c1"># TODO: specify how to handle this error</span>
+
         <span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="Runner.acall">
 <a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.acall">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1131,6 +1139,7 @@
 
                     <span class="c1"># Continue to next step instead of returning</span>
                     <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">break</span> 
 
             <span class="c1"># Update runner span with final results</span>
             <span class="c1"># Update runner span with completion info using update_attributes</span>
@@ -1170,7 +1179,7 @@
 
 <div class="viewcode-block" id="Runner.astream">
 <a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.astream">[docs]</a>
-    <span class="k">def</span> <span class="nf">astream</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1192,7 +1201,7 @@
 
 <div class="viewcode-block" id="Runner.impl_astream">
 <a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.impl_astream">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">impl_astream</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">impl_astream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1362,7 +1371,7 @@
                         <span class="c1"># TODO: trace the permission event</span>
 
                         <span class="n">function_output_observation</span> <span class="o">=</span> <span class="kc">None</span>
-                        <span class="n">function_result</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">function_result</span> <span class="o">=</span> <span class="kc">None</span> 
                         <span class="k">if</span> <span class="p">(</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span>
                             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="o">.</span><span class="n">is_approval_required</span><span class="p">(</span>
@@ -1374,6 +1383,7 @@
                                     <span class="n">function</span>
                                 <span class="p">)</span>
                             <span class="p">)</span>
+                            <span class="c1"># there is an error </span>
                             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">permission_event</span><span class="p">,</span> <span class="n">ToolOutput</span><span class="p">):</span>
                                 <span class="c1"># need a tool complete event </span>
                                 <span class="n">function_result</span> <span class="o">=</span> <span class="n">FunctionOutput</span><span class="p">(</span>
@@ -1408,19 +1418,20 @@
                                     <span class="n">streaming_result</span><span class="o">=</span><span class="n">streaming_result</span><span class="p">,</span>
                                 <span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;permission not required&quot;</span><span class="p">)</span>
                             <span class="n">function_result</span><span class="p">,</span> <span class="n">function_output</span><span class="p">,</span> <span class="n">function_output_observation</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_tool_execution</span><span class="p">(</span>
                                 <span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
                                 <span class="n">tool_call_id</span><span class="o">=</span><span class="n">tool_call_id</span><span class="p">,</span>
                                 <span class="n">tool_call_name</span><span class="o">=</span><span class="n">tool_call_name</span><span class="p">,</span>
                                 <span class="n">streaming_result</span><span class="o">=</span><span class="n">streaming_result</span><span class="p">,</span>
                             <span class="p">)</span>
-                        <span class="c1"># llm only takes observation as feedback</span>
+
+                        <span class="c1"># Add step to history for approved tools (same as non-permission branch)</span>
                         <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span> <span class="o">=</span> <span class="n">StepOutput</span><span class="p">(</span>
                             <span class="n">step</span><span class="o">=</span><span class="n">step_count</span><span class="p">,</span>
                             <span class="n">action</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
                             <span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
                             <span class="n">observation</span><span class="o">=</span><span class="n">function_output_observation</span><span class="p">,</span>
-                            <span class="c1"># ctx=self.ctx,</span>
                         <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_output</span><span class="p">)</span>
 
@@ -1482,6 +1493,7 @@
                     <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">error_event</span><span class="p">)</span>
 
                     <span class="n">step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">break</span>
 
             <span class="c1"># If loop terminated without creating a final output item, create our own</span>
             <span class="c1"># TODO this might be redundant</span>
@@ -1532,7 +1544,7 @@
             <span class="n">streaming_result</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">QueueCompleteSentinel</span><span class="p">())</span></div>
 
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_tool_execute_async</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_tool_execute_async</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span>
         <span class="n">streaming_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RunnerStreamingResult</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1543,7 +1555,7 @@
 <span class="sd">        Note: this version has no support for streaming.</span>
 <span class="sd">        Includes permission checking if permission_manager is configured.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
+        
         <span class="c1"># Check permission before execution</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">permission_manager</span><span class="o">.</span><span class="n">check_permission</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
@@ -1584,7 +1596,7 @@
 
 <div class="viewcode-block" id="Runner.stream_tool_execution">
 <a class="viewcode-back" href="../../../apis/components/components.agent.runner.html#components.agent.Runner.stream_tool_execution">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_tool_execution</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_tool_execution</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">function</span><span class="p">:</span> <span class="n">Function</span><span class="p">,</span>
         <span class="n">tool_call_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1639,7 +1651,6 @@
             <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutine</span><span class="p">(</span><span class="n">function_output</span><span class="p">):</span>
                 <span class="n">real_function_output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">function_output</span>
             <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isasyncgen</span><span class="p">(</span><span class="n">function_output</span><span class="p">):</span>
-                <span class="n">real_function_output</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">function_output</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ToolCallActivityRunItem</span><span class="p">):</span>
                         <span class="c1"># add the tool_call_id to the item</span>

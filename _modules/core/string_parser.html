@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>core.string_parser - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -486,12 +487,12 @@
 <span class="sd">From simple data types like boolean, integer, and float to more complex data types like JSON, YAML, and list strings.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">DataComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataComponent</span>
 
 
-<span class="kn">import</span> <span class="nn">adalflow.core.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -515,7 +516,7 @@
 
 <div class="viewcode-block" id="BooleanParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.BooleanParser">[docs]</a>
-<span class="k">class</span> <span class="nc">BooleanParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BooleanParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts boolean values from text.</span>
 
 <span class="s2">    Examples:</span>
@@ -527,12 +528,12 @@
 <span class="s2">        print(boolean_parser(test_input_1))  # Expected to extract True</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BooleanParser.call">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.BooleanParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BOOLEAN_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BOOLEAN_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">extract_first_boolean</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -547,7 +548,7 @@
 
 <div class="viewcode-block" id="IntParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.IntParser">[docs]</a>
-<span class="k">class</span> <span class="nc">IntParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IntParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts integer values from text.</span>
 
 <span class="s2">    Returns:</span>
@@ -565,12 +566,12 @@
 <span class="s2">        print(int_parser(test_input_2))  # Expected to extract 123</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="IntParser.call">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.IntParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">INT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">INT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">extract_first_int</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -585,7 +586,7 @@
 
 <div class="viewcode-block" id="FloatParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.FloatParser">[docs]</a>
-<span class="k">class</span> <span class="nc">FloatParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FloatParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts float values from text.</span>
 
 <span class="s2">    Returns:</span>
@@ -603,12 +604,12 @@
 <span class="s2">        print(float_parser(test_input_3))  # Expected to extract 123.45</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="FloatParser.call">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.FloatParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FLOAT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FLOAT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">extract_first_float</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -623,7 +624,7 @@
 
 <div class="viewcode-block" id="ListParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.ListParser">[docs]</a>
-<span class="k">class</span> <span class="nc">ListParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ListParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts list `[...]` strings from text and parses them into a list object.</span>
 
 <span class="s2">    Args:</span>
@@ -644,13 +645,13 @@
 <span class="s2">        print(list_parser(test_input_4))  # Expected to extract [&quot;item1&quot;, &quot;item2&quot;]</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_missing_right_bracket</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_missing_right_bracket</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_missing_right_bracket</span> <span class="o">=</span> <span class="n">add_missing_right_bracket</span>
 
 <div class="viewcode-block" id="ListParser.call">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.ListParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LIST_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LIST_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">list_str</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Extract list string</span>
@@ -676,7 +677,7 @@
 
 <div class="viewcode-block" id="JsonParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.JsonParser">[docs]</a>
-<span class="k">class</span> <span class="nc">JsonParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">JsonParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts JSON strings `{...}` or `[...]` from text and parses them into a JSON object.</span>
 
 <span class="s2">    It can output either a dictionary or a list as they are both valid JSON objects.</span>
@@ -701,13 +702,13 @@
 <span class="s2">        print(json_obj)  # Expected to extract {&quot;key&quot;: &quot;value&quot;}</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_missing_right_brace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_missing_right_brace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_missing_right_brace</span> <span class="o">=</span> <span class="n">add_missing_right_brace</span>
 
 <div class="viewcode-block" id="JsonParser.call">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.JsonParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSON_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSON_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="c1"># Extract JSON string</span>
         <span class="n">json_str</span> <span class="o">=</span> <span class="kc">None</span>
@@ -735,7 +736,7 @@
 <span class="c1"># TODO: yaml parser needs to be more robust, currently json works way better than yaml</span>
 <div class="viewcode-block" id="YamlParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.YamlParser">[docs]</a>
-<span class="k">class</span> <span class="nc">YamlParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">YamlParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;To extract YAML strings from text and parse them into a YAML object.</span>
 
 <span class="s2">    Returns:</span>
@@ -754,12 +755,12 @@
 <span class="s2">        print(yaml_obj)  # Expected to extract {&quot;key&quot;: &quot;value&quot;}</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="YamlParser.call">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.YamlParser.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YAML_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YAML_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="c1"># parse YAML string with yaml.safe_load</span>
         <span class="k">try</span><span class="p">:</span>

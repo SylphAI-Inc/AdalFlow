@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>core.base_data_class - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -483,25 +484,25 @@
           <h1>Source code for core.base_data_class</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;A base class that provides an easy way for data to interact with LLMs.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span>
-<span class="kn">import</span> <span class="nn">collections</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 
 
-<span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">field</span><span class="p">,</span>
     <span class="n">fields</span><span class="p">,</span>
     <span class="n">make_dataclass</span><span class="p">,</span>
     <span class="n">is_dataclass</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="c1"># dataclass_obj_to_dict,</span>
     <span class="n">custom_asdict</span><span class="p">,</span>
     <span class="n">dataclass_obj_from_dict</span><span class="p">,</span>
@@ -524,7 +525,7 @@
 
 <div class="viewcode-block" id="DataClassFormatType">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType">[docs]</a>
-<span class="k">class</span> <span class="nc">DataClassFormatType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataClassFormatType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The format type for the DataClass schema.&quot;&quot;&quot;</span>
 
     <span class="c1"># for class</span>
@@ -543,7 +544,7 @@
 
 <div class="viewcode-block" id="required_field">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.required_field">[docs]</a>
-<span class="k">def</span> <span class="nf">required_field</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">required_field</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A factory function to create a required field in a dataclass.</span>
 <span class="sd">    The returned callable raises a TypeError when invoked, indicating a required field was not provided.</span>
@@ -567,7 +568,7 @@
 <span class="sd">            age: int = field(default_factory=required_field())# allow required field after optional field</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">required_field_error</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">required_field_error</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This function is returned by required_field and raises an error indicating the field is required.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;This field is required and was not provided.&quot;</span><span class="p">)</span>
 
@@ -585,7 +586,7 @@
 
 <div class="viewcode-block" id="DataClass">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass">[docs]</a>
-<span class="k">class</span> <span class="nc">DataClass</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataClass</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The base data class for all data types that interact with LLMs.</span>
 
 <span class="s2">    Please only exclude optional fields in the exclude dictionary.</span>
@@ -682,7 +683,7 @@
     <span class="n">__input_fields__</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">__output_fields__</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">if</span> <span class="s2">&quot;desc&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span> <span class="s2">&quot;description&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
@@ -694,7 +695,7 @@
 <div class="viewcode-block" id="DataClass.get_task_desc">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_task_desc">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_task_desc</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_desc</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the task description for the dataclass.</span>
 
 <span class="sd">        Returns:</span>
@@ -706,7 +707,7 @@
 <div class="viewcode-block" id="DataClass.set_task_desc">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_task_desc">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_task_desc</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_task_desc</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the task description for the dataclass.</span>
 
 <span class="sd">        Args:</span>
@@ -718,7 +719,7 @@
 <div class="viewcode-block" id="DataClass.get_input_fields">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_input_fields">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_input_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of all input fields.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__input_fields__</span></div>
 
@@ -726,7 +727,7 @@
 <div class="viewcode-block" id="DataClass.set_input_fields">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_input_fields">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_input_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_input_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the input fields for the dataclass.</span>
 <span class="sd">          When creating schema or instance, it will follow the input field and output field order</span>
 
@@ -739,7 +740,7 @@
 <div class="viewcode-block" id="DataClass.get_output_fields">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_output_fields">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_output_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of all output fields.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__output_fields__</span></div>
 
@@ -747,7 +748,7 @@
 <div class="viewcode-block" id="DataClass.set_output_fields">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_output_fields">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_output_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">output_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_output_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">output_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the output fields for the dataclass.</span>
 <span class="sd">          When creating schema or instance, it will follow the input field and output field order</span>
 
@@ -759,7 +760,7 @@
 
 <div class="viewcode-block" id="DataClass.to_dict">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -811,7 +812,7 @@
             <span class="p">)</span>
         <span class="c1"># convert all fields to its data if its parameter</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dataclass_fields__</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="c1"># print(f&quot;field: {f}&quot;)</span>
@@ -876,7 +877,7 @@
 <div class="viewcode-block" id="DataClass.from_dict">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a dataclass instance from a dictionary.</span>
 
 <span class="sd">        Supports nested dataclasses, lists, and dictionaries.</span>
@@ -909,7 +910,7 @@
 <div class="viewcode-block" id="DataClass.from_json">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a dataclass instance from a JSON string.</span>
 
 <span class="sd">        Args:</span>
@@ -931,7 +932,7 @@
 
 <div class="viewcode-block" id="DataClass.to_json_obj">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json_obj">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_json_obj</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json_obj</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -950,7 +951,7 @@
 
 <div class="viewcode-block" id="DataClass.to_json">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -972,7 +973,7 @@
 <div class="viewcode-block" id="DataClass.from_yaml">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_yaml">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a dataclass instance from a YAML string.</span>
 
 <span class="sd">        Args:</span>
@@ -995,7 +996,7 @@
 <div class="viewcode-block" id="DataClass.to_pydantic">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_pydantic">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_pydantic</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pydantic</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the current dataclass instance into an equivalent Pydantic model instance.</span>
 <span class="sd">        The returned Pydantic model class will have the same fields and types as the dataclass.</span>
@@ -1006,8 +1007,8 @@
 <span class="sd">        Returns:</span>
 <span class="sd">        A Pydantic model instance with the same field values as the dataclass instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">MISSING</span><span class="p">,</span> <span class="n">fields</span> <span class="k">as</span> <span class="n">dc_fields</span>
-        <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">create_model</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">MISSING</span><span class="p">,</span> <span class="n">fields</span> <span class="k">as</span> <span class="n">dc_fields</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_model</span>
 
         <span class="n">field_definitions</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dc_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -1028,14 +1029,14 @@
 
 <div class="viewcode-block" id="DataClass.pydantic">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.pydantic">[docs]</a>
-    <span class="k">def</span> <span class="nf">pydantic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pydantic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_pydantic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataClass.pydantic_to_dataclass">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.pydantic_to_dataclass">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">pydantic_to_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pydantic_obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pydantic_to_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pydantic_obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert a Pydantic model instance into a corresponding DataClass instance.</span>
 <span class="sd">        This is achieved by extracting the dictionary representation of the Pydantic model</span>
@@ -1047,7 +1048,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            DataClass: An instance of the DataClass converted from the Pydantic model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pydantic_obj</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -1063,7 +1064,7 @@
 
 <div class="viewcode-block" id="DataClass.to_yaml_obj">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_obj">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_yaml_obj</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_yaml_obj</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1081,7 +1082,7 @@
 
 <div class="viewcode-block" id="DataClass.to_yaml">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_yaml</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_yaml</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1103,7 +1104,7 @@
 
 <div class="viewcode-block" id="DataClass.dict_to_yaml">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.dict_to_yaml">[docs]</a>
-    <span class="k">def</span> <span class="nf">dict_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dict_to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a dictionary to a YAML string.</span>
 
 <span class="sd">        Args:</span>
@@ -1118,7 +1119,7 @@
 <div class="viewcode-block" id="DataClass.to_schema">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_schema</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_schema</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1179,7 +1180,7 @@
 <div class="viewcode-block" id="DataClass.to_schema_str">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema_str">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_schema_str</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_schema_str</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1192,7 +1193,7 @@
 <div class="viewcode-block" id="DataClass.to_yaml_signature">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_signature">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_yaml_signature</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_yaml_signature</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1216,7 +1217,7 @@
 <div class="viewcode-block" id="DataClass.to_json_signature">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json_signature">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_json_signature</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json_signature</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1248,7 +1249,7 @@
 <div class="viewcode-block" id="DataClass.to_dict_class">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict_class">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_dict_class</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict_class</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1264,7 +1265,7 @@
 <div class="viewcode-block" id="DataClass.format_class_str">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_class_str">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">format_class_str</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_class_str</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">format_type</span><span class="p">:</span> <span class="n">DataClassFormatType</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1300,7 +1301,7 @@
 
 <div class="viewcode-block" id="DataClass.format_example_str">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_example_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">format_example_str</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_example_str</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">format_type</span><span class="p">:</span> <span class="n">DataClassFormatType</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1329,7 +1330,7 @@
 
 <div class="viewcode-block" id="check_adal_dataclass">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.check_adal_dataclass">[docs]</a>
-<span class="k">def</span> <span class="nf">check_adal_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_adal_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the provided class is a valid dataclass for the AdalFlow framework.</span>
 
 <span class="sd">    Args:</span>
@@ -1346,11 +1347,11 @@
 
 <div class="viewcode-block" id="DynamicDataClassFactory">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory">[docs]</a>
-<span class="k">class</span> <span class="nc">DynamicDataClassFactory</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DynamicDataClassFactory</span><span class="p">:</span>
 <div class="viewcode-block" id="DynamicDataClassFactory.from_dict">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory.from_dict">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">base_class</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">DataClass</span><span class="p">,</span>
         <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;DynamicDataClass&quot;</span><span class="p">,</span>

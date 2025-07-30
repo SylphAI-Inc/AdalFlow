@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>tracing.processor_interface - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -491,23 +492,23 @@
 <span class="sd">- OpenAI Agents SDK: https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/processor_interface.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">.spans</span> <span class="kn">import</span> <span class="n">Span</span>
-    <span class="kn">from</span> <span class="nn">.traces</span> <span class="kn">import</span> <span class="n">Trace</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.spans</span><span class="w"> </span><span class="kn">import</span> <span class="n">Span</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.traces</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trace</span>
 
 
 <div class="viewcode-block" id="TracingProcessor">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingProcessor">[docs]</a>
-<span class="k">class</span> <span class="nc">TracingProcessor</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TracingProcessor</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for processing spans.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TracingProcessor.on_trace_start">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingProcessor.on_trace_start">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">on_trace_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="s2">&quot;Trace&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_trace_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="s2">&quot;Trace&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when a trace is started.</span>
 
 <span class="sd">        Args:</span>
@@ -519,7 +520,7 @@
 <div class="viewcode-block" id="TracingProcessor.on_trace_end">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingProcessor.on_trace_end">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">on_trace_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="s2">&quot;Trace&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_trace_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="s2">&quot;Trace&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when a trace is finished.</span>
 
 <span class="sd">        Args:</span>
@@ -531,7 +532,7 @@
 <div class="viewcode-block" id="TracingProcessor.on_span_start">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingProcessor.on_span_start">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">on_span_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="s2">&quot;Span[Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_span_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="s2">&quot;Span[Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when a span is started.</span>
 
 <span class="sd">        Args:</span>
@@ -543,7 +544,7 @@
 <div class="viewcode-block" id="TracingProcessor.on_span_end">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingProcessor.on_span_end">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">on_span_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="s2">&quot;Span[Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_span_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="s2">&quot;Span[Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when a span is finished. Should not block or raise exceptions.</span>
 
 <span class="sd">        Args:</span>
@@ -555,7 +556,7 @@
 <div class="viewcode-block" id="TracingProcessor.shutdown">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingProcessor.shutdown">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when the application stops.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
@@ -563,7 +564,7 @@
 <div class="viewcode-block" id="TracingProcessor.force_flush">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingProcessor.force_flush">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">force_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">force_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Forces an immediate flush of all queued spans/traces.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 </div>
@@ -572,13 +573,13 @@
 
 <div class="viewcode-block" id="TracingExporter">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingExporter">[docs]</a>
-<span class="k">class</span> <span class="nc">TracingExporter</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TracingExporter</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Exports traces and spans. For example, could log them or send them to a backend.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TracingExporter.export">
 <a class="viewcode-back" href="../../apis/tracing/tracing.processor_interface.html#tracing.processor_interface.TracingExporter.export">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">,</span> <span class="s2">&quot;Span[Any]&quot;</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">,</span> <span class="s2">&quot;Span[Any]&quot;</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Exports a list of traces and spans.</span>
 
 <span class="sd">        Args:</span>

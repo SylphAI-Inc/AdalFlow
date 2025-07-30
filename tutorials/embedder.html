@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Embedder - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -528,9 +529,9 @@ We will use these two to demonstrate how to use <code class="docutils literal no
 <section id="use-openai-api">
 <h3>Use OpenAI API<a class="headerlink" href="#use-openai-api" title="Link to this heading">¶</a></h3>
 <p>Before you start ensure you config the API key either in the environment variable or <cite>.env</cite> file, or directly pass it to the <code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span> <span class="c1"># ensure you setup OPENAI_API_KEY in your project .env file</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span> <span class="c1"># ensure you setup OPENAI_API_KEY in your project .env file</span>
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
@@ -571,8 +572,8 @@ Run the embedder and print the length and embedding dimension of the output.</p>
 <section id="use-local-model">
 <h3>Use Local Model<a class="headerlink" href="#use-local-model" title="Link to this heading">¶</a></h3>
 <p>Set up the embedder with the local model.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">TransformersClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformersClient</span>
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;thenlper/gte-base&quot;</span><span class="p">}</span>
 <span class="n">local_embedder</span> <span class="o">=</span> <span class="n">Embedder</span><span class="p">(</span><span class="n">model_client</span><span class="o">=</span><span class="n">TransformersClient</span><span class="p">(),</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
@@ -592,21 +593,21 @@ Run the embedder and print the length and embedding dimension of the output.</p>
 <section id="use-output-processors">
 <h3>Use Output Processors<a class="headerlink" href="#use-output-processors" title="Link to this heading">¶</a></h3>
 <p>If we want to decreate the embedding dimension to only 256 to save memory, we can customize an additional output processing step and pass it to embedder via the <code class="docutils literal notranslate"><span class="pre">output_processors</span></code> argument.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="n">normalize_vector</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_vector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="k">class</span> <span class="nc">DecreaseEmbeddingDim</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DecreaseEmbeddingDim</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">old_dim</span> <span class="o">=</span> <span class="n">old_dim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">new_dim</span> <span class="o">=</span> <span class="n">new_dim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span> <span class="o">=</span> <span class="n">normalize</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_dim</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_dim</span><span class="p">,</span> <span class="s2">&quot;new_dim should be less than old_dim&quot;</span>
 
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]:</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">EmbedderOutput</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="n">old_embedding</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">embedding</span>
@@ -616,7 +617,7 @@ Run the embedder and print the length and embedding dimension of the output.</p>
             <span class="n">embedding</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">new_embedding</span>
         <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span>
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">repr_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;old_dim=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">old_dim</span><span class="si">}</span><span class="s2">, new_dim=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">new_dim</span><span class="si">}</span><span class="s2">, normalize=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">repr_str</span>
 </pre></div>
@@ -656,7 +657,7 @@ Putting it all together, we can create a new embedder with the output processor.
 <p>Especially in data processing pipelines, you can often have more than 1000 queries to embed. We need to chunk our queries into smaller batches to avoid memory overflow.
 <a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.</p>
 <p>The BatchEmbedder orchestrates the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and handles the batching process. To use it, you need to pass the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and the batch size to the constructor.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">BatchEmbedder</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">BatchEmbedder</span>
 
 <span class="n">batch_embedder</span> <span class="o">=</span> <span class="n">BatchEmbedder</span><span class="p">(</span><span class="n">embedder</span><span class="o">=</span><span class="n">local_embedder</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 

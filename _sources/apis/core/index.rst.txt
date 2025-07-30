@@ -47,6 +47,7 @@ Overview
    core.retriever
    core.string_parser
    core.func_tool
+   core.mcp_tool
    core.tool_manager
    core.types
    core.db

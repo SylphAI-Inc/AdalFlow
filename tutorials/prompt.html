@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Prompt - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -548,7 +549,7 @@ We have to do all this with flexibility and also make it easy for developers to 
 <span class="linenos">12</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;SYS&gt;</span><span class="si">{</span><span class="n">task_desc_str</span><span class="si">}</span><span class="s2">&lt;/SYS&gt; User: </span><span class="si">{</span><span class="n">input_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="linenos">13</span>
 <span class="linenos">14</span> <span class="c1"># Templates</span>
-<span class="linenos">15</span> <span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">Template</span>
+<span class="linenos">15</span> <span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 <span class="linenos">16</span>
 <span class="linenos">17</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;&lt;SYS&gt;$task_desc_str&lt;/SYS&gt; User: $input_str&quot;</span><span class="p">)</span>
 <span class="linenos">18</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span><span class="n">task_desc_str</span><span class="o">=</span><span class="n">task_desc_str</span><span class="p">,</span> <span class="n">input_str</span><span class="o">=</span><span class="n">input_str</span><span class="p">))</span>
@@ -558,8 +559,8 @@ We have to do all this with flexibility and also make it easy for developers to 
 Besides the placeholders using <code class="docutils literal notranslate"><span class="pre">{{}}</span></code> for keyword arguments, Jinja2 also allow users to write code similar to Python syntax.
 This includes conditionals, loops, filters, and even comments, which are lacking in Python’s native string formatting.
 Here is one example of using <cite>Jinja2</cite> to format the prompt:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">jinja2_template_example</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-   <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">jinja2_template_example</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+   <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 
    <span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt;{{ task_desc_str }}&lt;/SYS&gt;</span>
 <span class="s2">{# tools #}</span>
@@ -605,7 +606,7 @@ User: What is the capital of France?
 <p>We created our <a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prompt</span> <span class="pre">Component</span></code></a> to render the prompt with the string <code class="docutils literal notranslate"><span class="pre">template</span></code> and <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code>.
 It is a simple component, but it is quite handy.
 Let’s use the same template as above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
 
 <span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
    <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>

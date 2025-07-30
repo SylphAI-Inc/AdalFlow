@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.memory.memory - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -496,17 +497,17 @@
 <span class="sd">    conver_db (LocalDB): Database for storing complete conversations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.db</span> <span class="kn">import</span> <span class="n">LocalDB</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">uuid4</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Conversation</span><span class="p">,</span>
     <span class="n">DialogTurn</span><span class="p">,</span>
     <span class="n">UserQuery</span><span class="p">,</span>
     <span class="n">AssistantResponse</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
 
 
 <span class="c1"># Jinja2 template for formatting conversation history with dialog turns being ordered</span>
@@ -541,8 +542,8 @@
 
 <div class="viewcode-block" id="ConversationMemory">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory">[docs]</a>
-<span class="k">class</span> <span class="nc">ConversationMemory</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_db</span><span class="p">:</span> <span class="n">LocalDB</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConversationMemory</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_db</span><span class="p">:</span> <span class="n">LocalDB</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Memory component.</span>
 
 <span class="sd">        Args:</span>
@@ -557,7 +558,7 @@
 
 <div class="viewcode-block" id="ConversationMemory.call">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the current conversation history as a formatted string.</span>
 
 <span class="sd">        Args:</span>
@@ -583,7 +584,7 @@
 
 <div class="viewcode-block" id="ConversationMemory.add_dialog_turn">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.add_dialog_turn">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_dialog_turn</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_dialog_turn</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">user_query</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UserQuery</span><span class="p">],</span>
         <span class="n">assistant_response</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AssistantResponse</span><span class="p">],</span>
@@ -621,7 +622,7 @@
 
 <div class="viewcode-block" id="ConversationMemory.add_user_query">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.add_user_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_user_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_query</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UserQuery</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_user_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_query</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UserQuery</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a user query to start a new dialog turn.</span>
 
 <span class="sd">        Args:</span>
@@ -658,7 +659,7 @@
 
 <div class="viewcode-block" id="ConversationMemory.add_assistant_response">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.add_assistant_response">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_assistant_response</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_assistant_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">assistant_response</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AssistantResponse</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an assistant response to complete the current dialog turn.</span>

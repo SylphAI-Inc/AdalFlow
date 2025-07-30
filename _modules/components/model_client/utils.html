@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.model_client.utils - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -483,12 +484,12 @@
           <h1>Source code for components.model_client.utils</h1><div class="highlight"><pre>
 <span></span><span class="s2">&quot;Helpers for model client for integrating models and parsing the output.&quot;</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">EmbedderOutput</span><span class="p">,</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Usage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmbedderOutput</span><span class="p">,</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Usage</span>
 
 
 <div class="viewcode-block" id="parse_embedding_response">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.utils.html#components.model_client.utils.parse_embedding_response">[docs]</a>
-<span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_embedding_response</span><span class="p">(</span>
     <span class="n">api_response</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutput</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse embedding model output from the API response to EmbedderOutput.</span>

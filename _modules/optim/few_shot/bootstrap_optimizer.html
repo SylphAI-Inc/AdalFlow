@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>optim.few_shot.bootstrap_optimizer - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -485,26 +486,26 @@
 
 <span class="sd">DSPy: Com-piling declarative language model calls into state-of-the-art pipelines.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
-
-
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="n">random_sample</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.optimizer</span> <span class="kn">import</span> <span class="n">DemoOptimizer</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">ParameterType</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">printc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">random_sample</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DemoOptimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">printc</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="BootstrapFewShot">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot">[docs]</a>
-<span class="k">class</span> <span class="nc">BootstrapFewShot</span><span class="p">(</span><span class="n">DemoOptimizer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BootstrapFewShot</span><span class="p">(</span><span class="n">DemoOptimizer</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;BootstrapFewShot performs few-shot sampling used in few-shot ICL.</span>
 
 <span class="s2">    It will be used to optimize paramters of demos.</span>
@@ -523,7 +524,7 @@
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="p">:</span> <span class="nb">bool</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">],</span>
         <span class="n">raw_shots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -557,7 +558,7 @@
     <span class="c1"># this score does not make sense for multiple demo parameters</span>
 <div class="viewcode-block" id="BootstrapFewShot.add_scores">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.add_scores">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add scores for each demo via _teacher_scores or _student_scores.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -580,25 +581,25 @@
 
 <div class="viewcode-block" id="BootstrapFewShot.config_shots">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.config_shots">[docs]</a>
-    <span class="k">def</span> <span class="nf">config_shots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bootstrap_shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">config_shots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bootstrap_shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_raw_shots</span> <span class="o">=</span> <span class="n">raw_shots</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bootstrap_shots</span> <span class="o">=</span> <span class="n">bootstrap_shots</span></div>
 
 
 <div class="viewcode-block" id="BootstrapFewShot.config_dataset">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.config_dataset">[docs]</a>
-    <span class="k">def</span> <span class="nf">config_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">config_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_pre_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pre_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dataset must be provided&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_shots</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bootstrap_shots</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;raw_shots and bootstrap_shots must be provided&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_shots</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_shots</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_raw_shots</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bootstrap_shots</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_shots</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bootstrap_shots</span>
@@ -607,7 +608,7 @@
 
 <div class="viewcode-block" id="BootstrapFewShot.sample">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.sample">[docs]</a>
-    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">augmented_demos</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">],</span>
         <span class="n">demos</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">],</span>
@@ -704,7 +705,7 @@
 <div class="viewcode-block" id="BootstrapFewShot.samples_to_str">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.samples_to_str">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">samples_to_str</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">samples_to_str</span><span class="p">(</span>
         <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">],</span> <span class="n">augmented</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">exclude_inputs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">sample_strs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -732,7 +733,7 @@
 
 <div class="viewcode-block" id="BootstrapFewShot.propose">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.propose">[docs]</a>
-    <span class="k">def</span> <span class="nf">propose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">propose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Proposing a value while keeping previous value saved on parameter.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pre_check</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
@@ -783,7 +784,7 @@
 
 <div class="viewcode-block" id="BootstrapFewShot.revert">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.revert">[docs]</a>
-    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Revert to the previous value when the evaluation is worse.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pre_check</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
@@ -795,7 +796,7 @@
 
 <div class="viewcode-block" id="BootstrapFewShot.step">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.step">[docs]</a>
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Discard the previous value and keep the proposed value.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pre_check</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
@@ -807,12 +808,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BootstrapFewShot(raw_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_shots</span><span class="si">}</span><span class="s2">, bootstrap_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_bootstrap_shots</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
 <span class="s2">            params=</span><span class="si">{</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">]</span><span class="si">}</span><span class="s2">, dataset=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="k">return</span> <span class="n">s</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
 </pre></div>

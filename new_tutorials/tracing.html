@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Tracing - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -483,11 +484,63 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="tracing">
+          <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/agent/tutorial_agent_advanced_features.py" target="_blank" style="display: flex; align-items: center;">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+        <span style="vertical-align: middle;"> Open Source Code (Agent Advanced)</span>
+    </a>
+</div>
+<section id="tracing">
 <h1>Tracing<a class="headerlink" href="#tracing" title="Link to this heading">¶</a></h1>
+<p><img alt="mlflow_integration" src="../_images/adalflow_tracing_mlflow.png" /></p>
+<p>AdalFlow allows you to trace your agent/LLM workflows locally with open-source tools like MLflow without requiring a managed service/api.</p>
+<p>It supports all tracing providers that implement [OpenAI’s trace provider interface]https://openai.github.io/openai-agents-python/tracing/).</p>
+<section id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Install mlflow</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>mlflow
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Add the following code to your agent/LLM workflow</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span> 
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;ADALFLOW_DISABLE_TRACING&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
+<span class="c1"># ensure this is set before any adalflow imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.tracing</span><span class="w"> </span><span class="kn">import</span> <span class="n">enable_mlflow_local</span><span class="p">,</span> <span class="n">trace</span>
+
+<span class="n">enable_mlflow_local</span><span class="p">(</span>
+    <span class="n">tracking_uri</span><span class="o">=</span><span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">,</span>
+    <span class="n">experiment_name</span><span class="o">=</span><span class="s2">&quot;AdalFlow-Tracing-Demo&quot;</span><span class="p">,</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s2">&quot;Agent-Workflows&quot;</span>
+<span class="p">)</span>
+
+<span class="k">with</span> <span class="n">trace</span><span class="p">(</span><span class="n">workflow_name</span><span class="o">=</span><span class="s2">&quot;AdalFlow-Agent&quot;</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+        <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Analyze the calculation 25 * 4 + 15 and generate a report&quot;</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Start mlflow server</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mlflow<span class="w"> </span>server<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Go to http://localhost:8000 and navigate to the experiment “AdalFlow-Tracing-Demo” and project “Agent-Workflows” and go to the <code class="docutils literal notranslate"><span class="pre">traces</span></code> tab to view the traces.</p></li>
+</ol>
+<p><img alt="mlflow_integration" src="../_images/adalflow_tracing_mlflow.png" /></p>
+</section>
+<section id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h2>
 <p>AdalFlow provides a comprehensive tracing system that is <strong>compatible with OpenAI’s tracing interface</strong> and supports custom <a class="reference internal" href="../apis/tracing/tracing.processor_interface.html"><span class="doc">TracingProcessor</span></a> for integration with various observability backends like MLflow, Weights &amp; Biases, and other visualization tools.</p>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h3>
 <p>AdalFlow’s tracing system follows the OpenAI Agents SDK patterns and provides:</p>
 <ol class="arabic simple">
 <li><p><strong>OpenAI-Compatible Interface</strong>: Full compatibility with OpenAI’s trace provider format</p></li>
@@ -498,9 +551,7 @@
 </ol>
 </section>
 <section id="core-concepts">
-<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading">¶</a></h2>
-<section id="traces-and-spans">
-<h3>Traces and Spans<a class="headerlink" href="#traces-and-spans" title="Link to this heading">¶</a></h3>
+<h3>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/tracing/tracing.traces.html"><span class="doc">Trace</span></a>: Represents a complete workflow execution (e.g., the high level task to the agent)</p></li>
 <li><p><a class="reference internal" href="../apis/tracing/tracing.spans.html"><span class="doc">Span</span></a>: Represents individual operations within a trace (e.g., steps of the task, tool calls, LLM requests)</p></li>
@@ -511,11 +562,10 @@
 <h3>OpenAI Compatibility<a class="headerlink" href="#openai-compatibility" title="Link to this heading">¶</a></h3>
 <p>AdalFlow’s tracing system implements the same interface as OpenAI’s agents SDK, making it compatible with any visualization tool that supports OpenAI’s trace provider format.</p>
 </section>
-</section>
 <section id="agent-tracing">
-<h2>Agent Tracing<a class="headerlink" href="#agent-tracing" title="Link to this heading">¶</a></h2>
+<h3>Agent Tracing<a class="headerlink" href="#agent-tracing" title="Link to this heading">¶</a></h3>
 <p>AdalFlow automatically traces agent executions when tracing is enabled:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculator</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple calculator tool.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span>
@@ -523,11 +573,11 @@
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
 
-<span class="k">def</span> <span class="nf">text_processor</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">text_processor</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple text processing tool.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Processed: </span><span class="si">{</span><span class="n">text</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
-<span class="k">def</span> <span class="nf">agent_tracing_example</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">agent_tracing_example</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrate agent tracing.&quot;&quot;&quot;</span>
 
     <span class="c1"># Enable tracing</span>
@@ -565,19 +615,19 @@
 </div>
 </section>
 <section id="mlflow-integration">
-<h2>MLflow Integration<a class="headerlink" href="#mlflow-integration" title="Link to this heading">¶</a></h2>
+<h3>MLflow Integration<a class="headerlink" href="#mlflow-integration" title="Link to this heading">¶</a></h3>
 <p>AdalFlow provides seamless integration with MLflow for enterprise-grade tracing.</p>
 <p><strong>Prerequisites</strong>: Start MLflow server before running this example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mlflow<span class="w"> </span>server<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">demo_mlflow_integration</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">demo_mlflow_integration</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrate MLflow integration for enterprise tracing.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">analysis_tool</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analysis_tool</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Analyze data and return insights.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Analysis of &#39;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&#39;: This appears to be a numerical calculation with result involving multiplication and addition.&quot;</span>
 
-    <span class="k">def</span> <span class="nf">report_generator</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report_generator</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a formatted report.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;## Analysis Report</span><span class="se">\n\n</span><span class="s2">**Content**: </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">**Generated**: Using AdalFlow tracing with MLflow integration&quot;</span>
 
@@ -625,21 +675,21 @@
 <p><img alt="mlflow_integration" src="../_images/adalflow_tracing_mlflow.png" /></p>
 </section>
 <section id="openai-trace-provider-compatibility">
-<h2>OpenAI Trace Provider Compatibility<a class="headerlink" href="#openai-trace-provider-compatibility" title="Link to this heading">¶</a></h2>
+<h3>OpenAI Trace Provider Compatibility<a class="headerlink" href="#openai-trace-provider-compatibility" title="Link to this heading">¶</a></h3>
 <p>AdalFlow’s tracing system is designed to be compatible with any visualization library that supports OpenAI’s trace provider interface one of which is MlFlow as shown above.</p>
 </section>
 <section id="basic-tracing-patterns">
-<h2>Basic Tracing Patterns<a class="headerlink" href="#basic-tracing-patterns" title="Link to this heading">¶</a></h2>
+<h3>Basic Tracing Patterns<a class="headerlink" href="#basic-tracing-patterns" title="Link to this heading">¶</a></h3>
 <section id="tracing-while-streaming-agent-which-has-async-generator-tools">
-<h3>Tracing while Streaming Agent which has Async Generator Tools<a class="headerlink" href="#tracing-while-streaming-agent-which-has-async-generator-tools" title="Link to this heading">¶</a></h3>
+<h4>Tracing while Streaming Agent which has Async Generator Tools<a class="headerlink" href="#tracing-while-streaming-agent-which-has-async-generator-tools" title="Link to this heading">¶</a></h4>
 <p>When agents use async generator tools, its return type can be set to <code class="docutils literal notranslate"><span class="pre">ToolCallActivityRunItem</span></code> which will have it captured by tracing.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">demo_async_generator_tools_with_tracing</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">demo_async_generator_tools_with_tracing</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrate tracing agent with async generator tools during streaming.&quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">asyncio</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">RunItemStreamEvent</span><span class="p">,</span> <span class="n">FinalOutputItem</span><span class="p">,</span> <span class="n">ToolCallActivityRunItem</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunItemStreamEvent</span><span class="p">,</span> <span class="n">FinalOutputItem</span><span class="p">,</span> <span class="n">ToolCallActivityRunItem</span>
 
     <span class="c1"># Define async generator tools</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">data_processor</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">data_processor</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Process data and yield intermediate results.&quot;&quot;&quot;</span>
         <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
             <span class="sa">f</span><span class="s2">&quot;Analyzing query: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
@@ -653,7 +703,7 @@
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Simulate processing time</span>
             <span class="k">yield</span> <span class="n">ToolCallActivityRunItem</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">report_generator</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">report_generator</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a report in multiple parts.&quot;&quot;&quot;</span>
         <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span>
             <span class="sa">f</span><span class="s2">&quot;## Executive Summary</span><span class="se">\n</span><span class="s2">Based on: </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -666,7 +716,7 @@
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
             <span class="k">yield</span> <span class="n">ToolCallActivityRunItem</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">section</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">live_monitor</span><span class="p">(</span><span class="n">system</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">live_monitor</span><span class="p">(</span><span class="n">system</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Monitor system status and yield live updates.&quot;&quot;&quot;</span>
         <span class="n">statuses</span> <span class="o">=</span> <span class="p">[</span>
             <span class="sa">f</span><span class="s2">&quot;🟢 </span><span class="si">{</span><span class="n">system</span><span class="si">}</span><span class="s2"> system online&quot;</span><span class="p">,</span>
@@ -730,7 +780,7 @@
 </section>
 </section>
 <section id="starting-mlflow-server">
-<h2>Starting MLflow Server<a class="headerlink" href="#starting-mlflow-server" title="Link to this heading">¶</a></h2>
+<h3>Starting MLflow Server<a class="headerlink" href="#starting-mlflow-server" title="Link to this heading">¶</a></h3>
 <p>To use MLflow integration, you need to start an MLflow server first:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install MLflow if not already installed</span>
 poetry<span class="w"> </span>add<span class="w"> </span>adalflow
@@ -744,9 +794,9 @@ mlflow<span class="w"> </span>server<span class="w"> </span>--host<span class="w
 <p><strong>Important</strong>: Start the MLflow server before running any tracing examples that use MLflow integration. The server must be running for the tracing examples to work properly.</p>
 </section>
 <section id="trace-reference">
-<h2>Trace Reference<a class="headerlink" href="#trace-reference" title="Link to this heading">¶</a></h2>
+<h3>Trace Reference<a class="headerlink" href="#trace-reference" title="Link to this heading">¶</a></h3>
 <section id="span-types">
-<h3>Span Types<a class="headerlink" href="#span-types" title="Link to this heading">¶</a></h3>
+<h4>Span Types<a class="headerlink" href="#span-types" title="Link to this heading">¶</a></h4>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -791,6 +841,7 @@ mlflow<span class="w"> </span>server<span class="w"> </span>--host<span class="w
 </tbody>
 </table>
 </div>
+</section>
 </section>
 <section id="trace-processors">
 <h3>Trace Processors<a class="headerlink" href="#trace-processors" title="Link to this heading">¶</a></h3>
@@ -913,12 +964,11 @@ mlflow<span class="w"> </span>server<span class="w"> </span>--host<span class="w
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Tracing</a><ul>
+<li><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li><a class="reference internal" href="#how-it-works">How it works</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#core-concepts">Core Concepts</a><ul>
-<li><a class="reference internal" href="#traces-and-spans">Traces and Spans</a></li>
+<li><a class="reference internal" href="#core-concepts">Core Concepts</a></li>
 <li><a class="reference internal" href="#openai-compatibility">OpenAI Compatibility</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#agent-tracing">Agent Tracing</a></li>
 <li><a class="reference internal" href="#mlflow-integration">MLflow Integration</a></li>
 <li><a class="reference internal" href="#openai-trace-provider-compatibility">OpenAI Trace Provider Compatibility</a></li>
@@ -929,6 +979,8 @@ mlflow<span class="w"> </span>server<span class="w"> </span>--host<span class="w
 <li><a class="reference internal" href="#starting-mlflow-server">Starting MLflow Server</a></li>
 <li><a class="reference internal" href="#trace-reference">Trace Reference</a><ul>
 <li><a class="reference internal" href="#span-types">Span Types</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#trace-processors">Trace Processors</a></li>
 </ul>
 </li>

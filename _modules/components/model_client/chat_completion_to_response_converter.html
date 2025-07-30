@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.model_client.chat_completion_to_response_converter - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -487,16 +488,16 @@
 <span class="sd">Used to convert the OpenAI ChatCompletion stream to Response API format</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Iterator</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Iterator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
-<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">AsyncStream</span>
-<span class="kn">from</span> <span class="nn">openai._streaming</span> <span class="kn">import</span> <span class="n">Stream</span>
-<span class="kn">from</span> <span class="nn">openai.types.chat</span> <span class="kn">import</span> <span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">ChatCompletionChunk</span>
-<span class="kn">from</span> <span class="nn">openai.types.completion_usage</span> <span class="kn">import</span> <span class="n">CompletionUsage</span>
-<span class="kn">from</span> <span class="nn">openai.types.responses</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncStream</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai._streaming</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types.chat</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">ChatCompletionChunk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types.completion_usage</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompletionUsage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types.responses</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Response</span><span class="p">,</span>
     <span class="n">ResponseCompletedEvent</span><span class="p">,</span>
     <span class="n">ResponseContentPartAddedEvent</span><span class="p">,</span>
@@ -515,7 +516,7 @@
     <span class="n">ResponseUsage</span><span class="p">,</span>
     <span class="n">ResponseStreamEvent</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">openai.types.responses.response_usage</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types.responses.response_usage</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">InputTokensDetails</span><span class="p">,</span>
     <span class="n">OutputTokensDetails</span><span class="p">,</span>
 <span class="p">)</span>
@@ -530,7 +531,7 @@
 <div class="viewcode-block" id="StreamingState">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.StreamingState">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">StreamingState</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StreamingState</span><span class="p">:</span>
     <span class="n">started</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">text_content_index_and_output</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ResponseOutputText</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">refusal_content_index_and_output</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ResponseOutputRefusal</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -540,13 +541,13 @@
 
 <div class="viewcode-block" id="SequenceNumber">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.SequenceNumber">[docs]</a>
-<span class="k">class</span> <span class="nc">SequenceNumber</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SequenceNumber</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sequence_number</span> <span class="o">=</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="SequenceNumber.get_and_increment">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.SequenceNumber.get_and_increment">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_and_increment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_and_increment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sequence_number</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sequence_number</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">num</span></div>
@@ -556,13 +557,13 @@
 
 <div class="viewcode-block" id="ChatCompletionToResponseConverter">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter">[docs]</a>
-<span class="k">class</span> <span class="nc">ChatCompletionToResponseConverter</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChatCompletionToResponseConverter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts OpenAI ChatCompletion streams to standardized Response API format events.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ChatCompletionToResponseConverter.async_handle_stream">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter.async_handle_stream">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_handle_stream</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_handle_stream</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="n">AsyncStream</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">],</span>
@@ -840,7 +841,7 @@
 <div class="viewcode-block" id="ChatCompletionToResponseConverter.sync_handle_stream">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter.sync_handle_stream">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">sync_handle_stream</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sync_handle_stream</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="n">Stream</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">],</span>
@@ -1118,7 +1119,7 @@
 <div class="viewcode-block" id="ChatCompletionToResponseConverter.get_chat_completion_content">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter.get_chat_completion_content">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_chat_completion_content</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_chat_completion_content</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the final text from the ChatCompletion object by taking the content of the first choice&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span></div>
 </div>

@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>eval.retriever_recall - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -483,15 +484,15 @@
           <h1>Source code for eval.retriever_recall</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Retriever Recall @k metric.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">BaseEvaluator</span><span class="p">,</span> <span class="n">EvaluationResult</span>
-<span class="kn">from</span> <span class="nn">adalflow.eval.utils</span> <span class="kn">import</span> <span class="n">normalize_answer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvaluator</span><span class="p">,</span> <span class="n">EvaluationResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_answer</span>
 
 
 <div class="viewcode-block" id="RetrieverEvaluator">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.retriever_recall.RetrieverEvaluator">[docs]</a>
-<span class="k">class</span> <span class="nc">RetrieverEvaluator</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RetrieverEvaluator</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Return Recall@k and Precision@k.</span>
 
 <span class="s2">    Recall@k = Number of relevant retrieved documents/ Total number of relevant documents (len(gt_contexts))</span>
@@ -532,12 +533,12 @@
 <span class="s2">        - RAGAS: https://docs.ragas.io/en/stable/concepts/metrics/context_recall.html</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="RetrieverEvaluator.compute_single_item">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.retriever_recall.RetrieverEvaluator.compute_single_item">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_single_item</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_single_item</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">retrieved_context</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">gt_context</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -570,7 +571,7 @@
 
 <div class="viewcode-block" id="RetrieverEvaluator.compute">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.retriever_recall.RetrieverEvaluator.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">retrieved_contexts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
         <span class="n">gt_contexts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -618,7 +619,7 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">adalflow.datasets</span> <span class="kn">import</span> <span class="n">HotPotQA</span><span class="p">,</span> <span class="n">HotPotQAData</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">HotPotQA</span><span class="p">,</span> <span class="n">HotPotQAData</span>
 
     <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">HotPotQA</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">HotPotQAData</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>

@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Retriever - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -575,7 +576,7 @@ A retriever should return a list of <cite>RetrieverOutput</cite> to support mult
 <li><p>Query expansion: To increase recall, users often generate multiple queries from the original query.</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RetrieverOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RetrieverOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">doc_indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of document indices&quot;</span><span class="p">})</span>
     <span class="n">doc_scores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of document scores&quot;</span><span class="p">}</span>
@@ -603,11 +604,11 @@ As the retriever is a subclass of component, you already inherited powerful seri
 with the saving and loading process. As for helper attributes, we have <code class="docutils literal notranslate"><span class="pre">indexed</span></code> and <code class="docutils literal notranslate"><span class="pre">index_keys</span></code> to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
 It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
 As an example, <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> has the following key attributes to index.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Retriever</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">,</span> <span class="n">RetrieverQueryType</span><span class="p">]):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Retriever</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">,</span> <span class="n">RetrieverQueryType</span><span class="p">]):</span>
 
     <span class="o">...</span>
 
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverQueriesType</span><span class="p">,</span>
         <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -615,7 +616,7 @@ As an example, <a class="reference internal" href="../apis/components/components
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RetrieverOutputType</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;retrieve is not implemented&quot;</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverQueriesType</span><span class="p">,</span>
         <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -663,8 +664,8 @@ As an example, <a class="reference internal" href="../apis/components/components
 Document filtering is dependent on your data storage, whether it is in memory, local disk, or cloud database.
 For the cloud database, it is highly dependent on the database’s search and filter methods. And SQL-based search is common, scalable, and efficient.</p>
 <p>Before you pass the documents or processed document chunks and embeddings to the retriever, you can filter the documents first by yourself.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.db</span> <span class="kn">import</span> <span class="n">LocalDB</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">db</span> <span class="o">=</span> <span class="n">LocalDB</span><span class="p">(</span><span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]})</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">])</span>
 
@@ -688,8 +689,8 @@ The query can take both embeddings and str formats.</p>
 <p><code class="docutils literal notranslate"><span class="pre">faiss</span></code> package is optional in our library. When you want to use it, ensure you have it installed in your env.</p>
 </div>
 <p>We will quickly prepare the embeddings of the above documents using <cite>content</cite> field.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClientType</span>
 
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -705,7 +706,7 @@ The query can take both embeddings and str formats.</p>
 </div>
 <p>For the initialization, a retriever can take both its required documents along with hyperparmeters including <code class="docutils literal notranslate"><span class="pre">top_k</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">documents</span></code> field is optional. Let’s pass it all from <code class="docutils literal notranslate"><span class="pre">__init__</span></code> first:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">FAISSRetriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="n">FAISSRetriever</span>
 <span class="n">retriever</span> <span class="o">=</span> <span class="n">FAISSRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="n">documents_embeddings</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">retriever</span><span class="p">)</span>
@@ -749,7 +750,7 @@ You can check the retriever for more type of scores.</p>
 <h3>BM25Retriever<a class="headerlink" href="#bm25retriever" title="Link to this heading">¶</a></h3>
 <p>So the semantic search works pretty well. We will see how <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> works in comparison.
 We reimplemented the code in <a class="footnote-reference brackets" href="#id17" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> with one improvement: instead of using <code class="docutils literal notranslate"><span class="pre">text.split(&quot;</span> <span class="pre">&quot;)</span></code>, we use tokenizer to split the text. Here is a comparison of how they different:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever.bm25_retriever</span> <span class="kn">import</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">,</span> <span class="n">split_text_by_word_fn</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.retriever.bm25_retriever</span><span class="w"> </span><span class="kn">import</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">,</span> <span class="n">split_text_by_word_fn</span>
 
 <span class="n">query_1_words</span> <span class="o">=</span> <span class="n">split_text_by_word_fn</span><span class="p">(</span><span class="n">query_1</span><span class="p">)</span>
 <span class="n">query_1_tokens</span> <span class="o">=</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">(</span><span class="n">query_1</span><span class="p">)</span>
@@ -761,7 +762,7 @@ We reimplemented the code in <a class="footnote-reference brackets" href="#id17"
 </pre></div>
 </div>
 <p>We prepare the retriever:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">BM25Retriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="n">BM25Retriever</span>
 
 <span class="n">document_map_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
 
@@ -816,7 +817,7 @@ If you want to intergrate your reranker, either locally or using APIs, check out
 <a class="reference internal" href="../apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient" title="components.model_client.cohere_client.CohereAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a> for how to do it.</p>
 <p>To use it from the <code class="docutils literal notranslate"><span class="pre">RerankerRetriever</span></code>, we only need to pass the <code class="docutils literal notranslate"><span class="pre">model</span></code> along with other arguments who does not
 require conversion in the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>. Here is how we use model  <cite>rerank-english-v3.0</cite> from Cohere(Make sure you have the cohere sdk installed and prepared your api key):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">RerankerRetriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="n">RerankerRetriever</span>
 
 <span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">COHERE</span><span class="p">()</span>
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;rerank-english-v3.0&quot;</span><span class="p">}</span>
@@ -897,7 +898,7 @@ Also, if we use both the <cite>title</cite> and <cite>content</cite>, it will al
 </ol>
 <p>For the first case, with out prompt and zero-shot, <cite>gpt-3.5-turbo</cite> is not working as well as <cite>gpt-4o</cite> which got both answers right.
 Here is our code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">LLMRetriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="n">LLMRetriever</span>
 
 <span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">()</span>
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -966,8 +967,8 @@ Here is our code:</p>
 <p>Install the <code class="docutils literal notranslate"><span class="pre">qdrant-client</span></code> package in your project to use this retriever.</p>
 </div>
 <p>The retriever supports any embeddings provider. The field to be returned from the Qdrant payload can be configured along with other parameters like filters.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">QdrantRetriever</span>
-<span class="kn">from</span> <span class="nn">qdrant_client</span> <span class="kn">import</span> <span class="n">QdrantClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="n">QdrantRetriever</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qdrant_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">QdrantClient</span>
 
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">QdrantClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://localhost:6333&quot;</span><span class="p">)</span>
@@ -997,7 +998,7 @@ Here is our code:</p>
 </pre></div>
 </div>
 <p>You can use <a class="reference external" href="https://qdrant.tech/documentation/concepts/filtering/">filters</a> to further refine the search results as per requirements when setting up the retriever.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qdrant_client</span> <span class="kn">import</span> <span class="n">models</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qdrant_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 
 <span class="n">qdrant_retriever</span> <span class="o">=</span> <span class="n">QdrantRetriever</span><span class="p">(</span>
     <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{collection_name}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -1030,8 +1031,8 @@ LanceDB supports in-memory and disk-based configurations and can handle large-sc
 <p>The <code class="docutils literal notranslate"><span class="pre">lancedb</span></code> package is optional. Ensure you have it installed in your environment to use LanceDBRetriever.</p>
 </div>
 <p>We will prepare the document embeddings using the <cite>content</cite> field.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClientType</span>
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
@@ -1044,7 +1045,7 @@ LanceDB supports in-memory and disk-based configurations and can handle large-sc
 </pre></div>
 </div>
 <p>After initializing the LanceDB retriever, we can add documents and perform retrievals. The retriever can be set with its top-k hyperparameter during initialization.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">LanceDBRetriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.retriever</span><span class="w"> </span><span class="kn">import</span> <span class="n">LanceDBRetriever</span>
 <span class="n">retriever</span> <span class="o">=</span> <span class="n">LanceDBRetriever</span><span class="p">(</span><span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">db_uri</span><span class="o">=</span><span class="s2">&quot;/tmp/lancedb&quot;</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">retriever</span><span class="p">)</span>

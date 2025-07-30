@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>tracing.create - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -491,14 +492,14 @@
 <span class="sd">- OpenAI Agents SDK: https://github.com/openai/openai-agents-python/blob/main/src/agents/tracing/create.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.setup</span> <span class="kn">import</span> <span class="n">GLOBAL_TRACE_PROVIDER</span>
-<span class="kn">from</span> <span class="nn">.span_data</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLOBAL_TRACE_PROVIDER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.span_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AdalFlowRunnerSpanData</span><span class="p">,</span>
     <span class="n">AdalFlowGeneratorSpanData</span><span class="p">,</span>
     <span class="n">AdalFlowToolSpanData</span><span class="p">,</span>
@@ -506,8 +507,8 @@
     <span class="n">AdalFlowStepSpanData</span><span class="p">,</span>
     <span class="n">CustomSpanData</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.spans</span> <span class="kn">import</span> <span class="n">Span</span>
-<span class="kn">from</span> <span class="nn">.traces</span> <span class="kn">import</span> <span class="n">Trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.spans</span><span class="w"> </span><span class="kn">import</span> <span class="n">Span</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.traces</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trace</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="k">pass</span>
@@ -515,7 +516,7 @@
 
 <div class="viewcode-block" id="trace">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.trace">[docs]</a>
-<span class="k">def</span> <span class="nf">trace</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trace</span><span class="p">(</span>
     <span class="n">workflow_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">trace_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">group_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -564,7 +565,7 @@
 
 <div class="viewcode-block" id="get_current_trace">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.get_current_trace">[docs]</a>
-<span class="k">def</span> <span class="nf">get_current_trace</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Trace</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_current_trace</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Trace</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the currently active trace, if present.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">GLOBAL_TRACE_PROVIDER</span><span class="o">.</span><span class="n">get_current_trace</span><span class="p">()</span></div>
 
@@ -572,7 +573,7 @@
 
 <div class="viewcode-block" id="get_current_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.get_current_span">[docs]</a>
-<span class="k">def</span> <span class="nf">get_current_span</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Span</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_current_span</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Span</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the currently active span, if present.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">GLOBAL_TRACE_PROVIDER</span><span class="o">.</span><span class="n">get_current_span</span><span class="p">()</span></div>
 
@@ -585,7 +586,7 @@
 
 <div class="viewcode-block" id="custom_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.custom_span">[docs]</a>
-<span class="k">def</span> <span class="nf">custom_span</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">custom_span</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">span_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -628,7 +629,7 @@
 
 <div class="viewcode-block" id="runner_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.runner_span">[docs]</a>
-<span class="k">def</span> <span class="nf">runner_span</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">runner_span</span><span class="p">(</span>
     <span class="n">runner_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">steps_executed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -678,7 +679,7 @@
 
 <div class="viewcode-block" id="generator_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.generator_span">[docs]</a>
-<span class="k">def</span> <span class="nf">generator_span</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generator_span</span><span class="p">(</span>
     <span class="n">generator_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">generator_state_logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -742,7 +743,7 @@
 
 <div class="viewcode-block" id="tool_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.tool_span">[docs]</a>
-<span class="k">def</span> <span class="nf">tool_span</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tool_span</span><span class="p">(</span>
     <span class="n">tool_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">function_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">input_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -798,7 +799,7 @@
 
 <div class="viewcode-block" id="response_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.response_span">[docs]</a>
-<span class="k">def</span> <span class="nf">response_span</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">response_span</span><span class="p">(</span>
     <span class="n">result_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">execution_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -843,7 +844,7 @@
 
 <div class="viewcode-block" id="step_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.create.html#tracing.create.step_span">[docs]</a>
-<span class="k">def</span> <span class="nf">step_span</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">step_span</span><span class="p">(</span>
     <span class="n">step_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">action_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">observation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

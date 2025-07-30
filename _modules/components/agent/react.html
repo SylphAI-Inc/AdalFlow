@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.agent.react - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -485,30 +486,30 @@
 <span class="sd">Note: This will be deprecated soon, use Agent + Runner instead.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Type</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">GradComponent</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span><span class="p">,</span> <span class="n">AsyncCallable</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.tool_manager</span> <span class="kn">import</span> <span class="n">ToolManager</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.grad_component</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.func_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionTool</span><span class="p">,</span> <span class="n">AsyncCallable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.tool_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.output_parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonOutputParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">StepOutput</span><span class="p">,</span>
     <span class="n">GeneratorOutput</span><span class="p">,</span>
     <span class="n">Function</span><span class="p">,</span>
     <span class="n">FunctionOutput</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">fun_to_grad_component</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.grad_component</span><span class="w"> </span><span class="kn">import</span> <span class="n">fun_to_grad_component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">printc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -632,11 +633,11 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">CombineStepHistory</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CombineStepHistory</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Extract the final answer from the step history.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">],</span>
         <span class="n">react_agent_task_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># skip connection</span>
@@ -649,7 +650,7 @@
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ReActOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReActOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Similar to GeneratorOutput, but with additional step history and final answer.&quot;&quot;&quot;</span>
 
     <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
@@ -664,7 +665,7 @@
 
 <div class="viewcode-block" id="ReActAgent">
 <a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent">[docs]</a>
-<span class="k">class</span> <span class="nc">ReActAgent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReActAgent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.</span>
 <span class="s2">    The planner will generate a Function data class as action for each step that includes a &quot;thought&quot; field.</span>
 <span class="s2">    The execution result is stored in the &quot;observation&quot; field of the StepOutput data class.</span>
@@ -721,7 +722,7 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="c1"># TODO: allow users to pass in a few examples. Need to be a list of FunctionExpression instances.</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="c1"># added arguments specifc to React</span>
         <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">AsyncCallable</span><span class="p">,</span> <span class="n">FunctionTool</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
@@ -811,7 +812,7 @@
         <span class="c1"># besides of form the final output, it adds a skip connection to the planner task description prompt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combine_step_history</span> <span class="o">=</span> <span class="n">CombineStepHistory</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_init_tools</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_tools</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">AsyncCallable</span><span class="p">,</span> <span class="n">FunctionTool</span><span class="p">]],</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>
@@ -825,7 +826,7 @@
             <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">llm_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">llm_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;I answer any input query with llm&#39;s world knowledge. Use me as a fallback tool or when the query is simple.&quot;&quot;&quot;</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">_additional_llm_tool</span><span class="p">(</span>
@@ -840,7 +841,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># always add **kwargs for us to track the id, __doc__ as the predecessors.</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">fun_to_grad_component</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.grad_component</span><span class="w"> </span><span class="kn">import</span> <span class="n">fun_to_grad_component</span>
 
         <span class="nd">@fun_to_grad_component</span><span class="p">(</span>
             <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Finish&quot;</span><span class="p">,</span>
@@ -852,7 +853,7 @@
                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;doc_string&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span>
-        <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">finish</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">answer</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_finish</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">finish</span><span class="p">)</span>
@@ -862,7 +863,7 @@
         <span class="n">processed_tools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finish</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">processed_tools</span>
 
-    <span class="k">def</span> <span class="nf">_execute_action</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execute_action</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span>
         <span class="n">response</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">],</span>
@@ -870,10 +871,10 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the action string to a function call and execute it. Update the step_output with the result.&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">handle_error</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 
             <span class="nd">@fun_to_grad_component</span><span class="p">()</span>
-            <span class="k">def</span> <span class="nf">set_step_output_with_error</span><span class="p">(</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">set_step_output_with_error</span><span class="p">(</span>
                 <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span>
             <span class="p">):</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;Set the step_output with error.&quot;&quot;&quot;</span>
@@ -913,7 +914,7 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 
                     <span class="nd">@fun_to_grad_component</span><span class="p">()</span>
-                    <span class="k">def</span> <span class="nf">set_step_output_with_error</span><span class="p">(</span><span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">def</span><span class="w"> </span><span class="nf">set_step_output_with_error</span><span class="p">(</span><span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">                        </span><span class="sd">&quot;&quot;&quot;Set the step_output with error.&quot;&quot;&quot;</span>
                         <span class="n">step_output</span><span class="o">.</span><span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2"> in executing action.&quot;</span>
 
@@ -957,7 +958,7 @@
                 <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_execute_action_eval_mode</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execute_action_eval_mode</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">x</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>
         <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span>
@@ -1010,7 +1011,7 @@
                     <span class="n">printc</span><span class="p">(</span><span class="n">error_msg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">step_output</span>
 
-    <span class="k">def</span> <span class="nf">_run_one_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_one_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
@@ -1076,7 +1077,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
 
                     <span class="nd">@fun_to_grad_component</span><span class="p">()</span>
-                    <span class="k">def</span> <span class="nf">set_step_output_with_error</span><span class="p">(</span>
+                    <span class="k">def</span><span class="w"> </span><span class="nf">set_step_output_with_error</span><span class="p">(</span>
                         <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">GeneratorOutput</span>
                     <span class="p">):</span>
 <span class="w">                        </span><span class="sd">&quot;&quot;&quot;Set the step_output with error.&quot;&quot;&quot;</span>
@@ -1129,7 +1130,7 @@
             <span class="n">error_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Traceback:</span><span class="se">\n</span><span class="si">{</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_check_last_step</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_last_step</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the last step is the finish step.&quot;&quot;&quot;</span>
@@ -1150,7 +1151,7 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">_get_answer</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_answer</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the final answer from the step history.</span>
@@ -1173,7 +1174,7 @@
 
             <span class="k">return</span> <span class="n">answer</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">is_dataclass</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_dataclass</span>
 
             <span class="n">answer</span> <span class="o">=</span> <span class="n">last_step</span><span class="o">.</span><span class="n">observation</span>
             <span class="k">if</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">):</span>
@@ -1182,7 +1183,7 @@
 
 <div class="viewcode-block" id="ReActAgent.call">
 <a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReActOutput</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReActOutput</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">ReActOutput</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">output</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected ReActOutput, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1191,11 +1192,11 @@
 
 <div class="viewcode-block" id="ReActAgent.forward">
 <a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bicall</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_is_step_output_last_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_step_output_last_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the step output is the last step.&quot;&quot;&quot;</span>
         <span class="n">step_output_data</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">step_output</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step_output</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="k">else</span> <span class="n">step_output</span>
@@ -1210,7 +1211,7 @@
 
 <div class="viewcode-block" id="ReActAgent.bicall">
 <a class="viewcode-back" href="../../../apis/components/components.agent.react.html#components.agent.ReActAgent.bicall">[docs]</a>
-    <span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bicall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># open up to the external</span>
         <span class="n">promt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
@@ -1256,28 +1257,28 @@
         <span class="k">return</span> <span class="n">output</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;max_steps=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">, add_llm_as_fallback=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">add_llm_as_fallback</span><span class="si">}</span><span class="s2">, &quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
 
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-    <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.func_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionTool</span>
 
     <span class="n">setup_env</span><span class="p">()</span>
 
-    <span class="k">class</span> <span class="nc">App</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">App</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">llm_tool</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
                 <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
                 <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
             <span class="p">)</span>
 
-            <span class="k">def</span> <span class="nf">llm_as_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">llm_as_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;Used as a calculator tool.&quot;&quot;&quot;</span>
                 <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;llm_as_tool: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
 
@@ -1291,10 +1292,10 @@
                 <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
             <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">react_agent</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">react_agent</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>

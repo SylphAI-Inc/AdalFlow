@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Text Splitter - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -611,8 +612,8 @@ Our default tokenization model is <code class="docutils literal notranslate"><sp
 <p>What you need is to specify the arguments and input your documents this way:</p>
 <section id="split-by-word">
 <h3>Split by word<a class="headerlink" href="#split-by-word" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.data_process.text_splitter</span> <span class="kn">import</span> <span class="n">TextSplitter</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.data_process.text_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextSplitter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
 
 <span class="c1"># Configure the splitter settings</span>
 <span class="n">text_splitter</span> <span class="o">=</span> <span class="n">TextSplitter</span><span class="p">(</span>
@@ -642,9 +643,9 @@ Our default tokenization model is <code class="docutils literal notranslate"><sp
 </section>
 <section id="split-by-token">
 <h3>Split by token<a class="headerlink" href="#split-by-token" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.data_process.text_splitter</span> <span class="kn">import</span> <span class="n">TextSplitter</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">import</span> <span class="nn">tiktoken</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.data_process.text_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextSplitter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
 
 <span class="c1"># Configure the splitter settings</span>
 <span class="n">text_splitter</span> <span class="o">=</span> <span class="n">TextSplitter</span><span class="p">(</span>

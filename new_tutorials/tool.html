@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Tool Use - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -484,7 +485,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
-    <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/tools.py" target="_blank" style="display: flex; align-items: center;">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/tool_simple.py" target="_blank" style="display: flex; align-items: center;">
         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
         <span style="vertical-align: middle;"> Open Source Code (Tool)</span>
     </a>
@@ -496,37 +497,210 @@
 <h1>Tool Use<a class="headerlink" href="#tool-use" title="Link to this heading">¶</a></h1>
 <p>AdalFlow provides a unified interface for integrating external tools into LLM workflows. Tools extend the capabilities of LLM agents, enabling them to call functions, access APIs, or interact with external systems. Two main tool abstractions are provided:</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code>: Wraps any Python function or component method as a tool for LLMs.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MCPFunctionTool</span></code>: Wraps tools served by an MCP (Modular Command Protocol) server, enabling dynamic tool discovery and invocation.</p></li>
+<li><p><a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code></a>: Wraps any Python function or class/component method as a tool for LLMs.</p></li>
+<li><p><a class="reference internal" href="../apis/core/core.mcp_tool.html#core.mcp_tool.MCPFunctionTool" title="core.mcp_tool.MCPFunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">MCPFunctionTool</span></code></a>: Wraps tools served by an MCP (Modular Command Protocol) server, enabling dynamic tool discovery and invocation.</p></li>
 </ul>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
-<p>A “tool” is any callable function or service that an LLM agent can invoke to perform a specific task, such as retrieving information, performing calculations, or interacting with external APIs. Tools are essential for building agentic workflows, enabling LLMs to go beyond text generation.</p>
+<p>A “tool” is any callable function or service that an LLM agent can invoke to perform a specific task, such as retrieving information, performing calculations, or interacting with external APIs.
+Tools are essential for building agentic workflows, enabling LLMs to go beyond text generation.</p>
 </section>
-<section id="functiontool-wrapping-python-functions">
-<h2>FunctionTool: Wrapping Python Functions<a class="headerlink" href="#functiontool-wrapping-python-functions" title="Link to this heading">¶</a></h2>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code> class allows you to wrap any Python function or component method as a tool. This standardizes the interface and metadata, making it easy for agents to discover and invoke tools.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
+<section id="functiontool-wrapping-tools">
+<h2>FunctionTool: Wrapping Tools<a class="headerlink" href="#functiontool-wrapping-tools" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code></a> make it easy for developers by providing:</p>
+<ul class="simple">
+<li><p><strong>Automatic Schema Generation</strong>: Creates function definitions from docstrings and type hints for LLM understanding</p></li>
+<li><p><strong>Unified Interface</strong>: It always output <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionOutput</span></code></a> where the initial tool output is stored in the <cite>output</cite> field.</p></li>
+<li><p><strong>Type Support</strong>: Provides consistent <code class="docutils literal notranslate"><span class="pre">call()</span></code> and <code class="docutils literal notranslate"><span class="pre">acall()</span></code> methods regardless of the underlying function type, be it sync, async, generator, or async generator.</p></li>
+</ul>
+<ul class="simple">
+<li><p><strong>Error Handling</strong>: If the function call fails, the error will be stored in the <cite>error</cite> field of the <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionOutput</span></code></a>.</p></li>
+</ul>
+<p><strong>Basic Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.func_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionTool</span>
 
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add two numbers.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add two numbers.&quot;&quot;&quot;</span>  <span class="c1"># This docstring becomes the tool description for LLM</span>
     <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
 
+<span class="c1"># Wrap the function</span>
 <span class="n">add_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">add</span><span class="p">)</span>
+
+<span class="c1"># Execute the tool</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">add_tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># Output: 5</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>    <span class="c1"># Output: &quot;add&quot;</span>
 </pre></div>
 </div>
-<p>You can also wrap component methods, including trainable components, as tools. This enables seamless integration with the AdalFlow pipeline and supports both synchronous and asynchronous execution.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>FunctionTool supports both synchronous (<code class="docutils literal notranslate"><span class="pre">call</span></code>) and asynchronous (<code class="docutils literal notranslate"><span class="pre">acall</span></code>) functions.</p>
+<p>The complete <cite>FunctionOutput</cite> print is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">_is_answer_final</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_answer</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
 </div>
+<p><strong>Supported Function Types:</strong></p>
+<p>FunctionTool supports four core function types, automatically detected and handled appropriately:</p>
+<ol class="arabic simple">
+<li><p><strong>Synchronous Functions</strong> (Regular Python functions):</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_area</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the area of a rectangle.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">length</span> <span class="o">*</span> <span class="n">width</span>
+
+<span class="n">area_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">calculate_area</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">area_tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># Output: 15.0</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>Asynchronous Functions</strong> (Async/await functions):</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_data</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch data from a URL asynchronously.&quot;&quot;&quot;</span>
+    <span class="c1"># Simulate async operation</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Content from </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+
+<span class="n">fetch_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fetch_data</span><span class="p">)</span>
+<span class="c1"># Use acall for async functions</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fetch_tool</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="s2">&quot;https://api.example.com&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># Output: {&quot;data&quot;: &quot;Content from https://api.example.com&quot;}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>Synchronous Generators</strong> (Functions that yield values):</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">count_to_n</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Count from 1 to n, yielding each number.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">i</span>
+
+<span class="n">counter_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">count_to_n</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">counter_tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="c1"># For generators, output contains the generator object</span>
+<span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>  <span class="c1"># Outputs: 1, 2, 3, 4, 5</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p><strong>Asynchronous Generators</strong> (Async functions that yield):</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_updates</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stream updates from a source.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;Update </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="n">stream_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">stream_updates</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stream_tool</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span><span class="s2">&quot;sensor1&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">update</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>  <span class="c1"># Outputs updates over time</span>
+</pre></div>
+</div>
+<p><strong>Advanced Examples:</strong></p>
+<p><strong>Class Methods and Component Integration:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DataProcessor</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing_steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;normalize&quot;</span><span class="p">,</span> <span class="s2">&quot;clean&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process text through predefined steps.&quot;&quot;&quot;</span>
+        <span class="c1"># Access instance attributes</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing_steps</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+<span class="n">processor</span> <span class="o">=</span> <span class="n">DataProcessor</span><span class="p">()</span>
+<span class="c1"># Wrap instance method - maintains access to self</span>
+<span class="n">process_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">processor</span><span class="o">.</span><span class="n">process_text</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">process_tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># Output: &quot;[normalize] [clean] Hello World&quot;</span>
+</pre></div>
+</div>
+<p><strong>Working with Complex Types:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Point</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">float</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_centroid</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Point</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Point</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the centroid of a list of points.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">points</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">avg_x</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">avg_y</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">y</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">avg_x</span><span class="p">,</span> <span class="n">avg_y</span><span class="p">)</span>
+
+<span class="c1"># FunctionTool handles complex parameter types</span>
+<span class="n">centroid_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">calculate_centroid</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">centroid_tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># Output: Point(x=1.0, y=0.667)</span>
+</pre></div>
+</div>
+<p><strong>Using ToolOutput for Enhanced Control:</strong></p>
+<p>We use <a class="reference internal" href="../apis/core/core.types.html#core.types.ToolOutput" title="core.types.ToolOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToolOutput</span></code></a> with four important fields:</p>
+<ul class="simple">
+<li><p><cite>output</cite>: The actual output of the tool. Can be error message if the tool call fails.</p></li>
+<li><p><cite>observation</cite>: The observation of the tool seen by LLM agent. Can be error message if the tool call fails.</p></li>
+<li><p><cite>display</cite>: The display of the tool to users. Can be error message if the tool call fails.</p></li>
+<li><p><cite>metadata</cite>: Any additional metadata you want to save</p></li>
+<li><p><cite>status</cite>: The status of the tool call, can be “success”, “cancelled”, or “error”. Important for the frontend to display the correct status.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolOutput</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analyze_sentiment</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ToolOutput</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyze sentiment with detailed feedback.&quot;&quot;&quot;</span>
+    <span class="c1"># Simulate analysis</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="k">if</span> <span class="s2">&quot;happy&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">else</span> <span class="mf">0.2</span>
+
+    <span class="k">return</span> <span class="n">ToolOutput</span><span class="p">(</span>
+        <span class="n">output</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sentiment&quot;</span><span class="p">:</span> <span class="s2">&quot;positive&quot;</span> <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="s2">&quot;negative&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">score</span><span class="p">},</span>
+        <span class="n">observation</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Sentiment analysis complete. Score: </span><span class="si">{</span><span class="n">score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">display</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;😊 Positive (</span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;😢 Negative (</span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;simple-rule-based&quot;</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+<span class="n">sentiment_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">analyze_sentiment</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sentiment_tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;I am very happy today!&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>       <span class="c1"># The actual data</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">observation</span><span class="p">)</span>  <span class="c1"># For agent reasoning</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">display</span><span class="p">)</span>      <span class="c1"># For user display</span>
+</pre></div>
+</div>
+<p><strong>Error Handling:</strong></p>
+<p>When error is encountered, it is tracked in <cite>error</cite> field.
+This makes it easy for agent to auto-recover in the later steps.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">divide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Divide two numbers safely.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot divide by zero&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
+
+<span class="n">divide_tool</span> <span class="o">=</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">divide</span><span class="p">)</span>
+
+<span class="c1"># Successful call</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">divide_tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># Output: 5.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>   <span class="c1"># Output: None</span>
+
+<span class="c1"># Error case</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">divide_tool</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># Output: &quot;Error: Cannot divide by zero&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>   <span class="c1"># Contains the actual exception</span>
+</pre></div>
+</div>
+<p>To see how FunctionTool is used in agent workflows and integrated with the Agent and Runner components, refer to the <a class="reference internal" href="agents_runner.html"><span class="doc">Agents and Runner</span></a> documentation.</p>
 </section>
 <section id="mcpfunctiontool-integrating-mcp-tools">
 <h2>MCPFunctionTool: Integrating MCP Tools<a class="headerlink" href="#mcpfunctiontool-integrating-mcp-tools" title="Link to this heading">¶</a></h2>
 <p>MCP (Modular Command Protocol) enables dynamic discovery and invocation of tools served by external servers. The <code class="xref py py-class docutils literal notranslate"><span class="pre">MCPFunctionTool</span></code> class wraps these tools, exposing them as FunctionTool instances for agent workflows.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.mcp_tool</span> <span class="kn">import</span> <span class="n">MCPFunctionTool</span><span class="p">,</span> <span class="n">mcp_session_context</span><span class="p">,</span> <span class="n">MCPServerStdioParams</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.mcp_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPFunctionTool</span><span class="p">,</span> <span class="n">mcp_session_context</span><span class="p">,</span> <span class="n">MCPServerStdioParams</span>
 
 <span class="n">server_params</span> <span class="o">=</span> <span class="n">MCPServerStdioParams</span><span class="p">(</span>
     <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
@@ -544,8 +718,8 @@
 </div>
 <p>MCPFunctionTool only supports asynchronous execution (<code class="docutils literal notranslate"><span class="pre">acall</span></code>), as all MCP tools are invoked asynchronously.</p>
 <p><strong>Managing Multiple MCP Servers</strong></p>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">MCPToolManager</span></code> helps manage multiple MCP servers and aggregate all available tools for agent workflows.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.mcp_tool</span> <span class="kn">import</span> <span class="n">MCPToolManager</span><span class="p">,</span> <span class="n">MCPServerStdioParams</span>
+<p>The <a class="reference internal" href="../apis/core/core.mcp_tool.html#core.mcp_tool.MCPToolManager" title="core.mcp_tool.MCPToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MCPToolManager</span></code></a> helps manage multiple MCP servers and aggregate all available tools for agent workflows.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.mcp_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPToolManager</span><span class="p">,</span> <span class="n">MCPServerStdioParams</span>
 
 <span class="n">manager</span> <span class="o">=</span> <span class="n">MCPToolManager</span><span class="p">()</span>
 <span class="n">manager</span><span class="o">.</span><span class="n">add_server</span><span class="p">(</span><span class="s2">&quot;calculator_server&quot;</span><span class="p">,</span> <span class="n">MCPServerStdioParams</span><span class="p">(</span>
@@ -559,7 +733,7 @@
 </div>
 <p><strong>MCPFunctionTool: Using a URL-based MCP Server</strong></p>
 <p>You can also connect to a remote MCP server via SSE by passing a URL string as the server parameter. This enables integration with cloud-hosted or containerized tool servers.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.mcp_tool</span> <span class="kn">import</span> <span class="n">MCPFunctionTool</span><span class="p">,</span> <span class="n">mcp_session_context</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.mcp_tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPFunctionTool</span><span class="p">,</span> <span class="n">mcp_session_context</span>
 
 <span class="c1"># Example: connect to a remote MCP server via SSE</span>
 <span class="n">smithery_api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SMITHERY_API_KEY&quot;</span><span class="p">)</span>
@@ -598,9 +772,9 @@
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">adalflow.core.func_tool.FunctionTool</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">adalflow.core.mcp_tool.MCPFunctionTool</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">adalflow.core.mcp_tool.MCPToolManager</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.mcp_tool.html#core.mcp_tool.MCPFunctionTool" title="core.mcp_tool.MCPFunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.mcp_tool.MCPFunctionTool</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.mcp_tool.html#core.mcp_tool.MCPToolManager" title="core.mcp_tool.MCPToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.mcp_tool.MCPToolManager</span></code></a></p></li>
 </ul>
 </div>
 </section>
@@ -662,7 +836,7 @@
             <ul>
 <li><a class="reference internal" href="#">Tool Use</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#functiontool-wrapping-python-functions">FunctionTool: Wrapping Python Functions</a></li>
+<li><a class="reference internal" href="#functiontool-wrapping-tools">FunctionTool: Wrapping Tools</a></li>
 <li><a class="reference internal" href="#mcpfunctiontool-integrating-mcp-tools">MCPFunctionTool: Integrating MCP Tools</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>

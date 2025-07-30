@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>RAG optimization - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -505,7 +506,7 @@
 <h2>HotPotQA dataset<a class="headerlink" href="#hotpotqa-dataset" title="Link to this heading">¶</a></h2>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">datasets.hotpotqa.HotPotQA</span></code> dataset is widely used in research community to benchmark QA and RAG tasks.
 Here is one example of the dataset:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.datasets.hotpot_qa</span> <span class="kn">import</span> <span class="n">HotPotQA</span><span class="p">,</span> <span class="n">HotPotQAData</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.datasets.hotpot_qa</span><span class="w"> </span><span class="kn">import</span> <span class="n">HotPotQA</span><span class="p">,</span> <span class="n">HotPotQAData</span>
 
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">HotPotQA</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">type</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
@@ -521,16 +522,16 @@ we will use the <cite>retriever</cite> from DsPy library which allows you to ret
 <section id="retriever">
 <h2>Retriever<a class="headerlink" href="#retriever" title="Link to this heading">¶</a></h2>
 <p>With the following code, we can easily convert the <cite>Dspy</cite>’s Retriever to AdalFlow’s <cite>Retriever</cite>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adaflow</span> <span class="k">as</span> <span class="nn">adal</span>
-<span class="kn">import</span> <span class="nn">dspy</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">adaflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">adal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dspy</span>
 
-<span class="k">class</span> <span class="nc">DspyRetriever</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Retriever</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DspyRetriever</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Retriever</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span> <span class="o">=</span> <span class="n">top_k</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dspy_retriever</span> <span class="o">=</span> <span class="n">dspy</span><span class="o">.</span><span class="n">Retrieve</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">top_k</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">RetrieverOutput</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">RetrieverOutput</span><span class="p">]:</span>
 
         <span class="n">k</span> <span class="o">=</span> <span class="n">top_k</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_k</span>
 
@@ -549,7 +550,7 @@ we will use the <cite>retriever</cite> from DsPy library which allows you to ret
 </pre></div>
 </div>
 <p>Let’s try one example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_retriever</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_retriever</span><span class="p">():</span>
     <span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;How many storeys are in the castle that David Gregory inherited?&quot;</span>
     <span class="n">retriever</span> <span class="o">=</span> <span class="n">DspyRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="n">retriever_out</span> <span class="o">=</span> <span class="n">retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
@@ -566,7 +567,7 @@ we will use the <cite>retriever</cite> from DsPy library which allows you to ret
 <p>In other tutorials, we used only one component - <cite>Generator</cite>, so there is no need to connect the output-input between components.
 That was why we had written our task pipeline with a single <cite>call</cite> method that has both <cite>training</cite> and <cite>inference</cite> mode.</p>
 <p>The previous task pipeline <cite>call</cite> method will return <cite>GeneratorOutput</cite> in inference mode and <cite>Parameter</cite> in training mode.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
      <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
  <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
      <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_input</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
@@ -580,7 +581,7 @@ That was why we had written our task pipeline with a single <cite>call</cite> me
 Implementing <cite>call</cite> method is just free-form pythonic coding.
 Assume this class already have <cite>retriever</cite> and <cite>llm</cite> configured in the <cite>__init__</cite> method.</p>
 <p>Here is our call method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">:</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;This component is not supposed to be called in training mode&quot;</span>
@@ -615,7 +616,7 @@ We achieve this via using the <cite>successor_map_fn</cite> of <cite>Parameter</
 In this case, the <cite>data</cite> field of the <cite>Parameter</cite> saved the output of the <cite>Retriever</cite>.
 The <cite>successor_map_fn</cite> will apply a mapping function to convert the <cite>Parameter</cite> output from the Retriever to the string format used in the <cite>Generator</cite> prompt.</p>
 <p>Here is our <cite>RAG</cite> component’s <cite>forward</cite> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This component is not supposed to be called in eval mode&quot;</span><span class="p">)</span>
     <span class="n">retriever_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retriever</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
@@ -633,7 +634,7 @@ The <cite>successor_map_fn</cite> will apply a mapping function to convert the <
 </div>
 <p><strong>Both modes in the same method</strong></p>
 <p>You also still has the option to put two methods together. Here is one example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bicall</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bicall</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;You can also combine both the forward and call in the same function.</span>
@@ -672,8 +673,8 @@ The <cite>successor_map_fn</cite> will apply a mapping function to convert the <
 <span class="s2">Think step by step.&quot;&quot;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">VanillaRAG</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">GradComponent</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">passages_per_hop</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">model_client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VanillaRAG</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">GradComponent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">passages_per_hop</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">model_client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">passages_per_hop</span> <span class="o">=</span> <span class="n">passages_per_hop</span>
@@ -721,8 +722,8 @@ The <cite>successor_map_fn</cite> will apply a mapping function to convert the <
 <li><p>in training mode, how to parse the last output (Parameter) to the input of the <cite>loss_fn</cite>.</p></li>
 </ol>
 <p>Here is the <cite>AdalComponent</cite> class for the <cite>VanillaRAG</cite> task:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">VallinaRAGAdal</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">AdalComponent</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">VallinaRAGAdal</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">AdalComponent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
@@ -749,7 +750,7 @@ The <cite>successor_map_fn</cite> will apply a mapping function to convert the <
         <span class="p">)</span>
 
     <span class="c1"># tell the trainer how to call the task</span>
-    <span class="k">def</span> <span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
@@ -757,7 +758,7 @@ The <cite>successor_map_fn</cite> will apply a mapping function to convert the <
 
 
     <span class="c1"># eval mode: get the generator output, directly engage with the eval_fn</span>
-    <span class="k">def</span> <span class="nf">prepare_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">y_pred</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">answer</span><span class="p">:</span>
             <span class="n">y_label</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">answer</span>
@@ -765,7 +766,7 @@ The <cite>successor_map_fn</cite> will apply a mapping function to convert the <
 
 
     <span class="c1"># train mode: get the loss and get the data from the full_response</span>
-    <span class="k">def</span> <span class="nf">prepare_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">,</span> <span class="n">pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">HotPotQAData</span><span class="p">,</span> <span class="n">pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
         <span class="c1"># prepare gt parameter</span>
         <span class="n">y_gt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y_gt&quot;</span><span class="p">,</span>
@@ -790,7 +791,7 @@ The <cite>successor_map_fn</cite> will apply a mapping function to convert the <
 <h2>Diagnose<a class="headerlink" href="#diagnose" title="Link to this heading">¶</a></h2>
 <p>Before we start training, we decided to diagnose the pipeline and to analyze the current performance before the optimization.
 Here is the code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_diagnose</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train_diagnose</span><span class="p">(</span>
     <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>

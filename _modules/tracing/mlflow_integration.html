@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>tracing.mlflow_integration - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -483,19 +484,19 @@
           <h1>Source code for tracing.mlflow_integration</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;MLflow integration helpers for AdalFlow tracing.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># Check if MLflow is available</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="c1"># Do NOT set ADALFLOW_DISABLE_TRACING here - it should be set before imports</span>
-    <span class="kn">import</span> <span class="nn">mlflow</span>
-    <span class="kn">from</span> <span class="nn">mlflow.openai._agent_tracer</span> <span class="kn">import</span> <span class="n">MlflowOpenAgentTracingProcessor</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mlflow</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mlflow.openai._agent_tracer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MlflowOpenAgentTracingProcessor</span>
 
     <span class="n">MLFLOW_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -503,7 +504,7 @@
     <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;MLflow not available. Install with: pip install mlflow&quot;</span><span class="p">)</span>
 
 
-<span class="kn">from</span> <span class="nn">.setup</span> <span class="kn">import</span> <span class="n">GLOBAL_TRACE_PROVIDER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLOBAL_TRACE_PROVIDER</span>
 
 <span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
 <span class="c1"># Convenience functions for managing trace processors</span>
@@ -512,7 +513,7 @@
 
 <div class="viewcode-block" id="set_trace_processors">
 <a class="viewcode-back" href="../../apis/tracing/tracing.mlflow_integration.html#tracing.mlflow_integration.set_trace_processors">[docs]</a>
-<span class="k">def</span> <span class="nf">set_trace_processors</span><span class="p">(</span><span class="n">processors</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_trace_processors</span><span class="p">(</span><span class="n">processors</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the global trace processors.&quot;&quot;&quot;</span>
     <span class="n">GLOBAL_TRACE_PROVIDER</span><span class="o">.</span><span class="n">set_processors</span><span class="p">(</span><span class="n">processors</span><span class="p">)</span></div>
 
@@ -520,7 +521,7 @@
 
 <div class="viewcode-block" id="enable_mlflow_local">
 <a class="viewcode-back" href="../../apis/tracing/tracing.mlflow_integration.html#tracing.mlflow_integration.enable_mlflow_local">[docs]</a>
-<span class="k">def</span> <span class="nf">enable_mlflow_local</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enable_mlflow_local</span><span class="p">(</span>
     <span class="n">tracking_uri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">experiment_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;AdalFlow-Agent-Experiment&quot;</span><span class="p">,</span>
     <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;AdalFlow-Agent-Project&quot;</span><span class="p">,</span>
@@ -602,7 +603,7 @@
 
 <div class="viewcode-block" id="enable_mlflow_local_with_server">
 <a class="viewcode-back" href="../../apis/tracing/tracing.mlflow_integration.html#tracing.mlflow_integration.enable_mlflow_local_with_server">[docs]</a>
-<span class="k">def</span> <span class="nf">enable_mlflow_local_with_server</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enable_mlflow_local_with_server</span><span class="p">(</span>
     <span class="n">tracking_uri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">experiment_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;AdalFlow-Agent-Experiment&quot;</span><span class="p">,</span>
     <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;AdalFlow-Agent-Project&quot;</span><span class="p">,</span>
@@ -701,7 +702,7 @@
 
 <div class="viewcode-block" id="get_mlflow_server_command">
 <a class="viewcode-back" href="../../apis/tracing/tracing.mlflow_integration.html#tracing.mlflow_integration.get_mlflow_server_command">[docs]</a>
-<span class="k">def</span> <span class="nf">get_mlflow_server_command</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8080</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mlflow_server_command</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8080</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the MLflow server command with AdalFlow backend store.</span>
 
 <span class="sd">    Args:</span>
@@ -728,7 +729,7 @@
 
 <div class="viewcode-block" id="start_mlflow_server">
 <a class="viewcode-back" href="../../apis/tracing/tracing.mlflow_integration.html#tracing.mlflow_integration.start_mlflow_server">[docs]</a>
-<span class="k">def</span> <span class="nf">start_mlflow_server</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_mlflow_server</span><span class="p">(</span>
     <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span>
     <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8080</span><span class="p">,</span>
     <span class="n">wait</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -755,13 +756,13 @@
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;MLflow is not installed. Cannot start MLflow server.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="kn">import</span> <span class="nn">subprocess</span>
-    <span class="kn">import</span> <span class="nn">time</span>
-    <span class="kn">import</span> <span class="nn">urllib.request</span>
-    <span class="kn">import</span> <span class="nn">signal</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">psutil</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
 
         <span class="n">PSUTIL_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>

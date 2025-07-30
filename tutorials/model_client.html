@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>ModelClient - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f0068426" />
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apis/core/core.db.html">db</a></li>
@@ -510,7 +511,7 @@ Therefore, by switching out the <code class="docutils literal notranslate"><span
 <h2>Model Inference SDKs<a class="headerlink" href="#model-inference-sdks" title="Link to this heading">¶</a></h2>
 <p>With cloud API providers like OpenAI, Groq, and Anthropic, it often comes with a <cite>sync</cite> and an <cite>async</cite> client via their SDKs.
 For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span><span class="p">,</span> <span class="n">AsyncOpenAI</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span><span class="p">,</span> <span class="n">AsyncOpenAI</span>
 
 <span class="n">sync_client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
 <span class="n">async_client</span> <span class="o">=</span> <span class="n">AsyncOpenAI</span><span class="p">()</span>
@@ -531,7 +532,7 @@ It really is just normal model inference code.</p>
 <section id="modelclient-protocol">
 <h2>ModelClient Protocol<a class="headerlink" href="#modelclient-protocol" title="Link to this heading">¶</a></h2>
 <p>A model client can be used to manage different types of models, we defined a <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelType</span></code></a> to categorize the model type.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">EMBEDDER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">LLM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">RERANKER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -543,8 +544,8 @@ We will use <code class="xref py py-class docutils literal notranslate"><span cl
 <p>First, we offer two methods, <cite>init_async_client</cite> and <cite>init_sync_client</cite>, for subclasses to initialize the SDK client.
 You can refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code> to see how these methods, along with the <cite>__init__</cite> method, are implemented:</p>
 <p>This is how <code class="docutils literal notranslate"><span class="pre">TransformerClient</span></code> does the same thing:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TransformersClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TransformersClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_sync_client</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="kc">None</span>
@@ -554,12 +555,12 @@ You can refer to <code class="xref py py-class docutils literal notranslate"><sp
             <span class="p">}</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">TransformerEmbedder</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Second, we use <cite>convert_inputs_to_api_kwargs</cite> for subclasses to convert AdalFlow inputs into the <cite>api_kwargs</cite> (SDK arguments).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -571,7 +572,7 @@ You can refer to <code class="xref py py-class docutils literal notranslate"><sp
 </pre></div>
 </div>
 <p>This is how <cite>OpenAIClient</cite> implements this method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -602,7 +603,7 @@ You can refer to <code class="xref py py-class docutils literal notranslate"><sp
 For LLM, as <code class="docutils literal notranslate"><span class="pre">Generator</span></code> will takes a <cite>prompt_kwargs`(dict) and convert it into a single string, thus we need to convert the input to a list of messages.
 For Rerankers, you can refer to :class:`CohereAPIClient&lt;components.model_client.cohere_client.CohereAPIClient&gt;</cite> for an example.</p>
 <p>This is how <code class="docutils literal notranslate"><span class="pre">TransformerClient</span></code> does the same thing:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -622,7 +623,7 @@ You can refer to <a class="reference internal" href="../apis/components/componen
 <p>Lastly, the <cite>call</cite> and <cite>acall</cite> methods are used to call model inference via their own arguments.
 We encourage subclasses to provide error handling and retry mechanisms in these methods.</p>
 <p>The <cite>OpenAIClient</cite> example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
@@ -632,7 +633,7 @@ We encourage subclasses to provide error handling and retry mechanisms in these 
 </pre></div>
 </div>
 <p>The <cite>TransformerClient</cite> example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -644,9 +645,9 @@ Please check out <a class="reference internal" href="../apis/components/componen
 <h2>Use ModelClient directly<a class="headerlink" href="#use-modelclient-directly" title="Link to this heading">¶</a></h2>
 <p>Though <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> is often managed in a <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, or <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> component, you can use it directly if you plan to write your own component.
 Here is an example of using <code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code> directly, first on an LLM model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
 
 <span class="n">setup_env</span><span class="p">()</span>
 
@@ -699,13 +700,13 @@ Here is an example of using <code class="docutils literal notranslate"><span cla
 <section id="openai-embedder-embedding-processing-example">
 <h2>OPENAI EMBEDDER - Embedding Processing Example<a class="headerlink" href="#openai-embedder-embedding-processing-example" title="Link to this heading">¶</a></h2>
 <p>In this example, we are using a collection of embeddings to demonstrate different functionalities such as calculating semantic similarity, finding nearest neighbors, and averaging embeddings. Below is the Python code used to achieve these tasks:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
 </pre></div>
 </div>
 <p>Data Classes</p>
@@ -713,13 +714,13 @@ Here is an example of using <code class="docutils literal notranslate"><span cla
 <p>EmbeddingCollection: Stores an individual embedding collection and its corresponding index.
 Usage: Keeps track of token usage, such as prompt_tokens and total_tokens.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">EmbeddingCollection</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmbeddingCollection</span><span class="p">:</span>
     <span class="n">collection</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="n">cindex</span><span class="p">:</span> <span class="nb">int</span>
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Usage</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Usage</span><span class="p">:</span>
     <span class="n">prompt_tokens</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">total_tokens</span><span class="p">:</span> <span class="nb">int</span>
 </pre></div>
@@ -727,7 +728,7 @@ Usage: Keeps track of token usage, such as prompt_tokens and total_tokens.</p>
 <p>The following function, <cite>get_openai_embedding</cite>, sends a request to the OpenAI API to retrieve embeddings for a given text. It sets the model type to <cite>EMBEDDER</cite>, prepares the required model-specific parameters, and processes the response:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
 
-<span class="k">def</span> <span class="nf">get_openai_embedding</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_openai_embedding</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
     <span class="c1"># Set model type to EMBEDDER for embedding functionality</span>
     <span class="n">model_type</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span>
 
@@ -759,7 +760,7 @@ Usage: Keeps track of token usage, such as prompt_tokens and total_tokens.</p>
 <p>Similarity: Measures the cosine similarity between two embeddings.
 Average Embedding: Computes the mean embedding across a set of embeddings.
 Nearest Neighbors: Identifies the top-k nearest neighbors based on cosine similarity.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_embeddings</span><span class="p">(</span><span class="n">embeddings_collection</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_embeddings</span><span class="p">(</span><span class="n">embeddings_collection</span><span class="p">):</span>
     <span class="c1"># Extract embedding data for each item in the collection</span>
     <span class="n">embeddingOutput</span> <span class="o">=</span> <span class="p">[</span><span class="n">emb</span><span class="o">.</span><span class="n">collection</span> <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="n">embeddings_collection</span><span class="p">]</span>
     <span class="n">embeddingDataList</span> <span class="o">=</span> <span class="p">[</span><span class="n">each_emb_out</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">each_emb_out</span> <span class="ow">in</span> <span class="n">embeddingOutput</span><span class="p">]</span>
@@ -772,15 +773,15 @@ Nearest Neighbors: Identifies the top-k nearest neighbors based on cosine simila
     <span class="c1"># Convert to numpy array for easier manipulation and calculations</span>
     <span class="n">embeddings_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">embeddingList</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">calculate_similarity</span><span class="p">(</span><span class="n">emb1</span><span class="p">,</span> <span class="n">emb2</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_similarity</span><span class="p">(</span><span class="n">emb1</span><span class="p">,</span> <span class="n">emb2</span><span class="p">):</span>
         <span class="c1"># Compute cosine similarity between two embeddings</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">emb1</span><span class="p">,</span> <span class="n">emb2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">emb1</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">emb2</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">get_average_embedding</span><span class="p">(</span><span class="n">embeddings_list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_average_embedding</span><span class="p">(</span><span class="n">embeddings_list</span><span class="p">):</span>
         <span class="c1"># Calculate the mean embedding across a list of embeddings</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">embeddings_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">find_nearest_neighbors</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_nearest_neighbors</span><span class="p">(</span>
         <span class="n">query_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">embedding_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="p">):</span>
         <span class="c1"># Find top-k most similar embeddings to a query embedding, based on cosine similarity</span>
@@ -803,7 +804,7 @@ Nearest Neighbors: Identifies the top-k nearest neighbors based on cosine simila
 </div>
 <p>The function <cite>demonstrate_embeddings_usage</cite> showcases how to analyze semantic similarities, find nearest neighbors, and calculate average embeddings for sample texts. It selects random texts, compares their similarities, finds nearest neighbors for a specific query, and compares average embeddings for texts containing “Paris”.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Demonstrate embeddings usage with sample data</span>
-<span class="k">def</span> <span class="nf">demonstrate_embeddings_usage</span><span class="p">(</span><span class="n">sample_embeddings</span><span class="p">,</span> <span class="n">input_text_list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">demonstrate_embeddings_usage</span><span class="p">(</span><span class="n">sample_embeddings</span><span class="p">,</span> <span class="n">input_text_list</span><span class="p">):</span>
       <span class="c1"># Initialize processor and retrieve embeddings array</span>
       <span class="n">processor</span> <span class="o">=</span> <span class="n">process_embeddings</span><span class="p">(</span><span class="n">sample_embeddings</span><span class="p">)</span>
       <span class="n">embeddings</span> <span class="o">=</span> <span class="n">processor</span><span class="p">[</span><span class="s2">&quot;embeddings_array&quot;</span><span class="p">]</span>
@@ -862,7 +863,7 @@ Nearest Neighbors: Identifies the top-k nearest neighbors based on cosine simila
 </div>
 <p>Running the Model Client</p>
 <p>Finally, we run the model client by initializing a set of sample texts, generating their embeddings, and using the embedding processing functions to analyze similarities and neighbors.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_model_client_embedding_usage</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_model_client_embedding_usage</span><span class="p">():</span>
     <span class="c1"># Define a set of sample texts to test embedding and similarity functionalities</span>
     <span class="n">sample_texts</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">,</span>
@@ -897,16 +898,16 @@ Nearest Neighbors: Identifies the top-k nearest neighbors based on cosine simila
 <section id="openai-llm-chat-multichat-usage">
 <h2>OPENAI LLM Chat - Multichat Usage<a class="headerlink" href="#openai-llm-chat-multichat-usage" title="Link to this heading">¶</a></h2>
 <p>This example demonstrates how to create a multichat system using OpenAI’s LLM with adalflow, where the assistant’s responses depend on the entire conversation history. This allows for a more dynamic and context-aware conversation flow.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
 </pre></div>
 </div>
 <p>ChatConversation Class</p>
 <p>Here, we define a <code class="docutils literal notranslate"><span class="pre">ChatConversation</span></code> class to manage the conversation history and make API calls to the OpenAI model. The assistant’s responses are generated based on the entire conversation history.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConversation</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ChatConversation</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Initialize the OpenAI client for managing API calls</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
         <span class="c1"># Initialize an empty conversation history to store chat messages</span>
@@ -918,19 +919,19 @@ Nearest Neighbors: Identifies the top-k nearest neighbors based on cosine simila
             <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Limits the response length</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">add_user_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_user_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a user message to the conversation history&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;&lt;USER&gt; </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> &lt;/USER&gt;&quot;</span>  <span class="c1"># Format for user message</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">add_assistant_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_assistant_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an assistant message to the conversation history&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;&lt;ASSISTANT&gt; </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> &lt;/ASSISTANT&gt;&quot;</span>  <span class="c1"># Format for assistant message</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get response from the model based on conversation history&quot;&quot;&quot;</span>
         <span class="c1"># Convert the conversation history and model parameters into API arguments</span>
         <span class="n">api_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span><span class="o">.</span><span class="n">convert_inputs_to_api_kwargs</span><span class="p">(</span>
@@ -955,7 +956,7 @@ Nearest Neighbors: Identifies the top-k nearest neighbors based on cosine simila
 </div>
 <p>Simulating a Multi-turn Conversation</p>
 <p>In the <code class="docutils literal notranslate"><span class="pre">check_chat_conversation()</span></code> function, we simulate a multi-turn conversation by iterating over a list of user questions. Each question is added to the conversation history, and the assistant responds based on the accumulated conversation context.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">check_chat_conversation</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_chat_conversation</span><span class="p">():</span>
     <span class="c1"># Initialize a new chat conversation</span>
     <span class="n">chat</span> <span class="o">=</span> <span class="n">ChatConversation</span><span class="p">()</span>
 
@@ -990,16 +991,16 @@ check_chat_conversation()</p>
 <section id="openai-llm-chat-multichat-usage-asynchronous">
 <h2>OPENAI LLM Chat - Multichat Usage - Asynchronous<a class="headerlink" href="#openai-llm-chat-multichat-usage-asynchronous" title="Link to this heading">¶</a></h2>
 <p>This example demonstrates how to create an asynchronous multichat system using OpenAI’s LLM with adalflow. The asynchronous approach allows handling multiple questions in parallel, making the interaction more efficient when dealing with unrelated queries.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 </pre></div>
 </div>
 <p>ChatConversationAsync Class</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">ChatConversationAsync</span></code> class is designed to handle asynchronous API calls to the OpenAI model. It supports concurrent requests, which improves performance when interacting with multiple questions simultaneously.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConversationAsync</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ChatConversationAsync</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Initialize with an asynchronous OpenAI client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
 
@@ -1010,7 +1011,7 @@ check_chat_conversation()</p>
             <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Maximum tokens in the generated response</span>
         <span class="p">}</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously get a response from the model for a given user message&quot;&quot;&quot;</span>
 
         <span class="c1"># Convert input message and model parameters into the format expected by the API</span>
@@ -1035,7 +1036,7 @@ check_chat_conversation()</p>
 </div>
 <p>Running Multiple Asynchronous Chat Sessions</p>
 <p>In the <code class="docutils literal notranslate"><span class="pre">check_chat_conversations_async()</span></code> function, we handle a list of unrelated user questions concurrently. This is done by creating a list of asynchronous tasks and gathering their responses.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">check_chat_conversations_async</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_chat_conversations_async</span><span class="p">():</span>
     <span class="c1"># Create an instance of ChatConversationAsync to handle asynchronous operations</span>
     <span class="n">chat</span> <span class="o">=</span> <span class="n">ChatConversationAsync</span><span class="p">()</span>
 
@@ -1073,12 +1074,12 @@ check_chat_conversation()</p>
 <section id="openai-llm-chat-multichat-usage-benchmark-sync-vs-async">
 <h2>OPENAI LLM Chat - Multichat Usage - Benchmark sync() vs async()<a class="headerlink" href="#openai-llm-chat-multichat-usage-benchmark-sync-vs-async" title="Link to this heading">¶</a></h2>
 <p>This section compares the performance of synchronous (<code class="docutils literal notranslate"><span class="pre">call()</span></code>) vs. asynchronous (<code class="docutils literal notranslate"><span class="pre">acall()</span></code>) API calls to OpenAI’s language model, benchmarking them using a sample prompt to determine which approach is more efficient for handling multiple API requests.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OpenAIClient</span><span class="p">,</span>
 <span class="p">)</span>  <span class="c1"># Assuming OpenAIClient with .call() and .acall() is available</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span>
 </pre></div>
 </div>
 <p>Setup for Benchmarking</p>
@@ -1095,7 +1096,7 @@ check_chat_conversation()</p>
 <p>Synchronous Benchmarking</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">benchmark_sync_call</span></code> function runs the synchronous <code class="docutils literal notranslate"><span class="pre">.call()</span></code> method multiple times and measures the total time taken for all requests.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Synchronous function for benchmarking .call()</span>
-<span class="k">def</span> <span class="nf">benchmark_sync_call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">benchmark_sync_call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Benchmark the synchronous .call() method by running it multiple times.</span>
 
@@ -1130,7 +1131,7 @@ check_chat_conversation()</p>
 
 
 <span class="c1"># Asynchronous function for benchmarking .acall()</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">benchmark_async_acall</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">benchmark_async_acall</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Benchmark the asynchronous .acall() method by running it multiple times concurrently.</span>
 
@@ -1191,20 +1192,20 @@ check_chat_conversation()</p>
 <p>These utilities can be used to interact with the OpenAI model in various ways, such as extracting the first message content, retrieving all message content from a multi-chat scenario, and calculating the probabilities of tokens.</p>
 <p>Code Setup</p>
 <p>First, we import necessary components for utilizing the OpenAI client and the utilities from the <code class="docutils literal notranslate"><span class="pre">adalflow</span></code> library.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client.openai_client</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.openai_client</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_first_message_content</span><span class="p">,</span>
     <span class="n">get_all_messages_content</span><span class="p">,</span>
     <span class="n">get_probabilities</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 </pre></div>
 </div>
 <p>Function: <code class="docutils literal notranslate"><span class="pre">check_openai_additional_utils</span></code></p>
 <p>This function demonstrates how to use the OpenAI client along with a custom utility function for generating responses from the model, based on the given query and utility function.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">check_openai_additional_utils</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_openai_additional_utils</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function demonstrates the usage of the OpenAI client and a custom utility function</span>
 <span class="sd">    for generating responses from the LLM model, based on the given query in openai client.</span>
@@ -1246,7 +1247,7 @@ check_chat_conversation()</p>
 </div>
 <p>Function: <code class="docutils literal notranslate"><span class="pre">run_utils_functions</span></code></p>
 <p>This function runs a series of utility functions using different model configurations for generating responses. It demonstrates how to check OpenAI model outputs using various utility functions.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_utils_functions</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_utils_functions</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function runs a series of utility functions using different model</span>
 <span class="sd">    configurations for generating responses. It demonstrates how to check</span>
@@ -1305,16 +1306,16 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
 <h2>Groq LLM Chat - Multichat Usage<a class="headerlink" href="#groq-llm-chat-multichat-usage" title="Link to this heading">¶</a></h2>
 <p>Note: Groq doesnt have embedder method to get embeddings like openai</p>
 <p>The following example demonstrates how to set up a multi-turn conversation with the Groq LLM using the <code class="docutils literal notranslate"><span class="pre">GroqAPIClient</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroqAPIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
 </pre></div>
 </div>
 <p>ChatConversation Class</p>
 <p>This class handles the conversation flow by interacting with the Groq model, keeping track of the conversation history, and generating responses.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConversation</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ChatConversation</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a new ChatConversation object.</span>
 <span class="sd">        - GroqAPIClient is used to interact with the Groq model.</span>
@@ -1333,7 +1334,7 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
             <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Limit the number of tokens in the response</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">add_user_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_user_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a user message to the conversation history in the required format.</span>
 <span class="sd">        The message is wrapped with &lt;USER&gt; tags for better processing by the assistant.</span>
@@ -1342,7 +1343,7 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
             <span class="sa">f</span><span class="s2">&quot;&lt;USER&gt; </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> &lt;/USER&gt;&quot;</span>  <span class="c1"># Append user message to history</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">add_assistant_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_assistant_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add an assistant message to the conversation history in the required format.</span>
 <span class="sd">        The message is wrapped with &lt;ASSISTANT&gt; tags for better processing.</span>
@@ -1351,7 +1352,7 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
             <span class="sa">f</span><span class="s2">&quot;&lt;ASSISTANT&gt; </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2"> &lt;/ASSISTANT&gt;&quot;</span>  <span class="c1"># Append assistant message to history</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a response from the assistant based on the conversation history.</span>
 <span class="sd">        - Converts the conversation history and model kwargs into the format required by the Groq API.</span>
@@ -1385,7 +1386,7 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
 </div>
 <p>Example Multi-Turn Conversation</p>
 <p>The following function simulates a multi-turn conversation, where the user asks a series of questions and the assistant responds. It demonstrates how user inputs are processed, and responses are generated while maintaining the conversation history.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">check_chat_conversation</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_chat_conversation</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function simulates a multi-turn conversation between a user and an assistant.</span>
 <span class="sd">    It demonstrates how user inputs are processed, and the assistant generates responses,</span>
@@ -1430,16 +1431,16 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
 <section id="groq-llm-chat-multichat-usage-asynchronous">
 <h2>Groq LLM Chat - Multichat Usage - Asynchronous<a class="headerlink" href="#groq-llm-chat-multichat-usage-asynchronous" title="Link to this heading">¶</a></h2>
 <p>This example demonstrates how to perform multi-turn conversations with the Groq LLM using asynchronous calls for each query. It uses Python’s <cite>asyncio</cite> to handle multiple independent requests concurrently.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroqAPIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 </pre></div>
 </div>
 <p>ChatConversation Class</p>
 <p>This class allows you to interact asynchronously with the Groq model. The get_response method fetches responses from the model for a single user input asynchronously.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChatConversation</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ChatConversation</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Using an asynchronous client for communication with GroqAPI</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">groq_client</span> <span class="o">=</span> <span class="n">GroqAPIClient</span><span class="p">()</span>  <span class="c1"># Create an instance of GroqAPIClient</span>
         <span class="c1"># Model configuration parameters (e.g., Llama model with 8b parameters and 8192 context length)</span>
@@ -1449,7 +1450,7 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
             <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Maximum number of tokens in the response</span>
         <span class="p">}</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get response from the model for a single message asynchronously&quot;&quot;&quot;</span>
 
         <span class="c1"># Convert the user input message to the appropriate format for the Groq API</span>
@@ -1474,7 +1475,7 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
 </div>
 <p>Example Asynchronous Multi-Turn Conversation</p>
 <p>The following function demonstrates how multiple independent questions are handled asynchronously. Each question is processed concurrently, and their responses are gathered using asyncio.gather.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">check_chat_conversations</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_chat_conversations</span><span class="p">():</span>
     <span class="c1"># Create an instance of ChatConversation</span>
     <span class="n">chat</span> <span class="o">=</span> <span class="n">ChatConversation</span><span class="p">()</span>
 
@@ -1507,12 +1508,12 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
 <section id="groq-llm-chat-multichat-usage-benchmark-sync-vs-async">
 <h2>Groq LLM Chat - Multichat Usage - Benchmark sync() vs async()<a class="headerlink" href="#groq-llm-chat-multichat-usage-benchmark-sync-vs-async" title="Link to this heading">¶</a></h2>
 <p>This example demonstrates how to benchmark the synchronous <code class="docutils literal notranslate"><span class="pre">.call()</span></code> method versus the asynchronous <code class="docutils literal notranslate"><span class="pre">.acall()</span></code> method for making API calls using Groq. The benchmark compares the time taken to execute multiple API requests synchronously and asynchronously.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">GroqAPIClient</span><span class="p">,</span>
 <span class="p">)</span>  <span class="c1"># Assuming GroqAPI with .call() and .acall() is available</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span>
 </pre></div>
 </div>
 <p>Initialization</p>
@@ -1529,7 +1530,7 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
 <p>Benchmarking Synchronous <cite>.call()</cite> Method</p>
 <p>This function benchmarks the synchronous <cite>.call()</cite> method by calling the Groq API synchronously multiple times.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Synchronous function for benchmarking .call()</span>
-<span class="k">def</span> <span class="nf">benchmark_sync_call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">benchmark_sync_call</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="c1"># List to store responses from each synchronous call</span>
     <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1559,7 +1560,7 @@ These utilities (<code class="docutils literal notranslate"><span class="pre">ge
 <p>Benchmarking Asynchronous <code class="docutils literal notranslate"><span class="pre">.acall()</span></code> Method</p>
 <p>This asynchronous function benchmarks the <code class="docutils literal notranslate"><span class="pre">.acall()</span></code> method by calling the Groq API asynchronously multiple times using asyncio.gather() to execute tasks concurrently.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Asynchronous function for benchmarking .acall()</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">benchmark_async_acall</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">benchmark_async_acall</span><span class="p">(</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="c1"># Record the start time for benchmarking</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -1614,25 +1615,25 @@ custom model client</p>
 <span class="c1"># I have modified convert_inputs_to_api_kwargs() to make sure it follows the prompt of openai and i have used appropiate</span>
 <span class="c1"># openai api call in __call__()</span>
 
-<span class="kn">import</span> <span class="nn">openai</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
-<span class="kn">from</span> <span class="nn">openai.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openai</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CreateEmbeddingResponse</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client.utils</span> <span class="kn">import</span> <span class="n">parse_embedding_response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_embedding_response</span>
 </pre></div>
 </div>
 <p>This class defines the custom model client. The constructor initializes the client by calling the parent class’s initializer (ModelClient), which is essential for the setup of the Adalflow framework.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SimpleCustomModelClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SimpleCustomModelClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
     <span class="c1"># Initialize the custom model client</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Call the parent class&#39;s initializer</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">pass</span>  <span class="c1"># Placeholder for any initialization logic if needed in the future</span>
 
     <span class="c1"># Method to convert input into API parameters for different model types (LLM or Embedder)</span>
-    <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1671,7 +1672,7 @@ custom model client</p>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
 
     <span class="c1"># Method to make the actual API call to OpenAI for either completions (LLM) or embeddings</span>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the appropriate OpenAI API method based on the model type (LLM or Embedder).</span>
 
@@ -1693,7 +1694,7 @@ custom model client</p>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported model type: </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Method to parse the response from a chat completion API call</span>
-    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the response from a chat completion API call into a custom output format.</span>
 
@@ -1711,7 +1712,7 @@ custom model client</p>
         <span class="p">)</span>
 
     <span class="c1"># Method to parse the response from an embedding API call</span>
-    <span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_embedding_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">CreateEmbeddingResponse</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1732,7 +1733,7 @@ custom model client</p>
 </pre></div>
 </div>
 <p>In below block, the custom model client is instantiated, and a query is defined for processing by both an LLM (like GPT-3.5) and an Embedder model. The API arguments are converted, and the call() method is used to fetch responses. Finally, both types of responses (LLM and Embedder) are parsed and printed.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">build_custom_model_client</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">build_custom_model_client</span><span class="p">():</span>
     <span class="c1"># Instantiate the custom model client (SimpleCustomModelClient)</span>
     <span class="n">custom_client</span> <span class="o">=</span> <span class="n">SimpleCustomModelClient</span><span class="p">()</span>
 

@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>core.generator - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -485,49 +486,49 @@
 
 <span class="sd">It is a pipeline that consists of three subcomponents.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">AsyncGenerator</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterable</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">AsyncGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
-<span class="kn">from</span> <span class="nn">openai.types.responses</span> <span class="kn">import</span> <span class="n">ResponseCompletedEvent</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseCompletedEvent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.tokenizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tokenizer</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ModelType</span><span class="p">,</span>
     <span class="n">GeneratorOutput</span><span class="p">,</span>
     <span class="n">GeneratorOutputType</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">DataComponent</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.grad_component</span> <span class="kn">import</span> <span class="n">GradComponent</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">DataComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.grad_component</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Parameter</span><span class="p">,</span>
     <span class="n">OutputParameter</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.gradient</span> <span class="kn">import</span> <span class="n">GradientContext</span><span class="p">,</span> <span class="n">Gradient</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">ParameterType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.gradient</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradientContext</span><span class="p">,</span> <span class="n">Gradient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterType</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="n">compose_model_kwargs</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.default_prompt_template</span> <span class="kn">import</span> <span class="n">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.function</span> <span class="kn">import</span> <span class="n">BackwardContext</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.cache</span> <span class="kn">import</span> <span class="n">CachedEngine</span>
-<span class="kn">from</span> <span class="nn">adalflow.tracing.callback_manager</span> <span class="kn">import</span> <span class="n">CallbackManager</span>
-<span class="kn">from</span> <span class="nn">adalflow.tracing</span> <span class="kn">import</span> <span class="n">generator_span</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.global_config</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.prompt_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose_model_kwargs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.default_prompt_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_ADALFLOW_SYSTEM_PROMPT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.function</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackwardContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">CachedEngine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.tracing.callback_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.tracing</span><span class="w"> </span><span class="kn">import</span> <span class="n">generator_span</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.global_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.string_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonParser</span>
 
-<span class="kn">from</span> <span class="nn">adalflow.optim.text_grad.backend_engine_prompt</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.text_grad.backend_engine_prompt</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FEEDBACK_ENGINE_TEMPLATE</span><span class="p">,</span>
     <span class="n">LLM_CONVERSATION_TEMPLATE</span><span class="p">,</span>
     <span class="n">ALL_PRED_INFO</span><span class="p">,</span>
@@ -548,7 +549,7 @@
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BackwardPassSetup</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BackwardPassSetup</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">all_pred_at_once</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Backward all predecessors at once.&quot;</span><span class="p">}</span>
     <span class="p">)</span>
@@ -564,7 +565,7 @@
 <span class="c1"># TODO: better debug mode</span>
 <div class="viewcode-block" id="Generator">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator">[docs]</a>
-<span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">,</span> <span class="n">CachedEngine</span><span class="p">,</span> <span class="n">CallbackManager</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Generator</span><span class="p">(</span><span class="n">GradComponent</span><span class="p">,</span> <span class="n">CachedEngine</span><span class="p">,</span> <span class="n">CallbackManager</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;An user-facing orchestration component for LLM prediction.</span>
 
 <span class="s2">    It is also a GradComponent that can be used for backpropagation through the LLM model.</span>
@@ -602,7 +603,7 @@
         <span class="n">BackwardPassSetup</span><span class="p">()</span>
     <span class="p">)</span>  <span class="c1"># default setup for the backward pass</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="c1"># args for the model</span>
@@ -695,18 +696,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">use_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">use_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_cache</span>
 
 <div class="viewcode-block" id="Generator.update_default_backward_pass_setup">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.update_default_backward_pass_setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_default_backward_pass_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setup</span><span class="p">:</span> <span class="n">BackwardPassSetup</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_default_backward_pass_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setup</span><span class="p">:</span> <span class="n">BackwardPassSetup</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backward_pass_setup</span> <span class="o">=</span> <span class="n">setup</span></div>
 
 
 <div class="viewcode-block" id="Generator.set_cache_path">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.set_cache_path">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_cache_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_cache_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the cache path for the generator.&quot;&quot;&quot;</span>
 
         <span class="c1"># Construct a valid model string using the client class name and model</span>
@@ -728,13 +729,13 @@
 
 <div class="viewcode-block" id="Generator.get_cache_path">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.get_cache_path">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_cache_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cache_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the cache path for the generator.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span></div>
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_default_mapping</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_default_mapping</span><span class="p">(</span>
         <span class="n">output</span><span class="p">:</span> <span class="s2">&quot;GeneratorOutput&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 
@@ -759,7 +760,7 @@
 
 <div class="viewcode-block" id="Generator.set_mock_output">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.set_mock_output">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_mock_output</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_mock_output</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">mock_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mock_output_data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mock data&quot;</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mock_output</span> <span class="o">=</span> <span class="n">mock_output</span>
@@ -768,14 +769,14 @@
 
 <div class="viewcode-block" id="Generator.reset_mock_output">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.reset_mock_output">[docs]</a>
-    <span class="k">def</span> <span class="nf">reset_mock_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_mock_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mock_output</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mock_output_data</span> <span class="o">=</span> <span class="s2">&quot;mock data&quot;</span></div>
 
 
 <div class="viewcode-block" id="Generator.set_parameters">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.set_parameters">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">PromptArgType</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">PromptArgType</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set name for each paramter and set all context for each other.</span>
 <span class="sd">        Make all parameters attributes to the generator for finding them easily</span>
 <span class="sd">        for optimizers and other components.</span>
@@ -797,7 +798,7 @@
 <div class="viewcode-block" id="Generator.from_config">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.from_config">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a Generator instance from the config dictionary.</span>
 
 <span class="sd">        Example:</span>
@@ -818,7 +819,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_compose_model_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">model_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compose_model_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">model_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The model configuration exclude the input itself.</span>
 <span class="sd">        Combine the default model, model_kwargs with the passed model_kwargs.</span>
@@ -837,24 +838,24 @@
     <span class="c1"># TODO: use prompt_kwargs as users are already familiar with it</span>
 <div class="viewcode-block" id="Generator.print_prompt">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.print_prompt">[docs]</a>
-    <span class="k">def</span> <span class="nf">print_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">prompt</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.get_prompt">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.get_prompt">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">prompt</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;model_kwargs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">, model_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type</span><span class="si">}</span><span class="s2">, prompt=</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span>
 
-    <span class="k">def</span> <span class="nf">_post_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneratorOutput</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_post_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneratorOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get string completion and process it with the output_processors.&quot;&quot;&quot;</span>
         <span class="c1"># parse chat completion will only fill the raw_response</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">parse_chat_completion</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
@@ -878,7 +879,7 @@
 
         <span class="k">return</span> <span class="n">output</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_output_processing</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_output_processing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">AsyncIterable</span><span class="p">,</span> <span class="n">generator_output</span><span class="p">:</span> <span class="n">GeneratorOutput</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create an async generator from the async_iterable returned by model client and yield from them</span>
@@ -917,7 +918,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">generator_output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_post_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneratorOutput</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_async_post_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneratorOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get completion and depending on whether the client is streaming from the model client, create a GeneratorOutput or an AsyncGenerator.</span>
 <span class="sd">        when the client is not streaming, the post call return a GeneratorOutput where the final output after applying the output processors is stored under the data field.</span>
 <span class="sd">        When the client is streaming, the post call returns an Async Generator which will yield the events under the raw response and then also</span>
@@ -960,7 +961,7 @@
 
         <span class="k">return</span> <span class="n">output</span>
 
-    <span class="k">def</span> <span class="nf">_pre_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pre_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Prepare the input, prompt_kwargs, model_kwargs for the model call.&quot;&quot;&quot;</span>
         <span class="c1"># 1. render the prompt from the template</span>
         <span class="n">prompt_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
@@ -992,7 +993,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">api_kwargs</span>
 
-    <span class="k">def</span> <span class="nf">_model_client_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_model_client_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="c1"># call the model client</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># check the cache</span>
@@ -1007,6 +1008,7 @@
             <span class="n">completion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
                 <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type</span>
             <span class="p">)</span>
+
             <span class="c1"># prepare cache - skip caching for streaming responses which contain unpickleable threading objects</span>
             <span class="k">if</span> <span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">api_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stream&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_save_cache</span><span class="p">(</span><span class="n">index_content</span><span class="p">,</span> <span class="n">completion</span><span class="p">)</span>
@@ -1015,7 +1017,7 @@
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error calling the model: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_model_client_call</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_async_model_client_call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="c1"># async call the model client with caching support</span>
@@ -1047,7 +1049,7 @@
 
 <div class="viewcode-block" id="Generator.create_demo_data_instance">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.create_demo_data_instance">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_demo_data_instance</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_demo_data_instance</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">input_prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>
@@ -1057,7 +1059,7 @@
 <span class="sd">        Used to trace the demos for the demo paramter in the prompt_kwargs.</span>
 <span class="sd">        Part of the few-shot learning.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DynamicDataClassFactory</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DynamicDataClassFactory</span>
 
         <span class="c1"># map the input fields</span>
         <span class="n">demo_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>  <span class="c1"># add score to trace the prediction score</span>
@@ -1084,7 +1086,7 @@
 
 <div class="viewcode-block" id="Generator.set_backward_engine">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.set_backward_engine">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backward_engine</span><span class="p">:</span> <span class="s2">&quot;BackwardEngine&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backward_engine</span><span class="p">:</span> <span class="s2">&quot;BackwardEngine&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">backward_engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">backward_engine</span> <span class="o">=</span> <span class="n">BackwardEngine</span><span class="p">(</span>
                 <span class="n">model_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="p">,</span>
@@ -1097,7 +1099,7 @@
 
 <div class="viewcode-block" id="Generator.set_teacher_generator">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.set_teacher_generator">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">teacher</span><span class="p">:</span> <span class="s2">&quot;Generator&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">teacher</span><span class="p">:</span> <span class="s2">&quot;Generator&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span> <span class="o">=</span> <span class="n">teacher</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Teacher generator set: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="si">}</span><span class="s2">, teacher </span><span class="si">{</span><span class="n">teacher</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Teacher generator set: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
@@ -1119,8 +1121,8 @@
 <div class="viewcode-block" id="Generator.find_demo_parameter">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.find_demo_parameter">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">find_demo_parameter</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_demo_parameter</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">ParameterType</span>
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">param_type</span> <span class="o">==</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">:</span>
@@ -1130,7 +1132,7 @@
 
 <div class="viewcode-block" id="Generator.forward">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span>
@@ -1212,7 +1214,7 @@
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predecessors: </span><span class="si">{</span><span class="n">predecessors</span><span class="si">}</span><span class="s2"> for generator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">data_to_prompt_map_fn</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">data_to_prompt_map_fn</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;GeneratorOutput will show the raw response instead of just the final data.</span>
 <span class="sd">            The backward engine and optimizer should look at all reasoning to decide the gradient.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -1287,7 +1289,7 @@
 
 <div class="viewcode-block" id="Generator.backward">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.backward">[docs]</a>
-    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>  <span class="c1"># the output of the forward pass</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
@@ -1387,7 +1389,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_backward_through_all_predecessors</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_backward_through_all_predecessors</span><span class="p">(</span>
         <span class="n">children_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">],</span>
         <span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -1539,7 +1541,7 @@
                 <span class="n">pred</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_backward_through_one_predecessor</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_backward_through_one_predecessor</span><span class="p">(</span>
         <span class="n">pred</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
         <span class="n">response</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -1704,7 +1706,7 @@
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pred</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_run_callbacks</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_callbacks</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
@@ -1737,7 +1739,7 @@
 
 <div class="viewcode-block" id="Generator.call">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>  <span class="c1"># supports both str and parameter value</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
@@ -1823,7 +1825,7 @@
     <span class="c1"># TODO: training is not supported in async call yet</span>
 <div class="viewcode-block" id="Generator.acall">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.acall">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
@@ -1915,7 +1917,7 @@
             <span class="k">return</span> <span class="n">output</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">GeneratorOutputType</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">GeneratorOutputType</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Training mode&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1923,7 +1925,7 @@
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Inference mode&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="c1"># Create the string for model_kwargs</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;model_kwargs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">, &quot;</span>
 
@@ -1939,7 +1941,7 @@
 
 <div class="viewcode-block" id="Generator.to_dict">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.to_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the generator to a dictionary.&quot;&quot;&quot;</span>
         <span class="c1"># TODO: exclude default functions</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
@@ -1948,7 +1950,7 @@
 <div class="viewcode-block" id="Generator.failure_message_to_backward_engine">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.failure_message_to_backward_engine">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">failure_message_to_backward_engine</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">failure_message_to_backward_engine</span><span class="p">(</span>
         <span class="n">gradient_response</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">response_value</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1961,7 +1963,7 @@
 
 <div class="viewcode-block" id="BackwardEngine">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.BackwardEngine">[docs]</a>
-<span class="k">class</span> <span class="nc">BackwardEngine</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>  <span class="c1"># it is a generator with defaule template</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BackwardEngine</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>  <span class="c1"># it is a generator with defaule template</span>
 
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;A Generator with a default template for the backward pass in auto-differentiation.</span>
 
@@ -1973,7 +1975,7 @@
 <span class="s2">    This is achieved by making forward the same as call.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;template&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FEEDBACK_ENGINE_TEMPLATE</span>
@@ -1984,7 +1986,7 @@
 
 <div class="viewcode-block" id="BackwardEngine.call">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.BackwardEngine.call">[docs]</a>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneratorOutputType</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneratorOutputType</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Catch the rate limit error and raise it.&quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">output</span> <span class="ow">and</span> <span class="n">output</span><span class="o">.</span><span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;429&quot;</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
@@ -1994,7 +1996,7 @@
 
 <div class="viewcode-block" id="BackwardEngine.forward">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.BackwardEngine.forward">[docs]</a>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Forward pass for the backward engine.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -2002,7 +2004,7 @@
 <div class="viewcode-block" id="BackwardEngine.failure_message_to_optimizer">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.BackwardEngine.failure_message_to_optimizer">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">failure_message_to_optimizer</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">failure_message_to_optimizer</span><span class="p">(</span>
         <span class="n">gradient_response</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">gradient_value_data</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2016,7 +2018,7 @@
 
 <div class="viewcode-block" id="create_teacher_generator">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.create_teacher_generator">[docs]</a>
-<span class="k">def</span> <span class="nf">create_teacher_generator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_teacher_generator</span><span class="p">(</span>
     <span class="n">student</span><span class="p">:</span> <span class="n">Generator</span><span class="p">,</span>
     <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
@@ -2062,14 +2064,14 @@
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># test the generator with backward engine</span>
     <span class="c1"># TODO: move this to external local tests before packaging</span>
-    <span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">GroqAPIClient</span><span class="p">,</span>
         <span class="n">OpenAIClient</span><span class="p">,</span>
         <span class="n">GoogleGenAIClient</span><span class="p">,</span>
         <span class="n">AnthropicAPIClient</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
 
     <span class="n">setup_env</span><span class="p">()</span>
     <span class="c1"># log = get_logger(level=&quot;DEBUG&quot;)</span>
@@ -2098,13 +2100,13 @@
             <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">}</span>
-    <span class="kn">from</span> <span class="nn">adalflow.tracing.generator_call_logger</span> <span class="kn">import</span> <span class="n">GeneratorCallLogger</span>
-    <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.tracing.generator_call_logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneratorCallLogger</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 
     <span class="c1"># setup the logger</span>
     <span class="n">call_logger</span> <span class="o">=</span> <span class="n">GeneratorCallLogger</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="s2">&quot;traces&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">on_complete</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">,</span> <span class="n">logger_call</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_complete</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">,</span> <span class="n">logger_call</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
         <span class="n">logger_call</span><span class="p">(</span>
             <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
             <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>

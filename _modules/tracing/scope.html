@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>tracing.scope - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -492,12 +493,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Holds the current active span</span>
-<span class="kn">import</span> <span class="nn">contextvars</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">.traces</span> <span class="kn">import</span> <span class="n">Trace</span>
-<span class="kn">from</span> <span class="nn">.spans</span> <span class="kn">import</span> <span class="n">Span</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextvars</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.traces</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.spans</span><span class="w"> </span><span class="kn">import</span> <span class="n">Span</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -512,7 +513,7 @@
 
 <div class="viewcode-block" id="Scope">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.Scope">[docs]</a>
-<span class="k">class</span> <span class="nc">Scope</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Scope</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manages the current span and trace in the context.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -520,14 +521,14 @@
 <div class="viewcode-block" id="Scope.get_current_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.Scope.get_current_span">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_current_span</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Span[Any]&quot;</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_current_span</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Span[Any]&quot;</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">_current_span</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Scope.set_current_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.Scope.set_current_span">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_current_span</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_current_span</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Span[Any]&quot;</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;contextvars.Token[Optional[Span[Any]]]&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_current_span</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">span</span><span class="p">)</span></div>
@@ -536,7 +537,7 @@
 <div class="viewcode-block" id="Scope.reset_current_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.Scope.reset_current_span">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">reset_current_span</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_current_span</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="s2">&quot;contextvars.Token[Optional[Span[Any]]]&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_current_span</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
@@ -545,14 +546,14 @@
 <div class="viewcode-block" id="Scope.get_current_trace">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.Scope.get_current_trace">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_current_trace</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_current_trace</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">_current_trace</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Scope.set_current_trace">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.Scope.set_current_trace">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">set_current_trace</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_current_trace</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;contextvars.Token[Optional[Trace]]&quot;</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting current trace: </span><span class="si">{</span><span class="n">trace</span><span class="o">.</span><span class="n">trace_id</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">trace</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -562,7 +563,7 @@
 <div class="viewcode-block" id="Scope.reset_current_trace">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.Scope.reset_current_trace">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">reset_current_trace</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="s2">&quot;contextvars.Token[Optional[Trace]]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_current_trace</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="s2">&quot;contextvars.Token[Optional[Trace]]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Resetting current trace&quot;</span><span class="p">)</span>
         <span class="n">_current_trace</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
 </div>
@@ -572,7 +573,7 @@
 <span class="c1"># Utility functions for standalone use</span>
 <div class="viewcode-block" id="get_current_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.get_current_span">[docs]</a>
-<span class="k">def</span> <span class="nf">get_current_span</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Span[Any]&quot;</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_current_span</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Span[Any]&quot;</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the current span from context.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Scope</span><span class="o">.</span><span class="n">get_current_span</span><span class="p">()</span></div>
 
@@ -580,7 +581,7 @@
 
 <div class="viewcode-block" id="set_current_span">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.set_current_span">[docs]</a>
-<span class="k">def</span> <span class="nf">set_current_span</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_current_span</span><span class="p">(</span>
     <span class="n">span</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Span[Any]&quot;</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;contextvars.Token[Optional[Span[Any]]]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the current span in context.&quot;&quot;&quot;</span>
@@ -590,7 +591,7 @@
 
 <div class="viewcode-block" id="get_current_trace">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.get_current_trace">[docs]</a>
-<span class="k">def</span> <span class="nf">get_current_trace</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_current_trace</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the current trace from context.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Scope</span><span class="o">.</span><span class="n">get_current_trace</span><span class="p">()</span></div>
 
@@ -598,7 +599,7 @@
 
 <div class="viewcode-block" id="set_current_trace">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.set_current_trace">[docs]</a>
-<span class="k">def</span> <span class="nf">set_current_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;contextvars.Token[Optional[Trace]]&quot;</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_current_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Trace&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;contextvars.Token[Optional[Trace]]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the current trace in context.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Scope</span><span class="o">.</span><span class="n">set_current_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span></div>
 
@@ -606,7 +607,7 @@
 
 <div class="viewcode-block" id="gen_span_id">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.gen_span_id">[docs]</a>
-<span class="k">def</span> <span class="nf">gen_span_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_span_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a unique span ID.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span></div>
 
@@ -614,7 +615,7 @@
 
 <div class="viewcode-block" id="gen_trace_id">
 <a class="viewcode-back" href="../../apis/tracing/tracing.scope.html#tracing.scope.gen_trace_id">[docs]</a>
-<span class="k">def</span> <span class="nf">gen_trace_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_trace_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a unique trace ID.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span></div>
 

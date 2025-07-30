@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>eval.answer_match_acc - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -483,15 +484,15 @@
           <h1>Source code for eval.answer_match_acc</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;This is the metric for QA generation. It compares the predicted answer with the ground truth answer.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
-<span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">BaseEvaluator</span><span class="p">,</span> <span class="n">EvaluationResult</span>
-<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
-<span class="kn">from</span> <span class="nn">adalflow.eval.utils</span> <span class="kn">import</span> <span class="n">normalize_answer</span><span class="p">,</span> <span class="n">f1_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvaluator</span><span class="p">,</span> <span class="n">EvaluationResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.eval.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_answer</span><span class="p">,</span> <span class="n">f1_score</span>
 
 
 <div class="viewcode-block" id="AnswerMatchAcc">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.answer_match_acc.AnswerMatchAcc">[docs]</a>
-<span class="k">class</span> <span class="nc">AnswerMatchAcc</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnswerMatchAcc</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Metric for answer matching. It compares the predicted answer with the ground truth answer.</span>
 
@@ -518,7 +519,7 @@
 <span class="sd">    1. HotpotQA: https://github.com/hotpotqa/hotpot/blob/master/hotpot_evaluate_v1.py</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
             <span class="s2">&quot;exact_match&quot;</span><span class="p">,</span>
@@ -531,23 +532,23 @@
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;bert_score&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">torchmetrics.text.bert</span> <span class="kn">import</span> <span class="n">BERTScore</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.bert</span><span class="w"> </span><span class="kn">import</span> <span class="n">BERTScore</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">bertscore</span> <span class="o">=</span> <span class="n">BERTScore</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;rouge_score&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">torchmetrics.text.rouge</span> <span class="kn">import</span> <span class="n">ROUGEScore</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.rouge</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROUGEScore</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">rougescore</span> <span class="o">=</span> <span class="n">ROUGEScore</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">torchmetrics.text.bleu</span> <span class="kn">import</span> <span class="n">BLEUScore</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.bleu</span><span class="w"> </span><span class="kn">import</span> <span class="n">BLEUScore</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">bleuscore</span> <span class="o">=</span> <span class="n">BLEUScore</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AnswerMatchAcc.compute_single_item">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.answer_match_acc.AnswerMatchAcc.compute_single_item">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_single_item</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_single_item</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">y_gt</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -585,7 +586,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;f1_score&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_gt</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;bert_score&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">torchmetrics.text.bert</span> <span class="kn">import</span> <span class="n">BERTScore</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.bert</span><span class="w"> </span><span class="kn">import</span> <span class="n">BERTScore</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">bertscore</span> <span class="o">=</span> <span class="n">BERTScore</span><span class="p">()</span>
             <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bertscore</span><span class="p">([</span><span class="n">y</span><span class="p">],</span> <span class="p">[</span><span class="n">y_gt</span><span class="p">])</span>
@@ -595,7 +596,7 @@
             <span class="n">single_score</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">single_score</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;rouge_score&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">torchmetrics.text.rouge</span> <span class="kn">import</span> <span class="n">ROUGEScore</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.rouge</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROUGEScore</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">rougescore</span> <span class="o">=</span> <span class="n">ROUGEScore</span><span class="p">()</span>
             <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rougescore</span><span class="p">([</span><span class="n">y</span><span class="p">],</span> <span class="p">[</span><span class="n">y_gt</span><span class="p">])</span>
@@ -605,7 +606,7 @@
             <span class="n">single_score</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="s2">&quot;rouge1_precision&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">single_score</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">torchmetrics.text.bleu</span> <span class="kn">import</span> <span class="n">BLEUScore</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.text.bleu</span><span class="w"> </span><span class="kn">import</span> <span class="n">BLEUScore</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">bleuscore</span> <span class="o">=</span> <span class="n">BLEUScore</span><span class="p">()</span>
             <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bleuscore</span><span class="p">([</span><span class="n">y</span><span class="p">],</span> <span class="p">[</span><span class="n">y_gt</span><span class="p">])</span>
@@ -621,7 +622,7 @@
 
 <div class="viewcode-block" id="AnswerMatchAcc.compute">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.answer_match_acc.AnswerMatchAcc.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pred_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">gt_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EvaluationResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

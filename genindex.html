@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" />
 
     <link rel="shortcut icon" href="_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 --><title>Index - Build and Optimize LM Workflows</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=f0068426" />
@@ -315,6 +315,7 @@
 <li class="toctree-l3"><a class="reference internal" href="apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apis/core/core.db.html">db</a></li>
@@ -507,6 +508,8 @@
 </li>
           <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.acall">(GroqAPIClient method)</a>
 </li>
+          <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPFunctionTool.acall">(MCPFunctionTool method)</a>
+</li>
           <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.acall">(ModelClient method)</a>
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.acall">(OllamaClient method)</a>
@@ -584,14 +587,18 @@
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.add_score_to_trace">add_score_to_trace() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_score_to_trace">[1]</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/optim/index.html#optim.BootstrapFewShot.add_scores">add_scores() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.add_scores">[1]</a>
 
         <ul>
           <li><a href="apis/optim/index.html#optim.DemoOptimizer.add_scores">(DemoOptimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.DemoOptimizer.add_scores">[1]</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPToolManager.add_server">add_server() (MCPToolManager method)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPToolManager.add_servers_from_json_file">add_servers_from_json_file() (MCPToolManager method)</a>
+</li>
         <li><a href="apis/optim/index.html#optim.Parameter.add_successor_map_fn">add_successor_map_fn() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_successor_map_fn">[1]</a>
 </li>
         <li><a href="apis/tracing/tracing.setup.html#tracing.setup.SynchronousMultiTracingProcessor.add_tracing_processor">add_tracing_processor() (SynchronousMultiTracingProcessor method)</a>
@@ -671,7 +678,11 @@
         <li><a href="apis/utils/utils.file_io.html#utils.file_io.append_to_jsonl">append_to_jsonl() (in module utils.file_io)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.Function.args">args (Function attribute)</a>
+
+        <ul>
+          <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams.args">(MCPServerStdioParams attribute)</a>
 </li>
+        </ul></li>
         <li><a href="apis/core/core.types.html#core.types.DialogTurn.assistant_response">assistant_response (DialogTurn attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.DialogTurn.assistant_response_timestamp">assistant_response_timestamp (DialogTurn attribute)</a>
@@ -762,6 +773,8 @@
           <li><a href="apis/core/core.component.html#core.component.Component.bicall">(Component method)</a>
 </li>
           <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.bicall">(FunctionTool method)</a>
+</li>
+          <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPFunctionTool.bicall">(MCPFunctionTool method)</a>
 </li>
           <li><a href="apis/components/components.agent.html#components.agent.ReActAgent.bicall">(ReActAgent method)</a>, <a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent.bicall">[1]</a>
 </li>
@@ -883,6 +896,8 @@
 </li>
           <li><a href="apis/components/components.retriever.html#components.retriever.LLMRetriever.call">(LLMRetriever method)</a>, <a href="apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.call">[1]</a>
 </li>
+          <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPFunctionTool.call">(MCPFunctionTool method)</a>
+</li>
           <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.call">(ModelClient method)</a>
 </li>
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.call">(OllamaClient method)</a>
@@ -973,6 +988,8 @@
         <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient">CohereAPIClient (class in components.model_client.cohere_client)</a>
 </li>
         <li><a href="apis/eval/eval.g_eval.html#eval.g_eval.GEvalMetric.COHERENCE">COHERENCE (GEvalMetric attribute)</a>, <a href="apis/eval/index.html#eval.GEvalMetric.COHERENCE">[1]</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams.command">command (MCPServerStdioParams attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.CompletionUsage.completion_tokens">completion_tokens (CompletionUsage attribute)</a>
 </li>
@@ -1135,8 +1152,6 @@
           <li><a href="apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     components.model_client.openai_client
 
@@ -1144,11 +1159,20 @@
           <li><a href="apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     components.model_client.sambanova_client
 
         <ul>
           <li><a href="apis/components/components.model_client.sambanova_client.html#module-components.model_client.sambanova_client">module</a>
+</li>
+        </ul></li>
+        <li>
+    components.model_client.together_client
+
+        <ul>
+          <li><a href="apis/components/components.model_client.together_client.html#module-components.model_client.together_client">module</a>
 </li>
         </ul></li>
         <li>
@@ -1419,6 +1443,13 @@
 </li>
         </ul></li>
         <li>
+    core.mcp_tool
+
+        <ul>
+          <li><a href="apis/core/core.mcp_tool.html#module-core.mcp_tool">module</a>
+</li>
+        </ul></li>
+        <li>
     core.model_client
 
         <ul>
@@ -1502,6 +1533,8 @@
         <li><a href="apis/tracing/tracing.create.html#tracing.create.custom_span">custom_span() (in module tracing.create)</a>
 </li>
         <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.CustomSpanData">CustomSpanData (class in tracing.span_data)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams.cwd">cwd (MCPServerStdioParams attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1764,6 +1797,10 @@
 </li>
         <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.encode">encode() (Tokenizer method)</a>
 </li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams.encoding">encoding (MCPServerStdioParams attribute)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams.encoding_error_handler">encoding_error_handler (MCPServerStdioParams attribute)</a>
+</li>
         <li><a href="apis/tracing/tracing.spans.html#tracing.spans.NoOpSpan.ended_at">ended_at (NoOpSpan property)</a>
 
         <ul>
@@ -1773,6 +1810,8 @@
 </li>
         </ul></li>
         <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping">EntityMapping (class in utils.registry)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams.env">env (MCPServerStdioParams attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.error">error (EmbedderOutput attribute)</a>
 
@@ -1882,10 +1921,10 @@
         </ul></li>
         <li><a href="apis/core/core.functional.html#core.functional.evaluate_ast_node">evaluate_ast_node() (in module core.functional)</a>
 </li>
-        <li><a href="apis/optim/index.html#optim.AdalComponent.evaluate_samples">evaluate_samples() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.evaluate_samples">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.evaluate_samples">[2]</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="apis/optim/index.html#optim.AdalComponent.evaluate_samples">evaluate_samples() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.evaluate_samples">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.evaluate_samples">[2]</a>
+</li>
         <li><a href="apis/eval/eval.base.html#eval.base.EvaluationResult">EvaluationResult (class in eval.base)</a>
 
         <ul>
@@ -1919,6 +1958,8 @@
         <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_eval">execute_func_expr_via_eval() (ToolManager method)</a>
 </li>
         <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_sandbox">execute_func_expr_via_sandbox() (ToolManager method)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.execute_mcp_op">execute_mcp_op() (in module core.mcp_tool)</a>
 </li>
         <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.AdalFlowResponseSpanData.execution_metadata">execution_metadata (AdalFlowResponseSpanData attribute)</a>
 </li>
@@ -2308,6 +2349,8 @@
 </li>
         <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.get_all">get_all() (EntityMapping class method)</a>
 </li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPToolManager.get_all_tools">get_all_tools() (MCPToolManager method)</a>
+</li>
         <li><a href="apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.SequenceNumber.get_and_increment">get_and_increment() (SequenceNumber method)</a>
 </li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.get_cache_path">get_cache_path() (Generator method)</a>
@@ -2524,6 +2567,12 @@
 </li>
         <li><a href="apis/utils/utils.cache.html#utils.cache.hash_text_sha1">hash_text_sha1() (in module utils.cache)</a>
 </li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerSseParams.headers">headers (MCPServerSseParams attribute)</a>
+
+        <ul>
+          <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStreamableHttpParams.headers">(MCPServerStreamableHttpParams attribute)</a>
+</li>
+        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt">HistoryPrompt (class in optim.text_grad.tgd_optimizer)</a>
@@ -2629,6 +2678,8 @@
 </li>
           <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">(OpenAIClient method)</a>
 </li>
+          <li><a href="apis/components/components.model_client.together_client.html#components.model_client.together_client.TogetherClient.init_async_client">(TogetherClient method)</a>
+</li>
         </ul></li>
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_llm_client">init_llm_client() (TransformersClient method)</a>
 </li>
@@ -2658,6 +2709,8 @@
           <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_sync_client">(OllamaClient method)</a>
 </li>
           <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">(OpenAIClient method)</a>
+</li>
+          <li><a href="apis/components/components.model_client.together_client.html#components.model_client.together_client.TogetherClient.init_sync_client">(TogetherClient method)</a>
 </li>
           <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_sync_client">(TransformersClient method)</a>
 </li>
@@ -2810,6 +2863,8 @@
           <li><a href="apis/core/core.db.html#core.db.LocalDB.length">(LocalDB property)</a>
 </li>
         </ul></li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPToolManager.list_all_tools">list_all_tools() (MCPToolManager method)</a>
+</li>
         <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.list_models">list_models() (GroqAPIClient method)</a>
 
         <ul>
@@ -2940,7 +2995,19 @@
         </ul></li>
         <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.FunctionSpanData.mcp_data">mcp_data (FunctionSpanData attribute)</a>
 </li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.mcp_session_context">mcp_session_context() (in module core.mcp_tool)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPFunctionTool">MCPFunctionTool (class in core.mcp_tool)</a>
+</li>
         <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.MCPListToolsSpanData">MCPListToolsSpanData (class in tracing.span_data)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerSseParams">MCPServerSseParams (class in core.mcp_tool)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams">MCPServerStdioParams (class in core.mcp_tool)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStreamableHttpParams">MCPServerStreamableHttpParams (class in core.mcp_tool)</a>
+</li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPToolManager">MCPToolManager (class in core.mcp_tool)</a>
 </li>
         <li><a href="apis/optim/optim.types.html#optim.types.TrainerValidateStats.mean_of_score">mean_of_score (TrainerValidateStats attribute)</a>
 </li>
@@ -3082,6 +3149,8 @@
 </li>
           <li><a href="apis/components/components.model_client.sambanova_client.html#module-components.model_client.sambanova_client">components.model_client.sambanova_client</a>
 </li>
+          <li><a href="apis/components/components.model_client.together_client.html#module-components.model_client.together_client">components.model_client.together_client</a>
+</li>
           <li><a href="apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client">components.model_client.transformers_client</a>
 </li>
           <li><a href="apis/components/components.model_client.utils.html#module-components.model_client.utils">components.model_client.utils</a>
@@ -3127,6 +3196,8 @@
           <li><a href="apis/core/core.functional.html#module-core.functional">core.functional</a>
 </li>
           <li><a href="apis/core/core.generator.html#module-core.generator">core.generator</a>
+</li>
+          <li><a href="apis/core/core.mcp_tool.html#module-core.mcp_tool">core.mcp_tool</a>
 </li>
           <li><a href="apis/core/core.model_client.html#module-core.model_client">core.model_client</a>
 </li>
@@ -4215,10 +4286,10 @@
         </ul></li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_JSON">SIGNATURE_JSON (DataClassFormatType attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_YAML">SIGNATURE_YAML (DataClassFormatType attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT">SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT (in module core.default_prompt_template)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Trainer.skip_subset_val">skip_subset_val (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.skip_subset_val">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.skip_subset_val">[2]</a>
@@ -4271,6 +4342,12 @@
 </li>
         <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.SQLALCHEMY">SQLALCHEMY (OptionalPackages attribute)</a>
 </li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerSseParams.sse_read_timeout">sse_read_timeout (MCPServerSseParams attribute)</a>
+
+        <ul>
+          <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStreamableHttpParams.sse_read_timeout">(MCPServerStreamableHttpParams attribute)</a>
+</li>
+        </ul></li>
         <li><a href="apis/tracing/tracing.spans.html#tracing.spans.NoOpSpan.start">start() (NoOpSpan method)</a>
 
         <ul>
@@ -4417,6 +4494,8 @@
           <li><a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.teacher_mode">(Trainer attribute)</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.teacher_mode">[1]</a>
 </li>
         </ul></li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStreamableHttpParams.terminate_on_close">terminate_on_close (MCPServerStreamableHttpParams attribute)</a>
+</li>
         <li><a href="apis/optim/index.html#optim.Trainer.test_dataset">test_dataset (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.test_dataset">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.test_dataset">[2]</a>
 </li>
         <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.test_score">test_score (TrainerResult attribute)</a>
@@ -4481,6 +4560,12 @@
           <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStatesRecord.time_stamp">(GeneratorStatesRecord attribute)</a>
 </li>
           <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.time_stamp">(TrainerResult attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerSseParams.timeout">timeout (MCPServerSseParams attribute)</a>
+
+        <ul>
+          <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStreamableHttpParams.timeout">(MCPServerStreamableHttpParams attribute)</a>
 </li>
         </ul></li>
         <li><a href="apis/core/core.types.html#core.types.RunItem.timestamp">timestamp (RunItem attribute)</a>, <a href="apis/core/core.types.html#id3">[1]</a>
@@ -4548,6 +4633,8 @@
 </li>
         </ul></li>
         <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TOGETHER">TOGETHER (OptionalPackages attribute)</a>
+</li>
+        <li><a href="apis/components/components.model_client.together_client.html#components.model_client.together_client.TogetherClient">TogetherClient (class in components.model_client.together_client)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.TokenLogProb.token">token (TokenLogProb attribute)</a>
 </li>
@@ -4936,6 +5023,12 @@
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.update_value">update_value() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.update_value">[1]</a>
 </li>
+        <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerSseParams.url">url (MCPServerSseParams attribute)</a>
+
+        <ul>
+          <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStreamableHttpParams.url">(MCPServerStreamableHttpParams attribute)</a>
+</li>
+        </ul></li>
         <li><a href="apis/core/core.types.html#core.types.Usage">Usage (class in core.types)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.usage">usage (EmbedderOutput attribute)</a>
@@ -4958,10 +5051,10 @@
           <li><a href="apis/core/core.types.html#core.types.DialogTurn.user_id">(DialogTurn attribute)</a>
 </li>
         </ul></li>
-        <li><a href="apis/core/core.types.html#core.types.DialogTurn.user_query">user_query (DialogTurn attribute)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="apis/core/core.types.html#core.types.DialogTurn.user_query">user_query (DialogTurn attribute)</a>
+</li>
         <li><a href="apis/core/core.types.html#core.types.DialogTurn.user_query_timestamp">user_query_timestamp (DialogTurn attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.UserQuery">UserQuery (class in core.types)</a>

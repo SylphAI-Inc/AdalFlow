@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>components.model_client.anthropic_client - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apis/core/core.db.html">db</a></li>
@@ -483,16 +484,16 @@
           <h1>Source code for components.model_client.anthropic_client</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Anthropic ModelClient integration with OpenAI SDK compatibility.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">backoff</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Iterator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">backoff</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Iterator</span>
 
 
-<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ModelType</span><span class="p">,</span>
     <span class="n">CompletionUsage</span><span class="p">,</span>
     <span class="n">GeneratorOutput</span><span class="p">,</span>
@@ -502,15 +503,15 @@
 <span class="p">)</span>
 
 <span class="c1"># optional import</span>
-<span class="kn">from</span> <span class="nn">adalflow.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.lazy_import</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
 
 <span class="c1"># OpenAI SDK imports for Anthropic compatibility</span>
 <span class="n">openai</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span><span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OPENAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OPENAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span><span class="p">,</span> <span class="n">AsyncOpenAI</span>
-<span class="kn">from</span> <span class="nn">openai.types.chat</span> <span class="kn">import</span> <span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">ChatCompletionChunk</span>
-<span class="kn">from</span> <span class="nn">openai._streaming</span> <span class="kn">import</span> <span class="n">Stream</span><span class="p">,</span> <span class="n">AsyncStream</span>
-<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span><span class="p">,</span> <span class="n">AsyncOpenAI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types.chat</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">ChatCompletionChunk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai._streaming</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream</span><span class="p">,</span> <span class="n">AsyncStream</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">APITimeoutError</span><span class="p">,</span>
     <span class="n">InternalServerError</span><span class="p">,</span>
     <span class="n">RateLimitError</span><span class="p">,</span>
@@ -519,10 +520,10 @@
 <span class="p">)</span>
 
 <span class="c1"># Import our ChatCompletion to Response converter utility</span>
-<span class="kn">from</span> <span class="nn">adalflow.components.model_client.chat_completion_to_response_converter</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.chat_completion_to_response_converter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ChatCompletionToResponseConverter</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">openai.types.responses</span> <span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
 
 <span class="c1"># Legacy Anthropic imports (commented out for reference)</span>
 <span class="c1"># anthropic = safe_import(</span>
@@ -580,7 +581,7 @@
 <span class="c1">#         stream.__exit__()</span>
 
 
-<span class="k">def</span> <span class="nf">get_chat_completion_usage</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResponseUsage</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_chat_completion_usage</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResponseUsage</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert ChatCompletion.usage into our AdalFlowResponseUsage format.&quot;&quot;&quot;</span>
     <span class="n">usage</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span> <span class="s2">&quot;usage&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -796,7 +797,7 @@
 
 <div class="viewcode-block" id="AnthropicAPIClient">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient">[docs]</a>
-<span class="k">class</span> <span class="nc">AnthropicAPIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnthropicAPIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A component wrapper for Anthropic API using OpenAI SDK compatibility.</span>
 
 <span class="sd">    This client leverages Anthropic&#39;s OpenAI SDK compatibility layer to provide</span>
@@ -824,7 +825,7 @@
 <span class="sd">        The non_streaming_chat_completion_parser is provided for legacy compatibility only.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://api.anthropic.com/v1/&quot;</span><span class="p">,</span>
@@ -860,7 +861,7 @@
 
 <div class="viewcode-block" id="AnthropicAPIClient.init_sync_client">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">[docs]</a>
-    <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize synchronous OpenAI client pointing to Anthropic.&quot;&quot;&quot;</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ANTHROPIC_API_KEY&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
@@ -871,7 +872,7 @@
 
 <div class="viewcode-block" id="AnthropicAPIClient.init_async_client">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">[docs]</a>
-    <span class="k">def</span> <span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize asynchronous OpenAI client pointing to Anthropic.&quot;&quot;&quot;</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ANTHROPIC_API_KEY&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
@@ -882,7 +883,7 @@
 
 <div class="viewcode-block" id="AnthropicAPIClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_chat_completion</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="n">ChatCompletion</span><span class="p">,</span>
@@ -996,7 +997,7 @@
 
 <div class="viewcode-block" id="AnthropicAPIClient.track_completion_usage">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.track_completion_usage">[docs]</a>
-    <span class="k">def</span> <span class="nf">track_completion_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompletionUsage</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">track_completion_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompletionUsage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Track completion usage from ChatCompletion object.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">completion</span><span class="o">.</span><span class="n">usage</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">CompletionUsage</span><span class="p">(</span><span class="n">completion_tokens</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prompt_tokens</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">total_tokens</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -1014,7 +1015,7 @@
     <span class="c1"># but Anthropic&#39;s Message API has a system as a top level field</span>
 <div class="viewcode-block" id="AnthropicAPIClient.convert_inputs_to_api_kwargs">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs">[docs]</a>
-    <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -1071,7 +1072,7 @@
         <span class="p">),</span>
         <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Synchronous call to Anthropic via OpenAI SDK compatibility.</span>
 
@@ -1115,7 +1116,7 @@
         <span class="p">),</span>
         <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>together_client - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -189,7 +189,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../core/core.db.html">db</a></li>
@@ -477,14 +478,78 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="together-client">
-<span id="components-model-client-together-client"></span><h1>together_client<a class="headerlink" href="#together-client" title="Link to this heading">¶</a></h1>
+          <section id="module-components.model_client.together_client">
+<span id="together-client"></span><span id="components-model-client-together-client"></span><h1>together_client<a class="headerlink" href="#module-components.model_client.together_client" title="Link to this heading">¶</a></h1>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.together_client.TogetherClient" title="components.model_client.together_client.TogetherClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TogetherClient</span></code></a>([api_key, ...])</p></td>
+<td><p>A minimal Together client that inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="components.model_client.together_client.TogetherClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TogetherClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">non_streaming_chat_completion_parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Completion</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streaming_chat_completion_parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Completion</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'text'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'messages'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_api_key_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'TOGETHER_API_KEY'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/together_client.html#TogetherClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.together_client.TogetherClient" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code></p>
+<p>A minimal Together client that inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code>.</p>
+<p>This client is designed to work with the Together API by overriding the
+<cite>init_sync_client</cite> method from <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code>. It leverages the official
+Together SDK to initialize both synchronous and asynchronous client instances.</p>
+<p>References:
+- To get an API key, sign up at <a class="reference external" href="https://www.together.ai/">https://www.together.ai/</a>
+- To list available models, use the command: <cite>together models list</cite>. For setup instructions, see:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://docs.together.ai/reference/installation">https://docs.together.ai/reference/installation</a></p>
+</div></blockquote>
+<p><strong>Example usage with the AdalFlow Generator:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.together_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">TogetherClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_env</span>
+
+<span class="n">setup_env</span><span class="p">()</span>
+
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">TogetherClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;deepseek-ai/DeepSeek-R1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+        <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">output_processors</span><span class="o">=</span><span class="n">your_output_processor_function</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Hi from AdalFlow! Summarize generative AI briefly.&quot;</span><span class="p">}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.together_client.TogetherClient.init_sync_client">
+<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/together_client.html#TogetherClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.together_client.TogetherClient.init_sync_client" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize and return a synchronous Together client instance.</p>
+<p>Retrieves the API key from the provided value or from the environment variable,
+and returns a Together client initialized with the proper base URL.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.together_client.TogetherClient.init_async_client">
+<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/together_client.html#TogetherClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.together_client.TogetherClient.init_async_client" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize and return an asynchronous Together client instance.</p>
+<p>If the Together SDK supports asynchronous operations, this method returns an
+instance of the async client.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -529,8 +594,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">together_client</a><ul>
+<li><a class="reference internal" href="#components.model_client.together_client.TogetherClient"><code class="docutils literal notranslate"><span class="pre">TogetherClient</span></code></a><ul>
+<li><a class="reference internal" href="#components.model_client.together_client.TogetherClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">TogetherClient.init_sync_client()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.together_client.TogetherClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">TogetherClient.init_async_client()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

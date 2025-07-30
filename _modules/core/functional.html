@@ -6,7 +6,7 @@
 
     <link rel="shortcut icon" href="../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>core.functional - Build and Optimize LM Workflows</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f0068426" />
@@ -316,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.retriever.html">retriever</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.string_parser.html">string_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.mcp_tool.html">mcp_tool</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.types.html">types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apis/core/core.db.html">db</a></li>
@@ -485,7 +486,7 @@
 <span class="sd">Core functions we use to build across the components.</span>
 <span class="sd">Users can leverage these functions to customize their own components.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
@@ -501,20 +502,20 @@
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">TypeVar</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span><span class="p">,</span> <span class="n">Parameter</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">is_dataclass</span><span class="p">,</span> <span class="n">MISSING</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">signature</span><span class="p">,</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">is_dataclass</span><span class="p">,</span> <span class="n">MISSING</span><span class="p">,</span> <span class="n">Field</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
-<span class="kn">from</span> <span class="nn">pydantic.dataclasses</span> <span class="kn">import</span> <span class="n">is_pydantic_dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_pydantic_dataclass</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -529,7 +530,7 @@
 
 <div class="viewcode-block" id="custom_asdict">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.custom_asdict">[docs]</a>
-<span class="k">def</span> <span class="nf">custom_asdict</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">custom_asdict</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dict_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Equivalent to asdict() from dataclasses module but with exclude fields.</span>
@@ -548,7 +549,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_asdict_inner</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_asdict_inner</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">is_dataclass_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
@@ -643,7 +644,7 @@
 <span class="c1">#         return deepcopy(obj)</span>
 <div class="viewcode-block" id="validate_data">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.validate_data">[docs]</a>
-<span class="k">def</span> <span class="nf">validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">fieldtypes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">fieldtypes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="n">required_fields</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">fieldtypes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">_is_required_field</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
     <span class="p">}</span>
@@ -653,7 +654,7 @@
 
 <div class="viewcode-block" id="is_potential_dataclass">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.is_potential_dataclass">[docs]</a>
-<span class="k">def</span> <span class="nf">is_potential_dataclass</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_potential_dataclass</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the type is directly a dataclass or potentially a wrapped dataclass like Optional.&quot;&quot;&quot;</span>
     <span class="n">origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="n">Union</span><span class="p">:</span>
@@ -665,7 +666,7 @@
 
 <div class="viewcode-block" id="extract_dataclass_type">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_dataclass_type">[docs]</a>
-<span class="k">def</span> <span class="nf">extract_dataclass_type</span><span class="p">(</span><span class="n">type_hint</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_dataclass_type</span><span class="p">(</span><span class="n">type_hint</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the actual dataclass type from a type hint that could be Optional or other generic.&quot;&quot;&quot;</span>
     <span class="n">origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">type_hint</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">origin</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">):</span>
@@ -680,7 +681,7 @@
 
 <div class="viewcode-block" id="check_data_class_field_args_zero">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.check_data_class_field_args_zero">[docs]</a>
-<span class="k">def</span> <span class="nf">check_data_class_field_args_zero</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_data_class_field_args_zero</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the field is a dataclass.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span>
@@ -693,7 +694,7 @@
 
 <div class="viewcode-block" id="check_if_class_field_args_zero_exists">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.check_if_class_field_args_zero_exists">[docs]</a>
-<span class="k">def</span> <span class="nf">check_if_class_field_args_zero_exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_if_class_field_args_zero_exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the field is a dataclass.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
@@ -701,7 +702,7 @@
 
 <div class="viewcode-block" id="check_data_class_field_args_one">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.check_data_class_field_args_one">[docs]</a>
-<span class="k">def</span> <span class="nf">check_data_class_field_args_one</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_data_class_field_args_one</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the field is a dataclass.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span>
@@ -714,7 +715,7 @@
 
 <div class="viewcode-block" id="check_if_class_field_args_one_exists">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.check_if_class_field_args_one_exists">[docs]</a>
-<span class="k">def</span> <span class="nf">check_if_class_field_args_one_exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_if_class_field_args_one_exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the field is a dataclass.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
@@ -722,7 +723,7 @@
 
 <div class="viewcode-block" id="dataclass_obj_from_dict">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.dataclass_obj_from_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">dataclass_obj_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dataclass_obj_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a dictionary to a dataclass object.</span>
 
 <span class="sd">    Supports nested dataclasses, lists, and dictionaries.</span>
@@ -839,7 +840,7 @@
 <span class="c1"># Custom representer for OrderedDict</span>
 <div class="viewcode-block" id="represent_ordereddict">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.represent_ordereddict">[docs]</a>
-<span class="k">def</span> <span class="nf">represent_ordereddict</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">represent_ordereddict</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
     <span class="n">value</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">item_key</span><span class="p">,</span> <span class="n">item_value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">node_key</span> <span class="o">=</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_data</span><span class="p">(</span><span class="n">item_key</span><span class="p">)</span>
@@ -851,7 +852,7 @@
 
 <div class="viewcode-block" id="from_dict_to_json">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.from_dict_to_json">[docs]</a>
-<span class="k">def</span> <span class="nf">from_dict_to_json</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">sort_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_dict_to_json</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">sort_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a dictionary to a JSON string.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="n">sort_keys</span><span class="p">)</span>
@@ -862,7 +863,7 @@
 
 <div class="viewcode-block" id="from_dict_to_yaml">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.from_dict_to_yaml">[docs]</a>
-<span class="k">def</span> <span class="nf">from_dict_to_yaml</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">sort_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_dict_to_yaml</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">sort_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a dictionary to a YAML string.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="n">sort_keys</span><span class="p">)</span>
@@ -873,7 +874,7 @@
 
 <div class="viewcode-block" id="from_json_to_dict">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.from_json_to_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">from_json_to_dict</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_json_to_dict</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a JSON string to a dictionary.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
@@ -884,7 +885,7 @@
 
 <div class="viewcode-block" id="from_yaml_to_dict">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.from_yaml_to_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">from_yaml_to_dict</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_yaml_to_dict</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a YAML string to a dictionary.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span>
@@ -895,14 +896,14 @@
 
 <div class="viewcode-block" id="is_dataclass_instance">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.is_dataclass_instance">[docs]</a>
-<span class="k">def</span> <span class="nf">is_dataclass_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_dataclass_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__dataclass_fields__&quot;</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="get_type_schema">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_type_schema">[docs]</a>
-<span class="k">def</span> <span class="nf">get_type_schema</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_type_schema</span><span class="p">(</span>
     <span class="n">type_obj</span><span class="p">,</span>
     <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">type_var_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -999,7 +1000,7 @@
 
 <div class="viewcode-block" id="get_enum_schema">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_enum_schema">[docs]</a>
-<span class="k">def</span> <span class="nf">get_enum_schema</span><span class="p">(</span><span class="n">enum_cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Enum</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_enum_schema</span><span class="p">(</span><span class="n">enum_cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Enum</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
         <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">enum_cls</span><span class="p">],</span>
@@ -1010,7 +1011,7 @@
 
 <div class="viewcode-block" id="get_dataclass_schema">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_dataclass_schema">[docs]</a>
-<span class="k">def</span> <span class="nf">get_dataclass_schema</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_dataclass_schema</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
     <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">type_var_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1068,7 +1069,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_is_required_field</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Field</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_required_field</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Field</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Determine if the field of dataclass is required or optional.</span>
 <span class="sd">    Customized for required_field function.&quot;&quot;&quot;</span>
     <span class="c1"># Determine if the field is required or optional</span>
@@ -1086,7 +1087,7 @@
 
 <div class="viewcode-block" id="convert_schema_to_signature">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.convert_schema_to_signature">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_schema_to_signature</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_schema_to_signature</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the value from get_data_class_schema to a string description.&quot;&quot;&quot;</span>
 
     <span class="n">signature</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1114,7 +1115,7 @@
 <span class="c1">########################################################################################</span>
 <div class="viewcode-block" id="get_fun_schema">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_fun_schema">[docs]</a>
-<span class="k">def</span> <span class="nf">get_fun_schema</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fun_schema</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the schema of a function.</span>
 <span class="sd">    Support dataclass, Union and normal data types such as int, str, float, etc, list, dict, set.</span>
 
@@ -1162,7 +1163,7 @@
 <span class="c1"># For parse function call for FunctionTool component</span>
 <div class="viewcode-block" id="evaluate_ast_node">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.evaluate_ast_node">[docs]</a>
-<span class="k">def</span> <span class="nf">evaluate_ast_node</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">AST</span><span class="p">,</span> <span class="n">context_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_ast_node</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">AST</span><span class="p">,</span> <span class="n">context_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recursively evaluates an AST node and returns the corresponding Python object.</span>
 
@@ -1253,7 +1254,7 @@
 
 <div class="viewcode-block" id="parse_function_call_expr">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.parse_function_call_expr">[docs]</a>
-<span class="k">def</span> <span class="nf">parse_function_call_expr</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_function_call_expr</span><span class="p">(</span>
     <span class="n">function_expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1301,7 +1302,7 @@
 
 <div class="viewcode-block" id="generate_function_call_expression_from_callable">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.generate_function_call_expression_from_callable">[docs]</a>
-<span class="k">def</span> <span class="nf">generate_function_call_expression_from_callable</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_function_call_expression_from_callable</span><span class="p">(</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1382,7 +1383,7 @@
 
 <div class="viewcode-block" id="sandbox_exec">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.sandbox_exec">[docs]</a>
-<span class="k">def</span> <span class="nf">sandbox_exec</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sandbox_exec</span><span class="p">(</span>
     <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute code in a sandboxed environment with a timeout.</span>
@@ -1404,7 +1405,7 @@
         <span class="c1"># Result dictionary to store execution results</span>
 
         <span class="c1"># Define a target function for the thread</span>
-        <span class="k">def</span> <span class="nf">target</span><span class="p">():</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">target</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># Execute the code</span>
                 <span class="n">exec</span><span class="p">(</span><span class="n">compiled_code</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
@@ -1433,7 +1434,7 @@
 <span class="c1">########################################################################################</span>
 <div class="viewcode-block" id="compose_model_kwargs">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.compose_model_kwargs">[docs]</a>
-<span class="k">def</span> <span class="nf">compose_model_kwargs</span><span class="p">(</span><span class="n">default_model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compose_model_kwargs</span><span class="p">(</span><span class="n">default_model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add new arguments or overwrite the default arguments with the new arguments.</span>
 
 <span class="sd">    Example:</span>
@@ -1458,7 +1459,7 @@
 
 <div class="viewcode-block" id="is_normalized">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.is_normalized">[docs]</a>
-<span class="k">def</span> <span class="nf">is_normalized</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">VECTOR_TYPE</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_normalized</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">VECTOR_TYPE</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
     <span class="c1"># Compute the norm of the vector (assuming v is 1D)</span>
@@ -1470,7 +1471,7 @@
 
 <div class="viewcode-block" id="normalize_np_array">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.normalize_np_array">[docs]</a>
-<span class="k">def</span> <span class="nf">normalize_np_array</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_np_array</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># Compute the norm of the vector (assuming v is 1D)</span>
     <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
     <span class="c1"># Normalize the vector</span>
@@ -1482,7 +1483,7 @@
 
 <div class="viewcode-block" id="normalize_vector">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.normalize_vector">[docs]</a>
-<span class="k">def</span> <span class="nf">normalize_vector</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">VECTOR_TYPE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_vector</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">VECTOR_TYPE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
     <span class="c1"># Compute the norm of the vector (assuming v is 1D)</span>
@@ -1496,7 +1497,7 @@
 
 <div class="viewcode-block" id="get_top_k_indices_scores">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_top_k_indices_scores">[docs]</a>
-<span class="k">def</span> <span class="nf">get_top_k_indices_scores</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_top_k_indices_scores</span><span class="p">(</span>
     <span class="n">scores</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1511,7 +1512,7 @@
 
 <div class="viewcode-block" id="generate_readable_key_for_function">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.generate_readable_key_for_function">[docs]</a>
-<span class="k">def</span> <span class="nf">generate_readable_key_for_function</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_readable_key_for_function</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="n">module_name</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__module__</span>
     <span class="n">function_name</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span>
@@ -1524,7 +1525,7 @@
 <span class="c1">########################################################################################</span>
 <div class="viewcode-block" id="extract_first_int">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_first_int">[docs]</a>
-<span class="k">def</span> <span class="nf">extract_first_int</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_first_int</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the first integer from the provided text.</span>
 
 <span class="sd">    Args:</span>
@@ -1545,7 +1546,7 @@
 
 <div class="viewcode-block" id="extract_first_float">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_first_float">[docs]</a>
-<span class="k">def</span> <span class="nf">extract_first_float</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_first_float</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the first float from the provided text.</span>
 
 <span class="sd">    Args:</span>
@@ -1567,7 +1568,7 @@
 
 <div class="viewcode-block" id="extract_first_boolean">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_first_boolean">[docs]</a>
-<span class="k">def</span> <span class="nf">extract_first_boolean</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_first_boolean</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the first boolean from the provided text.</span>
 
 <span class="sd">    Args:</span>
@@ -1588,7 +1589,7 @@
 
 <div class="viewcode-block" id="extract_function_expression">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_function_expression">[docs]</a>
-<span class="k">def</span> <span class="nf">extract_function_expression</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_function_expression</span><span class="p">(</span>
     <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_parenthesis</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract function expression from text.</span>
@@ -1639,7 +1640,7 @@
 
 <div class="viewcode-block" id="extract_json_str">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_json_str">[docs]</a>
-<span class="k">def</span> <span class="nf">extract_json_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_brace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_json_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_brace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract JSON string from text.</span>
 
 <span class="sd">    It will extract the first JSON object or array found in the text by searching for { or [.</span>
@@ -1697,7 +1698,7 @@
 
 <div class="viewcode-block" id="extract_list_str">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_list_str">[docs]</a>
-<span class="k">def</span> <span class="nf">extract_list_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_bracket</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_list_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_bracket</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the first complete list string from the provided text.</span>
 
 <span class="sd">    If the list string is incomplete</span>
@@ -1751,7 +1752,7 @@
 
 <div class="viewcode-block" id="extract_yaml_str">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_yaml_str">[docs]</a>
-<span class="k">def</span> <span class="nf">extract_yaml_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_yaml_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract YAML string from text.</span>
 
 <span class="sd">    .. note::</span>
@@ -1786,7 +1787,7 @@
 
 <div class="viewcode-block" id="fix_json_missing_commas">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.fix_json_missing_commas">[docs]</a>
-<span class="k">def</span> <span class="nf">fix_json_missing_commas</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fix_json_missing_commas</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="c1"># Example: adding missing commas, only after double quotes</span>
     <span class="c1"># Regular expression to find missing commas</span>
     <span class="n">regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;(?&lt;=[}\]&quot;</span><span class="se">\&#39;</span><span class="s1">\d])(\s+)(?=[\{&quot;\[])&#39;</span>
@@ -1800,7 +1801,7 @@
 
 <div class="viewcode-block" id="fix_json_escaped_single_quotes">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.fix_json_escaped_single_quotes">[docs]</a>
-<span class="k">def</span> <span class="nf">fix_json_escaped_single_quotes</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fix_json_escaped_single_quotes</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="c1"># First, replace improperly escaped single quotes inside strings</span>
     <span class="c1"># json_str = re.sub(r&quot;(?&lt;!\\)\&#39;&quot;, &#39;&quot;&#39;, json_str)</span>
     <span class="c1"># Fix escaped single quotes</span>
@@ -1811,14 +1812,14 @@
 
 <div class="viewcode-block" id="parse_yaml_str_to_obj">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">[docs]</a>
-<span class="k">def</span> <span class="nf">parse_yaml_str_to_obj</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_yaml_str_to_obj</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse a YAML string to a Python object.</span>
 
 <span class="sd">    yaml_str: has to be a valid YAML string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">yaml_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">yaml</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 
         <span class="n">yaml_obj</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">yaml_obj</span>
@@ -1827,13 +1828,13 @@
             <span class="sa">f</span><span class="s2">&quot;Got invalid YAML object. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Got YAML string: </span><span class="si">{</span><span class="n">yaml_str</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please pip install PyYAML.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please pip install PyYAML.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
 
 
 
 <div class="viewcode-block" id="parse_json_str_to_obj">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.parse_json_str_to_obj">[docs]</a>
-<span class="k">def</span> <span class="nf">parse_json_str_to_obj</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_json_str_to_obj</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse a varietry of json format string to Python object.</span>
 
 <span class="sd">    json_str: has to be a valid JSON string. Either {} or [].</span>
@@ -1879,7 +1880,7 @@
 <span class="c1">########################################################################################</span>
 <div class="viewcode-block" id="random_sample">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.random_sample">[docs]</a>
-<span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">random_sample</span><span class="p">(</span>
     <span class="n">dataset</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">T_co</span><span class="p">],</span>
     <span class="n">num_shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">replace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1914,14 +1915,14 @@
 
 
 
-<span class="k">def</span> <span class="nf">_is_pydantic_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_pydantic_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="c1"># check whether cls is a pydantic dataclass</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_is_adalflow_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_adalflow_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="c1"># avoid circular imports</span>
-    <span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span>
 
     <span class="c1"># check whether cls is a adalflow dataclass</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">)</span>
