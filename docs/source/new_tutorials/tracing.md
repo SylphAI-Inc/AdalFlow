@@ -1,3 +1,10 @@
+<div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/agent/tutorial_agent_advanced_features.py" target="_blank" style="display: flex; align-items: center;">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+        <span style="vertical-align: middle;"> Open Source Code (Agent Advanced)</span>
+    </a>
+</div>
+
 # Tracing
 
 ![mlflow_integration](../_static/images/adalflow_tracing_mlflow.png)

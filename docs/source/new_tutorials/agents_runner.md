@@ -1,3 +1,10 @@
+<div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
+    <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/agent/tutorial_agent_basic.py" target="_blank" style="display: flex; align-items: center;">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+        <span style="vertical-align: middle;"> Open Source Code (Agent Basic)</span>
+    </a>
+</div>
+
 # Agents and Runner
 
 Agents are the core building block for creating autonomous AI systems in AdalFlow. An agent combines reasoning capabilities with tool usage, allowing it to break down complex tasks into steps, use available tools, and iteratively work toward solutions. This approach is motivated by the ReAcT (Reasoning and Acting) framework [[Yao et al., 2022]](https://arxiv.org/abs/2210.03629), which combines reasoning traces and task-specific actions in language models.

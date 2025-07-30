@@ -28,6 +28,7 @@ nbsphinx = "^0.9.4"
 nbconvert = "^7.16.4"
 pandoc = "^2.3"
 readthedocs-sphinx-search = "^0.3.2"
+together = "^1.5.21"
 
 # Additional dependencies for document compilation
 datasets = "^2.20.0"

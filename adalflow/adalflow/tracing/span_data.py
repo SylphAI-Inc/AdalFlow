@@ -731,8 +731,8 @@ class AdalFlowToolSpanData(CustomSpanData):
     ):
         # Map to OpenAI function format
         function_display_name = (
-            f"{tool_name}.{function_name}"
-            if tool_name and function_name
+            f"{tool_name}"
+            if tool_name 
             else (tool_name or function_name or "unknown")
         )
 

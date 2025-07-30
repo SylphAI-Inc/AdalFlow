@@ -16,6 +16,9 @@ from adalflow.core.generator import Generator
 from adalflow.components.model_client.openai_client import OpenAIClient
 import logging
 
+from adalflow.core.base_data_class import DataClass
+from dataclasses import dataclass
+
 logging.basicConfig(level=logging.INFO)
 
 # Load environment variables
@@ -100,7 +103,7 @@ def create_generator() -> Generator:
     model_client = setup_openai_client()
     generator = Generator(
         model_client=model_client,
-        model_kwargs={"model": "gpt-4o-mini", "temperature": 0.7},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
     )
     return generator
 
@@ -110,7 +113,7 @@ def create_structured_generator() -> Generator:
     model_client = setup_openai_client()
     generator = Generator(
         model_client=model_client,
-        model_kwargs={"model": "gpt-4o-mini", "temperature": 0.7},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
     )
     return generator
 
@@ -123,13 +126,65 @@ def create_agent_for_runner() -> Agent:
     agent = Agent(
         name="streaming_test_agent",
         model_client=model_client,
-        model_kwargs={"model": "gpt-4o-mini", "temperature": 0.7},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
         max_steps=3,
         answer_data_type=str,
     )
 
     return agent
 
+@dataclass
+class ToolCall(DataClass):
+    tool_name: str
+    input_args: Any
+    output: Any
+
+
+@dataclass
+class StepDetail(DataClass):
+    step_number: int
+    action_taken: str
+    observation: str
+    tool_call: Optional[ToolCall]
+
+
+@dataclass
+class Summary(DataClass):
+    step_count: int
+    final_output: Any
+    steps: List[StepDetail]
+    tool_calls: List[ToolCall]
+
+
+@dataclass
+class Metrics(DataClass):
+    time_taken_seconds: float
+    tokens_used: int
+
+
+@dataclass
+class PersonSummary(DataClass):
+    summary: Summary
+    metrics: Metrics
+
+
+@dataclass
+class Person(DataClass):
+    name: str
+    age: int
+    details: PersonSummary
+
+
+@dataclass
+class Department(DataClass):
+    department_name: str
+    members: List[Person]
+
+
+@dataclass
+class Organization(DataClass):
+    org_name: str
+    departments: List[Department]
 
 def create_structured_agent_for_runner() -> Agent:
     """Create an Agent instance for Runner streaming tests with structured output."""
@@ -139,9 +194,9 @@ def create_structured_agent_for_runner() -> Agent:
     agent = Agent(
         name="structured_streaming_agent",
         model_client=model_client,
-        model_kwargs={"model": "gpt-4o-mini", "temperature": 0.7},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
         max_steps=4,
-        answer_data_type=str,  # Keep as str for JSON parsing
+        answer_data_type=Organization,  # Keep as str for JSON parsing
     )
 
     return agent
@@ -297,7 +352,6 @@ async def test_runner_streaming_nested():
             "Include multiple phases (planning, development, testing, deployment), "
             "with detailed steps for each phase, time estimates, dependencies, "
             "budget breakdown, risk assessment, and success metrics. "
-            "Structure the response as a detailed JSON with nested objects and arrays."
         )
         print(f"📝 Query: {query}")
         print("\n🔄 Streaming runner execution with nested structures:")
@@ -317,6 +371,8 @@ async def test_runner_streaming_nested():
             if isinstance(event, RawResponsesStreamEvent):
                 print(f"🔄 Raw Response Event #{event_count}")
                 print(event.data)
+                # Handle OpenAI response events
+                
             elif isinstance(event, RunItemStreamEvent):
                 print(f"⚡ Run Item Event: {event.name}")
                 if hasattr(event, "item") and event.item:
@@ -364,73 +420,20 @@ async def test_runner_streaming_nested():
         )
 
         # Try to analyze the full content
-        full_content = "".join(content_chunks)
+        # full_content = "".join(content_chunks)
+        full_content = streaming_result.answer
         if full_content:
             print("\n📄 Full Content Analysis:")
-            print(f"   • Total characters: {len(full_content)}")
-
-            # Try to parse as JSON if it looks structured
-            if full_content.strip().startswith("{"):
-                try:
-                    import json
-
-                    parsed = json.loads(full_content.strip())
-                    print("🏗️ Nested Structure Analysis:")
-
-                    if isinstance(parsed, dict):
-                        print(f"   📋 Top-level keys: {list(parsed.keys())}")
-
-                        # Look for nested structures
-                        for key, value in parsed.items():
-                            if isinstance(value, list):
-                                print(f"   📝 {key}: List with {len(value)} items")
-                                if value and isinstance(value[0], dict):
-                                    print(
-                                        f"      └─ Each item has keys: {list(value[0].keys())}"
-                                    )
-                            elif isinstance(value, dict):
-                                print(
-                                    f"   📁 {key}: Nested object with keys: {list(value.keys())}"
-                                )
-                            else:
-                                print(f"   📄 {key}: {type(value).__name__} value")
-
-                        # Try to validate against our Pydantic model
-                        try:
-                            project_plan = NestedProjectPlan.model_validate(parsed)
-                            print("\n✅ Successfully parsed as NestedProjectPlan:")
-                            print(f"   📋 Project: {project_plan.project_name}")
-                            print(f"   🏗️ Phases: {len(project_plan.phases)}")
-                            print(
-                                f"   ⏱️ Duration: {project_plan.total_duration_weeks} weeks"
-                            )
-                            print(
-                                f"   💰 Budget categories: {list(project_plan.budget_estimate.keys())}"
-                            )
-                            print(f"   ⚠️ Risks identified: {len(project_plan.risks)}")
-
-                        except Exception as validation_error:
-                            print(
-                                f"⚠️ Could not validate as NestedProjectPlan: {validation_error}"
-                            )
-                            print(
-                                "💡 This might be a different but still valid nested structure"
-                            )
-
-                except json.JSONDecodeError as e:
-                    print(f"⚠️ Could not parse as JSON: {e}")
-                    print(
-                        "💡 The output might be valid but not in expected JSON format"
-                    )
+            print("type of object", type(full_content))
+            # print(f"   • Total characters: {len(full_content)}")
+            print("full_content", full_content)
 
         return streaming_result
 
     except Exception as e:
         print(f"❌ Error in nested runner streaming: {e}")
-        import traceback
-
-        traceback.print_exc()
         return None
+
 
 
 async def main():
@@ -448,7 +451,7 @@ async def main():
     print("✅ API key found, proceeding with tests...\n")
 
     # Run streaming tests
-    generator_result = await test_generator_streaming()
+    generator_result = await test_generator_streaming() 
     runner_result = await test_runner_streaming()
     nested_runner_result = await test_runner_streaming_nested()
 

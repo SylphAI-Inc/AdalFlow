@@ -548,11 +548,11 @@ class TestRunnerTracing(unittest.TestCase):
             ]
             self.assertEqual(len(runner_spans), 1)
             runner_span = runner_spans[0]
-            self.assertEqual(runner_span.span_data.workflow_status, "stream_completed")
-            # In this case, the runner continues after error and gets final result
-            self.assertEqual(runner_span.span_data.final_answer, "default_finish")
+            self.assertEqual(runner_span.span_data.workflow_status, "stream_incomplete")
+            # Streaming stops after error with incomplete result
+            self.assertEqual(runner_span.span_data.final_answer, "No output generated after 1 steps (max_steps: 10)")
 
-            # Should have multiple response spans (error + final result)
+            # Should have multiple response spans (error + incomplete result)
             response_spans = [
                 span
                 for span in self.processor.span_starts
@@ -560,7 +560,7 @@ class TestRunnerTracing(unittest.TestCase):
             ]
             self.assertEqual(
                 len(response_spans), 2
-            )  # One for error, one for final result
+            )  # One for error, one for incomplete result
 
             # Check error response span (first one)
             error_response_span = response_spans[0]
@@ -569,11 +569,11 @@ class TestRunnerTracing(unittest.TestCase):
 
             # Check final response span (last one)
             final_response_span = response_spans[1]
-            self.assertEqual(final_response_span.span_data.result_type, "str")
+            self.assertEqual(final_response_span.span_data.result_type, "incomplete")
             self.assertTrue(
                 final_response_span.span_data.execution_metadata.get("streaming")
             )
-            self.assertEqual(final_response_span.span_data.answer, "default_finish")
+            self.assertEqual(final_response_span.span_data.answer, "No output generated after 1 steps (max_steps: 10)")
 
         asyncio.run(async_test())
 
@@ -670,12 +670,12 @@ class TestRunnerTracing(unittest.TestCase):
         with trace("test_workflow"):
             result = runner.call(prompt_kwargs={"query": "test"})
 
-        # Should return final successful result (runner continues after error)
+        # Should return incomplete result after error (runner stops after error)
         self.assertIsInstance(result, RunnerResult)
         self.assertIsNone(result.error)  # No error in final result
-        self.assertEqual(result.answer, "default_finish")  # Final successful answer
+        self.assertEqual(result.answer, "No output generated after 1 steps (max_steps: 10)")  # Incomplete result
 
-        # Should have created spans for both error and success
+        # Should have created spans for error and incomplete result
         runner_spans = [
             span
             for span in self.processor.span_starts
@@ -686,11 +686,11 @@ class TestRunnerTracing(unittest.TestCase):
         self.assertEqual(
             runner_span.span_data.workflow_status, "completed"
         )  # Final status is completed
-        self.assertEqual(
-            runner_span.span_data.final_answer, "default_finish"
-        )  # Final answer
+        self.assertIsNone(
+            runner_span.span_data.final_answer
+        )  # No final answer when no output generated
 
-        # Should have multiple response spans (error + success)
+        # Should have multiple response spans (error + incomplete result)
         response_spans = [
             span
             for span in self.processor.span_starts
@@ -705,8 +705,8 @@ class TestRunnerTracing(unittest.TestCase):
 
         # Check final response span (last one)
         final_response_span = response_spans[1]
-        self.assertEqual(final_response_span.span_data.result_type, "str")
-        self.assertEqual(final_response_span.span_data.answer, "default_finish")
+        self.assertEqual(final_response_span.span_data.result_type, "no_output")
+        self.assertEqual(final_response_span.span_data.answer, "No output generated after 1 steps (max_steps: 10)")
 
     def test_runner_disabled_tracing(self):
         """Test Runner with disabled tracing."""
