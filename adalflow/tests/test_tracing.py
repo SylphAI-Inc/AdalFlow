@@ -468,7 +468,7 @@ class TestSpanData(unittest.TestCase):
         # Test export
         exported = span_data.export()
         self.assertEqual(exported["type"], "custom")
-        self.assertEqual(exported["name"], "test_tool.test_function")
+        self.assertEqual(exported["name"], "test_tool")
         self.assertIn("tool_name", exported["data"])
         self.assertEqual(exported["data"]["tool_name"], "test_tool")
         self.assertEqual(exported["data"]["input_params"], "{'arg1': 'value1'}")

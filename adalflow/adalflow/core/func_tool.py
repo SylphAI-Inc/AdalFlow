@@ -457,11 +457,13 @@ class FunctionTool(Component):
         Note: For generators, users need to iterate over the generator themselves.
         """
         output, error = None, None
+        print("output arguments",args, kwargs)
 
         try:
             if self.function_type == FunctionType.SYNC:
                 # Sync function - call directly
                 output = self.fn(*args, **kwargs)
+                print("output in synchronous function call",output)
 
             elif self.function_type == FunctionType.ASYNC:
                 # Async function - await the coroutine
