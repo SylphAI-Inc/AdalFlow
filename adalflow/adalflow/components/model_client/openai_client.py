@@ -653,7 +653,6 @@ class OpenAIClient(ModelClient):
         }
         """
         log.info(f"api_kwargs: {api_kwargs}")
-        assert(3 == 5)
         self._api_kwargs = api_kwargs
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)
