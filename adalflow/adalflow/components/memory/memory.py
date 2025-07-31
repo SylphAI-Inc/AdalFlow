@@ -210,3 +210,7 @@ class ConversationMemory(Component):
         self._pending_user_query = None
 
         return turn_id
+    
+    def reset_pending_query(self):
+        """Reset any pending query state. Useful for cleanup after cancellations or before starting new queries."""
+        self._pending_user_query = None

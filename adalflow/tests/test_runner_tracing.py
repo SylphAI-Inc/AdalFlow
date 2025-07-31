@@ -388,6 +388,8 @@ class TestRunnerTracing(unittest.TestCase):
 
             # Should have valid result in stream_result properties
             self.assertEqual(stream_result.answer, "stream_done")
+
+            print("stream_result:", stream_result)
             self.assertIsNotNone(stream_result.step_history)
 
             # Should have created multiple spans
@@ -401,7 +403,7 @@ class TestRunnerTracing(unittest.TestCase):
             ]
             self.assertEqual(len(runner_spans), 1)
             runner_span = runner_spans[0]
-            self.assertEqual(runner_span.span_data.workflow_status, "stream_completed")
+            self.assertEqual(runner_span.span_data.workflow_status, "stream_completed", msg=f"span data: {stream_result}")
 
             # Check for generator span with stream planner
             generator_spans = [
