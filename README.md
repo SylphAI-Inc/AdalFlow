@@ -11,7 +11,7 @@
 
 <h2>
     <p align="center">
-     ⚡ Say Goodbye to Manual Prompting and Vendor Lock-In ⚡
+     ⚡ AdalFlow is a PyTorch-like library to build and auto-optimize any LM workflows, from Chatbots, RAG,  to Agents. ⚡
     </p>
 </h2>
 
@@ -54,7 +54,7 @@
         <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/AdalFlow">
     </a>
       <a href="https://discord.gg/ezzszrRZvT">
-        <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
+        <img alt="discord-invite" src="https://dcbadge.limes.pink/api/server/ezzszrRZvT?style=flat">
     </a>
 </p>
 
@@ -64,11 +64,11 @@ For AI researchers, product teams, and software engineers who want to learn the 
 </p>
 </h4> -->
 
-<h4>
+<!-- <h4>
 <p align="center">
 AdalFlow is a PyTorch-like library to build and auto-optimize any LM workflows, from Chatbots, RAG,  to Agents.
 </p>
-</h4>
+</h4> -->
 
 
 
@@ -83,16 +83,22 @@ AdalFlow is a PyTorch-like library to build and auto-optimize any LM workflows, 
 
 # Why AdalFlow
 
-1. **Say goodbye to manual prompting**: AdalFlow provides a unified auto-differentiative framework for both zero-shot optimization and few-shot prompt optimization. Our research, ``LLM-AutoDiff`` and ``Learn-to-Reason Few-shot In Context Learning``, achieve the highest accuracy among all auto-prompt optimization libraries.
-2. **Switch your LLM app to any model via a config**:  AdalFlow provides `Model-agnostic` building blocks for LLM task pipelines, ranging from RAG, Agents to classical NLP tasks.
+1. **100% Open-source Agents SDK**: Lightweight and requires no additional API to setup ``Human-in-the-Loop`` and ``Tracing`` Functionalities.
+2. **Say goodbye to manual prompting**: AdalFlow provides a unified auto-differentiative framework for both zero-shot optimization and few-shot prompt optimization. Our research, ``LLM-AutoDiff`` and ``Learn-to-Reason Few-shot In Context Learning``, achieve the highest accuracy among all auto-prompt optimization libraries.
+3. **Switch your LLM app to any model via a config**:  AdalFlow provides `Model-agnostic` building blocks for LLM task pipelines, ranging from RAG, Agents to classical NLP tasks.
 
-<p align="center" style="background-color: #f0f0f0;">
+<!-- <p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/classification_training_map.png" style="width: 80%;" alt="AdalFlow Auto-optimization">
-</p>
+</p> -->
 
 <p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Optimized Prompt" style="width: 80%;">
 </p>
+
+<p align="center" style="background-color: #f0f0f0;">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/adalflow_tracing_mlflow.png" alt="AdalFlow MLflow Integration" style="width: 80%;">
+</p>
+
 <!-- Among all libraries, AdalFlow achieved the highest accuracy with manual prompting (starting at 82%) and the highest accuracy after optimization. -->
 <!-- <p align="center" style="background-color: #f0f0f0;">
   <img src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/classification_opt_prompt.png" alt="AdalFlow Optimized Prompt" style="width: 80%;">
@@ -110,9 +116,64 @@ Install AdalFlow with pip:
 pip install adalflow
 ```
 
+## Hello World Agent Example
+
+```python
+from adalflow import Agent, Runner
+from adalflow.components.model_client.openai_client import OpenAIClient
+
+# Create a simple agent
+agent = Agent(
+    name="Assistant",
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-4o", "temperature": 0.3}
+)
+
+runner = Runner(agent=agent)
+
+result = runner.call(prompt_kwargs={"input_str": "Write a haiku about AI and coding"})
+print(result.answer)
+
+# Output:
+# Code flows like water,
+# AI minds think in patterns,
+# Logic blooms in bytes.
+```
+
+_Set your `OPENAI_API_KEY` environment variable to run this example._
+
+### Agent with Tools
+
+```python
+def calculator(expression: str) -> str:
+    """Evaluate a mathematical expression."""
+    try:
+        result = eval(expression)
+        return f"Result: {result}"
+    except Exception as e:
+        return f"Error: {e}"
+
+# Create agent with tools
+agent = Agent(
+    name="CalculatorAgent",
+    tools=[calculator],
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-4o", "temperature": 0.3}
+)
+
+runner = Runner(agent=agent)
+
+result = runner.call(prompt_kwargs={"input_str": "Calculate 15 * 7 + 23"})
+print(result.answer)
+
+# Output: The result of 15 * 7 + 23 is 128.
+```
+
 <!-- Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
 [Package changelog](https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/CHANGELOG.md). -->
-View [Quickstart](https://colab.research.google.com/drive/1_YnD4HshzPRARvishoU4IA-qQuX9jHrT?usp=sharing): Learn AdalFlow end-to-end experience in 15 mins.
+View [Quickstart](https://colab.research.google.com/drive/1_YnD4HshzPRARvishoU4IA-qQuX9jHrT?usp=sharing): Learn How `AdalFlow` optimizes LM workflows end-to-end in 15 mins.
+
+Go to [Documentation](https://adalflow.sylph.ai) for tracing, human-in-the-loop, and more.
 
 
 <!-- * Try the [Building Quickstart](https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing) in Colab to see how AdalFlow can build the task pipeline, including Chatbot, RAG, agent, and structured output.
@@ -125,13 +186,17 @@ View [Quickstart](https://colab.research.google.com/drive/1_YnD4HshzPRARvishoU4I
 - LLM Applications as auto-differentiation graphs
 - Token-efficient and better performance than DsPy
 
+
 # Collaborations
 
-We work closely with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/), under the leadership of [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang), alongside [Dr. Junyuan Hong](https://jyhong.gitlab.io/), who provides valuable support in driving project initiatives.
+We work closely with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/), under the leadership of [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang), who provides valuable support in driving project initiatives.
 
-
+ <!-- alongside [Dr. Junyuan Hong](https://jyhong.gitlab.io/),  -->
 For collaboration, contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
 
+# Hiring
+
+We are looking for a Dev Rel to help us build the community and support our users. If you are interested, please contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
 
 
 

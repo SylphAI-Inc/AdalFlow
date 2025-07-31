@@ -711,6 +711,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
+                    break 
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -976,6 +977,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
+                    break 
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -1309,15 +1311,15 @@ class Runner(Component):
                             )
                             self.step_history.append(step_output)
 
-                            # Update step span with results
-                            step_span_instance.span_data.update_attributes(
-                                {
-                                    "tool_name": function.name,
-                                    "tool_output": function_result,
-                                    "is_final": self._check_last_step(function),
-                                    "observation": function_output_observation,
-                                }
-                            )
+                        # Update step span with results
+                        step_span_instance.span_data.update_attributes(
+                            {
+                                "tool_name": function.name,
+                                "tool_output": function_result,
+                                "is_final": self._check_last_step(function),
+                                "observation": function_output_observation,
+                            }
+                        )
 
                         # Emit step completion event
                         step_item = StepRunItem(data=step_output)

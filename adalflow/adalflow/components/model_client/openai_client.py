@@ -647,12 +647,11 @@ class OpenAIClient(ModelClient):
         model_kwargs = {
             "model": "gpt-4o-reasoning",
             "reasoning": {
-                "effort": "medium", # low, medium, high
+                "effort": "medium", # low, medium, highc
                 "summary": "auto", #detailed, auto, none
             }
         }
         """
-        log.info(f"api_kwargs: {api_kwargs}")
         self._api_kwargs = api_kwargs
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)

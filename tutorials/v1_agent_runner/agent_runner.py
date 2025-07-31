@@ -134,7 +134,7 @@ def run_react_agent_example():
             name="ReActAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+            model_kwargs={"model": "gpt-4o", "temperature": 0.7},
             # answer_data_type=Person,
             answer_data_type=str,
             max_steps=5,
@@ -215,7 +215,7 @@ def run_react_agent_primitive_type():
             name="ReActAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+            model_kwargs={"model": "gpt-4o", "temperature": 0.3},
             # answer_data_type=list,
             answer_data_type=dict,
         )
@@ -305,7 +305,7 @@ async def arun_react_agent_example():
             name="AsyncReActAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.2},
+            model_kwargs={"model": "gpt-4o", "temperature": 0.2},
             answer_data_type=Summary,
         )
 
@@ -429,7 +429,7 @@ def run_advanced_react_agent():
     #     name="AdvancedReActAgent",
     #     tools=tools,
     #     model_client=OpenAIClient(),
-    #     model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.5},
+    #     model_kwargs={"model": "gpt-4o", "temperature": 0.5},
     #     answer_data_type=Organization,
     # )
 
@@ -437,7 +437,7 @@ def run_advanced_react_agent():
         name="AdvancedReActAgent",
         tools=tools,
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
         answer_data_type=PersonSummary,
     )
 
@@ -491,7 +491,7 @@ async def arun_advanced_react_agent():
         name="AsyncAdvancedReActAgent",
         tools=tools,
         model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+        model_kwargs={"model": "gpt-4o", "temperature": 0.3},
         # answer_data_type=Organization,
         answer_data_type=PersonSummary,
     )
@@ -539,7 +539,7 @@ def no_structured_output_run_agent():
             name="NoStructuredOutputAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.7},
+            model_kwargs={"model": "gpt-4o", "temperature": 0.7},
             answer_data_type=float,
         )
 
@@ -607,7 +607,7 @@ def pydantic_dataclass_run_agent():
             name="PydanticOutputAgent",
             tools=tools,
             model_client=OpenAIClient(),
-            model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3},
+            model_kwargs={"model": "gpt-4o", "temperature": 0.3},
             answer_data_type=CalculationResult,
         )
 

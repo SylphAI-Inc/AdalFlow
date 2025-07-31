@@ -495,6 +495,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             completion = self.model_client.call(
                 api_kwargs=api_kwargs, model_type=self.model_type
             )
+
             # prepare cache - skip caching for streaming responses which contain unpickleable threading objects
             if use_cache and not api_kwargs.get("stream", False):
                 self._save_cache(index_content, completion)
