@@ -721,7 +721,7 @@ class StepOutput(DataClass, Generic[T]):
     # directly the output from planner LLMs
     planner_prompt: Optional[str] = field(
         default=None, metadata={"desc": "The planner prompt for this step"}
-    )   
+    )
     action: T = field(
         default=None, metadata={"desc": "The action the agent takes at this step"}
     )
@@ -1287,6 +1287,31 @@ class StepRunItem(RunItem):
         },
     )
 
+"""
+Used to wrap the final response from the runner which holds key information about the execution such
+as the answer, step history, and error.
+"""
+
+
+@dataclass
+class RunnerResult:
+    step_history: List[StepOutput] = field(
+        metadata={"desc": "The step history of the execution"},
+        default_factory=list,
+    )
+    answer: Optional[str] = field(
+        metadata={"desc": "The answer to the user's query"}, default=None
+    )
+
+    error: Optional[str] = field(
+        metadata={"desc": "The error message if the code execution failed"},
+        default=None,
+    )
+    ctx: Optional[Dict] = field(
+        metadata={"desc": "The context of the execution"},
+        default=None,
+    )
+
 
 @dataclass
 class FinalOutputItem(RunItem):
@@ -1317,7 +1342,7 @@ class FinalOutputItem(RunItem):
     """
 
     type: str = field(default="final_output", metadata={"desc": "Type of run item"})
-    data: Optional[Any] = field(
+    data: Optional[RunnerResult] = field(
         default=None,
         metadata={"desc": "Final processed output from the runner execution"},
     )
@@ -1343,6 +1368,7 @@ class RunItemStreamEvent(DataClass):
 
     Event Types:
         - "agent.final_output": Final output from the agent (FinalOutputItem)
+        - "agent.tool_permission_request": Tool permission request before execution
         - "agent.tool_call_start": Agent is about to execute a tool (ToolCallRunItem)
         - "agent.tool_call_activity": Agent is about to execute a tool (ToolCallActivityRunItem)
         - "agent.tool_call_complete": Tool execution completed (ToolOutputRunItem)
@@ -1383,30 +1409,6 @@ class RunItemStreamEvent(DataClass):
 
 StreamEvent: TypeAlias = Union[RawResponsesStreamEvent, RunItemStreamEvent]
 
-"""
-Used to wrap the final response from the runner which holds key information about the execution such
-as the answer, step history, and error.
-"""
-
-
-@dataclass
-class RunnerResult:
-    step_history: List[StepOutput] = field(
-        metadata={"desc": "The step history of the execution"},
-        default_factory=list,
-    )
-    answer: Optional[str] = field(
-        metadata={"desc": "The answer to the user's query"}, default=None
-    )
-
-    error: Optional[str] = field(
-        metadata={"desc": "The error message if the code execution failed"},
-        default=None,
-    )
-    ctx: Optional[Dict] = field(
-        metadata={"desc": "The context of the execution"},
-        default=None,
-    )
 
 
 @dataclass

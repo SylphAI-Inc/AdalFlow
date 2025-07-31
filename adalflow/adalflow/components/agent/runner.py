@@ -1,3 +1,5 @@
+from pdb import run
+from turtle import st
 from pydantic import BaseModel
 import logging
 import inspect
@@ -9,11 +11,13 @@ from typing import (
     Any,
     Dict,
     List,
+    Literal,
     Optional,
     Type,
     TypeVar,
     Union,
     AsyncIterable,
+    final,
 )
 from typing_extensions import TypeAlias
 
@@ -101,7 +105,7 @@ class Runner(Component):
         self,
         agent: Agent,
         ctx: Optional[Dict] = None,
-        max_steps: Optional[int] = None,
+        max_steps: Optional[int] = None, # this will overwrite the agent's max_steps
         permission_manager: Optional[PermissionManager] = None,
         conversation_memory: Optional[ConversationMemory] = None,
         **kwargs,
@@ -145,7 +149,7 @@ class Runner(Component):
 
         # Initialize permission manager
         self._init_permission_manager()
-        
+
         # Initialize cancellation flag
         self._cancelled = False
         self._cancel_callbacks = []
@@ -180,27 +184,27 @@ class Runner(Component):
             permission_manager.set_tool_manager(self.tool_manager)
 
 
-    
+
     def is_cancelled(self) -> bool:
         """Check if execution has been cancelled."""
         return self._cancelled
-    
+
     def reset_cancellation(self) -> None:
         """Reset the cancellation flag for a new execution."""
         self._cancelled = False
-    
+
     def register_cancel_callback(self, callback) -> None:
         """Register a callback to be called when execution is cancelled."""
         self._cancel_callbacks.append(callback)
-    
+
     def cancel(self) -> None:
         """Cancel the current execution.
-        
+
         This will stop the current execution but preserve state like memory.
         """
         log.info("Runner.cancel() called - setting cancelled flag")
         self._cancelled = True
-        
+
         # Try to emit a test event if we have a streaming result
         if hasattr(self, '_current_streaming_result') and self._current_streaming_result:
             try:
@@ -216,35 +220,35 @@ class Runner(Component):
                 log.info("Emitted cancel_received event")
             except Exception as e:
                 log.error(f"Failed to emit cancel_received event: {e}")
-        
+
         # Cancel the current streaming task if it exists
         if self._current_task and not self._current_task.done():
             log.info(f"Cancelling runner task: {self._current_task}")
             self._current_task.cancel()
-            
+
             # Create a task to wait for cancellation to complete
             asyncio.create_task(self._wait_for_cancellation())
-    
+
     async def _wait_for_cancellation(self):
         """Wait for task to be cancelled with timeout."""
         if self._current_task:
             try:
                 # Wait up to 1 second for task to cancel gracefully
                 await asyncio.wait_for(
-                    asyncio.shield(self._current_task), 
+                    asyncio.shield(self._current_task),
                     timeout=1.0
                 )
             except (asyncio.TimeoutError, asyncio.CancelledError):
                 # Task didn't cancel in time or was cancelled - that's ok
                 pass
-    
+
     def _check_last_step(self, step: Function) -> bool:
         """Check if the last step has is_answer_final set to True."""
         if hasattr(step, "_is_answer_final") and step._is_answer_final:
             return True
 
         return False
-    
+
     async def _process_final_step(
         self,
         function: Function,
@@ -312,7 +316,119 @@ class Runner(Component):
                     },
                 )
             )
-        
+
+        return final_output_item
+
+
+
+
+    def _get_final_anser(self, function: Function) -> Any:
+        """Get and process the final answer from the function."""
+        """Get and process the final answer from the function."""
+        if hasattr(function, "_answer"):
+            return self._process_data(function._answer)
+        return None
+
+
+    def _create_runner_result(self, answer: Any, step_history, error: Optional[str] = None,  ) -> RunnerResult:
+        """Create a RunnerResult object with the final answer and error."""
+        return RunnerResult(
+            answer=answer,
+            step_history=step_history.copy(),
+            error=error,
+            # ctx=self.ctx,
+        )
+    def _create_execution_complete_stream_event(self, streaming_result: RunnerStreamingResult, final_output_item: FinalOutputItem):
+        """Complete the streaming execution by adding a sentinel."""
+        final_output_event = RunItemStreamEvent(
+            name="agent.execution_complete",
+            item=final_output_item,
+        )
+        streaming_result.put_nowait(final_output_event)
+
+        runner_result: RunnerResult = final_output_item.data
+
+        # set up the final answer
+        streaming_result.answer = runner_result.answer if runner_result else None
+        streaming_result.step_history = self.step_history.copy()
+        streaming_result._is_complete = True
+
+    def _add_assistant_response_to_memory(self, final_output_item: FinalOutputItem):
+        # add the assistant response to the conversation memory
+        if self.use_conversation_memory:
+            self.conversation_memory.add_assistant_response(
+                AssistantResponse(
+                    response_str=final_output_item.data.answer,
+                    metadata={
+                        "step_history": final_output_item.data.step_history.copy()
+                    },
+                )
+            )
+
+
+    # async def _process_final_step()
+
+    def create_response_span(self, runner_result, step_count: int, streaming_result: RunnerStreamingResult, runner_span_instance, workflow_status: str = "stream_completed"):
+
+        runner_span_instance.span_data.update_attributes(
+            {
+                "steps_executed": step_count + 1,
+                "final_answer": runner_result.answer,
+                "workflow_status": workflow_status,
+            }
+        )
+
+        # Create response span for tracking final streaming result
+        with response_span(
+            answer=runner_result.answer,
+            result_type=type(runner_result.answer).__name__,
+            execution_metadata={
+                "steps_executed": step_count + 1,
+                "max_steps": self.max_steps,
+                "workflow_status": workflow_status,
+                "streaming": True,
+            },
+            response=runner_result,
+        ):
+            pass
+
+
+
+
+    async def _process_final_step(
+        self,
+        answer: Any,
+        step_count: int,
+        streaming_result,
+        runner_span_instance
+    ) -> FinalOutputItem:
+        """Process the final step and trace it."""
+        # processed_data = self._get_final_anser(function)
+        # printc(f"processed_data: {processed_data}", color="yellow")
+
+        # Runner result is the same as the sync/async call result
+
+        runner_result = self._create_runner_result(
+            answer=answer,
+            step_history=self.step_history.copy(),
+        )
+
+        # Update runner span with final results
+        # self.create_response_span(
+        #     runner_result=runner_result,
+        #     step_count=step_count,
+        #     streaming_result=streaming_result,
+        #     runner_span_instance=runner_span_instance,
+        #     workflow_status="stream_completed",
+        # )
+
+        # Emit execution complete event
+        final_output_item = FinalOutputItem(data=runner_result)
+        self._create_execution_complete_stream_event(
+            streaming_result, final_output_item
+        )
+        # add the assistant response to the conversation memory
+        self._add_assistant_response_to_memory(final_output_item)
         return final_output_item
 
     # TODO: improved after the finish function is refactored
@@ -439,11 +555,11 @@ class Runner(Component):
             prompt_kwargs["step_history"] = (
                 self.step_history
             )  # a reference to the step history
-            
+
             if self.use_conversation_memory:
                 # Reset any pending query state before starting a new query
                 self.conversation_memory.reset_pending_query()
-                
+
                 prompt_kwargs["chat_history_str"] = self.conversation_memory()
                 # save the user query to the conversation memory
 
@@ -493,7 +609,7 @@ class Runner(Component):
                         printc(f"function: {function}", color="yellow")
                         if function is None:
                             error_msg = output.error
-                            
+
 
                         if self._check_last_step(function):
                             processed_data = self._process_data(function._answer)
@@ -503,7 +619,7 @@ class Runner(Component):
                                 step_history=self.step_history.copy(),
                                 # ctx=self.ctx,
                             )
-                            
+
                             # Add assistant response to conversation memory
                             if self.use_conversation_memory:
                                 self.conversation_memory.add_assistant_response(
@@ -514,7 +630,7 @@ class Runner(Component):
                                         },
                                     )
                                 )
-                            
+
                             step_count += 1  # Increment step count before breaking
                             break
 
@@ -529,7 +645,7 @@ class Runner(Component):
                             )
 
                         else:
-                            
+
                         # Create tool span for function execution
                             with tool_span(
                                 tool_name=function.name,
@@ -673,9 +789,9 @@ class Runner(Component):
         if not isinstance(result, FunctionOutput):
             raise ValueError("Result is not a FunctionOutput")
 
-        # check error 
+        # check error
         if result.error is not None:
-            log.warning(f"Error in tool execution: {result.error}") 
+            log.warning(f"Error in tool execution: {result.error}")
         # TODO: specify how to handle this error
 
         return result
@@ -709,18 +825,18 @@ class Runner(Component):
         ) as runner_span_instance:
             # Reset cancellation flag at start of new execution
             self.reset_cancellation()
-            
+
             self.step_history = []
             prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
 
             prompt_kwargs["step_history"] = (
                 self.step_history
             )  # a reference to the step history
-            
+
             if self.use_conversation_memory:
                 # Reset any pending query state before starting a new query
                 self.conversation_memory.reset_pending_query()
-                
+
                 prompt_kwargs["chat_history_str"] = self.conversation_memory()
                 # save the user query to the conversation memory
 
@@ -732,7 +848,7 @@ class Runner(Component):
                         metadata=query_metadata,
                     )
                 )
-            
+
             # set maximum number of steps for the planner into the prompt
             prompt_kwargs["max_steps"] = self.max_steps
 
@@ -775,7 +891,7 @@ class Runner(Component):
                                 step_history=self.step_history.copy(),
                                 # ctx=self.ctx,
                             )
-                            
+
                             # Add assistant response to conversation memory
                             if self.use_conversation_memory:
                                 self.conversation_memory.add_assistant_response(
@@ -786,7 +902,7 @@ class Runner(Component):
                                         },
                                     )
                                 )
-                            
+
                             step_count += 1  # Increment step count before breaking
                             break
 
@@ -915,14 +1031,14 @@ class Runner(Component):
             log.info("Cancelled previous streaming task")
             # Don't wait for cancellation here - just cancel and move on
             self._current_task = None
-        
+
         # Reset cancellation flag for new execution
         self._cancelled = False
-        
+
         result = RunnerStreamingResult()
         # Store the streaming result so we can emit events to it during cancellation
         self._current_streaming_result = result
-        
+
         # Store the task so we can cancel it if needed
         self._current_task = asyncio.get_event_loop().create_task(
             self.impl_astream(prompt_kwargs, model_kwargs, use_cache, id, result)
@@ -948,15 +1064,16 @@ class Runner(Component):
             use_cache: Whether to use cached results if available
             id: Optional unique identifier for the request
         """
+        workflow_status: Literal["streaming", "stream_completed", "stream_failed", "stream_incomplete"] = "streaming"
         # Create runner span for tracing streaming execution
         with runner_span(
             runner_id=id or f"stream_runner_{hash(str(prompt_kwargs))}",
             max_steps=self.max_steps,
-            workflow_status="streaming",
+            workflow_status= workflow_status,
         ) as runner_span_instance:
             # Reset cancellation flag at start of new execution
             self.reset_cancellation()
-            
+
             self.step_history = []
             prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
 
@@ -964,7 +1081,7 @@ class Runner(Component):
             if self.use_conversation_memory:
                 # Reset any pending query state before starting a new query
                 self.conversation_memory.reset_pending_query()
-                
+
                 prompt_kwargs["chat_history_str"] = self.conversation_memory()
                 # save the user query to the conversation memory
 
@@ -983,10 +1100,14 @@ class Runner(Component):
             model_kwargs = model_kwargs.copy() if model_kwargs else {}
             step_count = 0
             final_output_item = None
+            current_error = None
+            stop_the_loop = False # break
 
-            while step_count < self.max_steps and not self.is_cancelled():
+            while step_count < self.max_steps and not self.is_cancelled() and not stop_the_loop:
                 try:
                     # Create step span for each streaming iteration
+                    # error handing: when run into any error, it creates a runner finish event. and stops the loop
+                    # it should directly sent the execution complete with error event
                     with step_span(
                         step_number=step_count, action_type="stream_planning"
                     ) as step_span_instance:
@@ -1004,9 +1125,9 @@ class Runner(Component):
                         # Check cancellation before calling planner
                         if self.is_cancelled():
                             raise asyncio.CancelledError("Execution cancelled by user")
-                        
+
                         # when it's streaming, the output will be an async generator
-                        output = await self.agent.planner.acall(
+                        output: GeneratorOutput = await self.agent.planner.acall(
                             prompt_kwargs=prompt_kwargs,
                             model_kwargs=model_kwargs,
                             use_cache=use_cache,
@@ -1014,9 +1135,21 @@ class Runner(Component):
                         )
 
                         if not isinstance(output, GeneratorOutput):
-                            raise ValueError("The output is not a GeneratorOutput")
+                            # Create runner finish event with error and stop the loop
+                            error_msg = (
+                                f"Expected GeneratorOutput, but got {type(output)}"
+                            )
+                            final_output_item = FinalOutputItem(
+                                error=error_msg,
+                            )
+                            stop_the_loop = True
+                            workflow_status = "stream_failed"
+                            current_error = error_msg
+                            break
 
                         planner_prompt = output.input
+
+                        # handle the generator output data and error
 
                         if isinstance(output.raw_response, AsyncIterable):
                             # Streaming llm call - iterate through the async generator
@@ -1029,9 +1162,20 @@ class Runner(Component):
                         else:
                             # yield the final planner response
                             if output.error is not None:
-                                wrapped_event = RawResponsesStreamEvent(
-                                    error=output.error, input=planner_prompt
-                                )
+                                if "400" in output.error or "429" in output.error: # context too long or rate limite, not recoverable
+                                    # create a final output item with error and stop the loop
+                                    final_output_item = FinalOutputItem(
+                                        error=output.error,
+                                    )
+                                    stop_the_loop = True
+                                    workflow_status = "stream_failed"
+                                    current_error = output.error
+                                    break
+                                else: # recoverable such as json format error
+                                    wrapped_event = RawResponsesStreamEvent(
+                                        error=output.error, input=planner_prompt
+                                    )
+                                # check if the error is recoverable
                             else:
                                 wrapped_event = RawResponsesStreamEvent(
                                     data=output.data, input=planner_prompt
@@ -1041,20 +1185,21 @@ class Runner(Component):
                         # asychronously consuming the raw response will
                         # update the data field of output with the result of the output processor
 
-                        function = self._get_planner_function(output)
+                        # handle function output
 
-                        # if function is None:
-                        #     error_msg = f"Error planning step {step_count}: {output.error}"
-                        #     # create a step complete with error event 
-                        #     step_output = StepOutput(
-                        #         step=step_count,
-                        #         action=None,
-                        #         function=None,
-                        #         observation=error_msg,
-                        #     )
-                        #     self.step_history.append(step_output)
-                        #     step_count += 1
-                        # else:
+                        function = output.data
+
+                        if function is None or not isinstance(function, Function): # this should almost never happen
+                            current_error = f"Error planning step {step_count}: Function is None, error: {output.error}"
+                            current_error = output.error
+                            # create the final output
+                            final_output_item = FinalOutputItem(
+                                error=current_error,
+                            )
+                            stop_the_loop = True  # no need to add the step
+                            break
+
+                        # for normal function
                         function.id = str(uuid.uuid4())
 
                         # TODO: simplify this
@@ -1063,19 +1208,22 @@ class Runner(Component):
                         printc(f"function: {function}", color="yellow")
 
                         if self._check_last_step(function):
+                            answer = self._get_final_anser(function)
                             final_output_item = await self._process_final_step(
-                                function=function,
+                                answer=answer,
                                 step_count=step_count,
                                 streaming_result=streaming_result,
-                                runner_span_instance=runner_span_instance
+                                runner_span_instance=runner_span_instance,
                             )
+                            stop_the_loop = True
+                            workflow_status = "stream_completed"
                             break
 
                         # Check if permission is required and emit permission event
                         # TODO: trace the permission event
 
                         function_output_observation = None
-                        function_result = None 
+                        function_result = None
                         print("function name", function.name)
                         if (
                             self.permission_manager
@@ -1088,9 +1236,9 @@ class Runner(Component):
                                     function
                                 )
                             )
-                            # there is an error 
+                            # there is an error
                             if isinstance(permission_event, ToolOutput):
-                                # need a tool complete event 
+                                # need a tool complete event
                                 function_result = FunctionOutput(
                                     name=function.name,
                                     input=function,
@@ -1103,7 +1251,7 @@ class Runner(Component):
                                     item=ToolOutputRunItem(
                                         data=function_result,
                                         id=tool_call_id,
-                                        error=permission_event.observation if permission_event.status == "error" else None, # error message sent to the frontend 
+                                        error=permission_event.observation if permission_event.status == "error" else None, # error message sent to the frontend
                                     ),
                                 )
                                 streaming_result.put_nowait(tool_complete_event)
@@ -1122,7 +1270,7 @@ class Runner(Component):
                                     tool_call_name=tool_call_name,
                                     streaming_result=streaming_result,
                                 )
-                                
+
                                 # Add step to history for approved tools (same as non-permission branch)
                                 step_output: StepOutput = StepOutput(
                                     step=step_count,
@@ -1184,7 +1332,7 @@ class Runner(Component):
                     # Handle cancellation gracefully
                     cancel_msg = "Execution cancelled by user"
                     log.info(cancel_msg)
-                    
+
                     # Emit cancellation event so frontend/logs can see it
                     cancel_event = RunItemStreamEvent(
                         name="runner.cancelled",
@@ -1195,12 +1343,12 @@ class Runner(Component):
                         })
                     )
                     streaming_result.put_nowait(cancel_event)
-                    
+
                     # Store cancellation result
                     streaming_result.answer = cancel_msg
                     streaming_result.step_history = self.step_history.copy()
                     streaming_result._is_complete = True
-                    
+
                     # Add cancellation response to conversation memory
                     if self.use_conversation_memory:
                         self.conversation_memory.add_assistant_response(
@@ -1213,50 +1361,26 @@ class Runner(Component):
                                 }
                             )
                         )
-                    
+
                     # Signal completion and break
                     streaming_result.put_nowait(QueueCompleteSentinel())
                     break
-                    
+
                 except Exception as e:
+                    # these excepts should almost never happen
                     error_msg = f"Error in step {step_count}: {str(e)}"
                     log.error(error_msg)
 
-                    # Update runner span with error info
-                    runner_span_instance.span_data.update_attributes(
-                        {
-                            "final_answer": error_msg,
-                            "workflow_status": "stream_failed",
-                        }
-                    )
-
-                    # Create response span for error tracking in streaming
-                    with response_span(
-                        answer=error_msg,
-                        result_type="error",
-                        execution_metadata={
-                            "steps_executed": step_count,
-                            "max_steps": self.max_steps,
-                            "workflow_status": "stream_failed",
-                            "streaming": True,
-                        },
-                        response=None,
-                    ):
-                        pass
-
-                    # Store error result and completion status
-                    streaming_result.step_history = self.step_history.copy()
-                    streaming_result._is_complete = True
+                    workflow_status = "stream_failed"
                     streaming_result.exception = error_msg
 
                     # Emit error as FinalOutputItem to queue
-                    error_final_item = FinalOutputItem(error=error_msg)
-                    error_event = RunItemStreamEvent(
-                        name="runner_finished", item=error_final_item
-                    )
-                    streaming_result.put_nowait(error_event)
-
-                    step_count += 1
+                    final_output_item = FinalOutputItem(error=error_msg)
+                    # error_event = RunItemStreamEvent(
+                    #     name="runner_finished", item=error_final_item
+                    # )
+                    stop_the_loop = True
+                    current_error = error_msg
                     break
 
             # If loop terminated without creating a final output item, create our own
@@ -1266,43 +1390,43 @@ class Runner(Component):
                 runner_result = RunnerResult(
                     answer=f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
                     step_history=self.step_history.copy(),
+
                 )
-
-                # Update runner span for incomplete execution
-                runner_span_instance.span_data.update_attributes(
-                    {
-                        "steps_executed": step_count,
-                        "final_answer": runner_result.answer,
-                        "workflow_status": "stream_incomplete",
-                    }
-                )
-
-                # Create response span for incomplete streaming result
-                with response_span(
-                    answer=runner_result.answer,
-                    result_type="incomplete",
-                    execution_metadata={
-                        "steps_executed": step_count,
-                        "max_steps": self.max_steps,
-                        "workflow_status": "stream_incomplete",
-                        "streaming": True,
-                    },
-                    response=runner_result,
-                ):
-                    pass
-
-                # Create and emit our own FinalOutputItem
                 final_output_item = FinalOutputItem(data=runner_result)
-                final_output_event = RunItemStreamEvent(
-                    name="agent.execution_complete",
-                    item=final_output_item,
-                )
-                streaming_result.put_nowait(final_output_event)
 
-                # Store final result and completion status
-                streaming_result.answer = runner_result.answer
-                streaming_result.step_history = self.step_history.copy()
-                streaming_result._is_complete = True
+                workflow_status = "stream_incomplete"
+                current_error = f"No output generated after {step_count} steps (max_steps: {self.max_steps})"
+
+
+            # create runner result with or without error
+
+            runner_result = RunnerResult(
+                answer=final_output_item.data if final_output_item.data else None,
+                step_history=self.step_history.copy(),
+                error=current_error,
+            )
+
+            self._create_execution_complete_stream_event(
+                streaming_result=streaming_result,
+                final_output_item=final_output_item,
+            )
+
+            # if not stop_the_loop:
+            #     printc(
+            #         f"Runner completed with {step_count} steps, final output: {runner_result.answer}",
+            #         color="green",
+            #     )
+            #     workflow_status = "stream_completed"
+
+            # create response span for final output
+            # if workflow_status  in ["stream_incomplete", "stream_failed"]:
+            self.create_response_span(
+                runner_result=runner_result,
+                step_count=step_count,
+                streaming_result=streaming_result,
+                runner_span_instance=runner_span_instance,
+                workflow_status=workflow_status,
+            )
 
             # Signal completion of streaming
             streaming_result.put_nowait(QueueCompleteSentinel())
@@ -1318,7 +1442,7 @@ class Runner(Component):
         Note: this version has no support for streaming.
         Includes permission checking if permission_manager is configured.
         """
-        
+
         # Check permission before execution
         if self.permission_manager:
             result = await self.permission_manager.check_permission(func)
@@ -1366,20 +1490,20 @@ class Runner(Component):
     ) -> tuple[Any, Any, Any]:
         """
         Execute a tool/function call with streaming support and proper event handling.
-        
+
         This method handles:
         - Tool span creation for tracing
         - Async generator support for streaming results
         - Tool activity events
         - Tool completion events
         - Error handling and observation extraction
-        
+
         Args:
             function: The Function object to execute
             tool_call_id: Unique identifier for this tool call
             tool_call_name: Name of the tool being called
             streaming_result: Queue for streaming events
-            
+
         Returns:
             tuple: (function_output, function_output_observation)
         """
@@ -1453,5 +1577,5 @@ class Runner(Component):
             tool_span_instance.span_data.update_attributes(
                 {"output_result": real_function_output}
             )
-            
+
             return function_result, function_output, function_output_observation

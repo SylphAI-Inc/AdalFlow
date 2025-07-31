@@ -235,7 +235,7 @@ class TestRunner(unittest.TestCase):
             )
             runner = Runner(agent=agent)
 
-            async def mock_tool_execute_async(func):
+            async def mock_tool_execute_async(func, streaming_result=None):
                 return FunctionOutput(name=func.name, input=func, output="stream-done")
 
             runner._tool_execute_async = mock_tool_execute_async
@@ -272,6 +272,7 @@ class TestRunner(unittest.TestCase):
             self.assertEqual(len(runner_response.step_history), 0)
 
             # Verify streaming result has final result
+            print("sgtreaming_result:", streaming_result)
             self.assertEqual(streaming_result.answer, "stream-done")
 
         asyncio.run(async_test())
@@ -324,6 +325,7 @@ class TestRunner(unittest.TestCase):
         runner = Runner(agent=agent)
 
         result = runner.call(prompt_kwargs={})
+        print("Step history:", runner.step_history)
         # Should only execute 3 steps due to max_steps limit
         self.assertEqual(len(runner.step_history), 3)
 
