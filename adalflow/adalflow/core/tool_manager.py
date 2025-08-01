@@ -456,6 +456,38 @@ class ToolManager(Component):
             log.error(f"Error {e} executing function: {func}")
             raise ValueError(f"Error {e} executing function: {func}")
 
+
+    # async def execute_func_astream(self, func: Function) -> FunctionOutput:
+    #     r"""Execute the function. If the function is sync, use await to execute it."""
+    #     try:
+    #         printc(f"Executing async function: {func.name}", color="yellow")
+    #         tool: FunctionTool = self.context[func.name]
+    #         # await the async call
+    #         try:
+    #             result = tool.astream(*func.args, **func.kwargs)
+    #         except Exception as e:
+    #             error_msg = (
+    #                 f"Error execute_func_async with Error {e} for function: {func}"
+    #             )
+    #             log.error(error_msg)
+    #             raise ValueError(error_msg)
+
+    #         # it can only be coroutine or function output
+    #         if inspect.iscoroutine(result):
+    #             result = await result
+    #             printc(f"result after await: {result}", color="yellow")
+    #         else:
+    #             printc("result is not coroutine", color="yellow")
+
+    #         if not isinstance(result, FunctionOutput):
+    #             error_msg = f"Output should be FunctionOutput. Got {result}"
+    #             log.error(error_msg)
+    #             raise ValueError(error_msg)
+    #         return result
+    #     except Exception as e:
+    #         log.error(f"Error {e} executing function: {func}")
+    #         raise ValueError(f"Error {e} executing function: {func}")
+
     def execute_func_expr(
         self,
         expr: Union[FunctionExpression, Parameter],
