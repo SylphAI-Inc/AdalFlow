@@ -1,11 +1,4 @@
-"""Memory component for user-assistant conversations.
-
-Memory can include data modeling, in-memory data storage, local file data storage, cloud data persistence, data pipeline, data retriever.
-It is itself an LLM application and different use cases can do it differently.
-
-This component handles the storage and retrieval of conversation history between users
-and assistants. It provides local memory experience with the ability to format and
-return conversation history.
+"""Simple converation memory component for user-assistant conversations.
 
 Attributes:
     current_conversation (Conversation): Stores the current active conversation.
@@ -57,7 +50,7 @@ Assistant: {{ turn.assistant_response.response_str }}
 
 
 class ConversationMemory(Component):
-    def __init__(self, turn_db: LocalDB = None):
+    def __init__(self, turn_db: LocalDB = None, user_id: str = None):
         """Initialize the Memory component.
 
         Args:
@@ -65,10 +58,21 @@ class ConversationMemory(Component):
                 Defaults to None, in which case a new LocalDB is created.
         """
         super().__init__()
-        self.current_conversation = Conversation()
+        self.current_conversation = Conversation(user_id=user_id)
         self.turn_db = turn_db or LocalDB()  # all turns
         self.conver_db = LocalDB()  # a list of conversations
         self._pending_user_query = None  # Store pending user query
+        self.user_id = user_id
+
+    def clear_conversation_turns(self):
+        self._pending_user_query = None
+        self.current_conversation.dialog_turns.clear()
+
+    def new_conversation(self):
+        # save the current conversation to the conversation database
+        self.conver_db.add(self.current_conversation)
+
+        self.current_conversation = Conversation(user_id=self.user_id)
 
     def call(self, metadata_filter: Optional[List[str]] = None) -> str:
         """Returns the current conversation history as a formatted string.
@@ -93,6 +97,7 @@ class ConversationMemory(Component):
         )
         return prompt.call().strip()
 
+    # Note: not used
     def add_dialog_turn(
         self,
         user_query: Union[str, UserQuery],
@@ -119,6 +124,7 @@ class ConversationMemory(Component):
             id=str(uuid4()),
             user_query=user_query,
             assistant_response=assistant_response,
+            conversation_id=self.current_conversation.id,
             # order will be automatically set by append_dialog_turn
         )
 
@@ -190,11 +196,14 @@ class ConversationMemory(Component):
         # Create and add the complete dialog turn
         dialog_turn = DialogTurn(
             id=self._pending_user_query["id"],
+            conversation_id=self.current_conversation.id,
             user_query=self._pending_user_query["user_query"],
             assistant_response=assistant_response,
             order=self._pending_user_query["order"],
         )
 
+
+        # current conversation manages the display to LLM.
         self.current_conversation.append_dialog_turn(dialog_turn)
 
         # Store in database
@@ -210,7 +219,7 @@ class ConversationMemory(Component):
         self._pending_user_query = None
 
         return turn_id
-    
+
     def reset_pending_query(self):
         """Reset any pending query state. Useful for cleanup after cancellations or before starting new queries."""
         self._pending_user_query = None

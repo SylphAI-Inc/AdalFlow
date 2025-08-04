@@ -625,6 +625,193 @@ class TestRunner(unittest.TestCase):
                 f"Runner.{method_name} should be callable",
             )
 
+    def test_conversation_memory_clear_sync(self):
+        """Test that clearing conversation memory results in empty chat history in sync call."""
+        from adalflow.components.memory.memory import ConversationMemory
+        
+        # Create a mock planner that captures prompt_kwargs
+        captured_prompt_kwargs = []
+        
+        class CapturingPlanner:
+            def __init__(self):
+                self.call_count = 0
+                
+            def call(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+                captured_prompt_kwargs.append(prompt_kwargs.copy())
+                self.call_count += 1
+                # Return a final answer to end execution
+                fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="test response")
+                return GeneratorOutput(data=fn)
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        # Create runner with conversation memory
+        memory = ConversationMemory()
+        planner = CapturingPlanner()
+        agent = DummyAgent(planner=planner, answer_data_type=None)
+        runner = Runner(agent=agent, conversation_memory=memory)
+        
+        # First call - should have empty history
+        result1 = runner.call(prompt_kwargs={"input_str": "Hello, my name is Alice"})
+        self.assertEqual(planner.call_count, 1)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[0])
+        self.assertEqual(captured_prompt_kwargs[0]["chat_history_str"], "")  # Empty on first call
+        
+        # Second call - should have history from first call
+        result2 = runner.call(prompt_kwargs={"input_str": "What is my name?"})
+        self.assertEqual(planner.call_count, 2)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[1])
+        self.assertNotEqual(captured_prompt_kwargs[1]["chat_history_str"], "")  # Has history
+        self.assertIn("Alice", captured_prompt_kwargs[1]["chat_history_str"])
+        
+        # Clear conversation memory
+        memory.clear_conversation_turns()
+        
+        # Third call - should have empty history again
+        result3 = runner.call(prompt_kwargs={"input_str": "Do you remember my name?"})
+        self.assertEqual(planner.call_count, 3)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[2])
+        self.assertEqual(captured_prompt_kwargs[2]["chat_history_str"], "")  # Empty after clear
+
+    async def _test_conversation_memory_clear_async(self):
+        """Test that clearing conversation memory results in empty chat history in async call."""
+        from adalflow.components.memory.memory import ConversationMemory
+        
+        # Create a mock planner that captures prompt_kwargs
+        captured_prompt_kwargs = []
+        
+        class CapturingAsyncPlanner:
+            def __init__(self):
+                self.call_count = 0
+                
+            async def acall(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+                captured_prompt_kwargs.append(prompt_kwargs.copy())
+                self.call_count += 1
+                # Return a final answer to end execution
+                fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="test response")
+                return GeneratorOutput(data=fn)
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        # Create runner with conversation memory
+        memory = ConversationMemory()
+        planner = CapturingAsyncPlanner()
+        agent = DummyAgent(planner=planner, answer_data_type=None)
+        runner = Runner(agent=agent, conversation_memory=memory)
+        
+        # Mock the async tool execution
+        async def mock_tool_execute_async(func):
+            from adalflow.core.types import FunctionOutput
+            return FunctionOutput(name=func.name, input=func, output="test response")
+        
+        runner._tool_execute_async = mock_tool_execute_async
+        
+        # First call - should have empty history
+        result1 = await runner.acall(prompt_kwargs={"input_str": "Hello, my name is Bob"})
+        self.assertEqual(planner.call_count, 1)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[0])
+        self.assertEqual(captured_prompt_kwargs[0]["chat_history_str"], "")  # Empty on first call
+        
+        # Second call - should have history from first call
+        result2 = await runner.acall(prompt_kwargs={"input_str": "What is my name?"})
+        self.assertEqual(planner.call_count, 2)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[1])
+        self.assertNotEqual(captured_prompt_kwargs[1]["chat_history_str"], "")  # Has history
+        self.assertIn("Bob", captured_prompt_kwargs[1]["chat_history_str"])
+        
+        # Clear conversation memory
+        memory.clear_conversation_turns()
+        
+        # Third call - should have empty history again
+        result3 = await runner.acall(prompt_kwargs={"input_str": "Do you remember my name?"})
+        self.assertEqual(planner.call_count, 3)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[2])
+        self.assertEqual(captured_prompt_kwargs[2]["chat_history_str"], "")  # Empty after clear
+
+    def test_conversation_memory_clear_async(self):
+        """Wrapper to run async test."""
+        asyncio.run(self._test_conversation_memory_clear_async())
+
+    async def _test_conversation_memory_clear_streaming(self):
+        """Test that clearing conversation memory results in empty chat history in streaming."""
+        from adalflow.components.memory.memory import ConversationMemory
+        
+        # Create a mock planner that captures prompt_kwargs
+        captured_prompt_kwargs = []
+        
+        class CapturingStreamingPlanner:
+            def __init__(self):
+                self.call_count = 0
+                
+            async def acall(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+                captured_prompt_kwargs.append(prompt_kwargs.copy())
+                self.call_count += 1
+                # Return a final answer to end execution
+                fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="test response")
+                
+                # Simulate streaming with async generator
+                async def stream_gen():
+                    yield "streaming event 1"
+                    yield "streaming event 2"
+                    
+                return GeneratorOutput(data=fn, raw_response=stream_gen())
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        # Create runner with conversation memory
+        memory = ConversationMemory()
+        planner = CapturingStreamingPlanner()
+        agent = DummyAgent(planner=planner, answer_data_type=None)
+        runner = Runner(agent=agent, conversation_memory=memory)
+        
+        # Mock the async tool execution
+        async def mock_tool_execute_async(func, streaming_result=None):
+            from adalflow.core.types import FunctionOutput
+            return FunctionOutput(name=func.name, input=func, output="test response")
+        
+        runner._tool_execute_async = mock_tool_execute_async
+        
+        # First streaming call - should have empty history
+        streaming_result1 = runner.astream(prompt_kwargs={"input_str": "Hello, my name is Charlie"})
+        events1 = []
+        async for event in streaming_result1.stream_events():
+            events1.append(event)
+        
+        self.assertEqual(planner.call_count, 1)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[0])
+        self.assertEqual(captured_prompt_kwargs[0]["chat_history_str"], "")  # Empty on first call
+        
+        # Second streaming call - should have history from first call
+        streaming_result2 = runner.astream(prompt_kwargs={"input_str": "What is my name?"})
+        events2 = []
+        async for event in streaming_result2.stream_events():
+            events2.append(event)
+            
+        self.assertEqual(planner.call_count, 2)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[1])
+        self.assertNotEqual(captured_prompt_kwargs[1]["chat_history_str"], "")  # Has history
+        self.assertIn("Charlie", captured_prompt_kwargs[1]["chat_history_str"])
+        
+        # Clear conversation memory
+        memory.clear_conversation_turns()
+        
+        # Third streaming call - should have empty history again
+        streaming_result3 = runner.astream(prompt_kwargs={"input_str": "Do you remember my name?"})
+        events3 = []
+        async for event in streaming_result3.stream_events():
+            events3.append(event)
+            
+        self.assertEqual(planner.call_count, 3)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[2])
+        self.assertEqual(captured_prompt_kwargs[2]["chat_history_str"], "")  # Empty after clear
+
+    def test_conversation_memory_clear_streaming(self):
+        """Wrapper to run async streaming test."""
+        asyncio.run(self._test_conversation_memory_clear_streaming())
+
 
 if __name__ == "__main__":
     unittest.main()

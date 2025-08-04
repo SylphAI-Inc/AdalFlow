@@ -318,3 +318,165 @@ def test_empty_metadata():
         output.replace("User:", "").replace("Assistant:", "").replace("query:", "")
     )
     assert ":" not in cleaned_output
+
+
+def test_clear_conversation_turns():
+    """Test clearing conversation turns."""
+    memory = Memory()
+    
+    # Add some conversation turns
+    memory.add_user_query("What is Python?")
+    memory.add_assistant_response("Python is a programming language.")
+    memory.add_user_query("Tell me more")
+    memory.add_assistant_response("It's known for its simplicity.")
+    
+    # Verify conversation has content
+    assert len(memory.current_conversation.dialog_turns) == 2
+    assert memory() != ""
+    assert "What is Python?" in memory()
+    assert "Tell me more" in memory()
+    
+    # Clear conversation turns
+    memory.clear_conversation_turns()
+    
+    # Verify conversation is cleared
+    assert len(memory.current_conversation.dialog_turns) == 0
+    assert memory() == ""
+    assert memory._pending_user_query is None
+
+
+def test_clear_conversation_turns_with_pending_query():
+    """Test clearing conversation turns when there's a pending user query."""
+    memory = Memory()
+    
+    # Add a complete turn
+    memory.add_user_query("First question")
+    memory.add_assistant_response("First answer")
+    
+    # Add a pending user query (no response yet)
+    memory.add_user_query("Second question")
+    
+    # Verify state before clearing
+    assert len(memory.current_conversation.dialog_turns) == 1
+    assert memory._pending_user_query is not None
+    assert memory._pending_user_query["user_query"].query_str == "Second question"
+    
+    # Clear conversation turns
+    memory.clear_conversation_turns()
+    
+    # Verify everything is cleared including pending query
+    assert len(memory.current_conversation.dialog_turns) == 0
+    assert memory._pending_user_query is None
+    assert memory() == ""
+
+
+def test_clear_conversation_turns_empty_memory():
+    """Test clearing an already empty conversation."""
+    memory = Memory()
+    
+    # Verify memory is empty
+    assert len(memory.current_conversation.dialog_turns) == 0
+    assert memory() == ""
+    
+    # Clear empty conversation (should not raise error)
+    memory.clear_conversation_turns()
+    
+    # Still empty
+    assert len(memory.current_conversation.dialog_turns) == 0
+    assert memory() == ""
+
+
+def test_add_after_clear():
+    """Test adding new conversation turns after clearing."""
+    memory = Memory()
+    
+    # Add initial conversation
+    memory.add_user_query("Initial question")
+    memory.add_assistant_response("Initial answer")
+    
+    # Clear
+    memory.clear_conversation_turns()
+    
+    # Add new conversation
+    memory.add_user_query("New question")
+    memory.add_assistant_response("New answer")
+    
+    # Verify only new conversation exists
+    output = memory()
+    assert "New question" in output
+    assert "New answer" in output
+    assert "Initial question" not in output
+    assert "Initial answer" not in output
+    assert len(memory.current_conversation.dialog_turns) == 1
+
+
+def test_clear_preserves_conversation_id():
+    """Test that clearing turns preserves the conversation ID."""
+    memory = Memory()
+    
+    # Get initial conversation ID
+    initial_conv_id = memory.current_conversation.id
+    
+    # Add and clear turns
+    memory.add_user_query("Test")
+    memory.add_assistant_response("Response")
+    memory.clear_conversation_turns()
+    
+    # Conversation ID should remain the same
+    assert memory.current_conversation.id == initial_conv_id
+
+
+def test_clear_does_not_affect_turn_db():
+    """Test that clearing conversation turns doesn't affect the turn database."""
+    from adalflow.core.db import LocalDB
+    
+    turn_db = LocalDB()
+    memory = Memory(turn_db=turn_db)
+    
+    # Add turns
+    memory.add_user_query("Question 1")
+    memory.add_assistant_response("Answer 1")
+    memory.add_user_query("Question 2")
+    memory.add_assistant_response("Answer 2")
+    
+    # Verify turn_db has entries
+    initial_db_size = len(turn_db.items)
+    assert initial_db_size > 0
+    
+    # Clear conversation turns
+    memory.clear_conversation_turns()
+    
+    # Turn database should still have all entries
+    assert len(turn_db.items) == initial_db_size
+    
+    # But current conversation should be empty
+    assert len(memory.current_conversation.dialog_turns) == 0
+    assert memory() == ""
+
+
+def test_clear_with_metadata():
+    """Test clearing conversation that contains metadata."""
+    memory = Memory()
+    
+    # Add turns with metadata
+    query_with_meta = UserQuery(
+        query_str="Question with metadata",
+        metadata={"source": "test", "priority": "high"}
+    )
+    memory.add_user_query(query_with_meta)
+    
+    response_with_meta = AssistantResponse(
+        response_str="Response with metadata",
+        metadata={"confidence": "high", "sources": 3}
+    )
+    memory.add_assistant_response(response_with_meta)
+    
+    # Verify metadata is present
+    output = memory()
+    assert "source: test" in output
+    assert "priority: high" in output
+    
+    # Clear and verify
+    memory.clear_conversation_turns()
+    assert memory() == ""
+    assert len(memory.current_conversation.dialog_turns) == 0

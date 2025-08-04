@@ -1,5 +1,3 @@
-from pdb import run
-from turtle import st
 from pydantic import BaseModel
 import logging
 import inspect
@@ -17,7 +15,6 @@ from typing import (
     TypeVar,
     Union,
     AsyncIterable,
-    final,
 )
 from typing_extensions import TypeAlias
 
@@ -711,7 +708,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
-                    break 
+                    break
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -977,7 +974,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
-                    break 
+                    break
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -1105,6 +1102,17 @@ class Runner(Component):
             current_error = None
             stop_the_loop = False # break
 
+            # whenever we have the final output, we break the loop, this includes
+            # (1) final_answer (check final step)
+            # (2) unrecoverable error in llm planner
+            # (3) any exception
+
+            # for normal, we will have raw_response_event, request_permission, tool_call_start, tool_call_activity, tool_call_complete, step_complete
+            # for error, we can skip any step but will always have step_complete []
+
+
+            # ToolOutput
+            # has three status: success, error, canceled
             while step_count < self.max_steps and not self.is_cancelled() and not stop_the_loop:
                 try:
                     # Create step span for each streaming iteration
@@ -1123,6 +1131,7 @@ class Runner(Component):
                             f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
                         )
                         planner_prompt = self.agent.planner.get_prompt(**prompt_kwargs) # save it in the final step_output
+
 
                         # Check cancellation before calling planner
                         if self.is_cancelled():
@@ -1175,8 +1184,9 @@ class Runner(Component):
                                     break
                                 else: # recoverable such as json format error
                                     wrapped_event = RawResponsesStreamEvent(
-                                        error=output.error, input=planner_prompt
+                                        error=output.error,
                                     )
+                                    current_error = output.error
                                 # check if the error is recoverable
                             else:
                                 wrapped_event = RawResponsesStreamEvent(
@@ -1189,82 +1199,94 @@ class Runner(Component):
 
                         # handle function output
 
-                        function = output.data
+                        function = output.data # here are the recoverable errors, should continue to step output
+                        function_result = None
+                        function_output_observation = None
 
-                        if function is None or not isinstance(function, Function): # this should almost never happen
+                        if function is None or not isinstance(function, Function): # for recoverable errors, continue to create stepout
                             current_error = f"Error planning step {step_count}: Function is None, error: {output.error}"
                             current_error = output.error
-                            # create the final output
-                            final_output_item = FinalOutputItem(
-                                error=current_error,
+                            # # create the final output
+                            # final_output_item = FinalOutputItem(
+                            #     error=current_error,
+                            # )
+                            # stop_the_loop = True  # no need to add the step
+                            # break
+                            # create a step output
+                            step_output: StepOutput = StepOutput(
+                                step=step_count,
+                                action=function,
+                                function=function,
+                                observation=output.error,
                             )
-                            stop_the_loop = True  # no need to add the step
-                            break
+                            self.step_history.append(step_output)
+                        else:
+                            # for normal function
+                            function.id = str(uuid.uuid4())
 
-                        # for normal function
-                        function.id = str(uuid.uuid4())
+                            # TODO: simplify this
+                            tool_call_id = function.id
+                            tool_call_name = function.name
+                            printc(f"function: {function}", color="yellow")
 
-                        # TODO: simplify this
-                        tool_call_id = function.id
-                        tool_call_name = function.name
-                        printc(f"function: {function}", color="yellow")
-
-                        if self._check_last_step(function):
-                            answer = self._get_final_anser(function)
-                            final_output_item = await self._process_final_step(
-                                answer=answer,
-                                step_count=step_count,
-                                streaming_result=streaming_result,
-                                runner_span_instance=runner_span_instance,
-                            )
-                            stop_the_loop = True
-                            workflow_status = "stream_completed"
-                            break
-
-                        # Check if permission is required and emit permission event
-                        # TODO: trace the permission event
-
-                        function_output_observation = None
-                        function_result = None
-                        print("function name", function.name)
-                        if (
-                            self.permission_manager
-                            and self.permission_manager.is_approval_required(
-                                function.name
-                            )
-                        ):
-                            permission_event = (
-                                self.permission_manager.create_permission_event(
-                                    function
+                            if self._check_last_step(function):
+                                answer = self._get_final_anser(function)
+                                final_output_item = await self._process_final_step(
+                                    answer=answer,
+                                    step_count=step_count,
+                                    streaming_result=streaming_result,
+                                    runner_span_instance=runner_span_instance,
                                 )
-                            )
-                            # there is an error
-                            if isinstance(permission_event, ToolOutput):
-                                # need a tool complete event
-                                function_result = FunctionOutput(
-                                    name=function.name,
-                                    input=function,
-                                    output=permission_event,
-                                )
-                                tool_complete_event = RunItemStreamEvent(
-                                    name="agent.tool_call_complete",
-                                    # error is already tracked in output
-                                    # TODO: error tracking is not needed in RunItem, it is tracked in the tooloutput status.
-                                    item=ToolOutputRunItem(
-                                        data=function_result,
-                                        id=tool_call_id,
-                                        error=permission_event.observation if permission_event.status == "error" else None, # error message sent to the frontend
-                                    ),
-                                )
-                                streaming_result.put_nowait(tool_complete_event)
-                                function_output_observation = permission_event.observation
-                            else:
-                                permission_stream_event = RunItemStreamEvent(
-                                    name="agent.tool_permission_request",
-                                    item=permission_event,
-                                )
-                                streaming_result.put_nowait(permission_stream_event)
+                                stop_the_loop = True
+                                workflow_status = "stream_completed"
+                                break
 
+                            # Check if permission is required and emit permission event
+                            # TODO: trace the permission event
+
+                            function_output_observation = None
+                            function_result = None
+                            print("function name", function.name)
+                            complete_step = False
+                            if (
+                                self.permission_manager
+                                and self.permission_manager.is_approval_required(
+                                    function.name
+                                )
+                            ):
+                                permission_event = (
+                                    self.permission_manager.create_permission_event(
+                                        function
+                                    )
+                                )
+                                # there is an error
+                                if isinstance(permission_event, ToolOutput):
+                                    # need a tool complete event
+                                    function_result = FunctionOutput(
+                                        name=function.name,
+                                        input=function,
+                                        output=permission_event,
+                                    )
+                                    tool_complete_event = RunItemStreamEvent(
+                                        name="agent.tool_call_complete",
+                                        # error is already tracked in output
+                                        # TODO: error tracking is not needed in RunItem, it is tracked in the tooloutput status.
+                                        item=ToolOutputRunItem(
+                                            data=function_result,
+                                            id=tool_call_id,
+                                            error=permission_event.observation if permission_event.status == "error" else None, # error message sent to the frontend
+                                        ),
+                                    )
+                                    streaming_result.put_nowait(tool_complete_event)
+                                    function_output_observation = permission_event.observation
+                                    complete_step = True
+                                else:
+                                    permission_stream_event = RunItemStreamEvent(
+                                        name="agent.tool_permission_request",
+                                        item=permission_event,
+                                    )
+                                    streaming_result.put_nowait(permission_stream_event)
+                            if not complete_step:
                                 # Execute the tool with streaming support
                                 function_result, function_output, function_output_observation = await self.stream_tool_execution(
                                     function=function,
@@ -1273,61 +1295,31 @@ class Runner(Component):
                                     streaming_result=streaming_result,
                                 )
 
-                                # Add step to history for approved tools (same as non-permission branch)
-                                step_output: StepOutput = StepOutput(
-                                    step=step_count,
-                                    action=function,
-                                    function=function,
-                                    observation=function_output_observation,
-                                    planner_prompt=planner_prompt,
-                                )
-                                self.step_history.append(step_output)
-
-                                # Update step span with results
-                                step_span_instance.span_data.update_attributes(
-                                    {
-                                        "tool_name": function.name,
-                                        "tool_output": function_result,
-                                        "is_final": self._check_last_step(function),
-                                        "observation": function_output_observation,
-                                    }
-                                )
-                        else:
-                            print("permission not required")
-                            function_result, function_output, function_output_observation = await self.stream_tool_execution(
-                                function=function,
-                                tool_call_id=tool_call_id,
-                                tool_call_name=tool_call_name,
-                                streaming_result=streaming_result,
-                            )
-                            # llm only takes observation as feedback
+                            # Add step to history for approved tools (same as non-permission branch)
                             step_output: StepOutput = StepOutput(
                                 step=step_count,
                                 action=function,
                                 function=function,
                                 observation=function_output_observation,
-                                planner_prompt=planner_prompt,
-                                # ctx=self.ctx,
                             )
                             self.step_history.append(step_output)
 
-                        # Update step span with results
+                        # Update step span with results (for both recoverable errors and normal function execution)
                         step_span_instance.span_data.update_attributes(
                             {
-                                "tool_name": function.name,
+                                "tool_name": function.name if function else None,
                                 "tool_output": function_result,
                                 "is_final": self._check_last_step(function),
                                 "observation": function_output_observation,
                             }
                         )
 
-                        # Emit step completion event
+                        # Emit step completion event (with error if any)
                         step_item = StepRunItem(data=step_output)
                         step_event = RunItemStreamEvent(
                             name="agent.step_complete", item=step_item
                         )
                         streaming_result.put_nowait(step_event)
-
                         step_count += 1
 
                 except asyncio.CancelledError:

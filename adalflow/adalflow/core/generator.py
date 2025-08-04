@@ -167,7 +167,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         self.name = name or self.__class__.__name__
         self.template = template
-        self.prompt_kwargs = prompt_kwargs
+        self.prompt_kwargs = prompt_kwargs.copy()
 
         self.model_kwargs = model_kwargs.copy()
         # init the model client
