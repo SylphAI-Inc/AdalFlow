@@ -21,8 +21,9 @@ Follow function docstring to best call the tool.
         - To end the call, set the `_is_answer_final` to True and generate the final answer in the `_answer` field. Note that the function is not called at the final step.
 
 REMEMBER:
-    - Action MUST call one of the tools under <START_OF_TOOLS><END_OF_TOOLS> other than when providing the final answer. 
+    - Action MUST call one of the tools within <START_OF_TOOLS><END_OF_TOOLS> other than when providing the final answer at the final step.
     - The `_answer` field must be either a python builtin type or a json deserialiable string based on the data schema in <START_OF_ANSWER_TYPE_SCHEMA><END_OF_ANSWER_TYPE_SCHEMA>.
+    - If the last observation has error, you MUST call the tool one more time with the fix. If it failed again, try a different approach.
 <END_OF_TASK_SPEC>
 """
 # TODO: access the max steps in the agent prompt or not

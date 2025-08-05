@@ -43,6 +43,9 @@ Examples:
 - Use double quotes for all keys and string values
 - Ensure proper JSON syntax with correct comma placement
 - Do not include any text before or after the JSON object
+- When including string values with newlines, use \\n instead of actual line breaks
+- Properly escape special characters: use \\" for quotes, \\\\ for backslashes
+- For multiline strings, keep them on a single line with \\n characters
 """
 
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
