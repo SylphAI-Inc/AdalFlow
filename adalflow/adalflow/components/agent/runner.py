@@ -1217,7 +1217,7 @@ class Runner(Component):
                                 step=step_count,
                                 action=function,
                                 function=function,
-                                observation=f"Error: {output.error}",
+                                observation=f"Run into Error: {output.error} at parsing Action {output.raw_response}",
                                 planner_prompt=planner_prompt
                             )
                             self.step_history.append(step_output)
