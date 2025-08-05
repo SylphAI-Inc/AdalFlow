@@ -1057,6 +1057,7 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
 
     It will extract the first JSON object or array found in the text by searching for { or [.
     If right brace is not found, we add one to the end of the string.
+    Handles JSON wrapped in markdown code blocks (```json ... ```).
 
     Args:
         text (str): The text containing potential JSON data.
@@ -1071,6 +1072,35 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
     """
     # NOTE: this regex parsing is taken from langchain.output_parsers.pydantic
     text = text.strip()
+    
+    # First, handle the specific case where JSON ends with ```} or similar patterns
+    # This regex will capture JSON that might have trailing markdown artifacts
+    malformed_pattern = re.compile(
+        r'^(.*?)\n?```\}*$', re.MULTILINE | re.DOTALL
+    )
+    malformed_match = malformed_pattern.match(text)
+    if malformed_match and text.endswith('```}'):
+        # Extract just the JSON part before the markdown artifacts
+        potential_json = malformed_match.group(1).strip()
+        # Validate by checking braces
+        if potential_json.startswith(("{", "[")) and potential_json.endswith(("}", "]")):
+            return potential_json
+    
+    # Then check if the JSON is wrapped in markdown code blocks
+    # Pattern matches ```json, ```JSON, or just ``` at the start
+    json_markdown_pattern = re.compile(
+        r"```(?:json|JSON)?\s*\n?(.*?)```", re.MULTILINE | re.DOTALL
+    )
+    match = json_markdown_pattern.search(text)
+    if match:
+        # Extract the JSON content from within the code blocks and return directly
+        json_content = match.group(1).strip()
+        # Validate it's valid JSON by finding the braces
+        if json_content.startswith(("{", "[")) and json_content.endswith(("}", "]")):
+            return json_content
+        # If not valid, continue with the extraction logic on the markdown content
+        text = json_content
+    
     start_obj = text.find("{")
     start_arr = text.find("[")
     if start_obj == -1 and start_arr == -1:

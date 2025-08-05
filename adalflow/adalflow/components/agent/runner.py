@@ -1203,7 +1203,7 @@ class Runner(Component):
                         function_result = None
                         function_output_observation = None
 
-                        if function is None or not isinstance(function, Function): # for recoverable errors, continue to create stepout
+                        if function is None or not isinstance(function, Function) or output.error: # for recoverable errors, continue to create stepout
                             current_error = f"Error planning step {step_count}: Function is None, error: {output.error}"
                             current_error = output.error
                             # # create the final output
@@ -1218,6 +1218,7 @@ class Runner(Component):
                                 action=function,
                                 function=function,
                                 observation=output.error,
+                                planner_prompt=planner_prompt
                             )
                             self.step_history.append(step_output)
                         else:
