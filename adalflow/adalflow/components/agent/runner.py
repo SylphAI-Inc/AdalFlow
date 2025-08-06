@@ -379,7 +379,12 @@ class Runner(Component):
                 )
                 # if it has not yet been deserialized then deserialize into dictionary using json loads
                 if isinstance(data, str):
-                    data = json.loads(data)
+                    try:
+                        data = json.loads(data)
+                    except json.JSONDecodeError as e:
+                        raise ValueError(f"Invalid JSON in data: {e}")
+                    if not isinstance(data, dict):
+                        raise ValueError(f"Expected dict after JSON parsing, got {type(data)}")
                 log.info(
                     f"initial answer after being evaluated using json: {data}, type: {type(data)}"
                 )
@@ -391,7 +396,12 @@ class Runner(Component):
                 )
 
                 if isinstance(data, str):
-                    data = json.loads(data)
+                    try:
+                        data = json.loads(data)
+                    except json.JSONDecodeError as e:
+                        raise ValueError(f"Invalid JSON in data: {e}")
+                    if not isinstance(data, dict):
+                        raise ValueError(f"Expected dict after JSON parsing, got {type(data)}")
                 log.info(
                     f"initial answer after being evaluated using json: {data}, type: {type(data)}"
                 )
