@@ -49,12 +49,25 @@ def parse_generate_response(completion: GenerateResponse) -> "GeneratorOutput":
         log.error(
             f"Error parsing the completion: {completion}, type: {type(completion)}"
         )
-        # raise ValueError(
-        #     f"Error parsing the completion: {completion}, type: {type(completion)}"
-        # )
         return GeneratorOutput(
             data=None, error="Error parsing the completion", raw_response=completion
         )
+    
+def parse_chat_messsage(completion: Dict[str, Any]) -> "GeneratorOutput":
+    """Parse the chat message from the completion."""
+    thinking = None
+    raw_response = None
+    if "message" in completion: # get both thinking and content 
+        message = completion["message"]
+        raw_response = message.get("content", None)
+        thinking = message.get("thinking", None)
+        return GeneratorOutput(data=None, raw_response=raw_response, thinking=thinking, api_response=completion)
+    else:
+        log.error(f"Error parsing the chat message: {completion}")
+        return GeneratorOutput(
+            data=None, error="Error parsing the chat message", api_response=completion, raw_response=raw_response, thinking=thinking
+        )
+
 
 
 class OllamaClient(ModelClient):
@@ -162,6 +175,28 @@ class OllamaClient(ModelClient):
     .. note::
        We use `embeddings` and `generate` apis from Ollama SDK.
        Please refer to https://github.com/ollama/ollama-python/blob/main/ollama/_client.py for model_kwargs details.
+
+    Example:
+
+    .. code-block:: python
+
+        from adalflow.core.generator import Generator
+        from adalflow.components.model_client import OllamaClient
+
+        # Initialize the client and generator
+        ollama_client = OllamaClient()
+        generator = Generator(
+            model_client=ollama_client,
+            model_kwargs={
+                "model": "qwen2:0.5b",
+                "stream": True,
+            }
+        )
+
+        # Generate response
+        output = generator({"input_str": "What is the capital of France?"})
+        print(output)
+
     """
 
     def __init__(self, host: Optional[str] = None):
@@ -178,6 +213,7 @@ class OllamaClient(ModelClient):
 
         self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
+        self.generate = False  # default to False, we use chat api by default
 
     def init_sync_client(self):
         """Create the synchronous client"""
@@ -197,8 +233,10 @@ class OllamaClient(ModelClient):
         log.debug(f"completion: {completion}, {isinstance(completion, GeneratorType)}")
         if isinstance(completion, GeneratorType):  # streaming
             return parse_stream_response(completion)
-        else:
+        elif self.generate:  # generate api
             return parse_generate_response(completion)
+        else:
+            return parse_chat_messsage(completion)
 
     def parse_embedding_response(
         self, response: Dict[str, List[float]]
@@ -221,6 +259,7 @@ class OllamaClient(ModelClient):
     ) -> Dict:
         r"""Convert the input and model_kwargs to api_kwargs for the Ollama SDK client."""
         # TODO: ollama will support batch embedding in the future: https://ollama.com/blog/embedding-models
+        self.generate = False  # reset generate to False
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
@@ -232,7 +271,20 @@ class OllamaClient(ModelClient):
                 )
         elif model_type == ModelType.LLM:
             if input is not None and input != "":
-                final_model_kwargs["prompt"] = input
+                # check if "generate" is in model_kwargs, and if it is set to True, then we use generate api
+                if model_kwargs.get("generate", False):
+                    final_model_kwargs["prompt"] = input
+                    self.generate = True
+                else:
+                    # for chat api, we need to convert the input to a message format
+                    # if the input is a string, we create a message with role "user"
+                    # if the input is a list of messages, we use it as is
+                    if isinstance(input, str):
+                        input = [{"role": "user", "content": input}]
+                        final_model_kwargs["messages"] = input
+                    elif not isinstance(input, list):
+                        raise ValueError("Input must be a string or a list of messages")
+                # if the input is a list of messages, we use it as is
                 return final_model_kwargs
             else:
                 raise ValueError("Input must be text")
@@ -255,7 +307,12 @@ class OllamaClient(ModelClient):
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings(**api_kwargs)
         if model_type == ModelType.LLM:
-            return self.sync_client.generate(**api_kwargs)
+            if "generate" in api_kwargs and api_kwargs["generate"]:
+                # remove generate from api_kwargs
+                api_kwargs.pop("generate")
+                return self.sync_client.generate(**api_kwargs)
+            else:
+                return self.sync_client.chat(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 
@@ -275,8 +332,14 @@ class OllamaClient(ModelClient):
             raise ValueError("model must be specified")
         if model_type == ModelType.EMBEDDER:
             return await self.async_client.embeddings(**api_kwargs)
-        if model_type == ModelType.LLM:
-            return await self.async_client.generate(**api_kwargs)
+        if model_type == ModelType.LLM: # in default we use chat 
+            # create a message from the input
+            if "generate" in api_kwargs and api_kwargs["generate"]:
+                # remove generate from api_kwargs
+                api_kwargs.pop("generate")
+                return await self.async_client.generate(**api_kwargs)
+            else:
+                return await self.async_client.chat(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 

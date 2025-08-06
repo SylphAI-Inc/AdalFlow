@@ -155,6 +155,30 @@ class TestOutputParsers(unittest.TestCase):
         parsed_output = parser(exact_error_json)
         self.assertEqual(parsed_output["thought"], "I need to add the import for Link and update the Careers page. Let me add the import statement at the top of the file.")
         self.assertEqual(parsed_output["name"], "EditFileTool_acall")
+    
+    def test_json_output_parser_action_with_embedded_bash(self):
+        """Test the exact failing case with Action dataclass containing bash code blocks"""
+        
+        @dataclass
+        class Action(DataClass):
+            thought: str = field(metadata={"description": "Reasoning behind the action"})
+            _is_answer_final: bool = field(default=False, metadata={"description": "Whether this is the final answer"})
+            _answer: str = field(default="", metadata={"description": "The final answer"})
+        
+        parser = JsonOutputParser(data_class=Action)
+        
+        # This is the exact JSON string that's failing to parse
+        action_json = r'''{"thought": "The user is showing me the error output from running the setup script where Ollama is installed but the server daemon isn't running, causing 'ollama server not responding' errors. I already updated their setup script in step 6 to handle this automatically. Since I'm at step 25/30, I should provide a final answer with the immediate solution.", "_is_answer_final": true, "_answer": "The error shows Ollama is installed but the server daemon isn't running. I've already updated your setup script to handle this automatically. Here's the immediate solution:\n\n**Quick Fix:**\n```bash\n# Start Ollama server in background\nollama serve &\nsleep 5\n# Now run the updated setup script\n./setup_gpt_oss.sh\n```\n\n**Alternative - Use separate terminals:**\n```bash\n# Terminal 1: Start server\nollama serve\n\n# Terminal 2: Run setup\n./setup_gpt_oss.sh\n```\n\nThe updated setup script now automatically checks if the Ollama server is running and starts it if needed. The core issue is that while the Ollama binary was installed, the daemon service wasn't running, which is required for all model operations."}'''
+        
+        # Parse the JSON string
+        parsed_output = parser(action_json)
+        
+        # Verify the structure is correct
+        self.assertIn("thought", parsed_output)
+        self.assertIn("_is_answer_final", parsed_output)
+        self.assertIn("_answer", parsed_output)
+        self.assertEqual(parsed_output["_is_answer_final"], True)
+        self.assertIn("bash", parsed_output["_answer"])  # Verify the bash code block is preserved
 
 
 if __name__ == "__main__":
