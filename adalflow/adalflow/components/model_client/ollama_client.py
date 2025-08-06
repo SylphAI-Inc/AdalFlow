@@ -278,7 +278,6 @@ class OllamaClient(ModelClient):
                 else:
                     # for chat api, we need to convert the input to a message format
                     # if the input is a string, we create a message with role "user"
-                    # if the input is a list of messages, we use it as is
                     if isinstance(input, str):
                         input = [{"role": "user", "content": input}]
                         final_model_kwargs["messages"] = input
