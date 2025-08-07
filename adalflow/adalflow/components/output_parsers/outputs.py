@@ -39,10 +39,14 @@ Examples:
 {{example}}
 ```
 {% endif %}
--Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
--Use double quotes for the keys and string values.
--DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the JSON output.
--Follow the JSON formatting conventions."""
+- Output ONLY valid JSON without any markdown formatting or backticks
+- Use double quotes for all keys and string values
+- Ensure proper JSON syntax with correct comma placement
+- Do not include any text before or after the JSON object
+- When including string values with newlines, use \\n instead of actual line breaks
+- Properly escape special characters: use \\" for quotes, \\\\ for backslashes
+- For multiline strings, keep them on a single line with \\n characters
+"""
 
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
 ```
@@ -85,6 +89,7 @@ class OutputParser(DataComponent):
     """
 
     def __init__(self, *args, **kwargs) -> None:
+        
         super().__init__()
         pass
 

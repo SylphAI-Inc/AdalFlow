@@ -73,7 +73,7 @@ class Prompt(DataComponent):
 
         logger.info(f"{__class__.__name__} has variables: {self.prompt_variables}")
 
-        self.prompt_kwargs = prompt_kwargs
+        self.prompt_kwargs = prompt_kwargs.copy()
 
     def __create_jinja2_template(self):
         r"""Create the Jinja2 template object."""
@@ -155,10 +155,12 @@ class Prompt(DataComponent):
         }
 
         if isinstance(value, Prompt):
-            return value.call(**filtered_kwargs)
+            output =  value.call(**filtered_kwargs)
+            return output
 
         if isinstance(value, Template):
-            return value.render(**filtered_kwargs)
+            output = value.render(**filtered_kwargs)
+            return output
 
         # if isinstance(value, str) and ("{{" in value or "{%" in value):
         #     # Treat raw strings as one‑off templates

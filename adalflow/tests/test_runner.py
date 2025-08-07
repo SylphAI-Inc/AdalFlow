@@ -235,7 +235,7 @@ class TestRunner(unittest.TestCase):
             )
             runner = Runner(agent=agent)
 
-            async def mock_tool_execute_async(func):
+            async def mock_tool_execute_async(func, streaming_result=None):
                 return FunctionOutput(name=func.name, input=func, output="stream-done")
 
             runner._tool_execute_async = mock_tool_execute_async
@@ -272,6 +272,7 @@ class TestRunner(unittest.TestCase):
             self.assertEqual(len(runner_response.step_history), 0)
 
             # Verify streaming result has final result
+            print("sgtreaming_result:", streaming_result)
             self.assertEqual(streaming_result.answer, "stream-done")
 
         asyncio.run(async_test())
@@ -324,6 +325,7 @@ class TestRunner(unittest.TestCase):
         runner = Runner(agent=agent)
 
         result = runner.call(prompt_kwargs={})
+        print("Step history:", runner.step_history)
         # Should only execute 3 steps due to max_steps limit
         self.assertEqual(len(runner.step_history), 3)
 
@@ -395,7 +397,8 @@ class TestRunner(unittest.TestCase):
 
     def test_acall_invalid_answer_data_type(self):
         """Test acall with invalid data handling."""
-        agent = DummyAgent(planner=FakePlanner([None]), answer_data_type=None)
+        # Create enough None outputs to reach max_steps (default is 10)
+        agent = DummyAgent(planner=FakePlanner([None] * 10), answer_data_type=None)
         runner = Runner(agent=agent)
         runner._tool_execute = lambda func: SimpleNamespace(output="x")
 
@@ -404,12 +407,14 @@ class TestRunner(unittest.TestCase):
 
         # Should return a RunnerResult with no output message (runner continues through all steps)
         self.assertIsInstance(result, RunnerResult)
-        self.assertIsNone(result.error)  # No error in final result
+        self.assertIsNone(result.error)  # No error when max steps reached normally
         self.assertIsNotNone(result.answer)  # Has answer message
         self.assertTrue(
             result.answer.startswith("No output generated")
         )  # No output completion message
-        self.assertEqual(runner.step_history, [])  # No successful steps in history
+        # Now that we handle None functions gracefully, we should have all 10 steps with None function
+        self.assertEqual(len(runner.step_history), 10)
+        self.assertIsNone(runner.step_history[0].function)
 
     def test_process_data_without_answer_data_type(self):
         """Test _process_data without answer_data_type."""
@@ -622,6 +627,409 @@ class TestRunner(unittest.TestCase):
                 callable(getattr(runner, method_name)),
                 f"Runner.{method_name} should be callable",
             )
+
+    def test_conversation_memory_clear_sync(self):
+        """Test that clearing conversation memory results in empty chat history in sync call."""
+        from adalflow.components.memory.memory import ConversationMemory
+        
+        # Create a mock planner that captures prompt_kwargs
+        captured_prompt_kwargs = []
+        
+        class CapturingPlanner:
+            def __init__(self):
+                self.call_count = 0
+                
+            def call(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+                captured_prompt_kwargs.append(prompt_kwargs.copy())
+                self.call_count += 1
+                # Return a final answer to end execution
+                fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="test response")
+                return GeneratorOutput(data=fn)
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        # Create runner with conversation memory
+        memory = ConversationMemory()
+        planner = CapturingPlanner()
+        agent = DummyAgent(planner=planner, answer_data_type=None)
+        runner = Runner(agent=agent, conversation_memory=memory)
+        
+        # First call - should have empty history
+        result1 = runner.call(prompt_kwargs={"input_str": "Hello, my name is Alice"})
+        self.assertEqual(planner.call_count, 1)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[0])
+        self.assertEqual(captured_prompt_kwargs[0]["chat_history_str"], "")  # Empty on first call
+        
+        # Second call - should have history from first call
+        result2 = runner.call(prompt_kwargs={"input_str": "What is my name?"})
+        self.assertEqual(planner.call_count, 2)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[1])
+        self.assertNotEqual(captured_prompt_kwargs[1]["chat_history_str"], "")  # Has history
+        self.assertIn("Alice", captured_prompt_kwargs[1]["chat_history_str"])
+        
+        # Clear conversation memory
+        memory.clear_conversation_turns()
+        
+        # Third call - should have empty history again
+        result3 = runner.call(prompt_kwargs={"input_str": "Do you remember my name?"})
+        self.assertEqual(planner.call_count, 3)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[2])
+        self.assertEqual(captured_prompt_kwargs[2]["chat_history_str"], "")  # Empty after clear
+
+    async def _test_conversation_memory_clear_async(self):
+        """Test that clearing conversation memory results in empty chat history in async call."""
+        from adalflow.components.memory.memory import ConversationMemory
+        
+        # Create a mock planner that captures prompt_kwargs
+        captured_prompt_kwargs = []
+        
+        class CapturingAsyncPlanner:
+            def __init__(self):
+                self.call_count = 0
+                
+            async def acall(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+                captured_prompt_kwargs.append(prompt_kwargs.copy())
+                self.call_count += 1
+                # Return a final answer to end execution
+                fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="test response")
+                return GeneratorOutput(data=fn)
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        # Create runner with conversation memory
+        memory = ConversationMemory()
+        planner = CapturingAsyncPlanner()
+        agent = DummyAgent(planner=planner, answer_data_type=None)
+        runner = Runner(agent=agent, conversation_memory=memory)
+        
+        # Mock the async tool execution
+        async def mock_tool_execute_async(func):
+            from adalflow.core.types import FunctionOutput
+            return FunctionOutput(name=func.name, input=func, output="test response")
+        
+        runner._tool_execute_async = mock_tool_execute_async
+        
+        # First call - should have empty history
+        result1 = await runner.acall(prompt_kwargs={"input_str": "Hello, my name is Bob"})
+        self.assertEqual(planner.call_count, 1)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[0])
+        self.assertEqual(captured_prompt_kwargs[0]["chat_history_str"], "")  # Empty on first call
+        
+        # Second call - should have history from first call
+        result2 = await runner.acall(prompt_kwargs={"input_str": "What is my name?"})
+        self.assertEqual(planner.call_count, 2)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[1])
+        self.assertNotEqual(captured_prompt_kwargs[1]["chat_history_str"], "")  # Has history
+        self.assertIn("Bob", captured_prompt_kwargs[1]["chat_history_str"])
+        
+        # Clear conversation memory
+        memory.clear_conversation_turns()
+        
+        # Third call - should have empty history again
+        result3 = await runner.acall(prompt_kwargs={"input_str": "Do you remember my name?"})
+        self.assertEqual(planner.call_count, 3)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[2])
+        self.assertEqual(captured_prompt_kwargs[2]["chat_history_str"], "")  # Empty after clear
+
+    def test_conversation_memory_clear_async(self):
+        """Wrapper to run async test."""
+        asyncio.run(self._test_conversation_memory_clear_async())
+
+    async def _test_conversation_memory_clear_streaming(self):
+        """Test that clearing conversation memory results in empty chat history in streaming."""
+        from adalflow.components.memory.memory import ConversationMemory
+        
+        # Create a mock planner that captures prompt_kwargs
+        captured_prompt_kwargs = []
+        
+        class CapturingStreamingPlanner:
+            def __init__(self):
+                self.call_count = 0
+                
+            async def acall(self, *, prompt_kwargs, model_kwargs=None, use_cache=None, id=None):
+                captured_prompt_kwargs.append(prompt_kwargs.copy())
+                self.call_count += 1
+                # Return a final answer to end execution
+                fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="test response")
+                
+                # Simulate streaming with async generator
+                async def stream_gen():
+                    yield "streaming event 1"
+                    yield "streaming event 2"
+                    
+                return GeneratorOutput(data=fn, raw_response=stream_gen())
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        # Create runner with conversation memory
+        memory = ConversationMemory()
+        planner = CapturingStreamingPlanner()
+        agent = DummyAgent(planner=planner, answer_data_type=None)
+        runner = Runner(agent=agent, conversation_memory=memory)
+        
+        # Mock the async tool execution
+        async def mock_tool_execute_async(func, streaming_result=None):
+            from adalflow.core.types import FunctionOutput
+            return FunctionOutput(name=func.name, input=func, output="test response")
+        
+        runner._tool_execute_async = mock_tool_execute_async
+        
+        # First streaming call - should have empty history
+        streaming_result1 = runner.astream(prompt_kwargs={"input_str": "Hello, my name is Charlie"})
+        events1 = []
+        async for event in streaming_result1.stream_events():
+            events1.append(event)
+        
+        self.assertEqual(planner.call_count, 1)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[0])
+        self.assertEqual(captured_prompt_kwargs[0]["chat_history_str"], "")  # Empty on first call
+        
+        # Second streaming call - should have history from first call
+        streaming_result2 = runner.astream(prompt_kwargs={"input_str": "What is my name?"})
+        events2 = []
+        async for event in streaming_result2.stream_events():
+            events2.append(event)
+            
+        self.assertEqual(planner.call_count, 2)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[1])
+        self.assertNotEqual(captured_prompt_kwargs[1]["chat_history_str"], "")  # Has history
+        self.assertIn("Charlie", captured_prompt_kwargs[1]["chat_history_str"])
+        
+        # Clear conversation memory
+        memory.clear_conversation_turns()
+        
+        # Third streaming call - should have empty history again
+        streaming_result3 = runner.astream(prompt_kwargs={"input_str": "Do you remember my name?"})
+        events3 = []
+        async for event in streaming_result3.stream_events():
+            events3.append(event)
+            
+        self.assertEqual(planner.call_count, 3)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[2])
+        self.assertEqual(captured_prompt_kwargs[2]["chat_history_str"], "")  # Empty after clear
+
+    def test_conversation_memory_clear_streaming(self):
+        """Wrapper to run async streaming test."""
+        asyncio.run(self._test_conversation_memory_clear_streaming())
+
+
+class TestRunnerBugFixes(unittest.TestCase):
+    """Tests for specific bugs that were found and fixed in the runner implementation."""
+
+    def test_null_function_handling_call(self):
+        """Test that call method handles None functions without crashing (fixes AttributeError on function.id)."""
+        # Simulate planner returning None function multiple times
+        agent = DummyAgent(
+            planner=FakePlanner([
+                GeneratorOutput(data=None, error="Parsing error"),
+                GeneratorOutput(data=None, error="Still parsing error")
+            ]),
+            answer_data_type=None
+        )
+        runner = Runner(agent=agent, max_steps=2)
+        
+        result = runner.call(prompt_kwargs={})
+        
+        # Should return a result and handle None gracefully without crashing
+        self.assertIsInstance(result, RunnerResult)
+        # Should have processed the None function in step history
+        self.assertEqual(len(runner.step_history), 2)  # Will try max_steps=2
+        # First step should have None function and error observation
+        step = runner.step_history[0] 
+        self.assertIsNone(step.function)
+        self.assertEqual(step.observation, "Parsing error")
+
+    def test_null_function_handling_acall(self):
+        """Test that acall method handles None functions without crashing."""
+        async def async_test():
+            agent = DummyAgent(
+                planner=FakePlanner([
+                    GeneratorOutput(data=None, error="Async parsing error"),
+                    GeneratorOutput(data=None, error="Still async parsing error")
+                ]),
+                answer_data_type=None
+            )
+            runner = Runner(agent=agent, max_steps=2)
+            
+            result = await runner.acall(prompt_kwargs={})
+            
+            # Should return a result and handle None gracefully without crashing
+            self.assertIsInstance(result, RunnerResult) 
+            # Should have processed the None function in step history
+            self.assertEqual(len(runner.step_history), 2)  # Will try max_steps=2
+            # First step should have None function and error observation
+            step = runner.step_history[0] 
+            self.assertIsNone(step.function)
+            self.assertEqual(step.observation, "Async parsing error")
+            
+        asyncio.run(async_test())
+
+    def test_function_id_assignment_safety(self):
+        """Test that function.id assignment is safe when function is None."""
+        # Create a GeneratorOutput with None data to test the null safety
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=None)]),
+            answer_data_type=None
+        )
+        runner = Runner(agent=agent)
+        
+        # This should not crash due to trying to access None.id
+        result = runner.call(prompt_kwargs={})
+        self.assertIsInstance(result, RunnerResult)
+
+    def test_consistent_error_variable_initialization(self):
+        """Test that current_error variable is properly initialized in all methods."""
+        
+        def create_error_planner():
+            """Create planner that causes internal error."""
+            class ErrorPlanner:
+                def call(self, **kwargs):
+                    return "invalid_output"  # Not a GeneratorOutput
+                    
+                async def acall(self, **kwargs):
+                    return "invalid_output"
+                    
+                def get_prompt(self, **kwargs):
+                    return "test prompt"
+            return ErrorPlanner()
+        
+        agent = DummyAgent(planner=create_error_planner(), answer_data_type=None)
+        runner = Runner(agent=agent)
+        
+        # Test call method doesn't crash with undefined current_error
+        result = runner.call(prompt_kwargs={})
+        self.assertIsInstance(result, RunnerResult)
+        self.assertIn("Expected GeneratorOutput", result.answer)
+        
+        # Test acall method doesn't crash with undefined current_error  
+        async def async_test():
+            result = await runner.acall(prompt_kwargs={})
+            self.assertIsInstance(result, RunnerResult)
+            self.assertIn("Expected GeneratorOutput", result.answer)
+            
+        asyncio.run(async_test())
+
+    def test_output_data_vs_function_consistency(self):
+        """Test that we correctly use output.data instead of non-existent output.function."""
+        fn = DummyFunction(name="test", _is_answer_final=True, _answer="success")
+        
+        # Test that GeneratorOutput.data is accessed, not .function
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=fn)]),
+            answer_data_type=None
+        )
+        runner = Runner(agent=agent)
+        
+        result = runner.call(prompt_kwargs={})
+        self.assertEqual(result.answer, "success")
+
+    def test_span_data_consistency(self):
+        """Test that span data uses answer strings, not full RunnerResult objects."""
+        fn = DummyFunction(name="finish", _is_answer_final=True, _answer="span_test")
+        mock_tool_manager = lambda expr_or_fun, step: SimpleNamespace(output="span_test")
+        
+        agent = DummyAgent(
+            planner=FakePlanner([GeneratorOutput(data=fn)]),
+            answer_data_type=None,
+            tool_manager=mock_tool_manager,
+        )
+        runner = Runner(agent=agent)
+        
+        # This would previously fail tests due to storing RunnerResult instead of string
+        result = runner.call(prompt_kwargs={})
+        self.assertEqual(result.answer, "span_test")
+        self.assertIsInstance(result.answer, str)  # Should be string, not RunnerResult
+
+    def test_cancellation_behavior(self):
+        """Test that cancellation works correctly without asyncio.shield interference."""
+        async def async_test():
+            # Create a long-running operation that can be cancelled
+            fn = DummyFunction(name="slow_op", _is_answer_final=False)
+            
+            class SlowPlanner:
+                async def acall(self, **kwargs):
+                    await asyncio.sleep(2)  # Long operation
+                    return GeneratorOutput(data=fn)
+                    
+                def get_prompt(self, **kwargs):
+                    return "test prompt"
+            
+            agent = DummyAgent(planner=SlowPlanner(), answer_data_type=None)
+            runner = Runner(agent=agent)
+            
+            # Start streaming
+            stream_result = runner.astream(prompt_kwargs={})
+            
+            # Cancel after short delay
+            await asyncio.sleep(0.1)
+            await runner.cancel()
+            
+            # Wait for completion 
+            await stream_result.wait_for_completion()
+            
+            # Should have been cancelled successfully
+            self.assertTrue(runner.is_cancelled())
+            
+        asyncio.run(async_test())
+
+    def test_error_handling_consistency_across_methods(self):
+        """Test that error handling is consistent between call, acall, and astream."""
+        
+        # Test consistent error handling when planner fails
+        class FailingPlanner:
+            def call(self, **kwargs):
+                raise ValueError("Planner failed")
+                
+            async def acall(self, **kwargs):
+                raise ValueError("Async planner failed")
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        agent = DummyAgent(planner=FailingPlanner(), answer_data_type=None)
+        runner = Runner(agent=agent)
+        
+        # All methods should handle errors gracefully
+        result_sync = runner.call(prompt_kwargs={})
+        self.assertIsInstance(result_sync, RunnerResult)
+        
+        async def async_test():
+            result_async = await runner.acall(prompt_kwargs={})
+            self.assertIsInstance(result_async, RunnerResult)
+            
+            stream_result = runner.astream(prompt_kwargs={})
+            await stream_result.wait_for_completion()
+            self.assertIsNotNone(stream_result._exception)
+            
+        asyncio.run(async_test())
+
+    def test_json_parsing_error_handling(self):
+        """Test that JSON parsing errors in _process_data are handled correctly."""
+        import adalflow.components.agent.runner as runner_module
+        
+        # Test with pydantic dataclass that requires JSON parsing
+        from pydantic import BaseModel
+        
+        class TestModel(BaseModel):
+            value: str
+        
+        runner = Runner(
+            agent=DummyAgent(planner=FakePlanner([]), answer_data_type=TestModel),
+            max_steps=1
+        )
+        
+        # Test malformed JSON
+        with self.assertRaises(ValueError) as cm:
+            runner._process_data("invalid json")
+        self.assertIn("Invalid JSON", str(cm.exception))
+        
+        # Test JSON that's not a dict  
+        with self.assertRaises(ValueError) as cm:
+            runner._process_data('"just a string"')
+        self.assertIn("Expected dict after JSON parsing", str(cm.exception))
 
 
 if __name__ == "__main__":
