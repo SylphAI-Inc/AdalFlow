@@ -4,6 +4,7 @@ import inspect
 import asyncio
 import uuid
 import json
+from datetime import datetime
 
 from typing import (
     Any,
@@ -194,7 +195,7 @@ class Runner(Component):
         """Register a callback to be called when execution is cancelled."""
         self._cancel_callbacks.append(callback)
 
-    def cancel(self) -> None:
+    async def cancel(self) -> None:
         """Cancel the current execution.
 
         This will stop the current execution but preserve state like memory.
@@ -224,7 +225,7 @@ class Runner(Component):
             self._current_task.cancel()
 
             # Create a task to wait for cancellation to complete
-            asyncio.create_task(self._wait_for_cancellation())
+            await self._wait_for_cancellation()
 
     async def _wait_for_cancellation(self):
         """Wait for task to be cancelled with timeout."""
@@ -232,7 +233,7 @@ class Runner(Component):
             try:
                 # Wait up to 1 second for task to cancel gracefully
                 await asyncio.wait_for(
-                    asyncio.shield(self._current_task),
+                    self._current_task,
                     timeout=1.0
                 )
             except (asyncio.TimeoutError, asyncio.CancelledError):
@@ -246,81 +247,7 @@ class Runner(Component):
 
         return False
 
-    async def _process_final_step(
-        self,
-        function: Function,
-        step_count: int,
-        streaming_result,
-        runner_span_instance
-    ):
-        """Process the final step when is_answer_final is True."""
-        processed_data = self._process_data(function._answer)
-        printc(f"processed_data: {processed_data}", color="yellow")
-
-        # Create RunnerResult for the final output
-        # TODO: this is over complicated!
-        # Need to make the relation between runner result and runner streaming result more clear
-        runner_result = RunnerResult(
-            answer=processed_data,
-            step_history=self.step_history.copy(),
-            # ctx=self.ctx,
-        )
-
-        # Update runner span with final results
-        runner_span_instance.span_data.update_attributes(
-            {
-                "steps_executed": step_count + 1,
-                "final_answer": processed_data,
-                "workflow_status": "stream_completed",
-            }
-        )
-
-        # Create response span for tracking final streaming result
-        with response_span(
-            answer=processed_data,
-            result_type=type(processed_data).__name__,
-            execution_metadata={
-                "steps_executed": step_count + 1,
-                "max_steps": self.max_steps,
-                "workflow_status": "stream_completed",
-                "streaming": True,
-            },
-            response=runner_result,
-        ):
-            pass
-
-        # Emit execution complete event
-        final_output_item = FinalOutputItem(data=runner_result)
-        final_output_event = RunItemStreamEvent(
-            name="agent.execution_complete",
-            item=final_output_item,
-        )
-        streaming_result.put_nowait(final_output_event)
-
-        # Store final result and completion status
-        streaming_result.answer = processed_data
-        streaming_result.step_history = self.step_history.copy()
-        streaming_result._is_complete = True
-
-        # add the assistant response to the conversation memory
-        # TODO: create a string for the step history
-        if self.use_conversation_memory:
-            self.conversation_memory.add_assistant_response(
-                AssistantResponse(
-                    response_str=processed_data,
-                    metadata={
-                        "step_history": self.step_history.copy()
-                    },
-                )
-            )
-
-        return final_output_item
-
-
-
-
-    def _get_final_anser(self, function: Function) -> Any:
-        """Get and process the final answer from the function."""
+    def _get_final_answer(self, function: Function) -> Any:
         """Get and process the final answer from the function."""
         if hasattr(function, "_answer"):
             return self._process_data(function._answer)
@@ -362,9 +289,6 @@ class Runner(Component):
                 )
             )
 
-
-    # async def _process_final_step()
-
     def create_response_span(self, runner_result, step_count: int, streaming_result: RunnerStreamingResult, runner_span_instance, workflow_status: str = "stream_completed"):
 
         runner_span_instance.span_data.update_attributes(
@@ -392,7 +316,7 @@ class Runner(Component):
 
 
 
-    async def _process_final_step(
+    async def _process_stream_final_step(
         self,
         answer: Any,
         step_count: int,
@@ -400,14 +324,14 @@ class Runner(Component):
         runner_span_instance
     ) -> FinalOutputItem:
         """Process the final step and trace it."""
-        # processed_data = self._get_final_anser(function)
+        # processed_data = self._get_final_answer(function)
         # printc(f"processed_data: {processed_data}", color="yellow")
 
         # Runner result is the same as the sync/async call result
 
         runner_result = self._create_runner_result(
             answer=answer,
-            step_history=self.step_history.copy(),
+            step_history=self.step_history,
         )
 
         # Update runner span with final results
@@ -455,7 +379,12 @@ class Runner(Component):
                 )
                 # if it has not yet been deserialized then deserialize into dictionary using json loads
                 if isinstance(data, str):
-                    data = json.loads(data)
+                    try:
+                        data = json.loads(data)
+                    except json.JSONDecodeError as e:
+                        raise ValueError(f"Invalid JSON in data: {e}")
+                    if not isinstance(data, dict):
+                        raise ValueError(f"Expected dict after JSON parsing, got {type(data)}")
                 log.info(
                     f"initial answer after being evaluated using json: {data}, type: {type(data)}"
                 )
@@ -467,7 +396,12 @@ class Runner(Component):
                 )
 
                 if isinstance(data, str):
-                    data = json.loads(data)
+                    try:
+                        data = json.loads(data)
+                    except json.JSONDecodeError as e:
+                        raise ValueError(f"Invalid JSON in data: {e}")
+                    if not isinstance(data, dict):
+                        raise ValueError(f"Expected dict after JSON parsing, got {type(data)}")
                 log.info(
                     f"initial answer after being evaluated using json: {data}, type: {type(data)}"
                 )
@@ -576,6 +510,7 @@ class Runner(Component):
 
             step_count = 0
             last_output = None
+            current_error = None
 
             while step_count < self.max_steps:
                 try:
@@ -602,7 +537,17 @@ class Runner(Component):
 
                         printc(f"planner output: {output}", color="yellow")
 
-                        function = self._get_planner_function(output)
+                        # consistency with impl_astream, break if output is not a Generator Output 
+                        if not isinstance(output, GeneratorOutput):
+                            # Create runner finish event with error and stop the loop
+                            current_error = (
+                                f"Expected GeneratorOutput, but got {type(output)}"
+                            )
+                            break
+
+                        function = output.data
+                        if function is not None:
+                            function.id = str(uuid.uuid4()) # add function id 
                         printc(f"function: {function}", color="yellow")
                         if function is None:
                             error_msg = output.error
@@ -708,6 +653,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
+                    current_error = error_msg
                     break
 
             # Update runner span with final results
@@ -741,8 +687,9 @@ class Runner(Component):
 
             # Always return a RunnerResult, even if no successful completion
             return last_output or RunnerResult(
-                answer=f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
+                answer=current_error or f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
                 step_history=self.step_history.copy(),
+                error=current_error,
             )
 
     def _tool_execute_sync(
@@ -854,6 +801,7 @@ class Runner(Component):
 
             step_count = 0
             last_output = None
+            current_error = None
 
             while step_count < self.max_steps:
                 try:
@@ -876,9 +824,17 @@ class Runner(Component):
 
                         printc(f"planner output: {output}", color="yellow")
 
-                        function = self._get_planner_function(output)
-                        # add a function id
-                        function.id = str(uuid.uuid4())
+                        if not isinstance(output, GeneratorOutput):
+                            # Create runner finish event with error and stop the loop
+                            current_error = (
+                                f"Expected GeneratorOutput, but got {type(output)}"
+                            )
+                            break
+
+                        function = output.data
+                        if function is not None:
+                            # add a function id
+                            function.id = str(uuid.uuid4())
                         printc(f"function: {function}", color="yellow")
 
                         if self._check_last_step(function):
@@ -903,6 +859,19 @@ class Runner(Component):
 
                             step_count += 1  # Increment step count before breaking
                             break
+
+                        # Handle None function case
+                        if function is None:
+                            error_msg = output.error
+                            step_output = StepOutput(
+                                step=step_count,
+                                action=None,
+                                function=None,
+                                observation=error_msg,
+                            )
+                            self.step_history.append(step_output)
+                            step_count += 1
+                            continue
 
                         # Create tool span for function execution
                         with tool_span(
@@ -974,6 +943,7 @@ class Runner(Component):
 
                     # Continue to next step instead of returning
                     step_count += 1
+                    current_error = error_msg
                     break
 
             # Update runner span with final results
@@ -1007,8 +977,9 @@ class Runner(Component):
 
             # Always return a RunnerResult, even if no successful completion
             return last_output or RunnerResult(
-                answer=f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
+                answer=current_error or f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
                 step_history=self.step_history.copy(),
+                error=current_error,
             )
 
     def astream(
@@ -1025,6 +996,7 @@ class Runner(Component):
             RunnerStreamingResult: A streaming result object with stream_events() method
         """
         # Cancel any previous task that might still be running
+        # TODO might have problems of overwriting and cancelling other tasks if we call await astream two times asychronously with the same runner / agent instance.
         if self._current_task and not self._current_task.done():
             self._current_task.cancel()
             log.info("Cancelled previous streaming task")
@@ -1037,6 +1009,8 @@ class Runner(Component):
         result = RunnerStreamingResult()
         # Store the streaming result so we can emit events to it during cancellation
         self._current_streaming_result = result
+
+        self.reset_cancellation()
 
         # Store the task so we can cancel it if needed
         self._current_task = asyncio.get_event_loop().create_task(
@@ -1071,8 +1045,6 @@ class Runner(Component):
             workflow_status= workflow_status,
         ) as runner_span_instance:
             # Reset cancellation flag at start of new execution
-            self.reset_cancellation()
-
             self.step_history = []
             prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
 
@@ -1134,6 +1106,7 @@ class Runner(Component):
 
 
                         # Check cancellation before calling planner
+                        # TODO seems slightly unnecessary we are calling .cancel on the task in cancel which will raise this exception regardless unless we want to terminate earlier by checking the cancelled field
                         if self.is_cancelled():
                             raise asyncio.CancelledError("Execution cancelled by user")
 
@@ -1165,6 +1138,7 @@ class Runner(Component):
                         if isinstance(output.raw_response, AsyncIterable):
                             # Streaming llm call - iterate through the async generator
                             async for event in output.raw_response:
+                                # TODO seems slightly unnecessary we are calling .cancel on the task in cancel which will raise this exception regardless
                                 if self.is_cancelled():
                                     raise asyncio.CancelledError("Execution cancelled by user")
                                 wrapped_event = RawResponsesStreamEvent(data=event, input=planner_prompt)
@@ -1198,9 +1172,10 @@ class Runner(Component):
                         # asychronously consuming the raw response will
                         # update the data field of output with the result of the output processor
 
-                        # handle function output
+                        # handle function output 
 
                         function = output.data # here are the recoverable errors, should continue to step output
+                        function.id = str(uuid.uuid4()) # add function id 
                         function_result = None
                         function_output_observation = None
 
@@ -1232,8 +1207,8 @@ class Runner(Component):
                             printc(f"function: {function}", color="yellow")
 
                             if self._check_last_step(function):
-                                answer = self._get_final_anser(function)
-                                final_output_item = await self._process_final_step(
+                                answer = self._get_final_answer(function)
+                                final_output_item = await self._process_stream_final_step(
                                     answer=answer,
                                     step_count=step_count,
                                     streaming_result=streaming_result,
@@ -1343,7 +1318,7 @@ class Runner(Component):
                     # Store cancellation result
                     streaming_result.answer = cancel_msg
                     streaming_result.step_history = self.step_history.copy()
-                    streaming_result._is_complete = True
+                    streaming_result._is_complete = True 
 
                     # Add cancellation response to conversation memory
                     if self.use_conversation_memory:
@@ -1368,7 +1343,7 @@ class Runner(Component):
                     log.error(error_msg)
 
                     workflow_status = "stream_failed"
-                    streaming_result.exception = error_msg
+                    streaming_result._exception = error_msg
 
                     # Emit error as FinalOutputItem to queue
                     final_output_item = FinalOutputItem(error=error_msg)
@@ -1385,6 +1360,7 @@ class Runner(Component):
                 # Create a RunnerResult with incomplete status
                 runner_result = RunnerResult(
                     answer=f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
+                    error=current_error,
                     step_history=self.step_history.copy(),
 
                 )
@@ -1394,10 +1370,18 @@ class Runner(Component):
                 current_error = f"No output generated after {step_count} steps (max_steps: {self.max_steps})"
 
 
+            runner_span_instance.span_data.update_attributes(
+                {
+                    "steps_executed": step_count,
+                    "final_answer": final_output_item.data.answer if final_output_item.data else None,
+                    "workflow_status": workflow_status,
+                }
+            )
+
             # create runner result with or without error
 
             runner_result = RunnerResult(
-                answer=final_output_item.data if final_output_item.data else None,
+                answer=final_output_item.data.answer if final_output_item.data else None,
                 step_history=self.step_history.copy(),
                 error=current_error,
             )

@@ -460,6 +460,7 @@ def run_advanced_react_agent():
 
     print("\nFINAL RESULT (RunnerResponse):")
     print(f"Answer: {result.answer}")
+    print(f"Error: {result.error}")
     # Extract function call info from step history (last step contains the final function)
     if result.step_history and len(result.step_history) > 0:
         last_step = result.step_history[-1]
@@ -512,6 +513,7 @@ async def arun_advanced_react_agent():
 
     print("\nFINAL RESULT (RunnerResponse):")
     print(f"Answer: {result.answer}")
+    print(f"Error: {result.error}")
     # Extract function call info from step history (last step contains the final function)
     if result.step_history and len(result.step_history) > 0:
         last_step = result.step_history[-1]
@@ -626,6 +628,7 @@ def pydantic_dataclass_run_agent():
         # Print results
         print("\nFINAL RESULT (RunnerResponse):")
         print(f"Answer: {result.answer}")
+        print(f"Error: {result.error}")
         # Extract function call info from step history (last step contains the final function)
         if result.step_history and len(result.step_history) > 0:
             last_step = result.step_history[-1]
@@ -750,6 +753,7 @@ if __name__ == "__main__":
             print(f"\n✅ SUCCESS: {name}")
             output = outputs[name]
             print(f"Answer: {output.answer}")
+            print(f"Error: {output.error}")
             # Extract function call info from step history (last step contains the final function)
             if output.step_history and len(output.step_history) > 0:
                 last_step = output.step_history[-1]
