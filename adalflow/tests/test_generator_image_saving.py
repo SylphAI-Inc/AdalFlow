@@ -35,13 +35,17 @@ class TestGeneratorImageSaving(unittest.TestCase):
             images=self.test_image_base64
         )
         
-        saved_path = output.save_images(
+        saved_paths = output.save_images(
             directory=self.test_dir,
             prefix="test_single",
             format="png"
         )
         
-        self.assertIsInstance(saved_path, str)
+        # save_images always returns a list, even for single images
+        self.assertIsInstance(saved_paths, list)
+        self.assertEqual(len(saved_paths), 1)
+        
+        saved_path = saved_paths[0]
         self.assertTrue(os.path.exists(saved_path))
         self.assertTrue(saved_path.endswith(".png"))
         
@@ -77,14 +81,16 @@ class TestGeneratorImageSaving(unittest.TestCase):
             images=data_uri
         )
         
-        saved_path = output.save_images(
+        saved_paths = output.save_images(
             directory=self.test_dir,
             prefix="test_data_uri",
             format="png"
         )
         
-        self.assertIsInstance(saved_path, str)
-        self.assertTrue(os.path.exists(saved_path))
+        # save_images always returns a list, even for single images
+        self.assertIsInstance(saved_paths, list)
+        self.assertEqual(len(saved_paths), 1)
+        self.assertTrue(os.path.exists(saved_paths[0]))
     
     def test_save_url_without_decoding(self):
         """Test handling of URL images (saves URL to file)."""
@@ -94,14 +100,18 @@ class TestGeneratorImageSaving(unittest.TestCase):
             images=image_url
         )
         
-        saved_path = output.save_images(
+        saved_paths = output.save_images(
             directory=self.test_dir,
             prefix="test_url",
             format="png",
             decode_base64=True  # Should recognize it's a URL and not decode
         )
         
-        self.assertIsInstance(saved_path, str)
+        # save_images always returns a list
+        self.assertIsInstance(saved_paths, list)
+        self.assertEqual(len(saved_paths), 1)
+        
+        saved_path = saved_paths[0]
         self.assertTrue(saved_path.endswith(".url"))
         
         # Verify URL was saved
@@ -126,14 +136,17 @@ class TestGeneratorImageSaving(unittest.TestCase):
             images=self.test_image_base64
         )
         
-        saved_path = output.save_images(
+        saved_paths = output.save_images(
             directory=nested_dir,
             prefix="nested",
             format="png"
         )
         
         self.assertTrue(os.path.exists(nested_dir))
-        self.assertTrue(os.path.exists(saved_path))
+        # save_images always returns a list
+        self.assertIsInstance(saved_paths, list)
+        self.assertEqual(len(saved_paths), 1)
+        self.assertTrue(os.path.exists(saved_paths[0]))
     
     def test_jpeg_conversion_with_pil(self):
         """Test JPEG conversion using PIL when available."""
@@ -145,16 +158,18 @@ class TestGeneratorImageSaving(unittest.TestCase):
         
         try:
             # This should trigger PIL conversion
-            saved_path = output.save_images(
+            saved_paths = output.save_images(
                 directory=self.test_dir,
                 prefix="test_jpeg",
                 format="jpg"
             )
             
             # If PIL is available, it should work
-            self.assertIsInstance(saved_path, str)
-            self.assertTrue(os.path.exists(saved_path))
-            self.assertTrue(saved_path.endswith(".jpg"))
+            # save_images always returns a list
+            self.assertIsInstance(saved_paths, list)
+            self.assertEqual(len(saved_paths), 1)
+            self.assertTrue(os.path.exists(saved_paths[0]))
+            self.assertTrue(saved_paths[0].endswith(".jpg"))
             
         except ImportError:
             # PIL not available - that's okay for this test environment
@@ -178,18 +193,20 @@ class TestGeneratorImageSaving(unittest.TestCase):
                 # For formats other than PNG, PIL is required
                 # Without PIL, it should still save but as PNG
                 try:
-                    saved_path = output.save_images(
+                    saved_paths = output.save_images(
                         directory=self.test_dir,
                         prefix=f"test_{format_str}",
                         format=format_str
                     )
                     
-                    self.assertIsInstance(saved_path, str)
-                    self.assertTrue(os.path.exists(saved_path))
+                    # save_images always returns a list
+                    self.assertIsInstance(saved_paths, list)
+                    self.assertEqual(len(saved_paths), 1)
+                    self.assertTrue(os.path.exists(saved_paths[0]))
                     
                     # Check extension matches if PIL is available
                     if format_str == "png":
-                        self.assertTrue(saved_path.endswith(expected_ext))
+                        self.assertTrue(saved_paths[0].endswith(expected_ext))
                 except ImportError:
                     # PIL not available for non-PNG formats
                     if format_str not in ["png"]:

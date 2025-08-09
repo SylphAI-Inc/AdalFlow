@@ -1,0 +1,107 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.1.2)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Determine version
+      id: version
+      run: |
+        if [[ "${{ github.event_name }}" == "push" ]]; then
+          VERSION=${GITHUB_REF#refs/tags/v}
+        else
+          VERSION=${{ github.event.inputs.version }}
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "Release version: $VERSION"
+    
+    - name: Update version in __init__.py
+      run: |
+        VERSION=${{ steps.version.outputs.VERSION }}
+        sed -i "s/__version__ = \".*\"/__version__ = \"$VERSION\"/" adalflow/adalflow/__init__.py
+        echo "Updated version to $VERSION in __init__.py"
+        cat adalflow/adalflow/__init__.py | head -1
+    
+    - name: Update version in pyproject.toml
+      run: |
+        VERSION=${{ steps.version.outputs.VERSION }}
+        cd adalflow
+        poetry version $VERSION
+        echo "Updated version to $VERSION in pyproject.toml"
+    
+    - name: Update CHANGELOG.md date
+      run: |
+        VERSION=${{ steps.version.outputs.VERSION }}
+        DATE=$(date +%Y-%m-%d)
+        sed -i "s/## \[$VERSION\] - .*/## [$VERSION] - $DATE/" adalflow/CHANGELOG.md
+        echo "Updated CHANGELOG.md with release date $DATE"
+    
+    - name: Commit version updates
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add adalflow/adalflow/__init__.py adalflow/pyproject.toml adalflow/CHANGELOG.md
+        git diff --staged --quiet || git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }} [skip ci]"
+    
+    - name: Build package
+      run: |
+        cd adalflow
+        poetry build
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.version.outputs.VERSION }}
+        name: Release v${{ steps.version.outputs.VERSION }}
+        body: |
+          ## AdalFlow v${{ steps.version.outputs.VERSION }}
+          
+          See [CHANGELOG.md](https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/CHANGELOG.md) for details.
+        files: |
+          adalflow/dist/*
+        draft: false
+        prerelease: false
+    
+    - name: Publish to PyPI
+      env:
+        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        cd adalflow
+        poetry publish --skip-existing
+    
+    - name: Push version updates to main
+      if: success()
+      run: |
+        git push origin HEAD:main || echo "No changes to push"

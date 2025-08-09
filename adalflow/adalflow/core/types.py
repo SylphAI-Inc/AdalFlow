@@ -566,7 +566,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         format: Literal["png", "jpg", "jpeg", "webp", "gif", "bmp"] = "png",
         decode_base64: bool = True,
         return_paths: bool = True
-    ) -> Optional[Union[str, List[str]]]:
+    ) -> Optional[List[str]]:
         """Save generated images to disk with automatic format conversion.
         
         Args:
@@ -578,15 +578,14 @@ class GeneratorOutput(DataClass, Generic[T_co]):
             
         Returns:
             If return_paths is True:
-                - str: Path to saved image (for single image)
-                - List[str]: Paths to saved images (for multiple images)
+                - List[str]: Paths to saved images (always returns a list, even for single image)
                 - None: If no images to save
             Otherwise returns None
             
         Examples:
-            >>> # Save single image as PNG
+            >>> # Save single image as PNG (returns list with one element)
             >>> response.save_images()
-            'generated_0.png'
+            ['generated_0.png']
             
             >>> # Save multiple images as JPEG with custom prefix
             >>> response.save_images(prefix="cat", format="jpg")
@@ -594,7 +593,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
             
             >>> # Save to specific directory
             >>> response.save_images(directory="/tmp/images", format="webp")
-            '/tmp/images/generated_0.webp'
+            ['/tmp/images/generated_0.webp']
         """
         if not self.images:
             return None
@@ -668,7 +667,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
             saved_paths.append(filepath)
         
         if return_paths:
-            return saved_paths[0] if len(saved_paths) == 1 else saved_paths
+            return saved_paths  # Always return a list
         return None
 
 

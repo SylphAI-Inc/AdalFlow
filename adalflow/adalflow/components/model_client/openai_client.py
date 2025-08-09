@@ -697,8 +697,8 @@ class OpenAIClient(ModelClient):
 
         Args:
             api_key (Optional[str], optional): OpenAI API key. Defaults to None.
-            _non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for chat completions. Defaults to None.
-            _streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for streaming chat completions. Defaults to None.
+            non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for chat completions. Ignored, kept for backward compatibility. Defaults to None.
+            streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for streaming chat completions. Ignored, kept for backward compatibility. Defaults to None.
             non_streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for non-streaming responses. Defaults to None.
             streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for streaming responses. Defaults to None.
             input_type (Literal["text", "messages"]): Input type for the client. Defaults to "text".
@@ -707,6 +707,18 @@ class OpenAIClient(ModelClient):
             organization (Optional[str], optional): OpenAI organization key. Defaults to None.
             headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.
         """
+        # Log deprecation warning if old parsers are provided
+        if non_streaming_chat_completion_parser is not None:
+            log.warning(
+                "non_streaming_chat_completion_parser is deprecated and will be ignored. "
+                "The OpenAI client now uses the Response API exclusively."
+            )
+        if streaming_chat_completion_parser is not None:
+            log.warning(
+                "streaming_chat_completion_parser is deprecated and will be ignored. "
+                "The OpenAI client now uses the Response API exclusively."
+            )
+        
         super().__init__()
         self._api_key = api_key
         self.base_url = base_url
