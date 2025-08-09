@@ -10,6 +10,7 @@ from typing import (
     Type,
     Generator as GeneratorType,
     Union,
+    AsyncGenerator,
 )
 import backoff
 import logging
@@ -29,14 +30,6 @@ from adalflow.core.types import EmbedderOutput, Embedding
 log = logging.getLogger(__name__)
 
 T = TypeVar("T")
-
-
-def parse_stream_response(completion: GeneratorType) -> Any:
-    """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
-    for chunk in completion:
-        log.debug(f"Raw chunk: {chunk}")
-        raw_response = chunk["response"] if "response" in chunk else None
-        yield GeneratorOutput(data=None, raw_response=raw_response)
 
 
 def parse_generate_response(completion: GenerateResponse) -> "GeneratorOutput":
@@ -72,6 +65,37 @@ def parse_chat_messsage(completion: Dict[str, Any]) -> "GeneratorOutput":
 
 class OllamaClient(ModelClient):
     __doc__ = r"""A component wrapper for the Ollama SDK client.
+
+    **Streaming Support:**
+    
+    When using streaming with Ollama, the raw response chunks are accessible through 
+    ``output.raw_response``. For async streaming::
+
+        # Using Generator with async streaming
+        generator = Generator(
+            model_client=OllamaClient(),
+            model_kwargs={"model": "llama3", "stream": True}
+        )
+        
+        output = await generator.acall(
+            prompt_kwargs={"input_str": "Tell me a story"}
+        )
+        
+        # Access the raw streaming response
+        async for chunk in output.raw_response:
+            if "message" in chunk:
+                print(chunk["message"]["content"], end='', flush=True)
+
+    For synchronous streaming::
+
+        output = generator.call(
+            prompt_kwargs={"input_str": "Tell me a story"}
+        )
+        
+        # Access the raw streaming response
+        for chunk in output.raw_response:
+            if "message" in chunk:
+                print(chunk["message"]["content"], end='', flush=True)
 
     To make a model work, you need to:
 
@@ -212,7 +236,7 @@ class OllamaClient(ModelClient):
         log.debug(f"Using host: {self._host}")
 
         self.init_sync_client()
-        self.async_client = None  # only initialize if the async call is called
+        self.init_async_client()
         self.generate = False  # default to False, we use chat api by default
 
     def init_sync_client(self):
@@ -227,14 +251,40 @@ class OllamaClient(ModelClient):
 
     # NOTE: do not put yield and return in the same function, thus we separate the functions
     def parse_chat_completion(
-        self, completion: Union[GenerateResponse, GeneratorType]
-    ) -> "GeneratorOutput":
-        """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
-        log.debug(f"completion: {completion}, {isinstance(completion, GeneratorType)}")
-        if isinstance(completion, GeneratorType):  # streaming
-            return parse_stream_response(completion)
-        elif self.generate:  # generate api
+        self, completion: Union[GenerateResponse, GeneratorType, AsyncGenerator]
+    ) -> Union["GeneratorOutput", AsyncGenerator[GeneratorOutput, None]]:
+        """Parse the completion to a str. We use the generate with prompt instead of chat with messages.
+        
+        Handles both synchronous and asynchronous responses, including streaming.
+        
+        Args:
+            completion: The response from Ollama API, can be:
+                - GenerateResponse: Non-streaming generate response
+                - GeneratorType: Synchronous streaming response
+                - AsyncGenerator: Asynchronous streaming response
+                - Dict: Chat response
+                
+        Returns:
+            GeneratorOutput for non-streaming responses
+            Generator/AsyncGenerator for streaming responses
+        """
+        log.debug(f"completion: {completion}, type: {type(completion)}")
+        
+        # Check for async generator (async streaming)
+        if hasattr(completion, '__aiter__'):
+            log.debug("Async streaming response detected")
+            # For streaming, return GeneratorOutput with the generator in raw_response
+            # This matches the OpenAI client pattern
+            return GeneratorOutput(data=None, raw_response=completion, api_response=completion)
+        # Check for sync generator (sync streaming)
+        elif isinstance(completion, GeneratorType):
+            log.debug("Sync streaming response detected")
+            # For streaming, return GeneratorOutput with the generator in raw_response
+            return GeneratorOutput(data=None, raw_response=completion, api_response=completion)
+        # Non-streaming generate API
+        elif self.generate:
             return parse_generate_response(completion)
+        # Non-streaming chat API
         else:
             return parse_chat_messsage(completion)
 

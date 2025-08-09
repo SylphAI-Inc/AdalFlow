@@ -12,3 +12,4 @@ The integration will be listing all existing integrations and integrations we pl
     integrations
     openai
     anthropic
+    ollama
