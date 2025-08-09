@@ -280,12 +280,6 @@ Popular models compatible with Ollama:
 
 To see all available models, visit: https://ollama.com/library
 
-Source Code
------------
-
-- **Ollama Client**: `ollama_client.py <https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/adalflow/components/model_client/ollama_client.py>`_
-
-
 Resources
 ---------
 

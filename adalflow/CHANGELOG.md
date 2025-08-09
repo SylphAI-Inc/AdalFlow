@@ -1,4 +1,82 @@
 
+## [1.1.1] - 2025-08-11
+
+### Added
+
+#### Model Client Enhancements
+- **OpenAI Client**:
+  - Full multimodal support for vision models (GPT-4o, GPT-4o-mini, O1, O1-mini)
+  - Image generation capabilities via DALL-E integration (both legacy and new tools API)
+  - Support for local images, URLs, and base64 encoded images
+  - Reasoning model support (O1, O3) with effort configuration
+  - Migrated to Response API for better feature support
+  - Comprehensive streaming support for both sync and async operations
+
+- **Ollama Client**:
+  - Enhanced streaming support with proper async/sync handling
+  - Chat API support alongside existing Generate API
+  - GPT-OSS model integration for local reasoning capabilities
+  - Improved error handling and connection management
+  - Support for thinking/reasoning output extraction
+
+#### Core Features
+- **GeneratorOutput**:
+  - Added `save_images()` method for automatic image saving with format conversion
+  - Support for multiple image formats (PNG, JPG, JPEG, WEBP, GIF, BMP)
+  - Added `images` field for multimodal responses
+  - Enhanced streaming response handling
+
+- **Memory (ConversationMemory)**:
+  - Added `clear()` method for memory management
+  - Improved prompt rendering for chat history
+  - Better handling of nested prompts
+
+#### Documentation & Examples
+- Comprehensive Ollama integration guide with tutorials
+- OpenAI integration documentation with multimodal examples
+- New notebooks: `ollama_models.ipynb`, `openai_integration.ipynb`
+- Tutorial scripts for both Ollama and OpenAI in `tutorials/models/`
+- Multimodal integration tutorial
+
+### Improved
+
+#### Runner & Agent
+- **Runner**:
+  - Enhanced error handling for `acall()`, `call()`, and streaming operations
+  - Added cancellation logic for better control flow
+  - Refactored `astream()` to reduce code redundancy
+  - Improved generator input handling
+  - Better error propagation and debugging information
+
+- **Agent**:
+  - More robust error handling and recovery
+  - Updated prompts for better clarity
+  - Fixed nested prompt support issues
+  - Improved JSON output formatting and parsing
+
+#### Output Parsing
+- JSON output parser now automatically handles JSON wrapped in markdown code blocks
+- Better handling of malformed JSON responses
+- Improved error messages for parsing failures
+
+#### Testing
+- Comprehensive tests for image saving functionality
+- Enhanced Ollama client tests with streaming support
+- Expanded OpenAI client tests for multimodal features
+- Memory component tests for new functionality
+- Runner tests for error handling scenarios
+
+### Fixed
+- Fixed nested prompt support by removing parentheses in agent task descriptions
+- Resolved streaming response handling issues in async contexts
+- Fixed memory rendering issues with complex conversation histories
+- Corrected JSON output parser for various edge cases
+- Fixed connection handling in Ollama client
+
+### Dependencies
+- Updated project dependencies for better compatibility
+- Added support for latest OpenAI SDK features
+
 ## [1.0.5] - Release Date TBD
 
 # Added
