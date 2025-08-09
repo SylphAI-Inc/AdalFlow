@@ -1209,7 +1209,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     def call(
         self,
         prompt_kwargs: Optional[Dict] = {},  # supports both str and parameter value
-        model_kwargs: Optional[Dict] = {},
+        model_kwargs: Optional[Dict] = {}, # can take images = {input: }, tools=[{"type": "image_generation"}],
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
     ) -> GeneratorOutputType:

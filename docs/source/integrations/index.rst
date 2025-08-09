@@ -10,4 +10,5 @@ The integration will be listing all existing integrations and integrations we pl
     :caption: Integrations
 
     integrations
+    openai
     anthropic

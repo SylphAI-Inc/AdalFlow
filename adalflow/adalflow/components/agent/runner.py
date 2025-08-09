@@ -1173,7 +1173,8 @@ class Runner(Component):
                         else:
                             # yield the final planner response
                             if output.error is not None:
-                                if "400" in output.error or "429" in output.error: # context too long or rate limite, not recoverable
+                                if "400" in output.error or "429" or "404" in output.error: # context too long or rate limite, not recoverable
+                                    # 404 model not exist
                                     # create a final output item with error and stop the loop
                                     final_output_item = FinalOutputItem(
                                         error=output.error,

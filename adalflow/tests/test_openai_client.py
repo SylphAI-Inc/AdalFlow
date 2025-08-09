@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, AsyncMock, Mock
+from unittest.mock import patch, AsyncMock, Mock, MagicMock
 import os
 import base64
 
@@ -13,6 +13,7 @@ from openai.types.responses import (
 
 from adalflow.core.types import ModelType, GeneratorOutput
 from adalflow.components.model_client.openai_client import OpenAIClient
+from adalflow.components.model_client.utils import extract_text_from_response_stream
 import asyncio
 
 
@@ -158,7 +159,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, pre_formatted)
 
     def test_convert_inputs_to_api_kwargs_with_images(self):
-        # Test with single image URL - Response API uses input as string
+        # Test with single image URL - Response API uses message format for multimodal
         model_kwargs = {
             "model": "gpt-4o",
             "images": "https://example.com/image.jpg",
@@ -169,11 +170,20 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             model_type=ModelType.LLM,
         )
         print(result)
-        # Response API expects input as string, not messages
-        self.assertEqual(result["input"], "Describe this image")
+        # Response API expects message format with content array for multimodal
+        expected_input = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": "Describe this image"},
+                    {"type": "input_image", "image_url": "https://example.com/image.jpg"}
+                ]
+            }
+        ]
+        self.assertEqual(result["input"], expected_input)
         self.assertEqual(result["model"], "gpt-4o")
 
-        # Test with multiple images - Response API uses input as string
+        # Test with multiple images - Response API uses message format for multimodal
         model_kwargs = {
             "model": "gpt-4o",
             "images": [
@@ -187,8 +197,18 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             model_kwargs=model_kwargs,
             model_type=ModelType.LLM,
         )
-        # Response API expects input as string, not messages
-        self.assertEqual(result["input"], "Compare these images")
+        # Response API expects message format with content array for multimodal
+        expected_input = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": "Compare these images"},
+                    {"type": "input_image", "image_url": "https://example.com/image1.jpg"},
+                    {"type": "input_image", "image_url": "https://example.com/image2.jpg"}
+                ]
+            }
+        ]
+        self.assertEqual(result["input"], expected_input)
         self.assertEqual(result["model"], "gpt-4o")
 
     @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
@@ -298,111 +318,6 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(output.usage.output_tokens, 15)
         self.assertEqual(output.usage.input_tokens, 25)
         self.assertEqual(output.usage.total_tokens, 40)
-
-    def test_convert_inputs_to_api_kwargs_for_image_generation(self):
-        # Test basic image generation
-        result = self.client.convert_inputs_to_api_kwargs(
-            input="a white siamese cat",
-            model_kwargs={"model": "dall-e-3"},
-            model_type=ModelType.IMAGE_GENERATION,
-        )
-        self.assertEqual(result["prompt"], "a white siamese cat")
-        self.assertEqual(result["model"], "dall-e-3")
-        self.assertEqual(result["size"], "1024x1024")  # default
-        self.assertEqual(result["quality"], "standard")  # default
-        self.assertEqual(result["n"], 1)  # default
-
-        # Test image edit
-        test_image = "test_image.jpg"
-        test_mask = "test_mask.jpg"
-        try:
-            # Create test files
-            with open(test_image, "wb") as f:
-                f.write(b"fake image content")
-            with open(test_mask, "wb") as f:
-                f.write(b"fake mask content")
-
-            result = self.client.convert_inputs_to_api_kwargs(
-                input="a white siamese cat",
-                model_kwargs={
-                    "model": "dall-e-2",
-                    "image": test_image,
-                    "mask": test_mask,
-                },
-                model_type=ModelType.IMAGE_GENERATION,
-            )
-            self.assertEqual(result["prompt"], "a white siamese cat")
-            self.assertEqual(result["model"], "dall-e-2")
-            self.assertTrue(isinstance(result["image"], str))  # base64 encoded
-            self.assertTrue(isinstance(result["mask"], str))  # base64 encoded
-        finally:
-            # Cleanup
-            if os.path.exists(test_image):
-                os.remove(test_image)
-            if os.path.exists(test_mask):
-                os.remove(test_mask)
-
-    @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
-    async def test_acall_image_generation(self, MockAsyncOpenAI):
-        mock_async_client = AsyncMock()
-        MockAsyncOpenAI.return_value = mock_async_client
-
-        # Mock the image generation response
-        mock_async_client.images.generate = AsyncMock(
-            return_value=type("Response", (), {"data": self.mock_image_response})()
-        )
-
-        # Call the acall method with image generation
-        result = await self.client.acall(
-            api_kwargs=self.image_generation_kwargs,
-            model_type=ModelType.IMAGE_GENERATION,
-        )
-
-        # Assertions
-        MockAsyncOpenAI.assert_called_once()
-        mock_async_client.images.generate.assert_awaited_once_with(
-            **self.image_generation_kwargs
-        )
-        self.assertEqual(result, self.mock_image_response)
-
-        # Test parse_image_generation_response
-        output = self.client.parse_image_generation_response(result)
-        self.assertTrue(isinstance(output, GeneratorOutput))
-        self.assertEqual(output.data, "https://example.com/generated_image.jpg")
-
-    @patch(
-        "adalflow.components.model_client.openai_client.OpenAIClient.init_sync_client"
-    )
-    @patch("adalflow.components.model_client.openai_client.OpenAI")
-    def test_call_image_generation(self, MockSyncOpenAI, mock_init_sync_client):
-        mock_sync_client = Mock()
-        MockSyncOpenAI.return_value = mock_sync_client
-        mock_init_sync_client.return_value = mock_sync_client
-
-        # Mock the image generation response
-        mock_sync_client.images.generate = Mock(
-            return_value=type("Response", (), {"data": self.mock_image_response})()
-        )
-
-        # Set the sync client
-        self.client.sync_client = mock_sync_client
-
-        # Call the call method with image generation
-        result = self.client.call(
-            api_kwargs=self.image_generation_kwargs,
-            model_type=ModelType.IMAGE_GENERATION,
-        )
-
-        # Assertions
-        mock_sync_client.images.generate.assert_called_once_with(
-            **self.image_generation_kwargs
-        )
-        self.assertEqual(result, self.mock_image_response)
-
-        # Test parse_image_generation_response
-        output = self.client.parse_image_generation_response(result)
-        self.assertTrue(isinstance(output, GeneratorOutput))
-        self.assertEqual(output.data, "https://example.com/generated_image.jpg")
 
     def test_from_dict_to_dict(self):
         test_api_key = "fake_api"
@@ -598,6 +513,253 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
             self.client.response_parser,
             self.client.non_streaming_response_parser,
         )
+
+    def test_reasoning_model_response(self):
+        """Test parsing of reasoning model responses with reasoning field."""
+        # Create a mock Response with reasoning output
+        mock_reasoning_response = Mock(spec=Response)
+        mock_reasoning_response.id = "resp-reasoning-123"
+        mock_reasoning_response.created_at = 1635820005.0
+        mock_reasoning_response.model = "o1"
+        mock_reasoning_response.object = "response"
+        mock_reasoning_response.output_text = None  # Reasoning models may not have output_text
+        
+        # Mock output array with reasoning and message
+        mock_reasoning_item = Mock()
+        mock_reasoning_item.type = "reasoning"
+        mock_reasoning_item.id = "rs_123"
+        mock_reasoning_item.summary = [
+            Mock(type="summary_text", text="I'm thinking about the problem step by step...")
+        ]
+        
+        mock_message_item = Mock()
+        mock_message_item.type = "message"
+        mock_message_item.content = [
+            Mock(type="output_text", text="The answer is 42.")
+        ]
+        
+        mock_reasoning_response.output = [mock_reasoning_item, mock_message_item]
+        mock_reasoning_response.usage = ResponseUsage(
+            input_tokens=50,
+            output_tokens=100,
+            total_tokens=150,
+            input_tokens_details={"cached_tokens": 0},
+            output_tokens_details={"reasoning_tokens": 80},
+        )
+        
+        # Parse the response
+        result = self.client.parse_chat_completion(mock_reasoning_response)
+        
+        # Assertions
+        self.assertIsInstance(result, GeneratorOutput)
+        self.assertEqual(result.data, "The answer is 42.")
+        self.assertIsNotNone(result.thinking)
+        self.assertIn("thinking about the problem", result.thinking)
+        # Check that usage was properly tracked
+        self.assertEqual(result.usage.output_tokens, 100)
+        self.assertEqual(result.usage.total_tokens, 150)
+
+    def test_multimodal_input_with_images(self):
+        """Test multimodal input with images (vision models)."""
+        # Test with URL image
+        url_kwargs = self.client.convert_inputs_to_api_kwargs(
+            input="What's in this image?",
+            model_kwargs={
+                "model": "gpt-4o",
+                "images": "https://example.com/image.jpg"
+            },
+            model_type=ModelType.LLM
+        )
+        
+        # Should format as message with content array
+        self.assertIn("input", url_kwargs)
+        self.assertIsInstance(url_kwargs["input"], list)
+        self.assertEqual(url_kwargs["input"][0]["role"], "user")
+        content = url_kwargs["input"][0]["content"]
+        self.assertIsInstance(content, list)
+        
+        # Check text content
+        text_content = next((c for c in content if c["type"] == "input_text"), None)
+        self.assertIsNotNone(text_content)
+        self.assertEqual(text_content["text"], "What's in this image?")
+        
+        # Check image content
+        image_content = next((c for c in content if c["type"] == "input_image"), None)
+        self.assertIsNotNone(image_content)
+        self.assertEqual(image_content["image_url"], "https://example.com/image.jpg")
+        
+        # Test with base64 image
+        base64_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        base64_kwargs = self.client.convert_inputs_to_api_kwargs(
+            input="Describe this image",
+            model_kwargs={
+                "model": "gpt-4o",
+                "images": f"data:image/png;base64,{base64_image}"
+            },
+            model_type=ModelType.LLM
+        )
+        
+        # Check base64 image content
+        content = base64_kwargs["input"][0]["content"]
+        image_content = next((c for c in content if c["type"] == "input_image"), None)
+        self.assertIsNotNone(image_content)
+        self.assertTrue(image_content["image_url"].startswith("data:image/png;base64,"))
+
+    def test_image_generation_response(self):
+        """Test parsing of image generation responses."""
+        # Create a mock Response with image generation output
+        mock_image_response = Mock(spec=Response)
+        mock_image_response.id = "resp-img-gen-123"
+        mock_image_response.created_at = 1635820005.0
+        mock_image_response.model = "gpt-4o"
+        mock_image_response.object = "response"
+        mock_image_response.output_text = None
+        
+        # Mock output array with image generation call
+        mock_image_item = Mock()
+        mock_image_item.type = "image_generation_call"
+        mock_image_item.result = "base64_encoded_image_data_here"
+        
+        mock_message_item = Mock()
+        mock_message_item.type = "message"
+        mock_message_item.content = [
+            Mock(type="output_text", text="I've generated an image of a cat for you.")
+        ]
+        
+        mock_image_response.output = [mock_image_item, mock_message_item]
+        mock_image_response.usage = ResponseUsage(
+            input_tokens=30,
+            output_tokens=50,
+            total_tokens=80,
+            input_tokens_details={"cached_tokens": 0},
+            output_tokens_details={"reasoning_tokens": 0},
+        )
+        
+        # Parse the response
+        result = self.client.parse_chat_completion(mock_image_response)
+        
+        # Assertions
+        self.assertIsInstance(result, GeneratorOutput)
+        self.assertEqual(result.data, "I've generated an image of a cat for you.")
+        self.assertIsNotNone(result.images)
+        self.assertEqual(result.images, ["base64_encoded_image_data_here"])
+
+
+    def test_streaming_with_helper_function(self):
+        """Test streaming response with text extraction helper."""
+        # Create streaming events with proper structure
+        event1 = Mock()
+        event1.type = "response.created"
+        
+        event2 = Mock()
+        event2.type = "response.output_text.delta"
+        event2.delta = "Hello "
+        
+        event3 = Mock()
+        event3.type = "response.output_text.delta"
+        event3.delta = "world!"
+        
+        event4 = Mock()
+        event4.type = "response.done"
+        
+        events = [event1, event2, event3, event4]
+        
+        # Test text extraction
+        extracted_text = []
+        for event in events:
+            text = extract_text_from_response_stream(event)
+            if text:
+                extracted_text.append(text)
+        
+        # Assertions
+        self.assertEqual(extracted_text, ["Hello ", "world!"])
+        self.assertEqual("".join(extracted_text), "Hello world!")
+
+    async def test_reasoning_model_streaming(self):
+        """Test streaming with reasoning model responses."""
+        # Setup mock
+        mock_async_client = AsyncMock()
+        
+        # Create reasoning streaming events with proper structure
+        async def mock_reasoning_stream():
+            # Reasoning events
+            event1 = Mock()
+            event1.type = "reasoning.start"
+            yield event1
+            
+            event2 = Mock()
+            event2.type = "reasoning.delta"
+            event2.delta = "Thinking..."
+            yield event2
+            
+            # Text output events
+            event3 = Mock()
+            event3.type = "response.output_text.delta"
+            event3.delta = "The answer "
+            yield event3
+            
+            event4 = Mock()
+            event4.type = "response.output_text.delta"
+            event4.delta = "is 42."
+            yield event4
+            
+            event5 = Mock()
+            event5.type = "response.done"
+            yield event5
+        
+        mock_async_client.responses.create.return_value = mock_reasoning_stream()
+        self.client.async_client = mock_async_client
+        
+        # Call with reasoning model
+        api_kwargs = {
+            "model": "o1",
+            "input": "What is the meaning of life?",
+            "stream": True,
+            "reasoning": {"effort": "medium", "summary": "auto"}
+        }
+        
+        stream = await self.client.acall(api_kwargs, ModelType.LLM_REASONING)
+        
+        # Process the stream
+        text_chunks = []
+        async for event in stream:
+            text = extract_text_from_response_stream(event)
+            if text:
+                text_chunks.append(text)
+        
+        # Assertions
+        self.assertEqual("".join(text_chunks), "The answer is 42.")
+
+    def test_multiple_images_input(self):
+        """Test multimodal input with multiple images."""
+        # Test with multiple images
+        multi_image_kwargs = self.client.convert_inputs_to_api_kwargs(
+            input="Compare these images",
+            model_kwargs={
+                "model": "gpt-4o",
+                "images": [
+                    "https://example.com/image1.jpg",
+                    "https://example.com/image2.jpg",
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+                ]
+            },
+            model_type=ModelType.LLM
+        )
+        
+        # Check content array
+        content = multi_image_kwargs["input"][0]["content"]
+        
+        # Should have 1 text + 3 images = 4 items
+        self.assertEqual(len(content), 4)
+        
+        # Count image contents
+        image_contents = [c for c in content if c["type"] == "input_image"]
+        self.assertEqual(len(image_contents), 3)
+        
+        # Verify each image
+        self.assertEqual(image_contents[0]["image_url"], "https://example.com/image1.jpg")
+        self.assertEqual(image_contents[1]["image_url"], "https://example.com/image2.jpg")
+        self.assertTrue(image_contents[2]["image_url"].startswith("data:image/png;base64,"))
 
 
 if __name__ == "__main__":

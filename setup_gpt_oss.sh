@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 
 # GPT-OSS Setup Script for Ollama
 # This script helps you set up and test OpenAI's GPT-OSS models with Ollama
@@ -15,16 +15,6 @@ if ! command -v ollama &> /dev/null; then
 fi
 
 echo "✅ Ollama is installed"
-
-# Start Ollama server if not running
-if ! pgrep -f "ollama serve" > /dev/null; then
-    echo "🚀 Starting Ollama server..."
-    ollama serve &
-    sleep 5  # Wait for server to start
-    echo "✅ Ollama server started"
-else
-    echo "✅ Ollama server is already running"
-fi
 
 # Show available models
 echo -e "\nCurrent models:"
