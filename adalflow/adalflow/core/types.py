@@ -18,6 +18,7 @@ from typing import (
     AsyncIterator,
     Coroutine,
     Iterable,
+    Tuple,
 )
 from typing_extensions import TypeAlias
 from collections import OrderedDict
@@ -38,15 +39,6 @@ from adalflow.core.tokenizer import Tokenizer
 from adalflow.core.functional import (
     is_normalized,
     generate_function_call_expression_from_callable,
-)
-from adalflow.components.model_client import (
-    CohereAPIClient,
-    TransformersClient,
-    AnthropicAPIClient,
-    GroqAPIClient,
-    OpenAIClient,
-    GoogleGenAIClient,
-    OllamaClient,
 )
 
 # Import OpenAI's ResponseStreamEvent for type alias
@@ -71,7 +63,6 @@ class ModelType(Enum):
     UNDEFINED = auto()
 
 
-@dataclass
 class ModelClientType:
     __doc__ = r"""A quick way to access all model clients in the ModelClient module.
 
@@ -89,15 +80,35 @@ class ModelClientType:
 
         from adalflow.core.types import ModelClientType
 
-        model_client = ModelClientType.OPENAI()
+        model_client = ModelClientType.OPENAI
     """
-    COHERE = CohereAPIClient
-    TRANSFORMERS = TransformersClient
-    ANTHROPIC = AnthropicAPIClient
-    GROQ = GroqAPIClient
-    OPENAI = OpenAIClient
-    GOOGLE_GENAI = GoogleGenAIClient
-    OLLAMA = OllamaClient
+    
+    _clients_cache = {}
+    
+    def __class_getattr__(cls, name):
+        """Dynamically import and return model clients on attribute access."""
+        if name in cls._clients_cache:
+            return cls._clients_cache[name]
+            
+        client_mapping = {
+            'COHERE': ('adalflow.components.model_client', 'CohereAPIClient'),
+            'TRANSFORMERS': ('adalflow.components.model_client', 'TransformersClient'),
+            'ANTHROPIC': ('adalflow.components.model_client', 'AnthropicAPIClient'),
+            'GROQ': ('adalflow.components.model_client', 'GroqAPIClient'),
+            'OPENAI': ('adalflow.components.model_client', 'OpenAIClient'),
+            'GOOGLE_GENAI': ('adalflow.components.model_client', 'GoogleGenAIClient'),
+            'OLLAMA': ('adalflow.components.model_client', 'OllamaClient'),
+        }
+        
+        if name in client_mapping:
+            module_name, class_name = client_mapping[name]
+            import importlib
+            module = importlib.import_module(module_name)
+            client_class = getattr(module, class_name)
+            cls._clients_cache[name] = client_class
+            return client_class
+        
+        raise AttributeError(f"'{cls.__name__}' object has no attribute '{name}'")
 
 
 # TODO: define standard required outputs
@@ -458,6 +469,8 @@ class RawResponsesStreamEvent(DataClass):
     """Streaming event for storing the raw responses from the LLM. These are 'raw' events, i.e. they are directly passed through
     from the LLM.
     """
+    input: Optional[Any] = None
+    """The input to the LLM."""
 
     data: Union[Any, None] = None
     """The raw responses streaming event from the LLM."""
@@ -489,7 +502,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
 
     input: Optional[Any] = field(
         default=None,
-        metadata={"desc": "The input to the generator"},
+        metadata={"desc": "The input to the generator"}, # should use it to save the prompt
     )
 
     data: T_co = field(
@@ -502,6 +515,9 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     )
     tool_use: Optional[Function] = field(
         default=None, metadata={"desc": "The tool use of the model"}
+    )
+    images: Optional[Union[str, List[str]]] = field(
+        default=None, metadata={"desc": "Generated images (base64 or URLs) from image generation tools"}
     )
     error: Optional[str] = field(
         default=None,
@@ -542,6 +558,117 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         # if the stream is already consumed and there is final data then just return the final data
         if count == 0 and self.data:
             yield self.data
+    
+    def save_images(
+        self,
+        directory: str = ".",
+        prefix: str = "generated",
+        format: Literal["png", "jpg", "jpeg", "webp", "gif", "bmp"] = "png",
+        decode_base64: bool = True,
+        return_paths: bool = True
+    ) -> Optional[List[str]]:
+        """Save generated images to disk with automatic format conversion.
+        
+        Args:
+            directory: Directory to save images to (default: current directory)
+            prefix: Filename prefix for saved images (default: "generated")
+            format: Image format to save as (png, jpg, jpeg, webp, gif, bmp)
+            decode_base64: Whether to decode base64 encoded images (default: True)
+            return_paths: Whether to return the saved file paths (default: True)
+            
+        Returns:
+            If return_paths is True:
+                - List[str]: Paths to saved images (always returns a list, even for single image)
+                - None: If no images to save
+            Otherwise returns None
+            
+        Examples:
+            >>> # Save single image as PNG (returns list with one element)
+            >>> response.save_images()
+            ['generated_0.png']
+            
+            >>> # Save multiple images as JPEG with custom prefix
+            >>> response.save_images(prefix="cat", format="jpg")
+            ['cat_0.jpg', 'cat_1.jpg']
+            
+            >>> # Save to specific directory
+            >>> response.save_images(directory="/tmp/images", format="webp")
+            ['/tmp/images/generated_0.webp']
+        """
+        if not self.images:
+            return None
+            
+        import os
+        import base64
+        from pathlib import Path
+        
+        # Create directory if it doesn't exist
+        Path(directory).mkdir(parents=True, exist_ok=True)
+        
+        saved_paths = []
+        images_to_save = self.images if isinstance(self.images, list) else [self.images]
+        
+        try:
+            # Try to import PIL for format conversion
+            from PIL import Image
+            import io
+            has_pil = True
+        except ImportError:
+            has_pil = False
+            if format.lower() not in ["png", "jpg", "jpeg"]:
+                raise ImportError(
+                    f"PIL/Pillow is required for '{format}' format. "
+                    "Install with: pip install Pillow"
+                )
+        
+        for i, img_data in enumerate(images_to_save):
+            # Determine if this is base64 or a URL
+            is_base64 = False
+            if isinstance(img_data, str):
+                if img_data.startswith("data:"):
+                    # Data URI format
+                    is_base64 = True
+                    # Extract base64 part from data URI
+                    base64_data = img_data.split(",")[1] if "," in img_data else img_data
+                elif not img_data.startswith(("http://", "https://")):
+                    # Assume it's raw base64 if not a URL
+                    is_base64 = True
+                    base64_data = img_data
+            
+            # Construct filename
+            filename = f"{prefix}_{i}.{format}"
+            filepath = os.path.join(directory, filename)
+            
+            if is_base64 and decode_base64:
+                # Decode base64 and save
+                img_bytes = base64.b64decode(base64_data)
+                
+                if has_pil and format.lower() not in ["png"]:
+                    # Use PIL to convert format
+                    img = Image.open(io.BytesIO(img_bytes))
+                    # Convert RGBA to RGB for JPEG
+                    if format.lower() in ["jpg", "jpeg"] and img.mode == "RGBA":
+                        rgb_img = Image.new("RGB", img.size, (255, 255, 255))
+                        rgb_img.paste(img, mask=img.split()[3] if len(img.split()) == 4 else None)
+                        img = rgb_img
+                    # PIL expects 'JPEG' for jpg/jpeg formats
+                    pil_format = "JPEG" if format.lower() in ["jpg", "jpeg"] else format.upper()
+                    img.save(filepath, pil_format)
+                else:
+                    # Save as-is (assuming PNG or no conversion needed)
+                    with open(filepath, "wb") as f:
+                        f.write(img_bytes)
+            else:
+                # For URLs or if not decoding, save the string as-is
+                with open(filepath + ".url", "w") as f:
+                    f.write(img_data)
+                filepath = filepath + ".url"
+            
+            saved_paths.append(filepath)
+        
+        if return_paths:
+            return saved_paths  # Always return a list
+        return None
 
 
 GeneratorOutputType = GeneratorOutput[object]
@@ -717,6 +844,9 @@ class StepOutput(DataClass, Generic[T]):
     # This action can be in Function, or Function Exptression, or just str
     # it includes the thought and action already
     # directly the output from planner LLMs
+    planner_prompt: Optional[str] = field(
+        default=None, metadata={"desc": "The planner prompt for this step"}
+    )
     action: T = field(
         default=None, metadata={"desc": "The action the agent takes at this step"}
     )
@@ -1282,6 +1412,31 @@ class StepRunItem(RunItem):
         },
     )
 
+"""
+Used to wrap the final response from the runner which holds key information about the execution such
+as the answer, step history, and error.
+"""
+
+
+@dataclass
+class RunnerResult:
+    step_history: List[StepOutput] = field(
+        metadata={"desc": "The step history of the execution"},
+        default_factory=list,
+    )
+    answer: Optional[str] = field(
+        metadata={"desc": "The answer to the user's query"}, default=None
+    )
+
+    error: Optional[str] = field(
+        metadata={"desc": "The error message if the code execution failed"},
+        default=None,
+    )
+    ctx: Optional[Dict] = field(
+        metadata={"desc": "The context of the execution"},
+        default=None,
+    )
+
 
 @dataclass
 class FinalOutputItem(RunItem):
@@ -1312,7 +1467,7 @@ class FinalOutputItem(RunItem):
     """
 
     type: str = field(default="final_output", metadata={"desc": "Type of run item"})
-    data: Optional[Any] = field(
+    data: Optional[RunnerResult] = field(
         default=None,
         metadata={"desc": "Final processed output from the runner execution"},
     )
@@ -1338,6 +1493,7 @@ class RunItemStreamEvent(DataClass):
 
     Event Types:
         - "agent.final_output": Final output from the agent (FinalOutputItem)
+        - "agent.tool_permission_request": Tool permission request before execution
         - "agent.tool_call_start": Agent is about to execute a tool (ToolCallRunItem)
         - "agent.tool_call_activity": Agent is about to execute a tool (ToolCallActivityRunItem)
         - "agent.tool_call_complete": Tool execution completed (ToolOutputRunItem)
@@ -1378,30 +1534,6 @@ class RunItemStreamEvent(DataClass):
 
 StreamEvent: TypeAlias = Union[RawResponsesStreamEvent, RunItemStreamEvent]
 
-"""
-Used to wrap the final response from the runner which holds key information about the execution such
-as the answer, step history, and error.
-"""
-
-
-@dataclass
-class RunnerResult:
-    step_history: List[StepOutput] = field(
-        metadata={"desc": "The step history of the execution"},
-        default_factory=list,
-    )
-    answer: Optional[str] = field(
-        metadata={"desc": "The answer to the user's query"}, default=None
-    )
-
-    error: Optional[str] = field(
-        metadata={"desc": "The error message if the code execution failed"},
-        default=None,
-    )
-    ctx: Optional[Dict] = field(
-        metadata={"desc": "The context of the execution"},
-        default=None,
-    )
 
 
 @dataclass

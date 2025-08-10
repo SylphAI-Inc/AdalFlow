@@ -98,6 +98,13 @@ get_probabilities = LazyImport(
     OptionalPackages.OPENAI,
 )
 
+# Import utils functions directly (not lazy) since they don't have dependencies
+from adalflow.components.model_client.utils import (
+    process_images_for_response_api,
+    format_content_for_response_api,
+    parse_embedding_response,
+)
+
 __all__ = [
     "CohereAPIClient",
     "TransformerReranker",
@@ -116,6 +123,11 @@ __all__ = [
     "XAIClient",
     "FireworksClient",
     "SambaNovaClient",
+    "AzureAIClient",
+    # Utils functions
+    "process_images_for_response_api",
+    "format_content_for_response_api",
+    "parse_embedding_response",
 ]
 
 for name in __all__:

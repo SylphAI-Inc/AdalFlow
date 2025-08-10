@@ -167,7 +167,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         self.name = name or self.__class__.__name__
         self.template = template
-        self.prompt_kwargs = prompt_kwargs
+        self.prompt_kwargs = prompt_kwargs.copy()
 
         self.model_kwargs = model_kwargs.copy()
         # init the model client
@@ -1209,7 +1209,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     def call(
         self,
         prompt_kwargs: Optional[Dict] = {},  # supports both str and parameter value
-        model_kwargs: Optional[Dict] = {},
+        model_kwargs: Optional[Dict] = {}, # can take images = {input: }, tools=[{"type": "image_generation"}], for image generation
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
     ) -> GeneratorOutputType:
@@ -1226,7 +1226,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         ) as generator_span_data:
             generation_time = time.time()
             if self.mock_output:
-                return GeneratorOutput(data=self.mock_output_data, id=id)
+                return GeneratorOutput(data=self.mock_output_data, id=id, input=prompt_str)
 
             log.debug(f"prompt_kwargs: {prompt_kwargs}")
             log.debug(f"model_kwargs: {model_kwargs}")
@@ -1245,7 +1245,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 )
             except Exception as e:
                 log.error(f"Error calling the model: {e}")
-                output = GeneratorOutput(error=str(e), id=id)
+                output = GeneratorOutput(error=str(e), id=id, input=prompt_str)
             # process the completion
             if completion is not None:
                 try:
@@ -1254,11 +1254,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 except Exception as e:
                     log.error(f"Error processing the output: {e}")
                     output = GeneratorOutput(
-                        raw_response=str(completion), error=str(e), id=id
+                        raw_response=str(completion), error=str(e), id=id, input=prompt_str
                     )
 
             # User only need to use one of them, no need to use them all.
             output.id = id
+            output.input = prompt_str
             self._run_callbacks(
                 output,
                 input=api_kwargs,
@@ -1314,7 +1315,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 generator_span_data.span_data.update_attributes(
                     {"final_response": self.mock_output_data}
                 )
-                return GeneratorOutput(data=self.mock_output_data, id=id)
+                return GeneratorOutput(data=self.mock_output_data, id=id, input=prompt_str)
 
             generation_time = time.time()
             log.info(f"prompt_kwargs: {prompt_kwargs}")
@@ -1334,7 +1335,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 )
             except Exception as e:
                 log.error(f"Error calling the model: {e}")
-                output = GeneratorOutput(error=str(e), id=id)
+                output = GeneratorOutput(error=str(e), id=id, input=prompt_str)
 
             if completion is not None:
                 try:
@@ -1343,11 +1344,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 except Exception as e:
                     log.error(f"Error processing the output: {e}")
                     output = GeneratorOutput(
-                        raw_response=str(completion), error=str(e), id=id
+                        raw_response=str(completion), error=str(e), id=id, input=prompt_str
                     )
 
             # User only need to use one of them, no need to use them all.
             output.id = id
+            output.input = prompt_str
             log.info(f"output: {output}")
             # if the output is not an async generator then set its id and run call backs
             # TODO support when output is an Async Generator

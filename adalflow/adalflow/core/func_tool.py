@@ -73,7 +73,7 @@ class FunctionType(Enum):
     ASYNC_GENERATOR = auto()  # Async generator: async def func(): yield value
 
 
-# TODO: improve the support for async functions, similarly a component might be used as a tool
+# TODO: Add a wrapper to add **kwargs at the end of each function
 class FunctionTool(Component):
     __doc__ = r"""Describing and Parsing(to LLM) and executing a function.
 

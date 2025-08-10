@@ -26,6 +26,7 @@ import json
 import yaml
 import ast
 import threading
+import base64
 
 from inspect import signature, Parameter
 from dataclasses import fields, is_dataclass, MISSING, Field
@@ -1052,11 +1053,28 @@ def extract_function_expression(
     return text[: end + 1]
 
 
+def _is_valid_json_str(text: str) -> bool:
+    """Helper function to check if a string is valid JSON.
+    
+    Args:
+        text (str): The text to validate as JSON.
+        
+    Returns:
+        bool: True if the text is valid JSON, False otherwise.
+    """
+    try:
+        json.loads(text)
+        return True
+    except json.JSONDecodeError:
+        return False
+
+
 def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
     """Extract JSON string from text.
 
     It will extract the first JSON object or array found in the text by searching for { or [.
     If right brace is not found, we add one to the end of the string.
+    Handles JSON wrapped in markdown code blocks (```json ... ```).
 
     Args:
         text (str): The text containing potential JSON data.
@@ -1071,6 +1089,41 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
     """
     # NOTE: this regex parsing is taken from langchain.output_parsers.pydantic
     text = text.strip()
+    
+    # First check if the text is already a valid JSON string
+    if _is_valid_json_str(text):
+        return text
+    
+    # First, handle the specific case where JSON ends with ```} or similar patterns
+    # This regex will capture JSON that might have trailing markdown artifacts
+    malformed_pattern = re.compile(
+        r'^(.*?)\n?```\}*$', re.MULTILINE | re.DOTALL
+    )
+    malformed_match = malformed_pattern.match(text)
+    if malformed_match and text.endswith('```}'):
+        # Extract just the JSON part before the markdown artifacts
+        potential_json = malformed_match.group(1).strip()
+        # Validate using helper function
+        if _is_valid_json_str(potential_json):
+            return potential_json
+    
+    # Then check if the JSON is wrapped in markdown code blocks
+    # Pattern matches ```json, ```JSON, or just ``` at the start
+    # IMPORTANT: Only extract if the text STARTS with markdown code blocks to avoid
+    # extracting embedded code blocks within JSON string values
+    json_markdown_pattern = re.compile(
+        r"^```(?:json|JSON)?\s*\n?(.*?)```", re.MULTILINE | re.DOTALL
+    )
+    match = json_markdown_pattern.match(text)  # Use match instead of search to ensure it starts at beginning
+    if match:
+        # Extract the JSON content from within the code blocks
+        json_content = match.group(1).strip()
+        # Validate using helper function
+        if _is_valid_json_str(json_content):
+            return json_content
+        # If not valid, continue with the extraction logic on the markdown content
+        text = json_content
+    
     start_obj = text.find("{")
     start_arr = text.find("[")
     if start_obj == -1 and start_arr == -1:
@@ -1104,7 +1157,9 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
             "Incomplete JSON object found and add_missing_right_brace is False."
         )
 
-    return text[start : end + 1]
+    extracted_json = text[start : end + 1]
+
+    return extracted_json.strip()  # Return the extracted JSON string without leading/trailing spaces
 
 
 def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
@@ -1266,6 +1321,34 @@ def parse_json_str_to_obj(json_str: str) -> Union[Dict[str, Any], List[Any]]:
                 raise ValueError(
                     f"Got invalid JSON object with yaml.safe_load. Error: {e}. Got JSON string: {json_str}"
                 )
+
+
+########################################################################################
+# For image encoding
+########################################################################################
+def encode_image(image_path: str) -> str:
+    """Encode an image file to base64 string.
+    
+    Args:
+        image_path (str): Path to the image file.
+        
+    Returns:
+        str: Base64 encoded string of the image.
+        
+    Raises:
+        FileNotFoundError: If the image file does not exist.
+        PermissionError: If there's no permission to read the file.
+        Exception: For other errors during encoding.
+    """
+    try:
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode("utf-8")
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Image file not found: {image_path}")
+    except PermissionError:
+        raise PermissionError(f"Permission denied when reading image file: {image_path}")
+    except Exception as e:
+        raise Exception(f"Error encoding image {image_path}: {str(e)}")
 
 
 ########################################################################################
