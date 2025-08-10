@@ -70,11 +70,11 @@ T = TypeVar("T")
 @dataclass
 class ParsedResponseContent:
     """Structured container for parsed response content from OpenAI Response API.
-    
+
     This dataclass provides a consistent interface for accessing different types
     of content that can be returned by the Response API, including text, images,
     tool calls, reasoning chains, and more.
-    
+
     Attributes:
         text: The main text content from the response
         images: List of image data (base64 or URLs) from image generation
@@ -89,7 +89,7 @@ class ParsedResponseContent:
     reasoning: Optional[List[Dict[str, Any]]] = None
     code_outputs: Optional[List[Dict[str, Any]]] = None
     raw_output: Optional[Any] = None
-    
+
     def __bool__(self) -> bool:
         """Check if there's any content."""
         return any([
@@ -118,7 +118,7 @@ def get_response_output_text(response: Response) -> str:
 
 def parse_response_output(response: Response) -> ParsedResponseContent:
     """Parse response output that may include various types of content and tool calls.
-    
+
     The output array can contain:
     - Output messages (with nested content items)
     - Tool calls (file search, function, web search, computer use, etc.)
@@ -126,18 +126,18 @@ def parse_response_output(response: Response) -> ParsedResponseContent:
     - Image generation calls
     - Code interpreter calls
     - And more...
-    
+
     Returns:
         ParsedResponseContent: Structured content with typed access to all response data
     """
-    log.debug(f"raw response with output: {response}")
-    
+    log.debug(f"raw response from api: {response}")
+
     content = ParsedResponseContent()
-    
+
     # Store raw output for advanced users
     if hasattr(response, 'output'):
         content.raw_output = response.output
-    
+
     # First try to use output_text if available (SDK convenience property)
     if hasattr(response, 'output_text') and response.output_text:
         content.text = response.output_text
@@ -149,49 +149,50 @@ def parse_response_output(response: Response) -> ParsedResponseContent:
         content.tool_calls = parsed.get("tool_calls")
         content.reasoning = parsed.get("reasoning")
         content.code_outputs = parsed.get("code_outputs")
-    
+
     return content
 
 
 
 def _parse_message(item) -> Dict[str, Any]:
     """Parse a message item from the output array.
-    
+
     Args:
         item: A message item with type="message" and content array
-        
+
     Returns:
         Dict with parsed text and images from the message
     """
     result = {"text": None}
-    
+
     if hasattr(item, 'content') and isinstance(item.content, list):
+        # now pick the longer response 
         text_parts = []
-        
+
         for content_item in item.content:
             content_type = getattr(content_item, 'type', None)
-            
+
             if content_type == "output_text":
                 if hasattr(content_item, 'text'):
                     text_parts.append(content_item.text)
-        
+
         if text_parts:
-            result["text"] = "\n".join(text_parts)
-    
+            result["text"] = max(text_parts, key=len) if len(text_parts) > 1 else text_parts[0]
+
     return result
 
 
 def _parse_reasoning(item) -> Dict[str, Any]:
     """Parse a reasoning item from the output array.
-    
+
     Args:
         item: A reasoning item with type="reasoning" and summary array
-        
+
     Returns:
         Dict with extracted reasoning text and full structure
     """
     result = {"reasoning": None}
-    
+
     # Extract text from reasoning summary if available
     if hasattr(item, 'summary') and isinstance(item.summary, list):
         summary_texts = []
@@ -199,43 +200,43 @@ def _parse_reasoning(item) -> Dict[str, Any]:
             if hasattr(summary_item, 'type') and summary_item.type == "summary_text":
                 if hasattr(summary_item, 'text'):
                     summary_texts.append(summary_item.text)
-        
+
         if summary_texts:
             # Store reasoning text separately for later combination
             result["reasoning"] = "\n".join(summary_texts)
-    
+
     return result
 
 
 def _parse_image(item) -> Dict[str, Any]:
     """Parse an image generation call item from the output array.
-    
+
     Args:
         item: An image generation item with type="image_generation_call" and result field
-        
+
     Returns:
         Dict with extracted image data
     """
     result = {"images": None}
-    
+
     if hasattr(item, 'result'):
         # The result contains the base64 image data or URL
         result["images"] = item.result
-    
+
     return result
 
 
 def _parse_tool_call(item) -> Dict[str, Any]:
     """Parse a tool call item from the output array.
-    
+
     Args:
         item: A tool call item (various types ending in _call or containing tool_call)
-        
+
     Returns:
         Dict with tool call information
     """
     item_type = getattr(item, 'type', None)
-    
+
     if item_type == "image_generation_call":
         # Handle image generation - extract the result which contains the image data
         if hasattr(item, 'result'):
@@ -251,18 +252,18 @@ def _parse_tool_call(item) -> Dict[str, Any]:
                 "content": _serialize_item(item)
             }]
         }
-    
+
     return {}
 
 
 def _parse_output_array(output_array) -> Dict[str, Any]:
     """Parse the entire output array, processing all elements.
-    
+
     The output array typically contains:
     1. Reasoning (optional) - thinking/reasoning before the response
     2. Message - the actual response with content
     3. Tool calls (optional) - any tool invocations
-    
+
     Returns:
         Dict with keys: text, images, tool_calls, reasoning, code_outputs
     """
@@ -273,20 +274,20 @@ def _parse_output_array(output_array) -> Dict[str, Any]:
         "reasoning": None,
         "code_outputs": None
     }
-    
+
     if not output_array:
         return result
-    
+
     # Process all items in the array
     all_images = []
     all_tool_calls = []
     all_code_outputs = []
     all_reasoning = None
     text = None
-    
+
     for item in output_array:
         item_type = getattr(item, 'type', None)
-        
+
         if item_type == "reasoning":
             # Parse reasoning item
             parsed = _parse_reasoning(item)
@@ -298,13 +299,13 @@ def _parse_output_array(output_array) -> Dict[str, Any]:
             parsed = _parse_message(item)
             if parsed.get("text"):
                 text = parsed["text"]
-        
+
         elif item_type == "image_generation_call":
             # Parse image generation call separately
             parsed = _parse_image(item)
             if parsed.get("images"):
                 all_images.append(parsed["images"])
-                
+
         elif item_type and ('call' in item_type or 'tool' in item_type):
             # Parse other tool calls
             parsed = _parse_tool_call(item)
@@ -312,19 +313,19 @@ def _parse_output_array(output_array) -> Dict[str, Any]:
                 all_tool_calls.extend(parsed["tool_calls"])
             if parsed.get("code_outputs"):
                 all_code_outputs.extend(parsed["code_outputs"])
-    
 
-    result["text"] = text if text else None
-    
+
+    result["text"] = text if text else None # TODO: they can potentially send multiple complete text messages, we might need to save all of them and only return the first that can convert to outpu parser
+
     # Set other fields if they have content
-    result["images"] = all_images 
+    result["images"] = all_images
     if all_tool_calls:
         result["tool_calls"] = all_tool_calls
     if all_reasoning:
         result["reasoning"] = all_reasoning
     if all_code_outputs:
         result["code_outputs"] = all_code_outputs
-    
+
     return result
 
 
@@ -438,16 +439,16 @@ class OpenAIClient(ModelClient):
 
             from adalflow.components.model_client import OpenAIClient
             from adalflow.core import Generator
-            
+
             # Initialize client (uses OPENAI_API_KEY env var by default)
             client = OpenAIClient()
-            
+
             # Create a generator for text
             generator = Generator(
                 model_client=client,
                 model_kwargs={"model": "gpt-4o-mini"}
             )
-            
+
             # Generate response
             response = generator(prompt_kwargs={"input_str": "What is machine learning?"})
             print(response.data)
@@ -462,7 +463,7 @@ class OpenAIClient(ModelClient):
                     "images": "https://example.com/chart.jpg"
                 }
             )
-            
+
             response = generator(
                 prompt_kwargs={"input_str": "Analyze this chart and explain the trends"}
             )
@@ -480,7 +481,7 @@ class OpenAIClient(ModelClient):
                     ]
                 }
             )
-            
+
             response = generator(
                 prompt_kwargs={"input_str": "Compare these two images"}
             )
@@ -489,14 +490,14 @@ class OpenAIClient(ModelClient):
 
             import base64
             from adalflow.core.functional import encode_image
-            
+
             # Option 1: Using the encode_image helper
             base64_img = encode_image("/path/to/image.jpg")
-            
+
             # Option 2: Manual base64 encoding
             with open("/path/to/image.png", "rb") as f:
                 base64_img = base64.b64encode(f.read()).decode('utf-8')
-            
+
             # Use pre-formatted image data
             generator = Generator(
                 model_client=OpenAIClient(),
@@ -515,7 +516,7 @@ class OpenAIClient(ModelClient):
                     ]
                 }
             )
-            
+
             response = generator(
                 prompt_kwargs={"input_str": "Analyze these images"}
             )
@@ -523,7 +524,7 @@ class OpenAIClient(ModelClient):
         Reasoning models (O1, O3)::
 
             from adalflow.core.types import ModelType
-            
+
             # O3 reasoning model with effort configuration
             generator = Generator(
                 model_client=OpenAIClient(),
@@ -536,7 +537,7 @@ class OpenAIClient(ModelClient):
                     }
                 }
             )
-            
+
             response = generator(
                 prompt_kwargs={"input_str": "Solve this complex problem: ..."}
             )
@@ -544,7 +545,7 @@ class OpenAIClient(ModelClient):
         Image generation with DALL-E (legacy method)::
 
             from adalflow.core.types import ModelType
-            
+
             # Generate an image using ModelType.IMAGE_GENERATION
             generator = Generator(
                 model_client=OpenAIClient(),
@@ -556,7 +557,7 @@ class OpenAIClient(ModelClient):
                     "n": 1
                 }
             )
-            
+
             response = generator(
                 prompt_kwargs={"input_str": "A futuristic city with flying cars at sunset"}
             )
@@ -565,7 +566,7 @@ class OpenAIClient(ModelClient):
         Image generation via tools (new API)::
 
             import base64
-            
+
             # Generate images using the new tools API
             generator = Generator(
                 model_client=OpenAIClient(),
@@ -574,14 +575,14 @@ class OpenAIClient(ModelClient):
                     "tools": [{"type": "image_generation"}]
                 }
             )
-            
+
             # Generate an image
             response = generator(
                 prompt_kwargs={
                     "input_str": "Generate an image of a gray tabby cat hugging an otter with an orange scarf"
                 }
             )
-            
+
             # Access the generated image(s)
             if isinstance(response.data, list):
                 # Multiple images
@@ -602,13 +603,13 @@ class OpenAIClient(ModelClient):
         Embeddings::
 
             from adalflow.core import Embedder
-            
+
             # Create embedder
             embedder = Embedder(
                 model_client=OpenAIClient(),
                 model_kwargs={"model": "text-embedding-3-small"}
             )
-            
+
             # Generate embeddings
             embeddings = embedder(input=["Hello world", "Machine learning"])
             print(embeddings.data)  # List of embedding vectors
@@ -616,7 +617,7 @@ class OpenAIClient(ModelClient):
         Streaming responses::
 
             from adalflow.components.model_client.utils import extract_text_from_response_stream
-            
+
             # Enable streaming
             generator = Generator(
                 model_client=OpenAIClient(),
@@ -625,10 +626,10 @@ class OpenAIClient(ModelClient):
                     "stream": True
                 }
             )
-            
+
             # Stream the response
             response = generator(prompt_kwargs={"input_str": "Tell me a story"})
-            
+
             # Extract text from Response API streaming events
             for event in response.raw_response:
                 text = extract_text_from_response_stream(event)
@@ -697,8 +698,8 @@ class OpenAIClient(ModelClient):
 
         Args:
             api_key (Optional[str], optional): OpenAI API key. Defaults to None.
-            _non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for chat completions. Defaults to None.
-            _streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for streaming chat completions. Defaults to None.
+            non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for chat completions. Ignored, kept for backward compatibility. Defaults to None.
+            streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for streaming chat completions. Ignored, kept for backward compatibility. Defaults to None.
             non_streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for non-streaming responses. Defaults to None.
             streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for streaming responses. Defaults to None.
             input_type (Literal["text", "messages"]): Input type for the client. Defaults to "text".
@@ -707,6 +708,18 @@ class OpenAIClient(ModelClient):
             organization (Optional[str], optional): OpenAI organization key. Defaults to None.
             headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.
         """
+        # Log deprecation warning if old parsers are provided
+        if non_streaming_chat_completion_parser is not None:
+            log.warning(
+                "non_streaming_chat_completion_parser is deprecated and will be ignored. "
+                "The OpenAI client now uses the Response API exclusively."
+            )
+        if streaming_chat_completion_parser is not None:
+            log.warning(
+                "streaming_chat_completion_parser is deprecated and will be ignored. "
+                "The OpenAI client now uses the Response API exclusively."
+            )
+
         super().__init__()
         self._api_key = api_key
         self.base_url = base_url
@@ -777,21 +790,21 @@ class OpenAIClient(ModelClient):
         if isinstance(completion, Response):
             parsed_content = parse_response_output(completion)
             usage = self.track_completion_usage(completion)
-            
+
             data = parsed_content.text
 
             thinking = None
             if parsed_content.reasoning:
                 thinking = str(parsed_content.reasoning)
-            
-            
+
+
             return GeneratorOutput(
-                data=data,  # only text 
+                data=data,  # only text
                 thinking=thinking,
                 images=parsed_content.images,  # List of image data (base64 or URLs)
                 tool_use=None,  # Will be populated when we handle function tool calls
-                error=None, 
-                raw_response=data, 
+                error=None,
+                raw_response=data,
                 usage=usage
             )
         # Regular response handling (streaming or other)
@@ -909,7 +922,7 @@ class OpenAIClient(ModelClient):
             else:
                 messages.append({"role": "system", "content": input})
         return messages
-     
+
     # adapted for the response api
     def convert_inputs_to_api_kwargs(
         self,
@@ -946,11 +959,11 @@ class OpenAIClient(ModelClient):
         elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
             # Check if images are provided for multimodal input
             images = final_model_kwargs.pop("images", None)
-            
+
             if images:
                 # Use helper function to format content with images
                 content = format_content_for_response_api(input, images)
-                
+
                 # For responses.create API, wrap in user message format
                 final_model_kwargs["input"] = [
                     {
@@ -1029,7 +1042,7 @@ class OpenAIClient(ModelClient):
                 log.debug("non-streaming call")
                 self.response_parser = self.non_streaming_response_parser
                 return self.sync_client.responses.create(**api_kwargs)
- 
+
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 

@@ -154,6 +154,9 @@ class Runner(Component):
         self._current_task = None  # Track the current running task
         self._current_streaming_result = None  # Track the current streaming result
 
+        # support thinking model
+        self.is_thinking_model = agent.is_thinking_model if hasattr(agent, 'is_thinking_model')  else False
+
     def _init_permission_manager(self):
         """Initialize the permission manager and register tools that require approval."""
         if self.permission_manager and hasattr(self.agent, "tool_manager"):
@@ -546,8 +549,11 @@ class Runner(Component):
                             break
 
                         function = output.data
+                        thinking = output.thinking if hasattr(output, 'thinking') else None
                         if function is not None:
-                            function.id = str(uuid.uuid4()) # add function id 
+                            function.id = str(uuid.uuid4()) # add function id
+                            if thinking is not None and self.is_thinking_model:
+                                function.thought = thinking
                         printc(f"function: {function}", color="yellow")
                         if function is None:
                             error_msg = output.error
@@ -832,9 +838,12 @@ class Runner(Component):
                             break
 
                         function = output.data
+                        thinking = output.thinking if hasattr(output, 'thinking') else None
                         if function is not None:
                             # add a function id
                             function.id = str(uuid.uuid4())
+                            if thinking is not None and self.is_thinking_model:
+                                function.thought = thinking
                         printc(f"function: {function}", color="yellow")
 
                         if self._check_last_step(function):
@@ -1175,6 +1184,7 @@ class Runner(Component):
                         # handle function output 
 
                         function = output.data # here are the recoverable errors, should continue to step output
+                        thinking = output.thinking # check the reasoning model response
                         function.id = str(uuid.uuid4()) # add function id 
                         function_result = None
                         function_output_observation = None
@@ -1200,6 +1210,9 @@ class Runner(Component):
                         else:
                             # for normal function
                             function.id = str(uuid.uuid4())
+
+                            if thinking is not None and self.is_thinking_model:
+                                function.thought = thinking
 
                             # TODO: simplify this
                             tool_call_id = function.id

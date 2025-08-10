@@ -260,7 +260,7 @@ class Agent(Component):
         # default agent parameters
         answer_data_type: Optional[Type[T]] = str,  # the data type of the final answer
         max_steps: Optional[int] = 10,
-        is_thinking_model: Optional[bool] = False,  # support thinking model in agent
+        is_thinking_model: Optional[bool] = False,  # when thinking model turned on, it disables the CoT field in the output
         # for fully customize the agent
         tool_manager: Optional[
             ToolManager
