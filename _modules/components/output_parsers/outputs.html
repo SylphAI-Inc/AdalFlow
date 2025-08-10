@@ -239,7 +239,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -523,10 +525,14 @@
 <span class="s2">{{example}}</span>
 <span class="s2">```</span>
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
-<span class="s2">-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!</span>
-<span class="s2">-Use double quotes for the keys and string values.</span>
-<span class="s2">-DO NOT mistaken the &quot;properties&quot; and &quot;type&quot; in the schema as the actual fields in the JSON output.</span>
-<span class="s2">-Follow the JSON formatting conventions.&quot;&quot;&quot;</span>
+<span class="s2">- Output ONLY valid JSON without any markdown formatting or backticks</span>
+<span class="s2">- Use double quotes for all keys and string values</span>
+<span class="s2">- Ensure proper JSON syntax with correct comma placement</span>
+<span class="s2">- Do not include any text before or after the JSON object</span>
+<span class="s2">- When including string values with newlines, use \\n instead of actual line breaks</span>
+<span class="s2">- Properly escape special characters: use \\&quot; for quotes, \\\\ for backslashes</span>
+<span class="s2">- For multiline strings, keep them on a single line with \\n characters</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">YAML_OUTPUT_FORMAT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Your output should be formatted as a standard YAML instance with the following schema:</span>
 <span class="s2">```</span>
@@ -571,6 +577,7 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">pass</span>
 

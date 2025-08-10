@@ -239,7 +239,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -510,6 +512,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">signature</span><span class="p">,</span> <span class="n">Parameter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">is_dataclass</span><span class="p">,</span> <span class="n">MISSING</span><span class="p">,</span> <span class="n">Field</span>
@@ -1638,6 +1641,22 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_valid_json_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to check if a string is valid JSON.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text to validate as JSON.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if the text is valid JSON, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
 <div class="viewcode-block" id="extract_json_str">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_json_str">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract_json_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_brace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1645,6 +1664,7 @@
 
 <span class="sd">    It will extract the first JSON object or array found in the text by searching for { or [.</span>
 <span class="sd">    If right brace is not found, we add one to the end of the string.</span>
+<span class="sd">    Handles JSON wrapped in markdown code blocks (```json ... ```).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        text (str): The text containing potential JSON data.</span>
@@ -1659,6 +1679,41 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># NOTE: this regex parsing is taken from langchain.output_parsers.pydantic</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    
+    <span class="c1"># First check if the text is already a valid JSON string</span>
+    <span class="k">if</span> <span class="n">_is_valid_json_str</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">text</span>
+    
+    <span class="c1"># First, handle the specific case where JSON ends with ```} or similar patterns</span>
+    <span class="c1"># This regex will capture JSON that might have trailing markdown artifacts</span>
+    <span class="n">malformed_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s1">&#39;^(.*?)\n?```\}*$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
+    <span class="p">)</span>
+    <span class="n">malformed_match</span> <span class="o">=</span> <span class="n">malformed_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">malformed_match</span> <span class="ow">and</span> <span class="n">text</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;```}&#39;</span><span class="p">):</span>
+        <span class="c1"># Extract just the JSON part before the markdown artifacts</span>
+        <span class="n">potential_json</span> <span class="o">=</span> <span class="n">malformed_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="c1"># Validate using helper function</span>
+        <span class="k">if</span> <span class="n">_is_valid_json_str</span><span class="p">(</span><span class="n">potential_json</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">potential_json</span>
+    
+    <span class="c1"># Then check if the JSON is wrapped in markdown code blocks</span>
+    <span class="c1"># Pattern matches ```json, ```JSON, or just ``` at the start</span>
+    <span class="c1"># IMPORTANT: Only extract if the text STARTS with markdown code blocks to avoid</span>
+    <span class="c1"># extracting embedded code blocks within JSON string values</span>
+    <span class="n">json_markdown_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;^```(?:json|JSON)?\s*\n?(.*?)```&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
+    <span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">json_markdown_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>  <span class="c1"># Use match instead of search to ensure it starts at beginning</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="c1"># Extract the JSON content from within the code blocks</span>
+        <span class="n">json_content</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="c1"># Validate using helper function</span>
+        <span class="k">if</span> <span class="n">_is_valid_json_str</span><span class="p">(</span><span class="n">json_content</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">json_content</span>
+        <span class="c1"># If not valid, continue with the extraction logic on the markdown content</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">json_content</span>
+    
     <span class="n">start_obj</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span>
     <span class="n">start_arr</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">start_obj</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">start_arr</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
@@ -1692,7 +1747,9 @@
             <span class="s2">&quot;Incomplete JSON object found and add_missing_right_brace is False.&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">text</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span></div>
+    <span class="n">extracted_json</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">extracted_json</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># Return the extracted JSON string without leading/trailing spaces</span></div>
 
 
 
@@ -1872,6 +1929,37 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Got invalid JSON object with yaml.safe_load. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Got JSON string: </span><span class="si">{</span><span class="n">json_str</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span></div>
+
+
+
+<span class="c1">########################################################################################</span>
+<span class="c1"># For image encoding</span>
+<span class="c1">########################################################################################</span>
+<div class="viewcode-block" id="encode_image">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.encode_image">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">encode_image</span><span class="p">(</span><span class="n">image_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Encode an image file to base64 string.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        image_path (str): Path to the image file.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Base64 encoded string of the image.</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: If the image file does not exist.</span>
+<span class="sd">        PermissionError: If there&#39;s no permission to read the file.</span>
+<span class="sd">        Exception: For other errors during encoding.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">image_file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">image_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image file not found: </span><span class="si">{</span><span class="n">image_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Permission denied when reading image file: </span><span class="si">{</span><span class="n">image_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error encoding image </span><span class="si">{</span><span class="n">image_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 

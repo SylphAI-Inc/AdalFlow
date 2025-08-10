@@ -240,7 +240,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -491,10 +493,10 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_generate_response" title="components.model_client.ollama_client.parse_generate_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_generate_response</span></code></a>(completion)</p></td>
-<td><p>Parse the completion to a str.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_chat_messsage" title="components.model_client.ollama_client.parse_chat_messsage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_chat_messsage</span></code></a>(completion)</p></td>
+<td><p>Parse the chat message from the completion.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_stream_response" title="components.model_client.ollama_client.parse_stream_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_stream_response</span></code></a>(completion)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_generate_response" title="components.model_client.ollama_client.parse_generate_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_generate_response</span></code></a>(completion)</p></td>
 <td><p>Parse the completion to a str.</p></td>
 </tr>
 </tbody>
@@ -511,15 +513,15 @@
 </table>
 </div>
 <dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.ollama_client.parse_stream_response">
-<span class="sig-name descname"><span class="pre">parse_stream_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#parse_stream_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.parse_stream_response" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="components.model_client.ollama_client.parse_generate_response">
+<span class="sig-name descname"><span class="pre">parse_generate_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenerateResponse</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#parse_generate_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.parse_generate_response" title="Link to this definition">¶</a></dt>
 <dd><p>Parse the completion to a str. We use the generate with prompt instead of chat with messages.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.ollama_client.parse_generate_response">
-<span class="sig-name descname"><span class="pre">parse_generate_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenerateResponse</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#parse_generate_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.parse_generate_response" title="Link to this definition">¶</a></dt>
-<dd><p>Parse the completion to a str. We use the generate with prompt instead of chat with messages.</p>
+<dt class="sig sig-object py" id="components.model_client.ollama_client.parse_chat_messsage">
+<span class="sig-name descname"><span class="pre">parse_chat_messsage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#parse_chat_messsage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.parse_chat_messsage" title="Link to this definition">¶</a></dt>
+<dd><p>Parse the chat message from the completion.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -527,6 +529,36 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OllamaClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
 <p>A component wrapper for the Ollama SDK client.</p>
+<p><strong>Streaming Support:</strong></p>
+<p>When using streaming with Ollama, the raw response chunks are accessible through
+<code class="docutils literal notranslate"><span class="pre">output.raw_response</span></code>. For async streaming:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using Generator with async streaming</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OllamaClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3&quot;</span><span class="p">,</span> <span class="s2">&quot;stream&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">generator</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Tell me a story&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Access the raw streaming response</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">raw_response</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;message&quot;</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For synchronous streaming:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Tell me a story&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Access the raw streaming response</span>
+<span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">raw_response</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;message&quot;</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>To make a model work, you need to:</p>
 <ul class="simple">
 <li><p>[Download Ollama app] Go to <a class="reference external" href="https://github.com/ollama/ollama?tab=readme-ov-file">https://github.com/ollama/ollama?tab=readme-ov-file</a> to download the Ollama app (command line tool).
@@ -616,6 +648,25 @@ The default host is “<a class="reference external" href="http://localhost:1143
 <p>We use <cite>embeddings</cite> and <cite>generate</cite> apis from Ollama SDK.
 Please refer to <a class="reference external" href="https://github.com/ollama/ollama-python/blob/main/ollama/_client.py">https://github.com/ollama/ollama-python/blob/main/ollama/_client.py</a> for model_kwargs details.</p>
 </div>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">OllamaClient</span>
+
+<span class="c1"># Initialize the client and generator</span>
+<span class="n">ollama_client</span> <span class="o">=</span> <span class="n">OllamaClient</span><span class="p">()</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">ollama_client</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;qwen2:0.5b&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stream&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Generate response</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">generator</span><span class="p">({</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the capital of France?&quot;</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.init_sync_client">
 <span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.init_sync_client" title="Link to this definition">¶</a></dt>
@@ -630,8 +681,22 @@ Please refer to <a class="reference external" href="https://github.com/ollama/ol
 
 <dl class="py method">
 <dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.parse_chat_completion">
-<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenerateResponse</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Generator</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.parse_chat_completion" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenerateResponse</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncGenerator</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">GeneratorOutput</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.parse_chat_completion" title="Link to this definition">¶</a></dt>
 <dd><p>Parse the completion to a str. We use the generate with prompt instead of chat with messages.</p>
+<p>Handles both synchronous and asynchronous responses, including streaming.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>completion</strong> – The response from Ollama API, can be:
+- GenerateResponse: Non-streaming generate response
+- GeneratorType: Synchronous streaming response
+- AsyncGenerator: Asynchronous streaming response
+- Dict: Chat response</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeneratorOutput for non-streaming responses
+Generator/AsyncGenerator for streaming responses</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -734,8 +799,8 @@ using <a class="reference internal" href="#components.model_client.ollama_client
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">ollama_client</a><ul>
-<li><a class="reference internal" href="#components.model_client.ollama_client.parse_stream_response"><code class="docutils literal notranslate"><span class="pre">parse_stream_response()</span></code></a></li>
 <li><a class="reference internal" href="#components.model_client.ollama_client.parse_generate_response"><code class="docutils literal notranslate"><span class="pre">parse_generate_response()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.ollama_client.parse_chat_messsage"><code class="docutils literal notranslate"><span class="pre">parse_chat_messsage()</span></code></a></li>
 <li><a class="reference internal" href="#components.model_client.ollama_client.OllamaClient"><code class="docutils literal notranslate"><span class="pre">OllamaClient</span></code></a><ul>
 <li><a class="reference internal" href="#components.model_client.ollama_client.OllamaClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">OllamaClient.init_sync_client()</span></code></a></li>
 <li><a class="reference internal" href="#components.model_client.ollama_client.OllamaClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">OllamaClient.init_async_client()</span></code></a></li>

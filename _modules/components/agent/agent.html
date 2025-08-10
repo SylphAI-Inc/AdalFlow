@@ -239,7 +239,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -647,7 +649,7 @@
     <span class="n">task_desc</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
         <span class="n">template</span><span class="o">=</span><span class="n">adalflow_agent_task_desc</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;role_desc&quot;</span><span class="p">:</span> <span class="n">role_desc</span><span class="p">},</span>
-    <span class="p">)()</span>
+    <span class="p">)</span>
 
     <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="n">tool_manager</span><span class="o">.</span><span class="n">yaml_definitions</span><span class="p">,</span>
@@ -728,7 +730,7 @@
         <span class="c1"># pass this if using default agent config</span>
         <span class="n">tools</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context_variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># context variables</span>
-        <span class="n">add_llm_as_fallback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">add_llm_as_fallback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="c1"># Generator parameters</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModelClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
@@ -746,7 +748,7 @@
         <span class="c1"># default agent parameters</span>
         <span class="n">answer_data_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># the data type of the final answer</span>
         <span class="n">max_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">is_thinking_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># support thinking model in agent</span>
+        <span class="n">is_thinking_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># when thinking model turned on, it disables the CoT field in the output</span>
         <span class="c1"># for fully customize the agent</span>
         <span class="n">tool_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">ToolManager</span>

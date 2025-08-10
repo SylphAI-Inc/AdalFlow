@@ -21,6 +21,7 @@ functional
       convert_schema_to_signature
       custom_asdict
       dataclass_obj_from_dict
+      encode_image
       evaluate_ast_node
       extract_dataclass_type
       extract_first_boolean

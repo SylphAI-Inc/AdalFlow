@@ -239,7 +239,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -540,11 +542,52 @@
     <span class="n">OutputTokensDetails</span><span class="p">,</span>
     <span class="n">GeneratorOutput</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_embedding_response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">parse_embedding_response</span><span class="p">,</span>
+    <span class="n">format_content_for_response_api</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ParsedResponseContent">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParsedResponseContent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Structured container for parsed response content from OpenAI Response API.</span>
+
+<span class="sd">    This dataclass provides a consistent interface for accessing different types</span>
+<span class="sd">    of content that can be returned by the Response API, including text, images,</span>
+<span class="sd">    tool calls, reasoning chains, and more.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        text: The main text content from the response</span>
+<span class="sd">        images: List of image data (base64 or URLs) from image generation</span>
+<span class="sd">        tool_calls: List of other tool call results</span>
+<span class="sd">        reasoning: Reasoning chain from reasoning models</span>
+<span class="sd">        code_outputs: Outputs from code interpreter</span>
+<span class="sd">        raw_output: The original output array for advanced processing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tool_calls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">reasoning</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">code_outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">raw_output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if there&#39;s any content.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reasoning</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code_outputs</span>
+        <span class="p">])</span></div>
+
 
 
 <span class="c1"># OLD CHAT COMPLETION PARSING FUNCTIONS (COMMENTED OUT)</span>
@@ -563,6 +606,233 @@
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;raw response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">output_text</span></div>
 
+
+
+<div class="viewcode-block" id="parse_response_output">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.parse_response_output">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_response_output</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParsedResponseContent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse response output that may include various types of content and tool calls.</span>
+
+<span class="sd">    The output array can contain:</span>
+<span class="sd">    - Output messages (with nested content items)</span>
+<span class="sd">    - Tool calls (file search, function, web search, computer use, etc.)</span>
+<span class="sd">    - Reasoning chains</span>
+<span class="sd">    - Image generation calls</span>
+<span class="sd">    - Code interpreter calls</span>
+<span class="sd">    - And more...</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ParsedResponseContent: Structured content with typed access to all response data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;raw response from api: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">content</span> <span class="o">=</span> <span class="n">ParsedResponseContent</span><span class="p">()</span>
+
+    <span class="c1"># Store raw output for advanced users</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">):</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">raw_output</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">output</span>
+
+    <span class="c1"># First try to use output_text if available (SDK convenience property)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s1">&#39;output_text&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">output_text</span><span class="p">:</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">output_text</span>
+    <span class="c1"># Parse the output array manually if no output_text</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">_parse_output_array</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;images&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">tool_calls</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tool_calls&quot;</span><span class="p">)</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">reasoning</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reasoning&quot;</span><span class="p">)</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">code_outputs</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code_outputs&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">content</span></div>
+
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_message</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a message item from the output array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        item: A message item with type=&quot;message&quot; and content array</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict with parsed text and images from the message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="c1"># now pick the longer response </span>
+        <span class="n">text_parts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">content_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">content_item</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">content_type</span> <span class="o">==</span> <span class="s2">&quot;output_text&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content_item</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">):</span>
+                    <span class="n">text_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">content_item</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">text_parts</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">text_parts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text_parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">text_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_reasoning</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a reasoning item from the output array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        item: A reasoning item with type=&quot;reasoning&quot; and summary array</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict with extracted reasoning text and full structure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;reasoning&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="c1"># Extract text from reasoning summary if available</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;summary&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">summary</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">summary_texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">summary_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">summary</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">summary_item</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">summary_item</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;summary_text&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">summary_item</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">):</span>
+                    <span class="n">summary_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary_item</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">summary_texts</span><span class="p">:</span>
+            <span class="c1"># Store reasoning text separately for later combination</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;reasoning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">summary_texts</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_image</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse an image generation call item from the output array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        item: An image generation item with type=&quot;image_generation_call&quot; and result field</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict with extracted image data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;images&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;result&#39;</span><span class="p">):</span>
+        <span class="c1"># The result contains the base64 image data or URL</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;images&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_tool_call</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a tool call item from the output array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        item: A tool call item (various types ending in _call or containing tool_call)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict with tool call information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">item_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">item_type</span> <span class="o">==</span> <span class="s2">&quot;image_generation_call&quot;</span><span class="p">:</span>
+        <span class="c1"># Handle image generation - extract the result which contains the image data</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;result&#39;</span><span class="p">):</span>
+            <span class="c1"># The result contains the base64 image data or URL</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;images&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">result</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">item_type</span> <span class="o">==</span> <span class="s2">&quot;code_interpreter_tool_call&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;code_outputs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">_serialize_item</span><span class="p">(</span><span class="n">item</span><span class="p">)]}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Generic tool call</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;tool_calls&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">item_type</span><span class="p">,</span>
+                <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">_serialize_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="p">}]</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_output_array</span><span class="p">(</span><span class="n">output_array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the entire output array, processing all elements.</span>
+
+<span class="sd">    The output array typically contains:</span>
+<span class="sd">    1. Reasoning (optional) - thinking/reasoning before the response</span>
+<span class="sd">    2. Message - the actual response with content</span>
+<span class="sd">    3. Tool calls (optional) - any tool invocations</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict with keys: text, images, tool_calls, reasoning, code_outputs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;images&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;tool_calls&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;reasoning&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;code_outputs&quot;</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">output_array</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1"># Process all items in the array</span>
+    <span class="n">all_images</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">all_tool_calls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">all_code_outputs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">all_reasoning</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">output_array</span><span class="p">:</span>
+        <span class="n">item_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">item_type</span> <span class="o">==</span> <span class="s2">&quot;reasoning&quot;</span><span class="p">:</span>
+            <span class="c1"># Parse reasoning item</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">_parse_reasoning</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reasoning&quot;</span><span class="p">):</span>
+                <span class="n">all_reasoning</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;reasoning&quot;</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">item_type</span> <span class="o">==</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span>
+            <span class="c1"># Parse message item</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">_parse_message</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">item_type</span> <span class="o">==</span> <span class="s2">&quot;image_generation_call&quot;</span><span class="p">:</span>
+            <span class="c1"># Parse image generation call separately</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">_parse_image</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;images&quot;</span><span class="p">):</span>
+                <span class="n">all_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;images&quot;</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="n">item_type</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;call&#39;</span> <span class="ow">in</span> <span class="n">item_type</span> <span class="ow">or</span> <span class="s1">&#39;tool&#39;</span> <span class="ow">in</span> <span class="n">item_type</span><span class="p">):</span>
+            <span class="c1"># Parse other tool calls</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">_parse_tool_call</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tool_calls&quot;</span><span class="p">):</span>
+                <span class="n">all_tool_calls</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;tool_calls&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code_outputs&quot;</span><span class="p">):</span>
+                <span class="n">all_code_outputs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;code_outputs&quot;</span><span class="p">])</span>
+
+
+    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">text</span> <span class="k">if</span> <span class="n">text</span> <span class="k">else</span> <span class="kc">None</span> <span class="c1"># TODO: they can potentially send multiple complete text messages, we might need to save all of them and only return the first that can convert to outpu parser</span>
+
+    <span class="c1"># Set other fields if they have content</span>
+    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;images&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_images</span>
+    <span class="k">if</span> <span class="n">all_tool_calls</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;tool_calls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_tool_calls</span>
+    <span class="k">if</span> <span class="n">all_reasoning</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;reasoning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_reasoning</span>
+    <span class="k">if</span> <span class="n">all_code_outputs</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;code_outputs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_code_outputs</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_serialize_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an output item to a serializable dict.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">result</span>
 
 
 <span class="c1"># def _get_chat_completion_usage(completion: ChatCompletion) -&gt; OpenAICompletionUsage:</span>
@@ -640,25 +910,6 @@
 
 
 
-<span class="c1"># OLD CHAT COMPLETION UTILITY FUNCTIONS (COMMENTED OUT)</span>
-<span class="c1"># def get_all_messages_content(completion: ChatCompletion) -&gt; List[str]:</span>
-<span class="c1">#     r&quot;&quot;&quot;When the n &gt; 1, get all the messages content.&quot;&quot;&quot;</span>
-<span class="c1">#     return [c.message.content for c in completion.choices]</span>
-
-
-<span class="c1"># def get_probabilities(completion: ChatCompletion) -&gt; List[List[TokenLogProb]]:</span>
-<span class="c1">#     r&quot;&quot;&quot;Get the probabilities of each token in the completion.&quot;&quot;&quot;</span>
-<span class="c1">#     log_probs = []</span>
-<span class="c1">#     for c in completion.choices:</span>
-<span class="c1">#         content = c.logprobs.content</span>
-<span class="c1">#         print(content)</span>
-<span class="c1">#         log_probs_for_choice = []</span>
-<span class="c1">#         for openai_token_logprob in content:</span>
-<span class="c1">#             token = openai_token_logprob.token</span>
-<span class="c1">#             logprob = openai_token_logprob.logprob</span>
-<span class="c1">#             log_probs_for_choice.append(TokenLogProb(token=token, logprob=logprob))</span>
-<span class="c1">#         log_probs.append(log_probs_for_choice)</span>
-<span class="c1">#     return log_probs</span>
 
 
 <div class="viewcode-block" id="OpenAIClient">
@@ -666,7 +917,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">OpenAIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A component wrapper for the OpenAI API client.</span>
 
-<span class="s2">    Support both embedding and chat completion API, including multimodal capabilities.</span>
+<span class="s2">    Support both embedding and response API, including multimodal capabilities.</span>
+
 
 <span class="s2">    Users (1) simplify use ``Embedder`` and ``Generator`` components by passing OpenAIClient() as the model_client.</span>
 <span class="s2">    (2) can use this as an example to create their own API client or extend this class(copying and modifing the code) in their own project.</span>
@@ -688,6 +940,217 @@
 <span class="s2">        - n: Number of images to generate (1 for DALL-E 3, 1-10 for DALL-E 2)</span>
 <span class="s2">        - response_format: &quot;url&quot; or &quot;b64_json&quot;</span>
 
+<span class="s2">    Examples:</span>
+<span class="s2">        Basic text generation::</span>
+
+<span class="s2">            from adalflow.components.model_client import OpenAIClient</span>
+<span class="s2">            from adalflow.core import Generator</span>
+
+<span class="s2">            # Initialize client (uses OPENAI_API_KEY env var by default)</span>
+<span class="s2">            client = OpenAIClient()</span>
+
+<span class="s2">            # Create a generator for text</span>
+<span class="s2">            generator = Generator(</span>
+<span class="s2">                model_client=client,</span>
+<span class="s2">                model_kwargs={&quot;model&quot;: &quot;gpt-4o-mini&quot;}</span>
+<span class="s2">            )</span>
+
+<span class="s2">            # Generate response</span>
+<span class="s2">            response = generator(prompt_kwargs={&quot;input_str&quot;: &quot;What is machine learning?&quot;})</span>
+<span class="s2">            print(response.data)</span>
+
+<span class="s2">        Multimodal with URL image::</span>
+
+<span class="s2">            # Vision model with image from URL</span>
+<span class="s2">            generator = Generator(</span>
+<span class="s2">                model_client=OpenAIClient(),</span>
+<span class="s2">                model_kwargs={</span>
+<span class="s2">                    &quot;model&quot;: &quot;gpt-4o&quot;,</span>
+<span class="s2">                    &quot;images&quot;: &quot;https://example.com/chart.jpg&quot;</span>
+<span class="s2">                }</span>
+<span class="s2">            )</span>
+
+<span class="s2">            response = generator(</span>
+<span class="s2">                prompt_kwargs={&quot;input_str&quot;: &quot;Analyze this chart and explain the trends&quot;}</span>
+<span class="s2">            )</span>
+
+<span class="s2">        Multimodal with local images::</span>
+
+<span class="s2">            # Multiple local images</span>
+<span class="s2">            generator = Generator(</span>
+<span class="s2">                model_client=OpenAIClient(),</span>
+<span class="s2">                model_kwargs={</span>
+<span class="s2">                    &quot;model&quot;: &quot;gpt-4o&quot;,</span>
+<span class="s2">                    &quot;images&quot;: [</span>
+<span class="s2">                        &quot;/path/to/image1.jpg&quot;,</span>
+<span class="s2">                        &quot;/path/to/image2.png&quot;</span>
+<span class="s2">                    ]</span>
+<span class="s2">                }</span>
+<span class="s2">            )</span>
+
+<span class="s2">            response = generator(</span>
+<span class="s2">                prompt_kwargs={&quot;input_str&quot;: &quot;Compare these two images&quot;}</span>
+<span class="s2">            )</span>
+
+<span class="s2">        Pre-formatted images with custom encoding::</span>
+
+<span class="s2">            import base64</span>
+<span class="s2">            from adalflow.core.functional import encode_image</span>
+
+<span class="s2">            # Option 1: Using the encode_image helper</span>
+<span class="s2">            base64_img = encode_image(&quot;/path/to/image.jpg&quot;)</span>
+
+<span class="s2">            # Option 2: Manual base64 encoding</span>
+<span class="s2">            with open(&quot;/path/to/image.png&quot;, &quot;rb&quot;) as f:</span>
+<span class="s2">                base64_img = base64.b64encode(f.read()).decode(&#39;utf-8&#39;)</span>
+
+<span class="s2">            # Use pre-formatted image data</span>
+<span class="s2">            generator = Generator(</span>
+<span class="s2">                model_client=OpenAIClient(),</span>
+<span class="s2">                model_kwargs={</span>
+<span class="s2">                    &quot;model&quot;: &quot;gpt-4o&quot;,</span>
+<span class="s2">                    &quot;images&quot;: [</span>
+<span class="s2">                        # Pre-formatted as base64 data URI</span>
+<span class="s2">                        f&quot;data:image/png;base64,</span><span class="si">{base64_img}</span><span class="s2">&quot;,</span>
+<span class="s2">                        # Or as a dict with type and image_url</span>
+<span class="s2">                        {</span>
+<span class="s2">                            &quot;type&quot;: &quot;input_image&quot;,</span>
+<span class="s2">                            &quot;image_url&quot;: f&quot;data:image/jpeg;base64,</span><span class="si">{base64_img}</span><span class="s2">&quot;</span>
+<span class="s2">                        },</span>
+<span class="s2">                        # Mix with regular URLs</span>
+<span class="s2">                        &quot;https://example.com/chart.jpg&quot;</span>
+<span class="s2">                    ]</span>
+<span class="s2">                }</span>
+<span class="s2">            )</span>
+
+<span class="s2">            response = generator(</span>
+<span class="s2">                prompt_kwargs={&quot;input_str&quot;: &quot;Analyze these images&quot;}</span>
+<span class="s2">            )</span>
+
+<span class="s2">        Reasoning models (O1, O3)::</span>
+
+<span class="s2">            from adalflow.core.types import ModelType</span>
+
+<span class="s2">            # O3 reasoning model with effort configuration</span>
+<span class="s2">            generator = Generator(</span>
+<span class="s2">                model_client=OpenAIClient(),</span>
+<span class="s2">                model_type=ModelType.LLM_REASONING,</span>
+<span class="s2">                model_kwargs={</span>
+<span class="s2">                    &quot;model&quot;: &quot;o3&quot;,</span>
+<span class="s2">                    &quot;reasoning&quot;: {</span>
+<span class="s2">                        &quot;effort&quot;: &quot;medium&quot;,  # low, medium, high</span>
+<span class="s2">                        &quot;summary&quot;: &quot;auto&quot;    # detailed, auto, none</span>
+<span class="s2">                    }</span>
+<span class="s2">                }</span>
+<span class="s2">            )</span>
+
+<span class="s2">            response = generator(</span>
+<span class="s2">                prompt_kwargs={&quot;input_str&quot;: &quot;Solve this complex problem: ...&quot;}</span>
+<span class="s2">            )</span>
+
+<span class="s2">        Image generation with DALL-E (legacy method)::</span>
+
+<span class="s2">            from adalflow.core.types import ModelType</span>
+
+<span class="s2">            # Generate an image using ModelType.IMAGE_GENERATION</span>
+<span class="s2">            generator = Generator(</span>
+<span class="s2">                model_client=OpenAIClient(),</span>
+<span class="s2">                model_type=ModelType.IMAGE_GENERATION,</span>
+<span class="s2">                model_kwargs={</span>
+<span class="s2">                    &quot;model&quot;: &quot;dall-e-3&quot;,</span>
+<span class="s2">                    &quot;size&quot;: &quot;1024x1792&quot;,</span>
+<span class="s2">                    &quot;quality&quot;: &quot;hd&quot;,</span>
+<span class="s2">                    &quot;n&quot;: 1</span>
+<span class="s2">                }</span>
+<span class="s2">            )</span>
+
+<span class="s2">            response = generator(</span>
+<span class="s2">                prompt_kwargs={&quot;input_str&quot;: &quot;A futuristic city with flying cars at sunset&quot;}</span>
+<span class="s2">            )</span>
+<span class="s2">            # response.data contains the image URL or base64 data</span>
+
+<span class="s2">        Image generation via tools (new API)::</span>
+
+<span class="s2">            import base64</span>
+
+<span class="s2">            # Generate images using the new tools API</span>
+<span class="s2">            generator = Generator(</span>
+<span class="s2">                model_client=OpenAIClient(),</span>
+<span class="s2">                model_kwargs={</span>
+<span class="s2">                    &quot;model&quot;: &quot;gpt-4o-mini&quot;,  # or any model that supports tools</span>
+<span class="s2">                    &quot;tools&quot;: [{&quot;type&quot;: &quot;image_generation&quot;}]</span>
+<span class="s2">                }</span>
+<span class="s2">            )</span>
+
+<span class="s2">            # Generate an image</span>
+<span class="s2">            response = generator(</span>
+<span class="s2">                prompt_kwargs={</span>
+<span class="s2">                    &quot;input_str&quot;: &quot;Generate an image of a gray tabby cat hugging an otter with an orange scarf&quot;</span>
+<span class="s2">                }</span>
+<span class="s2">            )</span>
+
+<span class="s2">            # Access the generated image(s)</span>
+<span class="s2">            if isinstance(response.data, list):</span>
+<span class="s2">                # Multiple images</span>
+<span class="s2">                for i, img_base64 in enumerate(response.data):</span>
+<span class="s2">                    with open(f&quot;generated_</span><span class="si">{i}</span><span class="s2">.png&quot;, &quot;wb&quot;) as f:</span>
+<span class="s2">                        f.write(base64.b64decode(img_base64))</span>
+<span class="s2">            elif isinstance(response.data, str):</span>
+<span class="s2">                # Single image</span>
+<span class="s2">                with open(&quot;generated.png&quot;, &quot;wb&quot;) as f:</span>
+<span class="s2">                    f.write(base64.b64decode(response.data))</span>
+<span class="s2">            elif isinstance(response.data, dict) and &quot;images&quot; in response.data:</span>
+<span class="s2">                # Mixed response with text and images</span>
+<span class="s2">                print(&quot;Text:&quot;, response.data[&quot;text&quot;])</span>
+<span class="s2">                for i, img_base64 in enumerate(response.data[&quot;images&quot;]):</span>
+<span class="s2">                    with open(f&quot;generated_</span><span class="si">{i}</span><span class="s2">.png&quot;, &quot;wb&quot;) as f:</span>
+<span class="s2">                        f.write(base64.b64decode(img_base64))</span>
+
+<span class="s2">        Embeddings::</span>
+
+<span class="s2">            from adalflow.core import Embedder</span>
+
+<span class="s2">            # Create embedder</span>
+<span class="s2">            embedder = Embedder(</span>
+<span class="s2">                model_client=OpenAIClient(),</span>
+<span class="s2">                model_kwargs={&quot;model&quot;: &quot;text-embedding-3-small&quot;}</span>
+<span class="s2">            )</span>
+
+<span class="s2">            # Generate embeddings</span>
+<span class="s2">            embeddings = embedder(input=[&quot;Hello world&quot;, &quot;Machine learning&quot;])</span>
+<span class="s2">            print(embeddings.data)  # List of embedding vectors</span>
+
+<span class="s2">        Streaming responses::</span>
+
+<span class="s2">            from adalflow.components.model_client.utils import extract_text_from_response_stream</span>
+
+<span class="s2">            # Enable streaming</span>
+<span class="s2">            generator = Generator(</span>
+<span class="s2">                model_client=OpenAIClient(),</span>
+<span class="s2">                model_kwargs={</span>
+<span class="s2">                    &quot;model&quot;: &quot;gpt-4o&quot;,</span>
+<span class="s2">                    &quot;stream&quot;: True</span>
+<span class="s2">                }</span>
+<span class="s2">            )</span>
+
+<span class="s2">            # Stream the response</span>
+<span class="s2">            response = generator(prompt_kwargs={&quot;input_str&quot;: &quot;Tell me a story&quot;})</span>
+
+<span class="s2">            # Extract text from Response API streaming events</span>
+<span class="s2">            for event in response.raw_response:</span>
+<span class="s2">                text = extract_text_from_response_stream(event)</span>
+<span class="s2">                if text:</span>
+<span class="s2">                    print(text, end=&quot;&quot;)</span>
+
+<span class="s2">        Custom API endpoint::</span>
+
+<span class="s2">            # Use with third-party providers or local models</span>
+<span class="s2">            client = OpenAIClient(</span>
+<span class="s2">                base_url=&quot;https://api.custom-provider.com/v1/&quot;,</span>
+<span class="s2">                api_key=&quot;your-api-key&quot;,</span>
+<span class="s2">                headers={&quot;X-Custom-Header&quot;: &quot;value&quot;}</span>
+<span class="s2">            )</span>
+
 <span class="s2">    Args:</span>
 <span class="s2">        api_key (Optional[str], optional): OpenAI API key. Defaults to `None`.</span>
 <span class="s2">        non_streaming_chat_completion_parser (Callable[[Completion], Any], optional): Legacy parser for chat completions.</span>
@@ -706,11 +1169,13 @@
 <span class="s2">        headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.</span>
 
 <span class="s2">    References:</span>
-<span class="s2">        - OpenAI API Overview: https://platform.openai.com/docs/introduction</span>
+<span class="s2">        - OpenAI API Overview: https://platform.openai.com/docs/introduction, https://platform.openai.com/docs/guides/images-vision?api-mode=responses</span>
 <span class="s2">        - Embeddings Guide: https://platform.openai.com/docs/guides/embeddings</span>
 <span class="s2">        - Chat Completion Models: https://platform.openai.com/docs/guides/text-generation</span>
+<span class="s2">        - Response api: https://platform.openai.com/docs/api-reference/responses/create, Analyze images and use them as input and/or generate images as output</span>
 <span class="s2">        - Vision Models: https://platform.openai.com/docs/guides/vision</span>
 <span class="s2">        - Image Generation: https://platform.openai.com/docs/guides/images</span>
+<span class="s2">        - reasoning: https://platform.openai.com/docs/guides/reasoning</span>
 
 <span class="s2">    Note:</span>
 <span class="s2">        - Ensure each OpenAIClient instance is used by one generator only.</span>
@@ -722,10 +1187,10 @@
         <span class="c1"># OLD CHAT COMPLETION PARSER PARAMS (kept for backward compatibility)</span>
         <span class="n">non_streaming_chat_completion_parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Callable</span><span class="p">[[</span><span class="n">Completion</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># non-streaming parser</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># non-streaming parser - deprecated but accepted</span>
         <span class="n">streaming_chat_completion_parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Callable</span><span class="p">[[</span><span class="n">Completion</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># streaming parser</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># streaming parser - deprecated but accepted</span>
         <span class="c1"># Response API parsers (used for reasoning models)</span>
         <span class="n">non_streaming_response_parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Response</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">streaming_response_parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Response</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -739,8 +1204,8 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            api_key (Optional[str], optional): OpenAI API key. Defaults to None.</span>
-<span class="sd">            non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): Legacy parser for chat completions. Defaults to None.</span>
-<span class="sd">            streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): Legacy parser for streaming chat completions. Defaults to None.</span>
+<span class="sd">            non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for chat completions. Ignored, kept for backward compatibility. Defaults to None.</span>
+<span class="sd">            streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for streaming chat completions. Ignored, kept for backward compatibility. Defaults to None.</span>
 <span class="sd">            non_streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for non-streaming responses. Defaults to None.</span>
 <span class="sd">            streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for streaming responses. Defaults to None.</span>
 <span class="sd">            input_type (Literal[&quot;text&quot;, &quot;messages&quot;]): Input type for the client. Defaults to &quot;text&quot;.</span>
@@ -749,6 +1214,18 @@
 <span class="sd">            organization (Optional[str], optional): OpenAI organization key. Defaults to None.</span>
 <span class="sd">            headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Log deprecation warning if old parsers are provided</span>
+        <span class="k">if</span> <span class="n">non_streaming_chat_completion_parser</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;non_streaming_chat_completion_parser is deprecated and will be ignored. &quot;</span>
+                <span class="s2">&quot;The OpenAI client now uses the Response API exclusively.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">streaming_chat_completion_parser</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;streaming_chat_completion_parser is deprecated and will be ignored. &quot;</span>
+                <span class="s2">&quot;The OpenAI client now uses the Response API exclusively.&quot;</span>
+            <span class="p">)</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
@@ -759,16 +1236,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only initialize if the async call is called</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span> <span class="o">=</span> <span class="n">input_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_kwargs</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># add api kwargs when the OpenAI Client is called</span>
-
-        <span class="c1"># OLD CHAT COMPLETION API PARSERS (COMMENTED OUT)</span>
-        <span class="c1"># # Chat Completion API Parsers</span>
-        <span class="c1"># # (used only for synchronous (stream + non-streaming) calls via create API)</span>
-        <span class="c1"># self.non_streaming_chat_completion_parser = (</span>
-        <span class="c1">#     non_streaming_chat_completion_parser or get_first_message_content</span>
-        <span class="c1"># )</span>
-        <span class="c1"># self.streaming_chat_completion_parser = (</span>
-        <span class="c1">#     streaming_chat_completion_parser or handle_streaming_chat_completion</span>
-        <span class="c1"># )</span>
 
         <span class="c1"># Response API parsers (RESPONSE API ONLY NOW)</span>
         <span class="c1"># (used for both synchronous and asynchronous (stream + non-streaming) calls via Response API)</span>
@@ -820,48 +1287,6 @@
         <span class="p">)</span></div>
 
 
-    <span class="c1"># def _parse_chat_completion(self, completion: ChatCompletion) -&gt; &quot;GeneratorOutput&quot;:</span>
-    <span class="c1">#     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message</span>
-    <span class="c1">#     try:</span>
-    <span class="c1">#         data = self.chat_completion_parser(completion)</span>
-    <span class="c1">#         usage = self.track_completion_usage(completion)</span>
-    <span class="c1">#         return GeneratorOutput(</span>
-    <span class="c1">#             data=data, error=None, raw_response=str(data), usage=usage</span>
-    <span class="c1">#         )</span>
-    <span class="c1">#     except Exception as e:</span>
-    <span class="c1">#         log.error(f&quot;Error parsing the completion: {e}&quot;)</span>
-    <span class="c1">#         return GeneratorOutput(data=None, error=str(e), raw_response=completion)</span>
-
-    <span class="c1"># OLD CHAT COMPLETIONS API FUNCTION (COMMENTED OUT)</span>
-    <span class="c1"># def parse_chat_completion(</span>
-    <span class="c1">#     self,</span>
-    <span class="c1">#     completion: Union[</span>
-    <span class="c1">#         ChatCompletion, GeneratorType[ChatCompletionChunk, None, None], Response</span>
-    <span class="c1">#     ],</span>
-    <span class="c1"># ) -&gt; &quot;GeneratorOutput&quot;:</span>
-    <span class="c1">#     &quot;&quot;&quot;Function handles a lot of logic is used for parsing both stream responses and nonstream responses.</span>
-    <span class="c1">#     # Determine parser based on completion type and streaming mode</span>
-    <span class="c1">#     parser = (</span>
-    <span class="c1">#         self.chat_completion_parser</span>
-    <span class="c1">#         if isinstance(completion, ChatCompletion)</span>
-    <span class="c1">#         else self.response_parser</span>
-    <span class="c1">#     )</span>
-    <span class="c1">#     log.debug(f&quot;completion/response: {completion}, parser: {parser}&quot;)</span>
-    <span class="c1">#     try:</span>
-    <span class="c1">#         data = parser(completion)</span>
-    <span class="c1">#     except Exception as e:</span>
-    <span class="c1">#         log.error(f&quot;Error parsing the completion: {e}&quot;)</span>
-    <span class="c1">#         return GeneratorOutput(data=None, error=str(e), raw_response=completion)</span>
-
-    <span class="c1">#     try:</span>
-    <span class="c1">#         usage = self.track_completion_usage(completion)</span>
-    <span class="c1">#         return GeneratorOutput(</span>
-    <span class="c1">#             data=None, error=None, raw_response=data, usage=usage</span>
-    <span class="c1">#         )</span>
-    <span class="c1">#     except Exception as e:</span>
-    <span class="c1">#         log.error(f&quot;Error tracking the completion usage: {e}&quot;)</span>
-    <span class="c1">#         return GeneratorOutput(data=None, error=str(e), raw_response=data)</span>
-
     <span class="c1"># NEW RESPONSE API ONLY FUNCTION</span>
 <div class="viewcode-block" id="OpenAIClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">[docs]</a>
@@ -875,60 +1300,33 @@
         <span class="n">parser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_parser</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion/response: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, parser: </span><span class="si">{</span><span class="n">parser</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Check if this is a Response with complex output (tools, images, etc.)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span> <span class="n">Response</span><span class="p">):</span>
+            <span class="n">parsed_content</span> <span class="o">=</span> <span class="n">parse_response_output</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+            <span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_completion_usage</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">parsed_content</span><span class="o">.</span><span class="n">text</span>
+
+            <span class="n">thinking</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">parsed_content</span><span class="o">.</span><span class="n">reasoning</span><span class="p">:</span>
+                <span class="n">thinking</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">parsed_content</span><span class="o">.</span><span class="n">reasoning</span><span class="p">)</span>
+
+
+            <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>  <span class="c1"># only text</span>
+                <span class="n">thinking</span><span class="o">=</span><span class="n">thinking</span><span class="p">,</span>
+                <span class="n">images</span><span class="o">=</span><span class="n">parsed_content</span><span class="o">.</span><span class="n">images</span><span class="p">,</span>  <span class="c1"># List of image data (base64 or URLs)</span>
+                <span class="n">tool_use</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Will be populated when we handle function tool calls</span>
+                <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">raw_response</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">usage</span><span class="o">=</span><span class="n">usage</span>
+            <span class="p">)</span>
+        <span class="c1"># Regular response handling (streaming or other)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
         <span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_completion_usage</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">)</span></div>
 
 
-    <span class="c1"># OLD CHAT COMPLETIONS API FUNCTION (COMMENTED OUT)</span>
-    <span class="c1"># # NOTE: this is adapted to parse both completion and response</span>
-    <span class="c1"># def track_completion_usage(</span>
-    <span class="c1">#     self,</span>
-    <span class="c1">#     completion: Union[</span>
-    <span class="c1">#         ChatCompletion, GeneratorType[ChatCompletionChunk, None, None], Response, AsyncIterable</span>
-    <span class="c1">#     ],</span>
-    <span class="c1"># ) -&gt; Union[CompletionUsage, ResponseUsage]:</span>
-    <span class="c1">#     # Handle the case where completion is an async generator of response stream events</span>
-    <span class="c1">#     try:</span>
-    <span class="c1">#         if isinstance(completion, Response):</span>
-    <span class="c1">#             # Handle Response object with ResponseUsage structure</span>
-    <span class="c1">#             input_tokens_details = InputTokensDetails(</span>
-    <span class="c1">#                 cached_tokens=getattr(completion.usage, &quot;cached_tokens&quot;, 0)</span>
-    <span class="c1">#             )</span>
-
-    <span class="c1">#             output_tokens_details = OutputTokensDetails(</span>
-    <span class="c1">#                 reasoning_tokens=getattr(completion.usage, &quot;reasoning_tokens&quot;, 0)</span>
-    <span class="c1">#             )</span>
-
-    <span class="c1">#             usage = AdalFlowResponseUsage(</span>
-    <span class="c1">#                 input_tokens=completion.usage.input_tokens,</span>
-    <span class="c1">#                 input_tokens_details=input_tokens_details,</span>
-    <span class="c1">#                 output_tokens=completion.usage.output_tokens,</span>
-    <span class="c1">#                 output_tokens_details=output_tokens_details,</span>
-    <span class="c1">#                 total_tokens=completion.usage.total_tokens,</span>
-    <span class="c1">#             )</span>
-    <span class="c1">#         # TODO implement __aiter__ and __iter__ for Response iterator</span>
-    <span class="c1">#         elif hasattr(completion, &#39;__aiter__&#39;) or hasattr(completion, &#39;__iter__&#39;):</span>
-    <span class="c1">#             # Handle async generator or regular generator/iterator of response stream events</span>
-    <span class="c1">#             # For generators/iterators, we cannot consume them here as it would exhaust them</span>
-    <span class="c1">#             # The usage information will need to be tracked elsewhere when the stream is consumed</span>
-    <span class="c1">#             log.warning(&quot;Cannot track usage for generator/iterator. Usage tracking should be handled when consuming the stream.&quot;)</span>
-    <span class="c1">#             return CompletionUsage(</span>
-    <span class="c1">#                 completion_tokens=None, prompt_tokens=None, total_tokens=None</span>
-    <span class="c1">#             )</span>
-    <span class="c1">#         else:</span>
-    <span class="c1">#             # Handle ChatCompletion with CompletionUsage structure</span>
-    <span class="c1">#             usage = CompletionUsage(</span>
-    <span class="c1">#                 completion_tokens=completion.usage.completion_tokens,</span>
-    <span class="c1">#                 prompt_tokens=completion.usage.prompt_tokens,</span>
-    <span class="c1">#                 total_tokens=completion.usage.total_tokens,</span>
-    <span class="c1">#             )</span>
-    <span class="c1">#         return usage</span>
-    <span class="c1">#     except Exception as e:</span>
-    <span class="c1">#         log.error(f&quot;Error tracking the completion usage: {e}&quot;)</span>
-    <span class="c1">#         return CompletionUsage(</span>
-    <span class="c1">#             completion_tokens=None, prompt_tokens=None, total_tokens=None</span>
-    <span class="c1">#         )</span>
 
     <span class="c1"># NEW RESPONSE API ONLY FUNCTION</span>
 <div class="viewcode-block" id="OpenAIClient.track_completion_usage">
@@ -1046,6 +1444,7 @@
                 <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">messages</span>
 
+    <span class="c1"># adapted for the response api</span>
 <div class="viewcode-block" id="OpenAIClient.convert_inputs_to_api_kwargs">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
@@ -1080,49 +1479,24 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;input must be a sequence of text&quot;</span><span class="p">)</span>
             <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
-        <span class="c1"># elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:</span>
-        <span class="c1">#     # convert input to messages</span>
-        <span class="c1">#     messages: List[Dict[str, str]] = []</span>
-        <span class="c1">#     images = final_model_kwargs.pop(&quot;images&quot;, None)</span>
-        <span class="c1">#     detail = final_model_kwargs.pop(&quot;detail&quot;, &quot;auto&quot;)</span>
-        <span class="c1">#     messages = self._convert_llm_inputs_to_messages(input, images, detail)</span>
-        <span class="c1">#     final_model_kwargs[&quot;messages&quot;] = messages</span>
-
-        <span class="c1"># replacing to use the model response API and save under input</span>
         <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span> <span class="ow">or</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM_REASONING</span><span class="p">:</span>
-            <span class="c1"># For Response API, input should be a string, not messages</span>
-            <span class="c1"># If input is already a string, use it directly</span>
-            <span class="c1"># if isinstance(input, str):</span>
-            <span class="c1">#     final_model_kwargs[&quot;input&quot;] = input</span>
-            <span class="c1"># else:</span>
-            <span class="c1">#     # Convert structured input to string format if needed</span>
-            <span class="c1">#     final_model_kwargs[&quot;input&quot;] = self._convert_llm_inputs_to_messages(input)</span>
-            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
-            <span class="c1"># double check that this is cast to string</span>
-        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">IMAGE_GENERATION</span><span class="p">:</span>
-            <span class="c1"># For image generation, input is the prompt</span>
-            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
-            <span class="c1"># Ensure model is specified</span>
-            <span class="k">if</span> <span class="s2">&quot;model&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">final_model_kwargs</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model must be specified for image generation&quot;</span><span class="p">)</span>
-            <span class="c1"># Set defaults for DALL-E 3 if not specified</span>
-            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;1024x1024&quot;</span><span class="p">)</span>
-            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;quality&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">&quot;quality&quot;</span><span class="p">,</span> <span class="s2">&quot;standard&quot;</span>
-            <span class="p">)</span>
-            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;response_format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">&quot;response_format&quot;</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span>
-            <span class="p">)</span>
+            <span class="c1"># Check if images are provided for multimodal input</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="n">final_model_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;images&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-            <span class="c1"># Handle image edits and variations</span>
-            <span class="n">image</span> <span class="o">=</span> <span class="n">final_model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;image&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
-                <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">images</span><span class="p">:</span>
+                <span class="c1"># Use helper function to format content with images</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">format_content_for_response_api</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">images</span><span class="p">)</span>
 
-            <span class="n">mask</span> <span class="o">=</span> <span class="n">final_model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mask&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
-                <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode_image</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                <span class="c1"># For responses.create API, wrap in user message format</span>
+                <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">content</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Text-only input</span>
+                <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">final_model_kwargs</span></div>
@@ -1197,19 +1571,7 @@
                 <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;non-streaming call&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">response_parser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_streaming_response_parser</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">responses</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">IMAGE_GENERATION</span><span class="p">:</span>
-            <span class="c1"># Determine which image API to call based on the presence of image/mask</span>
-            <span class="k">if</span> <span class="s2">&quot;image&quot;</span> <span class="ow">in</span> <span class="n">api_kwargs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;mask&quot;</span> <span class="ow">in</span> <span class="n">api_kwargs</span><span class="p">:</span>
-                    <span class="c1"># Image edit</span>
-                    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Image variation</span>
-                    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">create_variation</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Image generation</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span></div>
 

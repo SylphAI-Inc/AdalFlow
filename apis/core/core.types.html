@@ -240,7 +240,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -567,7 +569,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#core.types.QueueSentinel" title="core.types.QueueSentinel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QueueSentinel</span></code></a>([type])</p></td>
 <td><p>Special sentinel object to mark the end of a stream when using asyncio.Queue for stream processing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.RawResponsesStreamEvent" title="core.types.RawResponsesStreamEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RawResponsesStreamEvent</span></code></a>([data, type, error])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.RawResponsesStreamEvent" title="core.types.RawResponsesStreamEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RawResponsesStreamEvent</span></code></a>([input, data, type, ...])</p></td>
 <td><p>Streaming event for storing the raw responses from the LLM.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#core.types.ResponseUsage" title="core.types.ResponseUsage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResponseUsage</span></code></a>(input_tokens, output_tokens, ...)</p></td>
@@ -588,7 +590,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.types.RunnerStreamingResult" title="core.types.RunnerStreamingResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunnerStreamingResult</span></code></a>(_event_queue, ...)</p></td>
 <td><p>Container for runner streaming results that provides access to the event queue and allows users to consume streaming events.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StepOutput</span></code></a>([step, action, function, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StepOutput</span></code></a>([step, planner_prompt, action, ...])</p></td>
 <td><p>The output of a single step in the agent.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.types.StepRunItem" title="core.types.StepRunItem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StepRunItem</span></code></a>(id, type, data, error, timestamp)</p></td>
@@ -673,44 +675,9 @@ It helps ModelClient identify the model type required to correctly call the mode
 <p>To this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClientType</span>
 
-<span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">()</span>
+<span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span>
 </pre></div>
 </div>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.COHERE">
-<span class="sig-name descname"><span class="pre">COHERE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.COHERE" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.TRANSFORMERS">
-<span class="sig-name descname"><span class="pre">TRANSFORMERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.TRANSFORMERS" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.ANTHROPIC">
-<span class="sig-name descname"><span class="pre">ANTHROPIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.ANTHROPIC" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.GROQ">
-<span class="sig-name descname"><span class="pre">GROQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GROQ" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.OPENAI">
-<span class="sig-name descname"><span class="pre">OPENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.OPENAI" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.GOOGLE_GENAI">
-<span class="sig-name descname"><span class="pre">GOOGLE_GENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GOOGLE_GENAI" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.OLLAMA">
-<span class="sig-name descname"><span class="pre">OLLAMA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.OLLAMA" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py function">
@@ -1148,10 +1115,16 @@ The returned callable raises a TypeError when invoked, indicating a required fie
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.types.RawResponsesStreamEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RawResponsesStreamEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'raw_response_event'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raw_response_event'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#RawResponsesStreamEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.RawResponsesStreamEvent" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RawResponsesStreamEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'raw_response_event'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raw_response_event'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#RawResponsesStreamEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.RawResponsesStreamEvent" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code></p>
 <p>Streaming event for storing the raw responses from the LLM. These are ‘raw’ events, i.e. they are directly passed through
 from the LLM.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.RawResponsesStreamEvent.input">
+<span class="sig-name descname"><span class="pre">input</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.RawResponsesStreamEvent.input" title="Link to this definition">¶</a></dt>
+<dd><p>The input to the LLM.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.RawResponsesStreamEvent.data">
 <span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.RawResponsesStreamEvent.data" title="Link to this definition">¶</a></dt>
@@ -1174,7 +1147,7 @@ from the LLM.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.types.GeneratorOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T_co</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thinking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_use</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.CompletionUsage" title="core.types.CompletionUsage"><span class="pre">CompletionUsage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncIterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#GeneratorOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.GeneratorOutput" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T_co</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thinking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_use</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.CompletionUsage" title="core.types.CompletionUsage"><span class="pre">CompletionUsage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncIterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#GeneratorOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.GeneratorOutput" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T_co</span></code>]</p>
 <p>The output data class for the Generator component.
 We can not control its output 100%, so we use this to track the error_message and
@@ -1207,6 +1180,11 @@ we have data as None, error as the error message.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.GeneratorOutput.tool_use">
 <span class="sig-name descname"><span class="pre">tool_use</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.tool_use" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.images">
+<span class="sig-name descname"><span class="pre">images</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.images" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1247,6 +1225,55 @@ If the raw_response has already been consumed, yield from the data field</p>
 <dd class="field-even"><p>AsyncIterator[T_co]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.save_images">
+<span class="sig-name descname"><span class="pre">save_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'generated'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'png'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'jpg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'jpeg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'webp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gif'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bmp'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_base64</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/types.html#GeneratorOutput.save_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.GeneratorOutput.save_images" title="Link to this definition">¶</a></dt>
+<dd><p>Save generated images to disk with automatic format conversion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> – Directory to save images to (default: current directory)</p></li>
+<li><p><strong>prefix</strong> – Filename prefix for saved images (default: “generated”)</p></li>
+<li><p><strong>format</strong> – Image format to save as (png, jpg, jpeg, webp, gif, bmp)</p></li>
+<li><p><strong>decode_base64</strong> – Whether to decode base64 encoded images (default: True)</p></li>
+<li><p><strong>return_paths</strong> – Whether to return the saved file paths (default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><dl class="simple">
+<dt>List[str]: Paths to saved images (always returns a list, even for single image)</dt><dd><ul>
+<li><p>None: If no images to save</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Otherwise returns None</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>If return_paths is True</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Save single image as PNG (returns list with one element)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">save_images</span><span class="p">()</span>
+<span class="go">[&#39;generated_0.png&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Save multiple images as JPEG with custom prefix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">save_images</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;jpg&quot;</span><span class="p">)</span>
+<span class="go">[&#39;cat_0.jpg&#39;, &#39;cat_1.jpg&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Save to specific directory</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">save_images</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">&quot;/tmp/images&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;webp&quot;</span><span class="p">)</span>
+<span class="go">[&#39;/tmp/images/generated_0.webp&#39;]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -1407,12 +1434,17 @@ If the raw_response has already been consumed, yield from the data field</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.types.StepOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">StepOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#StepOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.StepOutput" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">StepOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Function" title="core.types.Function"><span class="pre">Function</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#StepOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.StepOutput" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p>The output of a single step in the agent. Suits for serial planning agent such as React</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.StepOutput.step">
 <span class="sig-name descname"><span class="pre">step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#core.types.StepOutput.step" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.StepOutput.planner_prompt">
+<span class="sig-name descname"><span class="pre">planner_prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.StepOutput.planner_prompt" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -2064,8 +2096,34 @@ print(f”Completed step {step_item.data.step}”)</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="core.types.RunnerResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RunnerResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_history:</span> <span class="pre">List[core.types.StepOutput]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx:</span> <span class="pre">Optional[Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#RunnerResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.RunnerResult" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.RunnerResult.step_history">
+<span class="sig-name descname"><span class="pre">step_history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.types.StepOutput" title="core.types.StepOutput"><span class="pre">StepOutput</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#core.types.RunnerResult.step_history" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.RunnerResult.answer">
+<span class="sig-name descname"><span class="pre">answer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.RunnerResult.answer" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.RunnerResult.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.RunnerResult.error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.RunnerResult.ctx">
+<span class="sig-name descname"><span class="pre">ctx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.RunnerResult.ctx" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="core.types.FinalOutputItem">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FinalOutputItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'final_output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~typing.Any</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp:</span> <span class="pre">~datetime.datetime</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#FinalOutputItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.FinalOutputItem" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FinalOutputItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'final_output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~core.types.RunnerResult</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp:</span> <span class="pre">~datetime.datetime</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#FinalOutputItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.FinalOutputItem" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#core.types.RunItem" title="core.types.RunItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunItem</span></code></a></p>
 <p>Event emitted when the entire Runner execution has completed.</p>
 <p>This event signals the end of the execution sequence and contains the final
@@ -2077,7 +2135,7 @@ successfully or with an error.</p>
 <dd><p>The final RunnerResponse containing the complete execution result</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Any | None</p>
+<dd class="field-odd"><p><a class="reference internal" href="#core.types.RunnerResult" title="core.types.RunnerResult">core.types.RunnerResult</a> | None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2112,7 +2170,7 @@ if final_item.data.error:</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id57">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id57" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.RunnerResult" title="core.types.RunnerResult"><span class="pre">RunnerResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id57" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2164,6 +2222,7 @@ or when execution finishes.</p>
 <dl class="simple">
 <dt>Event Types:</dt><dd><ul class="simple">
 <li><p>“agent.final_output”: Final output from the agent (FinalOutputItem)</p></li>
+<li><p>“agent.tool_permission_request”: Tool permission request before execution</p></li>
 <li><p>“agent.tool_call_start”: Agent is about to execute a tool (ToolCallRunItem)</p></li>
 <li><p>“agent.tool_call_activity”: Agent is about to execute a tool (ToolCallActivityRunItem)</p></li>
 <li><p>“agent.tool_call_complete”: Tool execution completed (ToolOutputRunItem)</p></li>
@@ -2189,40 +2248,6 @@ or when execution finishes.</p>
 <span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'run_item_stream_event'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'run_item_stream_event'</span></em><a class="headerlink" href="#id60" title="Link to this definition">¶</a></dt>
 <dd><p>Type discriminator for the streaming event system.</p>
 </dd></dl>
-
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="core.types.StreamEvent">
-<span class="sig-name descname"><span class="pre">StreamEvent</span></span><a class="headerlink" href="#core.types.StreamEvent" title="Link to this definition">¶</a></dt>
-<dd><p>Used to wrap the final response from the runner which holds key information about the execution such
-as the answer, step history, and error.</p>
-<p>alias of <a class="reference internal" href="#core.types.RawResponsesStreamEvent" title="core.types.RawResponsesStreamEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawResponsesStreamEvent</span></code></a> | <a class="reference internal" href="#core.types.RunItemStreamEvent" title="core.types.RunItemStreamEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunItemStreamEvent</span></code></a></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="core.types.RunnerResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RunnerResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_history:</span> <span class="pre">List[core.types.StepOutput]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx:</span> <span class="pre">Optional[Dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#RunnerResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.RunnerResult" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.RunnerResult.step_history">
-<span class="sig-name descname"><span class="pre">step_history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.types.StepOutput" title="core.types.StepOutput"><span class="pre">StepOutput</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#core.types.RunnerResult.step_history" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.RunnerResult.answer">
-<span class="sig-name descname"><span class="pre">answer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.RunnerResult.answer" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.RunnerResult.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.RunnerResult.error" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.RunnerResult.ctx">
-<span class="sig-name descname"><span class="pre">ctx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.RunnerResult.ctx" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -2442,16 +2467,7 @@ for event in result.stream_to_json_sync(“live_events.json”):</p>
 <li><a class="reference internal" href="#core.types.ModelType.UNDEFINED"><code class="docutils literal notranslate"><span class="pre">ModelType.UNDEFINED</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#core.types.ModelClientType"><code class="docutils literal notranslate"><span class="pre">ModelClientType</span></code></a><ul>
-<li><a class="reference internal" href="#core.types.ModelClientType.COHERE"><code class="docutils literal notranslate"><span class="pre">ModelClientType.COHERE</span></code></a></li>
-<li><a class="reference internal" href="#core.types.ModelClientType.TRANSFORMERS"><code class="docutils literal notranslate"><span class="pre">ModelClientType.TRANSFORMERS</span></code></a></li>
-<li><a class="reference internal" href="#core.types.ModelClientType.ANTHROPIC"><code class="docutils literal notranslate"><span class="pre">ModelClientType.ANTHROPIC</span></code></a></li>
-<li><a class="reference internal" href="#core.types.ModelClientType.GROQ"><code class="docutils literal notranslate"><span class="pre">ModelClientType.GROQ</span></code></a></li>
-<li><a class="reference internal" href="#core.types.ModelClientType.OPENAI"><code class="docutils literal notranslate"><span class="pre">ModelClientType.OPENAI</span></code></a></li>
-<li><a class="reference internal" href="#core.types.ModelClientType.GOOGLE_GENAI"><code class="docutils literal notranslate"><span class="pre">ModelClientType.GOOGLE_GENAI</span></code></a></li>
-<li><a class="reference internal" href="#core.types.ModelClientType.OLLAMA"><code class="docutils literal notranslate"><span class="pre">ModelClientType.OLLAMA</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#core.types.ModelClientType"><code class="docutils literal notranslate"><span class="pre">ModelClientType</span></code></a></li>
 <li><a class="reference internal" href="#core.types.get_model_args"><code class="docutils literal notranslate"><span class="pre">get_model_args()</span></code></a></li>
 <li><a class="reference internal" href="#core.types.Embedding"><code class="docutils literal notranslate"><span class="pre">Embedding</span></code></a><ul>
 <li><a class="reference internal" href="#core.types.Embedding.embedding"><code class="docutils literal notranslate"><span class="pre">Embedding.embedding</span></code></a></li>
@@ -2532,6 +2548,7 @@ for event in result.stream_to_json_sync(“live_events.json”):</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#core.types.RawResponsesStreamEvent"><code class="docutils literal notranslate"><span class="pre">RawResponsesStreamEvent</span></code></a><ul>
+<li><a class="reference internal" href="#core.types.RawResponsesStreamEvent.input"><code class="docutils literal notranslate"><span class="pre">RawResponsesStreamEvent.input</span></code></a></li>
 <li><a class="reference internal" href="#core.types.RawResponsesStreamEvent.data"><code class="docutils literal notranslate"><span class="pre">RawResponsesStreamEvent.data</span></code></a></li>
 <li><a class="reference internal" href="#core.types.RawResponsesStreamEvent.type"><code class="docutils literal notranslate"><span class="pre">RawResponsesStreamEvent.type</span></code></a></li>
 <li><a class="reference internal" href="#core.types.RawResponsesStreamEvent.error"><code class="docutils literal notranslate"><span class="pre">RawResponsesStreamEvent.error</span></code></a></li>
@@ -2543,12 +2560,14 @@ for event in result.stream_to_json_sync(“live_events.json”):</p>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.data"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.data</span></code></a></li>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.thinking"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.thinking</span></code></a></li>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.tool_use"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.tool_use</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.images"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.images</span></code></a></li>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.error"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.error</span></code></a></li>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.usage"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.usage</span></code></a></li>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.raw_response"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.raw_response</span></code></a></li>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.api_response"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.api_response</span></code></a></li>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.metadata"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.metadata</span></code></a></li>
 <li><a class="reference internal" href="#core.types.GeneratorOutput.stream_events"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.stream_events()</span></code></a></li>
+<li><a class="reference internal" href="#core.types.GeneratorOutput.save_images"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.save_images()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#core.types.FunctionExpression"><code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code></a><ul>
@@ -2576,6 +2595,7 @@ for event in result.stream_to_json_sync(“live_events.json”):</p>
 </li>
 <li><a class="reference internal" href="#core.types.StepOutput"><code class="docutils literal notranslate"><span class="pre">StepOutput</span></code></a><ul>
 <li><a class="reference internal" href="#core.types.StepOutput.step"><code class="docutils literal notranslate"><span class="pre">StepOutput.step</span></code></a></li>
+<li><a class="reference internal" href="#core.types.StepOutput.planner_prompt"><code class="docutils literal notranslate"><span class="pre">StepOutput.planner_prompt</span></code></a></li>
 <li><a class="reference internal" href="#core.types.StepOutput.action"><code class="docutils literal notranslate"><span class="pre">StepOutput.action</span></code></a></li>
 <li><a class="reference internal" href="#core.types.StepOutput.function"><code class="docutils literal notranslate"><span class="pre">StepOutput.function</span></code></a></li>
 <li><a class="reference internal" href="#core.types.StepOutput.observation"><code class="docutils literal notranslate"><span class="pre">StepOutput.observation</span></code></a></li>
@@ -2685,6 +2705,13 @@ for event in result.stream_to_json_sync(“live_events.json”):</p>
 <li><a class="reference internal" href="#id48"><code class="docutils literal notranslate"><span class="pre">StepRunItem.data</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#core.types.RunnerResult"><code class="docutils literal notranslate"><span class="pre">RunnerResult</span></code></a><ul>
+<li><a class="reference internal" href="#core.types.RunnerResult.step_history"><code class="docutils literal notranslate"><span class="pre">RunnerResult.step_history</span></code></a></li>
+<li><a class="reference internal" href="#core.types.RunnerResult.answer"><code class="docutils literal notranslate"><span class="pre">RunnerResult.answer</span></code></a></li>
+<li><a class="reference internal" href="#core.types.RunnerResult.error"><code class="docutils literal notranslate"><span class="pre">RunnerResult.error</span></code></a></li>
+<li><a class="reference internal" href="#core.types.RunnerResult.ctx"><code class="docutils literal notranslate"><span class="pre">RunnerResult.ctx</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#core.types.FinalOutputItem"><code class="docutils literal notranslate"><span class="pre">FinalOutputItem</span></code></a><ul>
 <li><a class="reference internal" href="#core.types.FinalOutputItem.data"><code class="docutils literal notranslate"><span class="pre">FinalOutputItem.data</span></code></a></li>
 <li><a class="reference internal" href="#core.types.FinalOutputItem.type"><code class="docutils literal notranslate"><span class="pre">FinalOutputItem.type</span></code></a></li>
@@ -2698,14 +2725,6 @@ for event in result.stream_to_json_sync(“live_events.json”):</p>
 <li><a class="reference internal" href="#id58"><code class="docutils literal notranslate"><span class="pre">RunItemStreamEvent.name</span></code></a></li>
 <li><a class="reference internal" href="#id59"><code class="docutils literal notranslate"><span class="pre">RunItemStreamEvent.item</span></code></a></li>
 <li><a class="reference internal" href="#id60"><code class="docutils literal notranslate"><span class="pre">RunItemStreamEvent.type</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#core.types.StreamEvent"><code class="docutils literal notranslate"><span class="pre">StreamEvent</span></code></a></li>
-<li><a class="reference internal" href="#core.types.RunnerResult"><code class="docutils literal notranslate"><span class="pre">RunnerResult</span></code></a><ul>
-<li><a class="reference internal" href="#core.types.RunnerResult.step_history"><code class="docutils literal notranslate"><span class="pre">RunnerResult.step_history</span></code></a></li>
-<li><a class="reference internal" href="#core.types.RunnerResult.answer"><code class="docutils literal notranslate"><span class="pre">RunnerResult.answer</span></code></a></li>
-<li><a class="reference internal" href="#core.types.RunnerResult.error"><code class="docutils literal notranslate"><span class="pre">RunnerResult.error</span></code></a></li>
-<li><a class="reference internal" href="#core.types.RunnerResult.ctx"><code class="docutils literal notranslate"><span class="pre">RunnerResult.ctx</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#core.types.QueueCompleteSentinel"><code class="docutils literal notranslate"><span class="pre">QueueCompleteSentinel</span></code></a></li>

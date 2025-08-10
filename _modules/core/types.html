@@ -239,7 +239,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -502,6 +504,7 @@
     <span class="n">AsyncIterator</span><span class="p">,</span>
     <span class="n">Coroutine</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -522,15 +525,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">is_normalized</span><span class="p">,</span>
     <span class="n">generate_function_call_expression_from_callable</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">CohereAPIClient</span><span class="p">,</span>
-    <span class="n">TransformersClient</span><span class="p">,</span>
-    <span class="n">AnthropicAPIClient</span><span class="p">,</span>
-    <span class="n">GroqAPIClient</span><span class="p">,</span>
-    <span class="n">OpenAIClient</span><span class="p">,</span>
-    <span class="n">GoogleGenAIClient</span><span class="p">,</span>
-    <span class="n">OllamaClient</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Import OpenAI&#39;s ResponseStreamEvent for type alias</span>
@@ -560,7 +554,6 @@
 
 <div class="viewcode-block" id="ModelClientType">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ModelClientType">[docs]</a>
-<span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ModelClientType</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A quick way to access all model clients in the ModelClient module.</span>
 
@@ -578,15 +571,35 @@
 
 <span class="s2">        from adalflow.core.types import ModelClientType</span>
 
-<span class="s2">        model_client = ModelClientType.OPENAI()</span>
+<span class="s2">        model_client = ModelClientType.OPENAI</span>
 <span class="s2">    &quot;&quot;&quot;</span>
-    <span class="n">COHERE</span> <span class="o">=</span> <span class="n">CohereAPIClient</span>
-    <span class="n">TRANSFORMERS</span> <span class="o">=</span> <span class="n">TransformersClient</span>
-    <span class="n">ANTHROPIC</span> <span class="o">=</span> <span class="n">AnthropicAPIClient</span>
-    <span class="n">GROQ</span> <span class="o">=</span> <span class="n">GroqAPIClient</span>
-    <span class="n">OPENAI</span> <span class="o">=</span> <span class="n">OpenAIClient</span>
-    <span class="n">GOOGLE_GENAI</span> <span class="o">=</span> <span class="n">GoogleGenAIClient</span>
-    <span class="n">OLLAMA</span> <span class="o">=</span> <span class="n">OllamaClient</span></div>
+    
+    <span class="n">_clients_cache</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">__class_getattr__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dynamically import and return model clients on attribute access.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_clients_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_clients_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            
+        <span class="n">client_mapping</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;COHERE&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;adalflow.components.model_client&#39;</span><span class="p">,</span> <span class="s1">&#39;CohereAPIClient&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;TRANSFORMERS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;adalflow.components.model_client&#39;</span><span class="p">,</span> <span class="s1">&#39;TransformersClient&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;ANTHROPIC&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;adalflow.components.model_client&#39;</span><span class="p">,</span> <span class="s1">&#39;AnthropicAPIClient&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;GROQ&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;adalflow.components.model_client&#39;</span><span class="p">,</span> <span class="s1">&#39;GroqAPIClient&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;OPENAI&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;adalflow.components.model_client&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenAIClient&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;GOOGLE_GENAI&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;adalflow.components.model_client&#39;</span><span class="p">,</span> <span class="s1">&#39;GoogleGenAIClient&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;OLLAMA&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;adalflow.components.model_client&#39;</span><span class="p">,</span> <span class="s1">&#39;OllamaClient&#39;</span><span class="p">),</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">client_mapping</span><span class="p">:</span>
+            <span class="n">module_name</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="n">client_mapping</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+            <span class="n">client_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_clients_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">client_class</span>
+            <span class="k">return</span> <span class="n">client_class</span>
+        
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
 
 
 
@@ -995,6 +1008,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Streaming event for storing the raw responses from the LLM. These are &#39;raw&#39; events, i.e. they are directly passed through</span>
 <span class="sd">    from the LLM.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The input to the LLM.&quot;&quot;&quot;</span>
 
     <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The raw responses streaming event from the LLM.&quot;&quot;&quot;</span>
@@ -1029,7 +1044,7 @@
 
     <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The input to the generator&quot;</span><span class="p">},</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The input to the generator&quot;</span><span class="p">},</span> <span class="c1"># should use it to save the prompt</span>
     <span class="p">)</span>
 
     <span class="n">data</span><span class="p">:</span> <span class="n">T_co</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
@@ -1042,6 +1057,9 @@
     <span class="p">)</span>
     <span class="n">tool_use</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Function</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The tool use of the model&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Generated images (base64 or URLs) from image generation tools&quot;</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1084,6 +1102,120 @@
         <span class="c1"># if the stream is already consumed and there is final data then just return the final data</span>
         <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span></div>
+
+    
+<div class="viewcode-block" id="GeneratorOutput.save_images">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.GeneratorOutput.save_images">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_images</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;generated&quot;</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;bmp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
+        <span class="n">decode_base64</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_paths</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save generated images to disk with automatic format conversion.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            directory: Directory to save images to (default: current directory)</span>
+<span class="sd">            prefix: Filename prefix for saved images (default: &quot;generated&quot;)</span>
+<span class="sd">            format: Image format to save as (png, jpg, jpeg, webp, gif, bmp)</span>
+<span class="sd">            decode_base64: Whether to decode base64 encoded images (default: True)</span>
+<span class="sd">            return_paths: Whether to return the saved file paths (default: True)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            If return_paths is True:</span>
+<span class="sd">                - List[str]: Paths to saved images (always returns a list, even for single image)</span>
+<span class="sd">                - None: If no images to save</span>
+<span class="sd">            Otherwise returns None</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Save single image as PNG (returns list with one element)</span>
+<span class="sd">            &gt;&gt;&gt; response.save_images()</span>
+<span class="sd">            [&#39;generated_0.png&#39;]</span>
+<span class="sd">            </span>
+<span class="sd">            &gt;&gt;&gt; # Save multiple images as JPEG with custom prefix</span>
+<span class="sd">            &gt;&gt;&gt; response.save_images(prefix=&quot;cat&quot;, format=&quot;jpg&quot;)</span>
+<span class="sd">            [&#39;cat_0.jpg&#39;, &#39;cat_1.jpg&#39;]</span>
+<span class="sd">            </span>
+<span class="sd">            &gt;&gt;&gt; # Save to specific directory</span>
+<span class="sd">            &gt;&gt;&gt; response.save_images(directory=&quot;/tmp/images&quot;, format=&quot;webp&quot;)</span>
+<span class="sd">            [&#39;/tmp/images/generated_0.webp&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+            
+        <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+        
+        <span class="c1"># Create directory if it doesn&#39;t exist</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+        <span class="n">saved_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">images_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">]</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Try to import PIL for format conversion</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+            <span class="n">has_pil</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">has_pil</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="nb">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;PIL/Pillow is required for &#39;</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&#39; format. &quot;</span>
+                    <span class="s2">&quot;Install with: pip install Pillow&quot;</span>
+                <span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">img_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">images_to_save</span><span class="p">):</span>
+            <span class="c1"># Determine if this is base64 or a URL</span>
+            <span class="n">is_base64</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">img_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">img_data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;data:&quot;</span><span class="p">):</span>
+                    <span class="c1"># Data URI format</span>
+                    <span class="n">is_base64</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="c1"># Extract base64 part from data URI</span>
+                    <span class="n">base64_data</span> <span class="o">=</span> <span class="n">img_data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">img_data</span> <span class="k">else</span> <span class="n">img_data</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">img_data</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)):</span>
+                    <span class="c1"># Assume it&#39;s raw base64 if not a URL</span>
+                    <span class="n">is_base64</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">base64_data</span> <span class="o">=</span> <span class="n">img_data</span>
+            
+            <span class="c1"># Construct filename</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">is_base64</span> <span class="ow">and</span> <span class="n">decode_base64</span><span class="p">:</span>
+                <span class="c1"># Decode base64 and save</span>
+                <span class="n">img_bytes</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">base64_data</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">has_pil</span> <span class="ow">and</span> <span class="nb">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">]:</span>
+                    <span class="c1"># Use PIL to convert format</span>
+                    <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">img_bytes</span><span class="p">))</span>
+                    <span class="c1"># Convert RGBA to RGB for JPEG</span>
+                    <span class="k">if</span> <span class="nb">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">img</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;RGBA&quot;</span><span class="p">:</span>
+                        <span class="n">rgb_img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+                        <span class="n">rgb_img</span><span class="o">.</span><span class="n">paste</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">4</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="n">img</span> <span class="o">=</span> <span class="n">rgb_img</span>
+                    <span class="c1"># PIL expects &#39;JPEG&#39; for jpg/jpeg formats</span>
+                    <span class="n">pil_format</span> <span class="o">=</span> <span class="s2">&quot;JPEG&quot;</span> <span class="k">if</span> <span class="nb">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="nb">format</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                    <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">pil_format</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Save as-is (assuming PNG or no conversion needed)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">img_bytes</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># For URLs or if not decoding, save the string as-is</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span> <span class="o">+</span> <span class="s2">&quot;.url&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">img_data</span><span class="p">)</span>
+                <span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span> <span class="o">+</span> <span class="s2">&quot;.url&quot;</span>
+            
+            <span class="n">saved_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">return_paths</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">saved_paths</span>  <span class="c1"># Always return a list</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 </div>
 
 
@@ -1275,6 +1407,9 @@
     <span class="c1"># This action can be in Function, or Function Exptression, or just str</span>
     <span class="c1"># it includes the thought and action already</span>
     <span class="c1"># directly the output from planner LLMs</span>
+    <span class="n">planner_prompt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The planner prompt for this step&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
     <span class="n">action</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The action the agent takes at this step&quot;</span><span class="p">}</span>
     <span class="p">)</span>
@@ -1907,6 +2042,34 @@
     <span class="p">)</span></div>
 
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Used to wrap the final response from the runner which holds key information about the execution such</span>
+<span class="sd">as the answer, step history, and error.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="RunnerResult">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerResult">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunnerResult</span><span class="p">:</span>
+    <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The step history of the execution&quot;</span><span class="p">},</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">answer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The answer to the user&#39;s query&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The error message if the code execution failed&quot;</span><span class="p">},</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The context of the execution&quot;</span><span class="p">},</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
 
 <div class="viewcode-block" id="FinalOutputItem">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FinalOutputItem">[docs]</a>
@@ -1939,7 +2102,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;final_output&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Type of run item&quot;</span><span class="p">})</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RunnerResult</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Final processed output from the runner execution&quot;</span><span class="p">},</span>
     <span class="p">)</span></div>
@@ -1968,6 +2131,7 @@
 
 <span class="sd">    Event Types:</span>
 <span class="sd">        - &quot;agent.final_output&quot;: Final output from the agent (FinalOutputItem)</span>
+<span class="sd">        - &quot;agent.tool_permission_request&quot;: Tool permission request before execution</span>
 <span class="sd">        - &quot;agent.tool_call_start&quot;: Agent is about to execute a tool (ToolCallRunItem)</span>
 <span class="sd">        - &quot;agent.tool_call_activity&quot;: Agent is about to execute a tool (ToolCallActivityRunItem)</span>
 <span class="sd">        - &quot;agent.tool_call_complete&quot;: Tool execution completed (ToolOutputRunItem)</span>
@@ -2008,33 +2172,6 @@
 
 
 <span class="n">StreamEvent</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">RawResponsesStreamEvent</span><span class="p">,</span> <span class="n">RunItemStreamEvent</span><span class="p">]</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Used to wrap the final response from the runner which holds key information about the execution such</span>
-<span class="sd">as the answer, step history, and error.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-
-<div class="viewcode-block" id="RunnerResult">
-<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.RunnerResult">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">RunnerResult</span><span class="p">:</span>
-    <span class="n">step_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The step history of the execution&quot;</span><span class="p">},</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">answer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The answer to the user&#39;s query&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span>
-
-    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The error message if the code execution failed&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">ctx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The context of the execution&quot;</span><span class="p">},</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span></div>
 
 
 

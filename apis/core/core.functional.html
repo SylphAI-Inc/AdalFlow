@@ -240,7 +240,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -517,106 +519,109 @@ Users can leverage these functions to customize their own components.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#core.functional.dataclass_obj_from_dict" title="core.functional.dataclass_obj_from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataclass_obj_from_dict</span></code></a>(cls, data)</p></td>
 <td><p>Convert a dictionary to a dataclass object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.evaluate_ast_node" title="core.functional.evaluate_ast_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_ast_node</span></code></a>(node[, context_map])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.encode_image" title="core.functional.encode_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">encode_image</span></code></a>(image_path)</p></td>
+<td><p>Encode an image file to base64 string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.evaluate_ast_node" title="core.functional.evaluate_ast_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_ast_node</span></code></a>(node[, context_map])</p></td>
 <td><p>Recursively evaluates an AST node and returns the corresponding Python object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_dataclass_type" title="core.functional.extract_dataclass_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_dataclass_type</span></code></a>(type_hint)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_dataclass_type" title="core.functional.extract_dataclass_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_dataclass_type</span></code></a>(type_hint)</p></td>
 <td><p>Extract the actual dataclass type from a type hint that could be Optional or other generic.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_first_boolean" title="core.functional.extract_first_boolean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_boolean</span></code></a>(text)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_first_boolean" title="core.functional.extract_first_boolean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_boolean</span></code></a>(text)</p></td>
 <td><p>Extract the first boolean from the provided text.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_first_float" title="core.functional.extract_first_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_float</span></code></a>(text)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_first_float" title="core.functional.extract_first_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_float</span></code></a>(text)</p></td>
 <td><p>Extract the first float from the provided text.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_first_int" title="core.functional.extract_first_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_int</span></code></a>(text)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_first_int" title="core.functional.extract_first_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_int</span></code></a>(text)</p></td>
 <td><p>Extract the first integer from the provided text.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_function_expression" title="core.functional.extract_function_expression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_function_expression</span></code></a>(text[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_function_expression" title="core.functional.extract_function_expression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_function_expression</span></code></a>(text[, ...])</p></td>
 <td><p>Extract function expression from text.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_json_str" title="core.functional.extract_json_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_json_str</span></code></a>(text[, add_missing_right_brace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_json_str" title="core.functional.extract_json_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_json_str</span></code></a>(text[, add_missing_right_brace])</p></td>
 <td><p>Extract JSON string from text.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_list_str" title="core.functional.extract_list_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_list_str</span></code></a>(text[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_list_str" title="core.functional.extract_list_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_list_str</span></code></a>(text[, ...])</p></td>
 <td><p>Extract the first complete list string from the provided text.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_yaml_str" title="core.functional.extract_yaml_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_yaml_str</span></code></a>(text)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_yaml_str" title="core.functional.extract_yaml_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_yaml_str</span></code></a>(text)</p></td>
 <td><p>Extract YAML string from text.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.fix_json_escaped_single_quotes" title="core.functional.fix_json_escaped_single_quotes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_json_escaped_single_quotes</span></code></a>(json_str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.fix_json_escaped_single_quotes" title="core.functional.fix_json_escaped_single_quotes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_json_escaped_single_quotes</span></code></a>(json_str)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.fix_json_missing_commas" title="core.functional.fix_json_missing_commas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_json_missing_commas</span></code></a>(json_str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.fix_json_missing_commas" title="core.functional.fix_json_missing_commas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_json_missing_commas</span></code></a>(json_str)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.from_dict_to_json" title="core.functional.from_dict_to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict_to_json</span></code></a>(data[, sort_keys])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.from_dict_to_json" title="core.functional.from_dict_to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict_to_json</span></code></a>(data[, sort_keys])</p></td>
 <td><p>Convert a dictionary to a JSON string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.from_dict_to_yaml" title="core.functional.from_dict_to_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict_to_yaml</span></code></a>(data[, sort_keys])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.from_dict_to_yaml" title="core.functional.from_dict_to_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict_to_yaml</span></code></a>(data[, sort_keys])</p></td>
 <td><p>Convert a dictionary to a YAML string.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.from_json_to_dict" title="core.functional.from_json_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json_to_dict</span></code></a>(json_str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.from_json_to_dict" title="core.functional.from_json_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json_to_dict</span></code></a>(json_str)</p></td>
 <td><p>Convert a JSON string to a dictionary.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.from_yaml_to_dict" title="core.functional.from_yaml_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_yaml_to_dict</span></code></a>(yaml_str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.from_yaml_to_dict" title="core.functional.from_yaml_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_yaml_to_dict</span></code></a>(yaml_str)</p></td>
 <td><p>Convert a YAML string to a dictionary.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.generate_function_call_expression_from_callable" title="core.functional.generate_function_call_expression_from_callable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_function_call_expression_from_callable</span></code></a>(...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.generate_function_call_expression_from_callable" title="core.functional.generate_function_call_expression_from_callable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_function_call_expression_from_callable</span></code></a>(...)</p></td>
 <td><p>Generate a function call expression string from a callable function and its arguments.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.generate_readable_key_for_function" title="core.functional.generate_readable_key_for_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_readable_key_for_function</span></code></a>(fn)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.generate_readable_key_for_function" title="core.functional.generate_readable_key_for_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_readable_key_for_function</span></code></a>(fn)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_dataclass_schema" title="core.functional.get_dataclass_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dataclass_schema</span></code></a>(cls[, exclude, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_dataclass_schema" title="core.functional.get_dataclass_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dataclass_schema</span></code></a>(cls[, exclude, ...])</p></td>
 <td><p>Generate a schema dictionary for a dataclass including nested structures.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_enum_schema" title="core.functional.get_enum_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_enum_schema</span></code></a>(enum_cls)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_enum_schema" title="core.functional.get_enum_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_enum_schema</span></code></a>(enum_cls)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fun_schema</span></code></a>(name, func)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fun_schema</span></code></a>(name, func)</p></td>
 <td><p>Get the schema of a function.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_top_k_indices_scores" title="core.functional.get_top_k_indices_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_top_k_indices_scores</span></code></a>(scores, top_k)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_top_k_indices_scores" title="core.functional.get_top_k_indices_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_top_k_indices_scores</span></code></a>(scores, top_k)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_type_schema" title="core.functional.get_type_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_type_schema</span></code></a>(type_obj[, exclude, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_type_schema" title="core.functional.get_type_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_type_schema</span></code></a>(type_obj[, exclude, ...])</p></td>
 <td><p>Retrieve the type name, handling complex and nested types.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.is_dataclass_instance" title="core.functional.is_dataclass_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_dataclass_instance</span></code></a>(obj)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.is_dataclass_instance" title="core.functional.is_dataclass_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_dataclass_instance</span></code></a>(obj)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.is_normalized" title="core.functional.is_normalized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_normalized</span></code></a>(v[, tol])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.is_normalized" title="core.functional.is_normalized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_normalized</span></code></a>(v[, tol])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.is_potential_dataclass" title="core.functional.is_potential_dataclass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_potential_dataclass</span></code></a>(t)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.is_potential_dataclass" title="core.functional.is_potential_dataclass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_potential_dataclass</span></code></a>(t)</p></td>
 <td><p>Check if the type is directly a dataclass or potentially a wrapped dataclass like Optional.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.normalize_np_array" title="core.functional.normalize_np_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_np_array</span></code></a>(v)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.normalize_np_array" title="core.functional.normalize_np_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_np_array</span></code></a>(v)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.normalize_vector" title="core.functional.normalize_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_vector</span></code></a>(v)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.normalize_vector" title="core.functional.normalize_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_vector</span></code></a>(v)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_function_call_expr</span></code></a>(function_expr[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_function_call_expr</span></code></a>(function_expr[, ...])</p></td>
 <td><p>Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map. :param function_expr: The string representing the function :type function_expr: str :param context_map: A dictionary that maps variable names to their respective values and functions. This context is used to resolve names and execute functions. :type context_map: Dict[str, Any].</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.parse_json_str_to_obj" title="core.functional.parse_json_str_to_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_json_str_to_obj</span></code></a>(json_str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.parse_json_str_to_obj" title="core.functional.parse_json_str_to_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_json_str_to_obj</span></code></a>(json_str)</p></td>
 <td><p>Parse a varietry of json format string to Python object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.parse_yaml_str_to_obj" title="core.functional.parse_yaml_str_to_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_yaml_str_to_obj</span></code></a>(yaml_str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.parse_yaml_str_to_obj" title="core.functional.parse_yaml_str_to_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_yaml_str_to_obj</span></code></a>(yaml_str)</p></td>
 <td><p>Parse a YAML string to a Python object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.random_sample" title="core.functional.random_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sample</span></code></a>(dataset, num_shots[, replace, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.random_sample" title="core.functional.random_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sample</span></code></a>(dataset, num_shots[, replace, ...])</p></td>
 <td><p>Randomly sample num_shots from the dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.represent_ordereddict" title="core.functional.represent_ordereddict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">represent_ordereddict</span></code></a>(dumper, data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.represent_ordereddict" title="core.functional.represent_ordereddict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">represent_ordereddict</span></code></a>(dumper, data)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.sandbox_exec" title="core.functional.sandbox_exec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sandbox_exec</span></code></a>(code[, context, timeout])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.sandbox_exec" title="core.functional.sandbox_exec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sandbox_exec</span></code></a>(code[, context, timeout])</p></td>
 <td><p>Execute code in a sandboxed environment with a timeout.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.validate_data" title="core.functional.validate_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_data</span></code></a>(data, fieldtypes)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.validate_data" title="core.functional.validate_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_data</span></code></a>(data, fieldtypes)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -1027,7 +1032,8 @@ If the right parenthesis is not found, we add one to the end of the string.</p>
 <span class="sig-name descname"><span class="pre">extract_json_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_missing_right_brace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#extract_json_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_json_str" title="Link to this definition">¶</a></dt>
 <dd><p>Extract JSON string from text.</p>
 <p>It will extract the first JSON object or array found in the text by searching for { or [.
-If right brace is not found, we add one to the end of the string.</p>
+If right brace is not found, we add one to the end of the string.
+Handles JSON wrapped in markdown code blocks (<code class="docutils literal notranslate"><span class="pre">`json</span> <span class="pre">...</span> <span class="pre">`</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1121,6 +1127,30 @@ it is crucial to have a format such as <code class="docutils literal notranslate
 <span class="sig-name descname"><span class="pre">parse_json_str_to_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#parse_json_str_to_obj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.parse_json_str_to_obj" title="Link to this definition">¶</a></dt>
 <dd><p>Parse a varietry of json format string to Python object.</p>
 <p>json_str: has to be a valid JSON string. Either {} or [].</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.encode_image">
+<span class="sig-name descname"><span class="pre">encode_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/functional.html#encode_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.encode_image" title="Link to this definition">¶</a></dt>
+<dd><p>Encode an image file to base64 string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>image_path</strong> (<em>str</em>) – Path to the image file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Base64 encoded string of the image.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the image file does not exist.</p></li>
+<li><p><strong>PermissionError</strong> – If there’s no permission to read the file.</p></li>
+<li><p><strong>Exception</strong> – For other errors during encoding.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1227,6 +1257,7 @@ it is crucial to have a format such as <code class="docutils literal notranslate
 <li><a class="reference internal" href="#core.functional.fix_json_escaped_single_quotes"><code class="docutils literal notranslate"><span class="pre">fix_json_escaped_single_quotes()</span></code></a></li>
 <li><a class="reference internal" href="#core.functional.parse_yaml_str_to_obj"><code class="docutils literal notranslate"><span class="pre">parse_yaml_str_to_obj()</span></code></a></li>
 <li><a class="reference internal" href="#core.functional.parse_json_str_to_obj"><code class="docutils literal notranslate"><span class="pre">parse_json_str_to_obj()</span></code></a></li>
+<li><a class="reference internal" href="#core.functional.encode_image"><code class="docutils literal notranslate"><span class="pre">encode_image()</span></code></a></li>
 <li><a class="reference internal" href="#core.functional.random_sample"><code class="docutils literal notranslate"><span class="pre">random_sample()</span></code></a></li>
 </ul>
 </li>

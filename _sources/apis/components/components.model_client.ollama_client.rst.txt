@@ -13,8 +13,8 @@ ollama_client
 
    .. autosummary::
 
+      parse_chat_messsage
       parse_generate_response
-      parse_stream_response
 
    .. rubric:: Classes
 

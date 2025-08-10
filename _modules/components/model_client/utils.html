@@ -239,7 +239,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -484,7 +486,10 @@
           <h1>Source code for components.model_client.utils</h1><div class="highlight"><pre>
 <span></span><span class="s2">&quot;Helpers for model client for integrating models and parsing the output.&quot;</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmbedderOutput</span><span class="p">,</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Usage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_image</span>
 
 
 <div class="viewcode-block" id="parse_embedding_response">
@@ -511,6 +516,268 @@
     <span class="n">model</span> <span class="o">=</span> <span class="n">api_response</span><span class="o">.</span><span class="n">model</span>
 
     <span class="k">return</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="process_images_for_response_api">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.utils.html#components.model_client.utils.process_images_for_response_api">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_images_for_response_api</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]],</span>
+    <span class="n">encode_local_images</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process and validate images for OpenAI&#39;s responses.create API.</span>
+<span class="sd">    </span>
+<span class="sd">    This function handles various image input formats and converts them to the</span>
+<span class="sd">    expected format for the responses.create API.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        images: Can be:</span>
+<span class="sd">            - A single image URL (str)</span>
+<span class="sd">            - A single local file path (str)</span>
+<span class="sd">            - A pre-formatted image dict with type=&#39;input_image&#39;</span>
+<span class="sd">            - A list containing any combination of the above</span>
+<span class="sd">        encode_local_images: Whether to encode local image files to base64</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        List of formatted image dicts ready for the API, each containing:</span>
+<span class="sd">        - type: &quot;input_image&quot;</span>
+<span class="sd">        - image_url: Either a URL or base64-encoded data URI</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If image dict format is invalid</span>
+<span class="sd">        FileNotFoundError: If local image file doesn&#39;t exist</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Single URL</span>
+<span class="sd">        &gt;&gt;&gt; process_images_for_response_api(&quot;https://example.com/image.jpg&quot;)</span>
+<span class="sd">        [{&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;https://example.com/image.jpg&quot;}]</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Local file</span>
+<span class="sd">        &gt;&gt;&gt; process_images_for_response_api(&quot;/path/to/image.jpg&quot;)</span>
+<span class="sd">        [{&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;data:image/jpeg;base64,...&quot;}]</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Multiple mixed sources</span>
+<span class="sd">        &gt;&gt;&gt; process_images_for_response_api([</span>
+<span class="sd">        ...     &quot;https://example.com/img.jpg&quot;,</span>
+<span class="sd">        ...     &quot;/local/img.png&quot;,</span>
+<span class="sd">        ...     {&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;...&quot;}</span>
+<span class="sd">        ... ])</span>
+<span class="sd">        [...]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize input to list for uniform processing</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">images</span><span class="p">]</span>
+    
+    <span class="n">processed_images</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)):</span>
+                <span class="c1"># URL image</span>
+                <span class="n">processed_images</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input_image&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;image_url&quot;</span><span class="p">:</span> <span class="n">img</span>
+                <span class="p">})</span>
+            <span class="k">elif</span> <span class="n">img</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;data:&quot;</span><span class="p">):</span>
+                <span class="c1"># Data URI (already base64 encoded)</span>
+                <span class="n">processed_images</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input_image&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;image_url&quot;</span><span class="p">:</span> <span class="n">img</span>
+                <span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Local file path</span>
+                <span class="k">if</span> <span class="n">encode_local_images</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image file not found: </span><span class="si">{</span><span class="n">img</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    
+                    <span class="c1"># Encode to base64</span>
+                    <span class="n">base64_image</span> <span class="o">=</span> <span class="n">encode_image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+                    
+                    <span class="c1"># Determine MIME type from extension</span>
+                    <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">img</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="n">mime_type</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;.jpg&#39;</span><span class="p">:</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;.jpeg&#39;</span><span class="p">:</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;.png&#39;</span><span class="p">:</span> <span class="s1">&#39;png&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;.gif&#39;</span><span class="p">:</span> <span class="s1">&#39;gif&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;.webp&#39;</span><span class="p">:</span> <span class="s1">&#39;webp&#39;</span>
+                    <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">)</span>  <span class="c1"># Default to jpeg</span>
+                    
+                    <span class="n">processed_images</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input_image&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;image_url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;data:image/</span><span class="si">{</span><span class="n">mime_type</span><span class="si">}</span><span class="s2">;base64,</span><span class="si">{</span><span class="n">base64_image</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Just pass the file path (for cases where encoding is handled elsewhere)</span>
+                    <span class="n">processed_images</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input_image&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;image_url&quot;</span><span class="p">:</span> <span class="n">img</span>
+                    <span class="p">})</span>
+                    
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># Validate pre-formatted image dict</span>
+            <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">img</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Image dict must have &#39;type&#39; field. Got: </span><span class="si">{</span><span class="n">img</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">img</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;input_image&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Image dict must have type=&#39;input_image&#39;. Got type=&#39;</span><span class="si">{</span><span class="n">img</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;image_url&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">img</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Image dict must have &#39;image_url&#39; field. Got: </span><span class="si">{</span><span class="n">img</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            
+            <span class="c1"># Valid format, add as-is</span>
+            <span class="n">processed_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid image type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Expected str (URL/path) or dict with type=&#39;input_image&#39;&quot;</span>
+            <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">processed_images</span></div>
+
+
+
+<div class="viewcode-block" id="format_content_for_response_api">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.utils.html#components.model_client.utils.format_content_for_response_api">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">format_content_for_response_api</span><span class="p">(</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format text and optional images into content array for responses.create API.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        text: The text prompt/question</span>
+<span class="sd">        images: Optional images in various formats (see process_images_for_response_api)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        List of content items formatted for the API</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Text only</span>
+<span class="sd">        &gt;&gt;&gt; format_content_for_response_api(&quot;What is this?&quot;)</span>
+<span class="sd">        [{&quot;type&quot;: &quot;input_text&quot;, &quot;text&quot;: &quot;What is this?&quot;}]</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Text with image</span>
+<span class="sd">        &gt;&gt;&gt; format_content_for_response_api(</span>
+<span class="sd">        ...     &quot;What&#39;s in this image?&quot;,</span>
+<span class="sd">        ...     &quot;https://example.com/img.jpg&quot;</span>
+<span class="sd">        ... )</span>
+<span class="sd">        [</span>
+<span class="sd">            {&quot;type&quot;: &quot;input_text&quot;, &quot;text&quot;: &quot;What&#39;s in this image?&quot;},</span>
+<span class="sd">            {&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;https://example.com/img.jpg&quot;}</span>
+<span class="sd">        ]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c1"># Add text content</span>
+    <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input_text&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span>
+    <span class="p">})</span>
+    
+    <span class="c1"># Add images if provided</span>
+    <span class="k">if</span> <span class="n">images</span><span class="p">:</span>
+        <span class="n">image_content</span> <span class="o">=</span> <span class="n">process_images_for_response_api</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+        <span class="n">content</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">image_content</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">content</span></div>
+
+
+
+<div class="viewcode-block" id="extract_text_from_response_stream">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.utils.html#components.model_client.utils.extract_text_from_response_stream">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_text_from_response_stream</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract text content from OpenAI Response API streaming events.</span>
+<span class="sd">    </span>
+<span class="sd">    The Response API generates various event types during streaming:</span>
+<span class="sd">    - ResponseCreatedEvent: Initial event when response starts</span>
+<span class="sd">    - ResponseInProgressEvent: Status updates</span>
+<span class="sd">    - ResponseOutputItemAddedEvent: When new output items are added</span>
+<span class="sd">    - ResponseContentPartAddedEvent: When content parts are added</span>
+<span class="sd">    - ResponseTextDeltaEvent: Contains actual text chunks</span>
+<span class="sd">    - ResponseTextDoneEvent: When text generation completes</span>
+<span class="sd">    - ResponseDoneEvent: Final event when response completes</span>
+<span class="sd">    </span>
+<span class="sd">    This function extracts text only from ResponseTextDeltaEvent types.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        event: A streaming event from OpenAI&#39;s Response API</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The text delta if this is a text delta event, None otherwise</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # In a streaming response handler</span>
+<span class="sd">        &gt;&gt;&gt; async for event in stream:</span>
+<span class="sd">        ...     text = extract_text_from_response_stream(event)</span>
+<span class="sd">        ...     if text:</span>
+<span class="sd">        ...         print(text, end=&quot;&quot;, flush=True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if the event has a type attribute indicating it&#39;s a text delta</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;response.output_text.delta&#39;</span><span class="p">:</span>
+        <span class="c1"># ResponseTextDeltaEvent has a &#39;delta&#39; field with the text chunk</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s1">&#39;delta&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">delta</span>
+    
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="extract_complete_text_from_response_stream">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.utils.html#components.model_client.utils.extract_complete_text_from_response_stream">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_complete_text_from_response_stream</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract complete text from response completion events.</span>
+<span class="sd">    </span>
+<span class="sd">    Some events contain the complete text rather than deltas:</span>
+<span class="sd">    - ResponseTextDoneEvent: Contains the complete text when done</span>
+<span class="sd">    - Response objects with output_text property</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        event: A streaming event from OpenAI&#39;s Response API</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The complete text if available, None otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check for done events with complete text</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;response.output_text.done&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">text</span>
+    
+    <span class="c1"># Check for Response objects with output_text</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s1">&#39;output_text&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s1">&#39;delta&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">output_text</span>
+    
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="is_response_complete">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.utils.html#components.model_client.utils.is_response_complete">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_response_complete</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a streaming event indicates the response is complete.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        event: A streaming event from OpenAI&#39;s Response API</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if this event indicates completion, False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;response.done&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;response.output_text.done&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;response.complete&#39;</span>
+        <span class="p">]</span>
+    
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;completed&#39;</span>
+    
+    <span class="k">return</span> <span class="kc">False</span></div>
 
 </pre></div>
         </article>

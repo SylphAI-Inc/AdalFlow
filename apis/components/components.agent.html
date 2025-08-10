@@ -240,7 +240,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -527,6 +529,11 @@
 <li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.step_history"><code class="docutils literal notranslate"><span class="pre">Runner.step_history</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.ctx"><code class="docutils literal notranslate"><span class="pre">Runner.ctx</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.set_permission_manager"><code class="docutils literal notranslate"><span class="pre">Runner.set_permission_manager()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.is_cancelled"><code class="docutils literal notranslate"><span class="pre">Runner.is_cancelled()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.reset_cancellation"><code class="docutils literal notranslate"><span class="pre">Runner.reset_cancellation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.register_cancel_callback"><code class="docutils literal notranslate"><span class="pre">Runner.register_cancel_callback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.cancel"><code class="docutils literal notranslate"><span class="pre">Runner.cancel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.create_response_span"><code class="docutils literal notranslate"><span class="pre">Runner.create_response_span()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.call"><code class="docutils literal notranslate"><span class="pre">Runner.call()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.acall"><code class="docutils literal notranslate"><span class="pre">Runner.acall()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.agent.runner.html#components.agent.runner.Runner.astream"><code class="docutils literal notranslate"><span class="pre">Runner.astream()</span></code></a></li>
@@ -805,6 +812,36 @@ and error handling throughout the execution pipeline.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="components.agent.Runner.is_cancelled">
+<span class="sig-name descname"><span class="pre">is_cancelled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/components/agent/runner.html#Runner.is_cancelled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.Runner.is_cancelled" title="Link to this definition">¶</a></dt>
+<dd><p>Check if execution has been cancelled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.Runner.reset_cancellation">
+<span class="sig-name descname"><span class="pre">reset_cancellation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/components/agent/runner.html#Runner.reset_cancellation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.Runner.reset_cancellation" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the cancellation flag for a new execution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.Runner.register_cancel_callback">
+<span class="sig-name descname"><span class="pre">register_cancel_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/components/agent/runner.html#Runner.register_cancel_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.Runner.register_cancel_callback" title="Link to this definition">¶</a></dt>
+<dd><p>Register a callback to be called when execution is cancelled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.Runner.cancel">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/components/agent/runner.html#Runner.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.Runner.cancel" title="Link to this definition">¶</a></dt>
+<dd><p>Cancel the current execution.</p>
+<p>This will stop the current execution but preserve state like memory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.Runner.create_response_span">
+<span class="sig-name descname"><span class="pre">create_response_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runner_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streaming_result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RunnerStreamingResult</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runner_span_instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stream_completed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/agent/runner.html#Runner.create_response_span"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.Runner.create_response_span" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="components.agent.Runner.call">
 <span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RunnerResult</span></span></span><a class="reference internal" href="../../_modules/components/agent/runner.html#Runner.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.Runner.call" title="Link to this definition">¶</a></dt>
 <dd><p>Execute the planner synchronously for multiple steps with function calling support.</p>
@@ -988,6 +1025,11 @@ and error handling throughout the execution pipeline.</p>
 <li><a class="reference internal" href="#components.agent.Runner.step_history"><code class="docutils literal notranslate"><span class="pre">Runner.step_history</span></code></a></li>
 <li><a class="reference internal" href="#components.agent.Runner.ctx"><code class="docutils literal notranslate"><span class="pre">Runner.ctx</span></code></a></li>
 <li><a class="reference internal" href="#components.agent.Runner.set_permission_manager"><code class="docutils literal notranslate"><span class="pre">Runner.set_permission_manager()</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.Runner.is_cancelled"><code class="docutils literal notranslate"><span class="pre">Runner.is_cancelled()</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.Runner.reset_cancellation"><code class="docutils literal notranslate"><span class="pre">Runner.reset_cancellation()</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.Runner.register_cancel_callback"><code class="docutils literal notranslate"><span class="pre">Runner.register_cancel_callback()</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.Runner.cancel"><code class="docutils literal notranslate"><span class="pre">Runner.cancel()</span></code></a></li>
+<li><a class="reference internal" href="#components.agent.Runner.create_response_span"><code class="docutils literal notranslate"><span class="pre">Runner.create_response_span()</span></code></a></li>
 <li><a class="reference internal" href="#components.agent.Runner.call"><code class="docutils literal notranslate"><span class="pre">Runner.call()</span></code></a></li>
 <li><a class="reference internal" href="#components.agent.Runner.acall"><code class="docutils literal notranslate"><span class="pre">Runner.acall()</span></code></a></li>
 <li><a class="reference internal" href="#components.agent.Runner.astream"><code class="docutils literal notranslate"><span class="pre">Runner.astream()</span></code></a></li>

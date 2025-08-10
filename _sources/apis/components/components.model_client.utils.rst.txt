@@ -13,5 +13,10 @@ utils
 
    .. autosummary::
 
+      extract_complete_text_from_response_stream
+      extract_text_from_response_stream
+      format_content_for_response_api
+      is_response_complete
       parse_embedding_response
+      process_images_for_response_api
 

@@ -240,7 +240,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -592,8 +594,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.ollama_client.html">ollama_client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.parse_stream_response"><code class="docutils literal notranslate"><span class="pre">parse_stream_response()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.parse_generate_response"><code class="docutils literal notranslate"><span class="pre">parse_generate_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.parse_chat_messsage"><code class="docutils literal notranslate"><span class="pre">parse_chat_messsage()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient"><code class="docutils literal notranslate"><span class="pre">OllamaClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">OllamaClient.init_sync_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">OllamaClient.init_async_client()</span></code></a></li>
@@ -609,7 +611,23 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.openai_client.html">openai_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.text"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.images"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.images</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.tool_calls"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.tool_calls</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.reasoning"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.reasoning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.code_outputs"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.code_outputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.raw_output"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.raw_output</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#id0"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#id1"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.images</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#id2"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.tool_calls</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#id3"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.reasoning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#id4"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.code_outputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#id5"><code class="docutils literal notranslate"><span class="pre">ParsedResponseContent.raw_output</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.get_response_output_text"><code class="docutils literal notranslate"><span class="pre">get_response_output_text()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.parse_response_output"><code class="docutils literal notranslate"><span class="pre">parse_response_output()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.estimate_token_count"><code class="docutils literal notranslate"><span class="pre">estimate_token_count()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response"><code class="docutils literal notranslate"><span class="pre">handle_streaming_response()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response_sync"><code class="docutils literal notranslate"><span class="pre">handle_streaming_response_sync()</span></code></a></li>
@@ -682,6 +700,11 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.utils.html">utils</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">parse_embedding_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.process_images_for_response_api"><code class="docutils literal notranslate"><span class="pre">process_images_for_response_api()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.format_content_for_response_api"><code class="docutils literal notranslate"><span class="pre">format_content_for_response_api()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.extract_text_from_response_stream"><code class="docutils literal notranslate"><span class="pre">extract_text_from_response_stream()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.extract_complete_text_from_response_stream"><code class="docutils literal notranslate"><span class="pre">extract_complete_text_from_response_stream()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.is_response_complete"><code class="docutils literal notranslate"><span class="pre">is_response_complete()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.model_client.xai_client.html">xai_client</a><ul>
@@ -692,6 +715,103 @@
 </div>
 <hr class="docutils" />
 <p id="module-components.model_client">We let users install the required SDKs conditionally for our integrated model providers.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.process_images_for_response_api">
+<span class="sig-name descname"><span class="pre">process_images_for_response_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_local_images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/adalflow/components/model_client/utils.html#process_images_for_response_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.process_images_for_response_api" title="Link to this definition">¶</a></dt>
+<dd><p>Process and validate images for OpenAI’s responses.create API.</p>
+<p>This function handles various image input formats and converts them to the
+expected format for the responses.create API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>images</strong> – Can be:
+- A single image URL (str)
+- A single local file path (str)
+- A pre-formatted image dict with type=’input_image’
+- A list containing any combination of the above</p></li>
+<li><p><strong>encode_local_images</strong> – Whether to encode local image files to base64</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>type: “input_image”</p></li>
+<li><p>image_url: Either a URL or base64-encoded data URI</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of formatted image dicts ready for the API, each containing</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If image dict format is invalid</p></li>
+<li><p><strong>FileNotFoundError</strong> – If local image file doesn’t exist</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Single URL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process_images_for_response_api</span><span class="p">(</span><span class="s2">&quot;https://example.com/image.jpg&quot;</span><span class="p">)</span>
+<span class="go">[{&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;https://example.com/image.jpg&quot;}]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Local file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process_images_for_response_api</span><span class="p">(</span><span class="s2">&quot;/path/to/image.jpg&quot;</span><span class="p">)</span>
+<span class="go">[{&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;data:image/jpeg;base64,...&quot;}]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Multiple mixed sources</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process_images_for_response_api</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="s2">&quot;https://example.com/img.jpg&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;/local/img.png&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input_image&quot;</span><span class="p">,</span> <span class="s2">&quot;image_url&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="go">[...]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.format_content_for_response_api">
+<span class="sig-name descname"><span class="pre">format_content_for_response_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/adalflow/components/model_client/utils.html#format_content_for_response_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.format_content_for_response_api" title="Link to this definition">¶</a></dt>
+<dd><p>Format text and optional images into content array for responses.create API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – The text prompt/question</p></li>
+<li><p><strong>images</strong> – Optional images in various formats (see process_images_for_response_api)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of content items formatted for the API</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Text only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">format_content_for_response_api</span><span class="p">(</span><span class="s2">&quot;What is this?&quot;</span><span class="p">)</span>
+<span class="go">[{&quot;type&quot;: &quot;input_text&quot;, &quot;text&quot;: &quot;What is this?&quot;}]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Text with image</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">format_content_for_response_api</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;What&#39;s in this image?&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;https://example.com/img.jpg&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[</span>
+<span class="go">    {&quot;type&quot;: &quot;input_text&quot;, &quot;text&quot;: &quot;What&#39;s in this image?&quot;},</span>
+<span class="go">    {&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;https://example.com/img.jpg&quot;}</span>
+<span class="go">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.parse_embedding_response">
+<span class="sig-name descname"><span class="pre">parse_embedding_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_response</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/adalflow/components/model_client/utils.html#parse_embedding_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.parse_embedding_response" title="Link to this definition">¶</a></dt>
+<dd><p>Parse embedding model output from the API response to EmbedderOutput.</p>
+<p>Follows the OpenAI API response pattern.</p>
+</dd></dl>
+
 </section>
 </section>
 
@@ -750,7 +870,12 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">model_client</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li><a class="reference internal" href="#components.model_client.process_images_for_response_api"><code class="docutils literal notranslate"><span class="pre">process_images_for_response_api()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.format_content_for_response_api"><code class="docutils literal notranslate"><span class="pre">format_content_for_response_api()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">parse_embedding_response()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

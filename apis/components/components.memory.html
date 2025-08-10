@@ -240,7 +240,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -495,10 +497,13 @@
 <li class="toctree-l2"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.turn_db"><code class="docutils literal notranslate"><span class="pre">turn_db</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.conver_db"><code class="docutils literal notranslate"><span class="pre">conver_db</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.ConversationMemory"><code class="docutils literal notranslate"><span class="pre">ConversationMemory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.ConversationMemory.clear_conversation_turns"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.clear_conversation_turns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.ConversationMemory.new_conversation"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.new_conversation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.ConversationMemory.call"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.call()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.ConversationMemory.add_dialog_turn"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_dialog_turn()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.ConversationMemory.add_user_query"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_user_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.ConversationMemory.add_assistant_response"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_assistant_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.memory.memory.html#components.memory.memory.ConversationMemory.reset_pending_query"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.reset_pending_query()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -508,8 +513,18 @@
 <hr class="docutils" />
 <dl class="py class" id="module-components.memory">
 <dt class="sig sig-object py" id="components.memory.ConversationMemory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConversationMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turn_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LocalDB</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.ConversationMemory" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConversationMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turn_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LocalDB</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.ConversationMemory" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.ConversationMemory.clear_conversation_turns">
+<span class="sig-name descname"><span class="pre">clear_conversation_turns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory.clear_conversation_turns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.ConversationMemory.clear_conversation_turns" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.ConversationMemory.new_conversation">
+<span class="sig-name descname"><span class="pre">new_conversation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory.new_conversation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.ConversationMemory.new_conversation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="components.memory.ConversationMemory.call">
 <span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.ConversationMemory.call" title="Link to this definition">¶</a></dt>
@@ -587,6 +602,12 @@ If UserQuery object, can include metadata.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="components.memory.ConversationMemory.reset_pending_query">
+<span class="sig-name descname"><span class="pre">reset_pending_query</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/memory/memory.html#ConversationMemory.reset_pending_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.memory.ConversationMemory.reset_pending_query" title="Link to this definition">¶</a></dt>
+<dd><p>Reset any pending query state. Useful for cleanup after cancellations or before starting new queries.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -649,10 +670,13 @@ If UserQuery object, can include metadata.</p>
 <li><a class="reference internal" href="#">memory</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a><ul>
 <li><a class="reference internal" href="#components.memory.ConversationMemory"><code class="docutils literal notranslate"><span class="pre">ConversationMemory</span></code></a><ul>
+<li><a class="reference internal" href="#components.memory.ConversationMemory.clear_conversation_turns"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.clear_conversation_turns()</span></code></a></li>
+<li><a class="reference internal" href="#components.memory.ConversationMemory.new_conversation"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.new_conversation()</span></code></a></li>
 <li><a class="reference internal" href="#components.memory.ConversationMemory.call"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.call()</span></code></a></li>
 <li><a class="reference internal" href="#components.memory.ConversationMemory.add_dialog_turn"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_dialog_turn()</span></code></a></li>
 <li><a class="reference internal" href="#components.memory.ConversationMemory.add_user_query"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_user_query()</span></code></a></li>
 <li><a class="reference internal" href="#components.memory.ConversationMemory.add_assistant_response"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.add_assistant_response()</span></code></a></li>
+<li><a class="reference internal" href="#components.memory.ConversationMemory.reset_pending_query"><code class="docutils literal notranslate"><span class="pre">ConversationMemory.reset_pending_query()</span></code></a></li>
 </ul>
 </li>
 </ul>

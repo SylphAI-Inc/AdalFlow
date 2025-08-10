@@ -239,7 +239,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -482,14 +484,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for components.memory.memory</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Memory component for user-assistant conversations.</span>
-
-<span class="sd">Memory can include data modeling, in-memory data storage, local file data storage, cloud data persistence, data pipeline, data retriever.</span>
-<span class="sd">It is itself an LLM application and different use cases can do it differently.</span>
-
-<span class="sd">This component handles the storage and retrieval of conversation history between users</span>
-<span class="sd">and assistants. It provides local memory experience with the ability to format and</span>
-<span class="sd">return conversation history.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Simple converation memory component for user-assistant conversations.</span>
 
 <span class="sd">Attributes:</span>
 <span class="sd">    current_conversation (Conversation): Stores the current active conversation.</span>
@@ -543,7 +538,7 @@
 <div class="viewcode-block" id="ConversationMemory">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ConversationMemory</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_db</span><span class="p">:</span> <span class="n">LocalDB</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn_db</span><span class="p">:</span> <span class="n">LocalDB</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Memory component.</span>
 
 <span class="sd">        Args:</span>
@@ -551,10 +546,27 @@
 <span class="sd">                Defaults to None, in which case a new LocalDB is created.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span> <span class="o">=</span> <span class="n">Conversation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span> <span class="o">=</span> <span class="n">Conversation</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">turn_db</span> <span class="o">=</span> <span class="n">turn_db</span> <span class="ow">or</span> <span class="n">LocalDB</span><span class="p">()</span>  <span class="c1"># all turns</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conver_db</span> <span class="o">=</span> <span class="n">LocalDB</span><span class="p">()</span>  <span class="c1"># a list of conversations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_query</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Store pending user query</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
+
+<div class="viewcode-block" id="ConversationMemory.clear_conversation_turns">
+<a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.clear_conversation_turns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_conversation_turns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_query</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span><span class="o">.</span><span class="n">dialog_turns</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ConversationMemory.new_conversation">
+<a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.new_conversation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">new_conversation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># save the current conversation to the conversation database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conver_db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span> <span class="o">=</span> <span class="n">Conversation</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="ConversationMemory.call">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.call">[docs]</a>
@@ -582,6 +594,7 @@
         <span class="k">return</span> <span class="n">prompt</span><span class="o">.</span><span class="n">call</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 
+    <span class="c1"># Note: not used</span>
 <div class="viewcode-block" id="ConversationMemory.add_dialog_turn">
 <a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.add_dialog_turn">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_dialog_turn</span><span class="p">(</span>
@@ -610,6 +623,7 @@
             <span class="nb">id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">()),</span>
             <span class="n">user_query</span><span class="o">=</span><span class="n">user_query</span><span class="p">,</span>
             <span class="n">assistant_response</span><span class="o">=</span><span class="n">assistant_response</span><span class="p">,</span>
+            <span class="n">conversation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="c1"># order will be automatically set by append_dialog_turn</span>
         <span class="p">)</span>
 
@@ -687,11 +701,14 @@
         <span class="c1"># Create and add the complete dialog turn</span>
         <span class="n">dialog_turn</span> <span class="o">=</span> <span class="n">DialogTurn</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_query</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+            <span class="n">conversation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">user_query</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_query</span><span class="p">[</span><span class="s2">&quot;user_query&quot;</span><span class="p">],</span>
             <span class="n">assistant_response</span><span class="o">=</span><span class="n">assistant_response</span><span class="p">,</span>
             <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_query</span><span class="p">[</span><span class="s2">&quot;order&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
+
+        <span class="c1"># current conversation manages the display to LLM.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_conversation</span><span class="o">.</span><span class="n">append_dialog_turn</span><span class="p">(</span><span class="n">dialog_turn</span><span class="p">)</span>
 
         <span class="c1"># Store in database</span>
@@ -707,6 +724,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_query</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">turn_id</span></div>
+
+
+<div class="viewcode-block" id="ConversationMemory.reset_pending_query">
+<a class="viewcode-back" href="../../../apis/components/components.memory.memory.html#components.memory.ConversationMemory.reset_pending_query">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_pending_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset any pending query state. Useful for cleanup after cancellations or before starting new queries.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_user_query</span> <span class="o">=</span> <span class="kc">None</span></div>
 </div>
 
 </pre></div>

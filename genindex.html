@@ -238,7 +238,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -645,12 +647,8 @@
           <li><a href="apis/eval/eval.answer_match_acc.html#eval.answer_match_acc.AnswerMatchAcc">(class in eval.answer_match_acc)</a>
 </li>
         </ul></li>
-        <li><a href="apis/core/core.types.html#core.types.ModelClientType.ANTHROPIC">ANTHROPIC (ModelClientType attribute)</a>
-
-        <ul>
-          <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.ANTHROPIC">(OptionalPackages attribute)</a>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.ANTHROPIC">ANTHROPIC (OptionalPackages attribute)</a>
 </li>
-        </ul></li>
         <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient">AnthropicAPIClient (class in components.model_client.anthropic_client)</a>
 </li>
         <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.AdalFlowGeneratorSpanData.api_kwargs">api_kwargs (AdalFlowGeneratorSpanData attribute)</a>
@@ -941,8 +939,12 @@
 </li>
         <li><a href="apis/core/core.tool_manager.html#core.tool_manager.CallFunctionTool">CallFunctionTool (class in core.tool_manager)</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.RunnerStreamingResult.cancel">cancel() (RunnerStreamingResult method)</a>
+        <li><a href="apis/components/components.agent.html#components.agent.Runner.cancel">cancel() (Runner method)</a>, <a href="apis/components/components.agent.runner.html#components.agent.runner.Runner.cancel">[1]</a>
+
+        <ul>
+          <li><a href="apis/core/core.types.html#core.types.RunnerStreamingResult.cancel">(RunnerStreamingResult method)</a>
 </li>
+        </ul></li>
         <li><a href="apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.ChatCompletionToResponseConverter">ChatCompletionToResponseConverter (class in components.model_client.chat_completion_to_response_converter)</a>
 </li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.check_adal_dataclass">check_adal_dataclass() (in module core.base_data_class)</a>
@@ -979,12 +981,12 @@
         </ul></li>
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.clean_device_cache">clean_device_cache() (in module components.model_client.transformers_client)</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.ModelClientType.COHERE">COHERE (ModelClientType attribute)</a>
-
-        <ul>
-          <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.COHERE">(OptionalPackages attribute)</a>
+        <li><a href="apis/components/components.memory.html#components.memory.ConversationMemory.clear_conversation_turns">clear_conversation_turns() (ConversationMemory method)</a>, <a href="apis/components/components.memory.memory.html#components.memory.memory.ConversationMemory.clear_conversation_turns">[1]</a>
 </li>
-        </ul></li>
+        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.code_outputs">code_outputs (ParsedResponseContent attribute)</a>, <a href="apis/components/components.model_client.openai_client.html#id4">[1]</a>
+</li>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.COHERE">COHERE (OptionalPackages attribute)</a>
+</li>
         <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient">CohereAPIClient (class in components.model_client.cohere_client)</a>
 </li>
         <li><a href="apis/eval/eval.g_eval.html#eval.g_eval.GEvalMetric.COHERENCE">COHERENCE (GEvalMetric attribute)</a>, <a href="apis/eval/index.html#eval.GEvalMetric.COHERENCE">[1]</a>
@@ -1508,6 +1510,8 @@
 </li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.create_demo_data_instance">create_demo_data_instance() (Generator method)</a>
 </li>
+        <li><a href="apis/components/components.agent.html#components.agent.Runner.create_response_span">create_response_span() (Runner method)</a>, <a href="apis/components/components.agent.runner.html#components.agent.runner.Runner.create_response_span">[1]</a>
+</li>
         <li><a href="apis/tracing/tracing.setup.html#tracing.setup.TraceProvider.create_span">create_span() (TraceProvider method)</a>
 </li>
         <li><a href="apis/core/core.generator.html#core.generator.create_teacher_generator">create_teacher_generator() (in module core.generator)</a>
@@ -1797,6 +1801,8 @@
 </li>
         <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.encode">encode() (Tokenizer method)</a>
 </li>
+        <li><a href="apis/core/core.functional.html#core.functional.encode_image">encode_image() (in module core.functional)</a>
+</li>
         <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams.encoding">encoding (MCPServerStdioParams attribute)</a>
 </li>
         <li><a href="apis/core/core.mcp_tool.html#core.mcp_tool.MCPServerStdioParams.encoding_error_handler">encoding_error_handler (MCPServerStdioParams attribute)</a>
@@ -2029,6 +2035,8 @@
           <li><a href="apis/core/core.container.html#core.container.Sequential.extend">(Sequential method)</a>
 </li>
         </ul></li>
+        <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.extract_complete_text_from_response_stream">extract_complete_text_from_response_stream() (in module components.model_client.utils)</a>
+</li>
         <li><a href="apis/core/core.functional.html#core.functional.extract_dataclass_type">extract_dataclass_type() (in module core.functional)</a>
 </li>
         <li><a href="apis/core/core.functional.html#core.functional.extract_first_boolean">extract_first_boolean() (in module core.functional)</a>
@@ -2044,6 +2052,8 @@
         <li><a href="apis/core/core.functional.html#core.functional.extract_list_str">extract_list_str() (in module core.functional)</a>
 </li>
         <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.extract_new_variable">extract_new_variable() (in module optim.text_grad.tgd_optimizer)</a>
+</li>
+        <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.extract_text_from_response_stream">extract_text_from_response_stream() (in module components.model_client.utils)</a>
 </li>
         <li><a href="apis/core/core.functional.html#core.functional.extract_yaml_str">extract_yaml_str() (in module core.functional)</a>
 </li>
@@ -2127,6 +2137,12 @@
         </ul></li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_class_str">format_class_str() (DataClass class method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.html#components.model_client.format_content_for_response_api">format_content_for_response_api() (in module components.model_client)</a>
+
+        <ul>
+          <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.format_content_for_response_api">(in module components.model_client.utils)</a>
+</li>
+        </ul></li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_example_str">format_example_str() (DataClass method)</a>
 </li>
         <li><a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser.format_instructions">format_instructions() (BooleanOutputParser method)</a>
@@ -2411,10 +2427,10 @@
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.get_gradients_names">get_gradients_names() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_gradients_names">[1]</a>
 </li>
-        <li><a href="apis/optim/index.html#optim.Parameter.get_gradients_str">get_gradients_str() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_gradients_str">[1]</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="apis/optim/index.html#optim.Parameter.get_gradients_str">get_gradients_str() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_gradients_str">[1]</a>
+</li>
         <li><a href="apis/optim/index.html#optim.Parameter.get_gt">get_gt() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_gt">[1]</a>
 </li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_input_fields">get_input_fields() (DataClass class method)</a>
@@ -2497,8 +2513,6 @@
 </li>
         <li><a href="apis/datasets/datasets.types.html#datasets.types.HotPotQAData.gold_titles">gold_titles (HotPotQAData attribute)</a>, <a href="apis/datasets/index.html#datasets.HotPotQAData.gold_titles">[1]</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.ModelClientType.GOOGLE_GENAI">GOOGLE_GENAI (ModelClientType attribute)</a>
-</li>
         <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.GOOGLE_GENERATIVEAI">GOOGLE_GENERATIVEAI (OptionalPackages attribute)</a>
 </li>
         <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient">GoogleGenAIClient (class in components.model_client.google_client)</a>
@@ -2519,12 +2533,8 @@
         </ul></li>
         <li><a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.gradients">gradients (Parameter attribute)</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.ModelClientType.GROQ">GROQ (ModelClientType attribute)</a>
-
-        <ul>
-          <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.GROQ">(OptionalPackages attribute)</a>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.GROQ">GROQ (OptionalPackages attribute)</a>
 </li>
-        </ul></li>
         <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient">GroqAPIClient (class in components.model_client.groq_client)</a>
 </li>
         <li><a href="apis/tracing/tracing.traces.html#tracing.traces.TraceImpl.group_id">group_id (TraceImpl attribute)</a>
@@ -2637,6 +2647,12 @@
         </ul></li>
         <li><a href="apis/core/core.types.html#core.types.ModelType.IMAGE_GENERATION">IMAGE_GENERATION (ModelType attribute)</a>
 </li>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.images">images (GeneratorOutput attribute)</a>
+
+        <ul>
+          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.images">(ParsedResponseContent attribute)</a>, <a href="apis/components/components.model_client.openai_client.html#id1">[1]</a>
+</li>
+        </ul></li>
         <li><a href="apis/components/components.agent.html#components.agent.Runner.impl_astream">impl_astream() (Runner method)</a>, <a href="apis/components/components.agent.runner.html#components.agent.runner.Runner.impl_astream">[1]</a>
 </li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.IncludeType">IncludeType (in module core.base_data_class)</a>
@@ -2737,9 +2753,11 @@
         </ul></li>
         <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.INPUT">INPUT (ParameterType attribute)</a>
 </li>
-        <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.ResponseSpanData.input">input (ResponseSpanData attribute)</a>
+        <li><a href="apis/core/core.types.html#core.types.RawResponsesStreamEvent.input">input (RawResponsesStreamEvent attribute)</a>
 
         <ul>
+          <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.ResponseSpanData.input">(ResponseSpanData attribute)</a>
+</li>
           <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.SpeechGroupSpanData.input">(SpeechGroupSpanData attribute)</a>
 </li>
           <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.SpeechSpanData.input">(SpeechSpanData attribute)</a>
@@ -2777,6 +2795,8 @@
 </li>
         <li><a href="apis/core/core.string_parser.html#core.string_parser.IntParser">IntParser (class in core.string_parser)</a>
 </li>
+        <li><a href="apis/components/components.agent.html#components.agent.Runner.is_cancelled">is_cancelled() (Runner method)</a>, <a href="apis/components/components.agent.runner.html#components.agent.runner.Runner.is_cancelled">[1]</a>
+</li>
         <li><a href="apis/core/core.types.html#core.types.RunnerStreamingResult.is_complete">is_complete (RunnerStreamingResult property)</a>
 </li>
         <li><a href="apis/core/core.functional.html#core.functional.is_dataclass_instance">is_dataclass_instance() (in module core.functional)</a>
@@ -2794,6 +2814,8 @@
         <li><a href="apis/core/core.component.html#core.component.Component.is_picklable">is_picklable() (Component method)</a>
 </li>
         <li><a href="apis/core/core.functional.html#core.functional.is_potential_dataclass">is_potential_dataclass() (in module core.functional)</a>
+</li>
+        <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.is_response_complete">is_response_complete() (in module components.model_client.utils)</a>
 </li>
         <li><a href="apis/core/core.func_tool.html#core.func_tool.is_running_in_event_loop">is_running_in_event_loop() (in module core.func_tool)</a>
 </li>
@@ -3392,6 +3414,8 @@
 </li>
         <li><a href="apis/utils/utils.config.html#utils.config.new_components_from_config">new_components_from_config() (in module utils.config)</a>
 </li>
+        <li><a href="apis/components/components.memory.html#components.memory.ConversationMemory.new_conversation">new_conversation() (ConversationMemory method)</a>, <a href="apis/components/components.memory.memory.html#components.memory.memory.ConversationMemory.new_conversation">[1]</a>
+</li>
         <li><a href="apis/eval/eval.g_eval.html#eval.g_eval.NLGTask">NLGTask (class in eval.g_eval)</a>
 </li>
         <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.NONE">NONE (ParameterType attribute)</a>
@@ -3428,12 +3452,8 @@
           <li><a href="apis/core/core.types.html#core.types.ToolOutput.observation">(ToolOutput attribute)</a>
 </li>
         </ul></li>
-        <li><a href="apis/core/core.types.html#core.types.ModelClientType.OLLAMA">OLLAMA (ModelClientType attribute)</a>
-
-        <ul>
-          <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.OLLAMA">(OptionalPackages attribute)</a>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.OLLAMA">OLLAMA (OptionalPackages attribute)</a>
 </li>
-        </ul></li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient">OllamaClient (class in components.model_client.ollama_client)</a>
 </li>
         <li><a href="apis/tracing/tracing.setup.html#tracing.setup.SynchronousMultiTracingProcessor.on_span_end">on_span_end() (SynchronousMultiTracingProcessor method)</a>
@@ -3462,12 +3482,8 @@
         </ul></li>
         <li><a href="apis/optim/index.html#optim.TGDOptimizer.one_parameter_at_a_time">one_parameter_at_a_time (TGDOptimizer attribute)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.one_parameter_at_a_time">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.one_parameter_at_a_time">[2]</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.ModelClientType.OPENAI">OPENAI (ModelClientType attribute)</a>
-
-        <ul>
-          <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.OPENAI">(OptionalPackages attribute)</a>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.OPENAI">OPENAI (OptionalPackages attribute)</a>
 </li>
-        </ul></li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient">OpenAIClient (class in components.model_client.openai_client)</a>
 </li>
         <li>
@@ -3732,9 +3748,13 @@
           <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_chat_completion">(TransformersClient method)</a>
 </li>
         </ul></li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_chat_messsage">parse_chat_messsage() (in module components.model_client.ollama_client)</a>
+</li>
         <li><a href="apis/components/components.model_client.azureai_client.html#components.model_client.azureai_client.AzureAIClient.parse_embedding_response">parse_embedding_response() (AzureAIClient method)</a>
 
         <ul>
+          <li><a href="apis/components/components.model_client.html#components.model_client.parse_embedding_response">(in module components.model_client)</a>
+</li>
           <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.parse_embedding_response">(in module components.model_client.utils)</a>
 </li>
           <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.parse_embedding_response">(ModelClient method)</a>
@@ -3756,11 +3776,13 @@
 </li>
         <li><a href="apis/core/core.functional.html#core.functional.parse_json_str_to_obj">parse_json_str_to_obj() (in module core.functional)</a>
 </li>
-        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_stream_response">parse_stream_response() (in module components.model_client.ollama_client)</a>
+        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.parse_response_output">parse_response_output() (in module components.model_client.openai_client)</a>
 </li>
         <li><a href="apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">parse_yaml_str_to_obj() (in module core.functional)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.FunctionOutput.parsed_input">parsed_input (FunctionOutput attribute)</a>
+</li>
+        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent">ParsedResponseContent (class in components.model_client.openai_client)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.peers">peers (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.peers">[1]</a>
 </li>
@@ -3773,6 +3795,8 @@
         <li><a href="apis/core/core.component.html#core.component.Component.pickle_to_file">pickle_to_file() (Component method)</a>
 </li>
         <li><a href="apis/components/components.agent.agent.html#components.agent.agent.Agent.planner">planner (Agent attribute)</a>, <a href="apis/components/components.agent.html#components.agent.Agent.planner">[1]</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.StepOutput.planner_prompt">planner_prompt (StepOutput attribute)</a>
 </li>
         <li><a href="apis/core/core.container.html#core.container.ComponentList.pop">pop() (ComponentList method)</a>
 </li>
@@ -3808,6 +3832,12 @@
 </li>
         <li><a href="apis/utils/utils.logger.html#utils.logger.printc">printc() (in module utils.logger)</a>
 </li>
+        <li><a href="apis/components/components.model_client.html#components.model_client.process_images_for_response_api">process_images_for_response_api() (in module components.model_client)</a>
+
+        <ul>
+          <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.process_images_for_response_api">(in module components.model_client.utils)</a>
+</li>
+        </ul></li>
         <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt">Prompt (class in core.prompt_builder)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Gradient.prompt">prompt (Gradient attribute)</a>, <a href="apis/optim/optim.gradient.html#optim.gradient.Gradient.prompt">[1]</a>
@@ -3920,6 +3950,8 @@
           <li><a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler">(class in optim.sampler)</a>
 </li>
         </ul></li>
+        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.raw_output">raw_output (ParsedResponseContent attribute)</a>, <a href="apis/components/components.model_client.openai_client.html#id5">[1]</a>
+</li>
         <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.AdalFlowGeneratorSpanData.raw_response">raw_response (AdalFlowGeneratorSpanData attribute)</a>
 
         <ul>
@@ -3943,6 +3975,8 @@
         <ul>
           <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.HistoryPrompt.reasoning">(HistoryPrompt attribute)</a>
 </li>
+          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.reasoning">(ParsedResponseContent attribute)</a>, <a href="apis/components/components.model_client.openai_client.html#id3">[1]</a>
+</li>
           <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDData.reasoning">(TGDData attribute)</a>
 </li>
         </ul></li>
@@ -3953,6 +3987,8 @@
         <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.register">register() (EntityMapping class method)</a>
 </li>
         <li><a href="apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager.register_callback">register_callback() (CallbackManager method)</a>
+</li>
+        <li><a href="apis/components/components.agent.html#components.agent.Runner.register_cancel_callback">register_cancel_callback() (Runner method)</a>, <a href="apis/components/components.agent.runner.html#components.agent.runner.Runner.register_cancel_callback">[1]</a>
 </li>
         <li><a href="apis/core/core.component.html#core.component.Component.register_component">register_component() (Component method)</a>
 </li>
@@ -3992,12 +4028,16 @@
         </ul></li>
         <li><a href="apis/optim/index.html#optim.Parameter.reset_all_gradients">reset_all_gradients() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.reset_all_gradients">[1]</a>
 </li>
+        <li><a href="apis/components/components.agent.html#components.agent.Runner.reset_cancellation">reset_cancellation() (Runner method)</a>, <a href="apis/components/components.agent.runner.html#components.agent.runner.Runner.reset_cancellation">[1]</a>
+</li>
         <li><a href="apis/tracing/tracing.scope.html#tracing.scope.Scope.reset_current_span">reset_current_span() (Scope class method)</a>
 </li>
         <li><a href="apis/tracing/tracing.scope.html#tracing.scope.Scope.reset_current_trace">reset_current_trace() (Scope class method)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.reset_gradients">reset_gradients() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.reset_gradients">[1]</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.reset_index">reset_index() (BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.reset_index">[1]</a>
 
         <ul>
@@ -4012,9 +4052,9 @@
           <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.reset_index">(Retriever method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.reset_mock_output">reset_mock_output() (Generator method)</a>
+</li>
+        <li><a href="apis/components/components.memory.html#components.memory.ConversationMemory.reset_pending_query">reset_pending_query() (ConversationMemory method)</a>, <a href="apis/components/components.memory.memory.html#components.memory.memory.ConversationMemory.reset_pending_query">[1]</a>
 </li>
         <li><a href="apis/optim/index.html#optim.TGDOptimizer.reset_steps_from_last_improvement">reset_steps_from_last_improvement() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.reset_steps_from_last_improvement">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.TGDOptimizer.reset_steps_from_last_improvement">[2]</a>
 </li>
@@ -4141,6 +4181,8 @@
 </li>
         </ul></li>
         <li><a href="apis/utils/utils.file_io.html#utils.file_io.save_csv">save_csv() (in module utils.file_io)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.save_images">save_images() (GeneratorOutput method)</a>
 </li>
         <li><a href="apis/utils/utils.file_io.html#utils.file_io.save_json">save_json() (in module utils.file_io)</a>
 </li>
@@ -4286,10 +4328,10 @@
         </ul></li>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_JSON">SIGNATURE_JSON (DataClassFormatType attribute)</a>
 </li>
-        <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_YAML">SIGNATURE_YAML (DataClassFormatType attribute)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_YAML">SIGNATURE_YAML (DataClassFormatType attribute)</a>
+</li>
         <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT">SIMPLE_DEFAULT_ADALFLOW_SYSTEM_PROMPT (in module core.default_prompt_template)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Trainer.skip_subset_val">skip_subset_val (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.skip_subset_val">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.skip_subset_val">[2]</a>
@@ -4436,8 +4478,6 @@
 </li>
         <li><a href="apis/components/components.agent.html#components.agent.Runner.stream_tool_execution">stream_tool_execution() (Runner method)</a>, <a href="apis/components/components.agent.runner.html#components.agent.runner.Runner.stream_tool_execution">[1]</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.StreamEvent">StreamEvent (in module core.types)</a>
-</li>
         <li><a href="apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.StreamingState">StreamingState (class in components.model_client.chat_completion_to_response_converter)</a>
 </li>
         <li><a href="apis/utils/utils.data.html#utils.data.Subset">Subset (class in utils.data)</a>
@@ -4510,6 +4550,8 @@
 
         <ul>
           <li><a href="apis/optim/optim.text_grad.tgd_optimizer.html#optim.text_grad.tgd_optimizer.Instruction.text">(Instruction attribute)</a>
+</li>
+          <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.text">(ParsedResponseContent attribute)</a>, <a href="apis/components/components.model_client.openai_client.html#id0">[1]</a>
 </li>
         </ul></li>
         <li><a href="apis/components/components.model_client.chat_completion_to_response_converter.html#components.model_client.chat_completion_to_response_converter.StreamingState.text_content_index_and_output">text_content_index_and_output (StreamingState attribute)</a>
@@ -4652,6 +4694,8 @@
 </li>
         <li><a href="apis/core/core.types.html#core.types.FunctionRequest.tool">tool (FunctionRequest attribute)</a>
 </li>
+        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.ParsedResponseContent.tool_calls">tool_calls (ParsedResponseContent attribute)</a>, <a href="apis/components/components.model_client.openai_client.html#id2">[1]</a>
+</li>
         <li><a href="apis/components/components.agent.agent.html#components.agent.agent.Agent.tool_manager">tool_manager (Agent attribute)</a>, <a href="apis/components/components.agent.html#components.agent.Agent.tool_manager">[1]</a>
 </li>
         <li><a href="apis/tracing/tracing.span_data.html#tracing.span_data.AdalFlowStepSpanData.tool_name">tool_name (AdalFlowStepSpanData attribute)</a>
@@ -4714,6 +4758,8 @@
 </li>
         <li><a href="apis/optim/index.html#optim.Parameter.trace_graph">trace_graph() (Parameter static method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.trace_graph">[1]</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/tracing/tracing.spans.html#tracing.spans.NoOpSpan.trace_id">trace_id (NoOpSpan property)</a>
 
         <ul>
@@ -4728,8 +4774,6 @@
           <li><a href="apis/tracing/tracing.traces.html#tracing.traces.TraceImpl.trace_id">(TraceImpl property)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="apis/optim/index.html#optim.Parameter.trace_optimizer">trace_optimizer() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.trace_optimizer">[1]</a>
 </li>
         <li><a href="apis/tracing/tracing.traces.html#tracing.traces.TraceImpl">TraceImpl (class in tracing.traces)</a>
@@ -4911,12 +4955,8 @@
 </li>
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker">TransformerReranker (class in components.model_client.transformers_client)</a>
 </li>
-        <li><a href="apis/core/core.types.html#core.types.ModelClientType.TRANSFORMERS">TRANSFORMERS (ModelClientType attribute)</a>
-
-        <ul>
-          <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TRANSFORMERS">(OptionalPackages attribute)</a>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TRANSFORMERS">TRANSFORMERS (OptionalPackages attribute)</a>
 </li>
-        </ul></li>
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient">TransformersClient (class in components.model_client.transformers_client)</a>
 </li>
         <li><a href="apis/datasets/index.html#datasets.TrecData">TrecData (class in datasets)</a>

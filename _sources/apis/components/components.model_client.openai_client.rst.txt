@@ -17,10 +17,12 @@ openai_client
       get_response_output_text
       handle_streaming_response
       handle_streaming_response_sync
+      parse_response_output
 
    .. rubric:: Classes
 
    .. autosummary::
 
       OpenAIClient
+      ParsedResponseContent
 

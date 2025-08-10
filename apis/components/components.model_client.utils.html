@@ -240,7 +240,9 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../integrations/index.html">Integrations</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Integrations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/integrations.html">All Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/openai.html">OpenAI Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integrations/anthropic.html">Anthropic Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integrations/ollama.html">Ollama Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -491,8 +493,23 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.utils.extract_complete_text_from_response_stream" title="components.model_client.utils.extract_complete_text_from_response_stream"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_complete_text_from_response_stream</span></code></a>(event)</p></td>
+<td><p>Extract complete text from response completion events.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.utils.extract_text_from_response_stream" title="components.model_client.utils.extract_text_from_response_stream"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_text_from_response_stream</span></code></a>(event)</p></td>
+<td><p>Extract text content from OpenAI Response API streaming events.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.utils.format_content_for_response_api" title="components.model_client.utils.format_content_for_response_api"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_content_for_response_api</span></code></a>(text[, images])</p></td>
+<td><p>Format text and optional images into content array for responses.create API.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.utils.is_response_complete" title="components.model_client.utils.is_response_complete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_response_complete</span></code></a>(event)</p></td>
+<td><p>Check if a streaming event indicates the response is complete.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.utils.parse_embedding_response" title="components.model_client.utils.parse_embedding_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_embedding_response</span></code></a>(api_response)</p></td>
 <td><p>Parse embedding model output from the API response to EmbedderOutput.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.utils.process_images_for_response_api" title="components.model_client.utils.process_images_for_response_api"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_images_for_response_api</span></code></a>(images[, ...])</p></td>
+<td><p>Process and validate images for OpenAI's responses.create API.</p></td>
 </tr>
 </tbody>
 </table>
@@ -502,6 +519,167 @@
 <span class="sig-name descname"><span class="pre">parse_embedding_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_response</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/utils.html#parse_embedding_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.utils.parse_embedding_response" title="Link to this definition">¶</a></dt>
 <dd><p>Parse embedding model output from the API response to EmbedderOutput.</p>
 <p>Follows the OpenAI API response pattern.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.utils.process_images_for_response_api">
+<span class="sig-name descname"><span class="pre">process_images_for_response_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_local_images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/model_client/utils.html#process_images_for_response_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.utils.process_images_for_response_api" title="Link to this definition">¶</a></dt>
+<dd><p>Process and validate images for OpenAI’s responses.create API.</p>
+<p>This function handles various image input formats and converts them to the
+expected format for the responses.create API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>images</strong> – Can be:
+- A single image URL (str)
+- A single local file path (str)
+- A pre-formatted image dict with type=’input_image’
+- A list containing any combination of the above</p></li>
+<li><p><strong>encode_local_images</strong> – Whether to encode local image files to base64</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>type: “input_image”</p></li>
+<li><p>image_url: Either a URL or base64-encoded data URI</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of formatted image dicts ready for the API, each containing</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If image dict format is invalid</p></li>
+<li><p><strong>FileNotFoundError</strong> – If local image file doesn’t exist</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Single URL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process_images_for_response_api</span><span class="p">(</span><span class="s2">&quot;https://example.com/image.jpg&quot;</span><span class="p">)</span>
+<span class="go">[{&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;https://example.com/image.jpg&quot;}]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Local file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process_images_for_response_api</span><span class="p">(</span><span class="s2">&quot;/path/to/image.jpg&quot;</span><span class="p">)</span>
+<span class="go">[{&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;data:image/jpeg;base64,...&quot;}]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Multiple mixed sources</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">process_images_for_response_api</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="s2">&quot;https://example.com/img.jpg&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;/local/img.png&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;input_image&quot;</span><span class="p">,</span> <span class="s2">&quot;image_url&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="go">[...]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.utils.format_content_for_response_api">
+<span class="sig-name descname"><span class="pre">format_content_for_response_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/components/model_client/utils.html#format_content_for_response_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.utils.format_content_for_response_api" title="Link to this definition">¶</a></dt>
+<dd><p>Format text and optional images into content array for responses.create API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – The text prompt/question</p></li>
+<li><p><strong>images</strong> – Optional images in various formats (see process_images_for_response_api)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of content items formatted for the API</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Text only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">format_content_for_response_api</span><span class="p">(</span><span class="s2">&quot;What is this?&quot;</span><span class="p">)</span>
+<span class="go">[{&quot;type&quot;: &quot;input_text&quot;, &quot;text&quot;: &quot;What is this?&quot;}]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Text with image</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">format_content_for_response_api</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;What&#39;s in this image?&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;https://example.com/img.jpg&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[</span>
+<span class="go">    {&quot;type&quot;: &quot;input_text&quot;, &quot;text&quot;: &quot;What&#39;s in this image?&quot;},</span>
+<span class="go">    {&quot;type&quot;: &quot;input_image&quot;, &quot;image_url&quot;: &quot;https://example.com/img.jpg&quot;}</span>
+<span class="go">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.utils.extract_text_from_response_stream">
+<span class="sig-name descname"><span class="pre">extract_text_from_response_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/components/model_client/utils.html#extract_text_from_response_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.utils.extract_text_from_response_stream" title="Link to this definition">¶</a></dt>
+<dd><p>Extract text content from OpenAI Response API streaming events.</p>
+<p>The Response API generates various event types during streaming:
+- ResponseCreatedEvent: Initial event when response starts
+- ResponseInProgressEvent: Status updates
+- ResponseOutputItemAddedEvent: When new output items are added
+- ResponseContentPartAddedEvent: When content parts are added
+- ResponseTextDeltaEvent: Contains actual text chunks
+- ResponseTextDoneEvent: When text generation completes
+- ResponseDoneEvent: Final event when response completes</p>
+<p>This function extracts text only from ResponseTextDeltaEvent types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – A streaming event from OpenAI’s Response API</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The text delta if this is a text delta event, None otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># In a streaming response handler</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">text</span> <span class="o">=</span> <span class="n">extract_text_from_response_stream</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.utils.extract_complete_text_from_response_stream">
+<span class="sig-name descname"><span class="pre">extract_complete_text_from_response_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/components/model_client/utils.html#extract_complete_text_from_response_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.utils.extract_complete_text_from_response_stream" title="Link to this definition">¶</a></dt>
+<dd><p>Extract complete text from response completion events.</p>
+<p>Some events contain the complete text rather than deltas:
+- ResponseTextDoneEvent: Contains the complete text when done
+- Response objects with output_text property</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – A streaming event from OpenAI’s Response API</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The complete text if available, None otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.utils.is_response_complete">
+<span class="sig-name descname"><span class="pre">is_response_complete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/components/model_client/utils.html#is_response_complete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.utils.is_response_complete" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a streaming event indicates the response is complete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – A streaming event from OpenAI’s Response API</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if this event indicates completion, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -562,6 +740,11 @@
             <ul>
 <li><a class="reference internal" href="#">utils</a><ul>
 <li><a class="reference internal" href="#components.model_client.utils.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">parse_embedding_response()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.utils.process_images_for_response_api"><code class="docutils literal notranslate"><span class="pre">process_images_for_response_api()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.utils.format_content_for_response_api"><code class="docutils literal notranslate"><span class="pre">format_content_for_response_api()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.utils.extract_text_from_response_stream"><code class="docutils literal notranslate"><span class="pre">extract_text_from_response_stream()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.utils.extract_complete_text_from_response_stream"><code class="docutils literal notranslate"><span class="pre">extract_complete_text_from_response_stream()</span></code></a></li>
+<li><a class="reference internal" href="#components.model_client.utils.is_response_complete"><code class="docutils literal notranslate"><span class="pre">is_response_complete()</span></code></a></li>
 </ul>
 </li>
 </ul>
