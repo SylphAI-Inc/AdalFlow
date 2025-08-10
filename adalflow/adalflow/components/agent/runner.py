@@ -1185,7 +1185,6 @@ class Runner(Component):
 
                         function = output.data # here are the recoverable errors, should continue to step output
                         thinking = output.thinking # check the reasoning model response
-                        function.id = str(uuid.uuid4()) # add function id 
                         function_result = None
                         function_output_observation = None
 

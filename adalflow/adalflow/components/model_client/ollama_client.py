@@ -15,13 +15,13 @@ from typing import (
 import backoff
 import logging
 import warnings
-from adalflow.core.types import ModelType, GeneratorOutput
+from adalflow.core.types import ModelType, GeneratorOutput, Function
 
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
 ollama = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
 import ollama
-from ollama import RequestError, ResponseError, GenerateResponse
+from ollama import RequestError, ResponseError, GenerateResponse, Message
 
 
 from adalflow.core.model_client import ModelClient
@@ -32,12 +32,59 @@ log = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
+def extract_ollama_tool_calls(message: Message) -> Optional[List[Function]]:
+    """Extract tool calls from Ollama message response and convert to Function objects.
+    
+    Args:
+        message: The message dict from Ollama response containing potential tool_calls
+        
+    Returns:
+        List of Function objects if tool_calls exist, None otherwise
+    """
+    # if not isinstance(message, dict):
+    #     log.warning(f"Expected dict, got {type(message)}")
+    #     return None
+        
+    tool_calls_data = hasattr(message, "tool_calls") and message.tool_calls
+    if not tool_calls_data:
+        log.debug("No tool calls found in the message")
+        return None
+        
+    functions = []
+    for tool_call in tool_calls_data:
+        if hasattr(tool_call, "function"):
+            func_data = tool_call.function
+            # Extract function name and arguments
+            func_name = hasattr(func_data, "name") and func_data.name 
+            func_args = hasattr(func_data, "arguments") and func_data.arguments
+            
+            # Create Function object with kwargs from arguments
+            func = Function(
+                name=func_name,
+                kwargs=func_args if isinstance(func_args, dict) else {}
+            )
+            functions.append(func)
+    
+    return functions if functions else None
+
+
 def parse_generate_response(completion: GenerateResponse) -> "GeneratorOutput":
     """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
     if "response" in completion:
         log.debug(f"response: {completion}")
         raw_response = completion["response"]
-        return GeneratorOutput(data=None, raw_response=raw_response)
+        
+        # Check for tool calls in the completion
+        tool_calls = extract_ollama_tool_calls(completion)
+
+        one_tool_call = tool_calls[0] if tool_calls else None
+        
+        return GeneratorOutput(
+            data=one_tool_call,  # Return first tool call as data
+            tool_use=one_tool_call,
+            raw_response=raw_response,
+            api_response=completion
+        )
     else:
         log.error(
             f"Error parsing the completion: {completion}, type: {type(completion)}"
@@ -50,11 +97,25 @@ def parse_chat_messsage(completion: Dict[str, Any]) -> "GeneratorOutput":
     """Parse the chat message from the completion."""
     thinking = None
     raw_response = None
+    tool_calls = None
+    
     if "message" in completion: # get both thinking and content 
         message = completion["message"]
         raw_response = message.get("content", None)
         thinking = message.get("thinking", None)
-        return GeneratorOutput(data=None, raw_response=raw_response, thinking=thinking, api_response=completion)
+        
+        # Extract tool calls from the message
+        tool_calls = extract_ollama_tool_calls(message)
+
+        one_tool_call = tool_calls[0] if tool_calls else None
+        
+        return GeneratorOutput(
+            data=one_tool_call,  # Return first tool call as data
+            tool_use=one_tool_call,
+            raw_response=raw_response,
+            thinking=thinking, 
+            api_response=completion
+        )
     else:
         log.error(f"Error parsing the chat message: {completion}")
         return GeneratorOutput(
