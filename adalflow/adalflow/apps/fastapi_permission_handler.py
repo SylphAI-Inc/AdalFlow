@@ -120,22 +120,9 @@ class ApprovalQueue:
 
     def get_pending_requests(self) -> List[ApprovalRequest]:
         """Get all pending approval requests."""
-        # Clean up expired requests
-        now = datetime.now()
-        expired_ids = []
-
-        for req_id, metadata in self.request_metadata.items():
-            if metadata.status == "pending":
-                age = (now - metadata.timestamp).total_seconds()
-                if age > self.timeout_seconds:
-                    metadata.status = "expired"
-                    expired_ids.append(req_id)
-
-        # Clean up expired futures
-        for req_id in expired_ids:
-            if req_id in self.responses and not self.responses[req_id].done():
-                self.responses[req_id].set_result(ApprovalOutcome.CANCEL)
-
+        # Don't auto-expire requests - let them wait indefinitely for user approval
+        # The timeout in wait_for_response will handle actual expiration if needed
+        
         # Return only pending requests
         return [
             metadata

@@ -1143,8 +1143,12 @@ class Runner(Component):
                         planner_prompt = output.input
 
                         # handle the generator output data and error
+                        wrapped_event = None
 
                         if isinstance(output.raw_response, AsyncIterable):
+                            log.debug(
+                                f"Streaming raw response from planner: {output.raw_response}"
+                            )
                             # Streaming llm call - iterate through the async generator
                             async for event in output.raw_response:
                                 # TODO seems slightly unnecessary we are calling .cancel on the task in cancel which will raise this exception regardless
@@ -1154,29 +1158,62 @@ class Runner(Component):
                                 streaming_result.put_nowait(wrapped_event)
 
                         else:
-                            # yield the final planner response
-                            if output.error is not None:
-                                if "400" in output.error or "429" or "404" in output.error: # context too long or rate limite, not recoverable
-                                    # 404 model not exist
-                                    # create a final output item with error and stop the loop
-                                    final_output_item = FinalOutputItem(
-                                        error=output.error,
-                                    )
-                                    stop_the_loop = True
-                                    workflow_status = "stream_failed"
-                                    current_error = output.error
-                                    break
-                                else: # recoverable such as json format error
-                                    wrapped_event = RawResponsesStreamEvent(
-                                        error=output.error,
-                                    )
-                                    current_error = output.error
-                                # check if the error is recoverable
-                            else:
+                            # must emit the raw response event even with error:
+                            if output.data and output.error is None:
+                                log.debug(
+                                    f"Emitting raw response event from planner: {output.data}"
+                                )
+                                # if the output is not None, we can emit the raw response event
                                 wrapped_event = RawResponsesStreamEvent(
                                     data=output.data, input=planner_prompt
-                                )  # wrap on the data field to be the final output, the data might be null
+                                )
+                            else:
+                                log.warning(
+                                    f"Emitting raw response event with error from planner: {output.error}"
+                                )
+                                # if the output is None, we can still emit the raw response event with error
+                                wrapped_event = RawResponsesStreamEvent(
+                                    error=output.error, input=planner_prompt
+                                )
+                                current_error = output.error
                             streaming_result.put_nowait(wrapped_event)
+
+                            # if none recoverable error, we can continue to the next step
+                            if output.error and ("400" in output.error or "429" in output.error or "404" in output.error): # context too long or rate limit, not recoverable
+                                # create a final output item with error and stop the loop
+                                final_output_item = FinalOutputItem(
+                                    error=output.error,
+                                )
+                                stop_the_loop = True
+                                workflow_status = "stream_failed"
+                                current_error = output.error
+                                break
+                            log.debug(
+                                f"Continuing to next step despite error: {output.error}"
+                            )
+                            # # yield the final planner response
+                            # if output.error is not None:
+                            #     if "400" in output.error or "429" or "404" in output.error: # context too long or rate limite, not recoverable
+                            #         # 404 model not exist
+                            #         # create a final output item with error and stop the loop
+                            #         final_output_item = FinalOutputItem(
+                            #             error=output.error,
+                            #         )
+                            #         stop_the_loop = True
+                            #         workflow_status = "stream_failed"
+                            #         current_error = output.error
+                            #         break
+                            #     else: # recoverable such as json format error
+                            #         wrapped_event = RawResponsesStreamEvent(
+                            #             error=output.error,
+                            #         )
+                            #         current_error = output.error
+                            #     # check if the error is recoverable
+                            # else:
+                            #     wrapped_event = RawResponsesStreamEvent(
+                            #         data=output.data, input=planner_prompt
+                            #     )  # wrap on the data field to be the final output, the data might be null
+                            # streaming_result.put_nowait(wrapped_event)
 
                         # asychronously consuming the raw response will
                         # update the data field of output with the result of the output processor
