@@ -84,8 +84,17 @@ def _asdict_inner(obj, dict_factory, exclude):
             )
             for k, v in obj.items()
         )
+    elif isinstance(obj, set):
+        # Handle sets specifically - preserve them as sets
+        return type(obj)(_asdict_inner(v, dict_factory, exclude) for v in obj)
     else:
-        return obj
+        # Check if the object is JSON serializable
+        try:
+            json.dumps(obj)
+            return obj
+        except: 
+            # If not JSON serializable, convert to string representation
+            return str(obj)
         # return deepcopy(obj)
 
 

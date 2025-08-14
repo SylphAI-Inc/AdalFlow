@@ -11,7 +11,6 @@ from adalflow.datasets.utils import prepare_dataset_path
 from adalflow.core.base_data_class import DataClass
 from adalflow.datasets.types import HotPotQAData
 
-
 class HotPotQA(Dataset):
     def __init__(
         self,

@@ -20,6 +20,9 @@ adalflow = { path = "adalflow", develop = true }
 black = { extras = ["jupyter"], version = "^24.10.0" }
 aioitertools = "^0.12.0"
 asyncstdlib = "^3.13.1"
+datasets = "^4.0.0"
+pyvis = "^0.3.2"
+graphviz = "^0.21"
 
 [tool.poetry.group.dev.dependencies]
 

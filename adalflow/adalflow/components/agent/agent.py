@@ -132,7 +132,7 @@ def create_default_planner(
     cache_path: Optional[str] = None,
     use_cache: Optional[bool] = False,
     # default agent parameters
-    max_steps: Optional[int] = 10,
+    max_steps: Optional[int] = 3,
     is_thinking_model: Optional[bool] = False,
     answer_data_type: Optional[Type[T]] = str,
     **kwargs,
@@ -259,8 +259,8 @@ class Agent(Component):
         use_cache: Optional[bool] = True,
         # default agent parameters
         answer_data_type: Optional[Type[T]] = str,  # the data type of the final answer
-        max_steps: Optional[int] = 10,
-        is_thinking_model: Optional[bool] = False,  # when thinking model turned on, it disables the CoT field in the output
+        max_steps: Optional[int] = DEFAULT_MAX_STEPS,
+        is_thinking_model: Optional[bool] = False,  # support thinking model in agent
         # for fully customize the agent
         tool_manager: Optional[
             ToolManager

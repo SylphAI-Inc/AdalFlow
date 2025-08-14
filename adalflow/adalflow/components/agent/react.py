@@ -559,7 +559,7 @@ class ReActAgent(Component):
                 )
 
         log.debug(
-            f"Running step {step} with prompt: {self.planner.prompt(**prompt_kwargs)}"
+            f"Running step {step} with prompt: {self.planner.get_prompt(**prompt_kwargs)}"
         )
         try:
 
@@ -682,7 +682,8 @@ class ReActAgent(Component):
                 step_history=step_history,
                 id=last_step.data_id,
                 react_agent_task_desc=self.planner.prompt_kwargs[
-                    "react_agent_task_desc"
+                    # "react_agent_task_desc"
+                    "task_desc"
                 ],
             )
 
@@ -720,7 +721,7 @@ class ReActAgent(Component):
     def bicall(
         self,
         input: str,  # open up to the external
-        promt_kwargs: Optional[Dict] = {},
+        prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
         id: Optional[str] = None,
     ) -> Union["Parameter", ReActOutput]:
@@ -729,7 +730,7 @@ class ReActAgent(Component):
 
         # set up the prompts
         prompt_kwargs = {
-            **promt_kwargs,
+            **prompt_kwargs,
             "input_str": input,
         }
 
