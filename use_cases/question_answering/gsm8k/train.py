@@ -21,8 +21,9 @@ class StandardTrain(adal.AdalComponent):
         backward_engine_model_config: Optional[Dict] = None,
         teacher_model_config: Optional[Dict] = None,
         text_optimizer_model_config: Optional[Dict] = None,
+        config: Optional[Dict] = None,
     ):
-        task = GSM8KTask(**gpt_3_model)
+        task = GSM8KTask(**config)
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
         loss_fn = adal.EvalFnToTextLoss(
             eval_fn=eval_fn,
@@ -66,16 +67,29 @@ from use_cases.config import gpt_3_model, gpt_o3_mini_model
 
 def train():
     train_data, val_data, test_data = load_datasets()
-    task = GSM8KTask(**gpt_3_model)
+
+    # Create Anthropic client configuration instead of GPT-3
+    anthropic_config = {
+        "model_client": adal.AnthropicAPIClient(),
+        "model_kwargs": {
+            "model": "claude-3-5-sonnet-20241022",
+            # "max_tokens": 2000,
+            "temperature": 0.0,
+        }
+    }
+
+    task = GSM8KTask(**anthropic_config)
     adal_component = StandardTrain(
         task=task,
-        backward_engine_model_config=gpt_o3_mini_model,
-        text_optimizer_model_config=gpt_o3_mini_model,
+        backward_engine_model_config=anthropic_config,
+        text_optimizer_model_config=anthropic_config,
+        config=anthropic_config,
     )
     trainer = adal.Trainer(
         adaltask=adal_component,
         strategy="random",
-        max_steps=10,
+        # max_steps=10,
+        max_steps=1, 
         text_optimizers_config_kwargs={"max_past_history": 5},
     )
     trainer.fit(
@@ -83,7 +97,8 @@ def train():
         val_dataset=val_data,
         test_dataset=test_data,
         debug=False,
-        resume_from_ckpt="/Users/liyin/.adalflow/ckpt/StandardTrain/random_max_steps_10_57bb8_run_1.json",
+        # resume_from_ckpt=None,
+        # resume_from_ckpt="/Users/jinhakim/.adalflow/ckpt/StandardTrain/random_max_steps_1_e35e9_run_1.json",
     )
 
 

@@ -162,6 +162,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         CachedEngine.__init__(self, cache_path=self.cache_path)
 
         Component.__init__(self)
+        # creates a backward engine if none is called 
         GradComponent.__init__(self, desc="Generate a response using LLM model.")
         CallbackManager.__init__(self)
 
@@ -739,7 +740,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # **** end of the special to the generator ****
 
         # if not self.backward_engine:
-        #     # self.set_backward_engine()
+        #     self.set_backward_engine()
         #     log.debug(f"Backward engine: {self.backward_engine}")
 
         # attach a funtion to compute gradient for predecessors
@@ -778,7 +779,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         log.debug(
             f"backward pass setup: {backward_pass_setup}, name: {self.name}",
             color="red",
-        )
+        ) 
 
         children_params = response.predecessors
         is_intermediate_node = True

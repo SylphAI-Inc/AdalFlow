@@ -865,6 +865,8 @@ class Parameter(Generic[T]):
 
         # Add nodes to the graph
         node_ids = set()
+        if nodes is None:
+            nodes = []
         for node in nodes:
             self.generate_node_html(node, output_dir=filepath)
 

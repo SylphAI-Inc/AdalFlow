@@ -1311,6 +1311,10 @@ class RunnerResult:
         metadata={"desc": "The context of the execution"},
         default=None,
     )
+    id: Optional[str] = field(
+        metadata={"desc": "The id of the execution"},
+        default=None,
+    )
 
 
 @dataclass

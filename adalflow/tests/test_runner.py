@@ -816,6 +816,329 @@ class TestRunner(unittest.TestCase):
         asyncio.run(self._test_conversation_memory_clear_streaming())
 
 
+class TestRunnerForward(unittest.TestCase):
+    """Tests for the Runner.forward method (trainable mode)."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.runner = Runner(
+            agent=DummyAgent(
+                planner=None, answer_data_type=None, tool_manager=MockToolManager()
+            )
+        )
+
+    def test_forward_single_step_final_answer(self):
+        """Test forward method with single step that produces final answer."""
+        from adalflow.optim.parameter import Parameter
+        
+        fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="forward_answer")
+        
+        class TrainablePlanner:
+            def __init__(self):
+                self.training = False
+                
+            def forward(self, *, prompt_kwargs, model_kwargs=None, id=None):
+                # Return a Parameter wrapping GeneratorOutput 
+                param = Parameter(
+                    name="planner_output",
+                    data=GeneratorOutput(data=fn),
+                    requires_opt=True,
+                )
+                return param
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        agent = DummyAgent(
+            planner=TrainablePlanner(),
+            answer_data_type=None,
+            tool_manager=MockToolManager()
+        )
+        runner = Runner(agent=agent)
+        
+        result = runner.forward(prompt_kwargs={"input_str": "test"})
+        
+        # Should return OutputParameter with RunnerResult
+        from adalflow.optim.parameter import OutputParameter
+        self.assertIsInstance(result, OutputParameter)
+        self.assertIsInstance(result.data, RunnerResult)
+        self.assertEqual(result.data.answer, "forward_answer")
+        self.assertTrue(result.requires_opt)
+
+    def test_forward_multi_step_execution(self):
+        """Test forward method with multiple steps before final answer."""
+        from adalflow.optim.parameter import Parameter
+        
+        fn1 = DummyFunction(name="search", _is_answer_final=False)
+        fn2 = DummyFunction(name="answer_output", _is_answer_final=True, _answer="multi_step_answer")
+        
+        class MultiStepTrainablePlanner:
+            def __init__(self):
+                self.training = False
+                self.call_count = 0
+                
+            def forward(self, *, prompt_kwargs, model_kwargs=None, id=None):
+                self.call_count += 1
+                if self.call_count == 1:
+                    data = GeneratorOutput(data=fn1)
+                else:
+                    data = GeneratorOutput(data=fn2)
+                
+                param = Parameter(
+                    name=f"planner_output_{self.call_count}",
+                    data=data,
+                    requires_opt=True,
+                )
+                return param
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        agent = DummyAgent(
+            planner=MultiStepTrainablePlanner(),
+            answer_data_type=None,
+            tool_manager=MockToolManager()
+        )
+        runner = Runner(agent=agent)
+        
+        result = runner.forward(prompt_kwargs={"input_str": "test"})
+        
+        # Should return OutputParameter with RunnerResult
+        from adalflow.optim.parameter import OutputParameter
+        self.assertIsInstance(result, OutputParameter)
+        self.assertIsInstance(result.data, RunnerResult)
+        self.assertEqual(result.data.answer, "multi_step_answer")
+        self.assertEqual(len(runner.step_history), 1)  # Only non-final step in history
+
+    def test_forward_parameter_chaining(self):
+        """Test that forward method properly chains parameters."""
+        from adalflow.optim.parameter import Parameter
+        
+        fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="chained_answer")
+        
+        class ChainingPlanner:
+            def __init__(self):
+                self.training = False
+                self.call_count = 0
+                
+            def forward(self, *, prompt_kwargs, model_kwargs=None, id=None):
+                self.call_count += 1
+                param = Parameter(
+                    name=f"step_{self.call_count}",
+                    data=GeneratorOutput(data=fn),
+                    requires_opt=True,
+                )
+                return param
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        agent = DummyAgent(
+            planner=ChainingPlanner(),
+            answer_data_type=None,
+            tool_manager=MockToolManager()
+        )
+        runner = Runner(agent=agent)
+        
+        result = runner.forward(prompt_kwargs={"input_str": "test"})
+        
+        # Should return OutputParameter
+        from adalflow.optim.parameter import OutputParameter
+        self.assertIsInstance(result, OutputParameter)
+        
+        # Should have gradient function set up
+        self.assertIsNotNone(result.grad_fn)
+        self.assertTrue(result.requires_opt)
+
+    def test_forward_error_handling(self):
+        """Test forward method handles errors gracefully."""
+        from adalflow.optim.parameter import Parameter
+        
+        class ErrorPlanner:
+            def __init__(self):
+                self.training = False
+                
+            def forward(self, *, prompt_kwargs, model_kwargs=None, id=None):
+                raise ValueError("Planning error")
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        agent = DummyAgent(
+            planner=ErrorPlanner(),
+            answer_data_type=None,
+            tool_manager=MockToolManager()
+        )
+        runner = Runner(agent=agent)
+        
+        result = runner.forward(prompt_kwargs={"input_str": "test"})
+        
+        # Should return OutputParameter with error in RunnerResult
+        from adalflow.optim.parameter import OutputParameter
+        self.assertIsInstance(result, OutputParameter)
+        self.assertIsInstance(result.data, RunnerResult)
+        self.assertIn("Error in step 0", result.data.answer)
+        self.assertIsNotNone(result.data.error)
+
+    def test_forward_max_steps_reached(self):
+        """Test forward method when max steps are reached without final answer."""
+        from adalflow.optim.parameter import Parameter
+        
+        fn = DummyFunction(name="continue", _is_answer_final=False)
+        
+        class ContinuousPlanner:
+            def __init__(self):
+                self.training = False
+                self.call_count = 0
+                
+            def forward(self, *, prompt_kwargs, model_kwargs=None, id=None):
+                self.call_count += 1
+                param = Parameter(
+                    name=f"step_{self.call_count}",
+                    data=GeneratorOutput(data=fn),
+                    requires_opt=True,
+                )
+                return param
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        agent = DummyAgent(
+            planner=ContinuousPlanner(),
+            answer_data_type=None,
+            tool_manager=MockToolManager(),
+            max_steps=2
+        )
+        runner = Runner(agent=agent)
+        
+        result = runner.forward(prompt_kwargs={"input_str": "test"})
+        
+        # Should return OutputParameter with incomplete message
+        from adalflow.optim.parameter import OutputParameter
+        self.assertIsInstance(result, OutputParameter)
+        self.assertIsInstance(result.data, RunnerResult)
+        self.assertIn("Max steps (2) reached", result.data.answer)
+        self.assertEqual(len(runner.step_history), 2)
+
+    def test_forward_training_mode_flag(self):
+        """Test that forward method sets training mode on planner."""
+        from adalflow.optim.parameter import Parameter
+        
+        fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="training_test")
+        
+        class TrainingAwarePlanner:
+            def __init__(self):
+                self.training = False
+                
+            def forward(self, *, prompt_kwargs, model_kwargs=None, id=None):
+                # Should be called in training mode
+                assert self.training == True, "Planner should be in training mode"
+                param = Parameter(
+                    name="planner_output",
+                    data=GeneratorOutput(data=fn),
+                    requires_opt=True,
+                )
+                return param
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        agent = DummyAgent(
+            planner=TrainingAwarePlanner(),
+            answer_data_type=None,
+            tool_manager=MockToolManager()
+        )
+        runner = Runner(agent=agent)
+        
+        # This should set planner.training = True and not raise assertion error
+        result = runner.forward(prompt_kwargs={"input_str": "test"})
+        
+        from adalflow.optim.parameter import OutputParameter
+        self.assertIsInstance(result, OutputParameter)
+
+    def test_forward_with_conversation_memory(self):
+        """Test forward method with conversation memory."""
+        from adalflow.optim.parameter import Parameter
+        from adalflow.components.memory.memory import ConversationMemory
+        
+        fn = DummyFunction(name="answer_output", _is_answer_final=True, _answer="memory_test")
+        captured_prompt_kwargs = []
+        
+        class MemoryPlanner:
+            def __init__(self):
+                self.training = False
+                
+            def forward(self, *, prompt_kwargs, model_kwargs=None, id=None):
+                captured_prompt_kwargs.append(prompt_kwargs.copy())
+                param = Parameter(
+                    name="planner_output",
+                    data=GeneratorOutput(data=fn),
+                    requires_opt=True,
+                )
+                return param
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        memory = ConversationMemory()
+        agent = DummyAgent(
+            planner=MemoryPlanner(),
+            answer_data_type=None,
+            tool_manager=MockToolManager()
+        )
+        runner = Runner(agent=agent, conversation_memory=memory)
+        
+        result = runner.forward(prompt_kwargs={"input_str": "Hello"})
+        
+        # Should have chat_history_str in prompt_kwargs
+        self.assertEqual(len(captured_prompt_kwargs), 1)
+        self.assertIn("chat_history_str", captured_prompt_kwargs[0])
+        self.assertEqual(captured_prompt_kwargs[0]["chat_history_str"], "")  # Empty on first call
+
+    def test_forward_predecessor_chaining(self):
+        """Test that forward method properly chains predecessors across steps."""
+        from adalflow.optim.parameter import Parameter
+        
+        fn1 = DummyFunction(name="search", _is_answer_final=False)
+        fn2 = DummyFunction(name="answer_output", _is_answer_final=True, _answer="predecessor_test")
+        
+        class PredecessorPlanner:
+            def __init__(self):
+                self.training = False
+                self.call_count = 0
+                
+            def forward(self, *, prompt_kwargs, model_kwargs=None, id=None):
+                self.call_count += 1
+                if self.call_count == 1:
+                    data = GeneratorOutput(data=fn1)
+                else:
+                    data = GeneratorOutput(data=fn2)
+                
+                param = Parameter(
+                    name=f"step_{self.call_count}",
+                    data=data,
+                    requires_opt=True,
+                )
+                return param
+                
+            def get_prompt(self, **kwargs):
+                return "test prompt"
+        
+        agent = DummyAgent(
+            planner=PredecessorPlanner(),
+            answer_data_type=None,
+            tool_manager=MockToolManager()
+        )
+        runner = Runner(agent=agent)
+        
+        result = runner.forward(prompt_kwargs={"input_str": "test"})
+        
+        # The final result should have predecessors set up
+        from adalflow.optim.parameter import OutputParameter
+        self.assertIsInstance(result, OutputParameter)
+        self.assertTrue(len(result.predecessors) > 0)  # Should have predecessor
+
+
 class TestRunnerBugFixes(unittest.TestCase):
     """Tests for specific bugs that were found and fixed in the runner implementation."""
 

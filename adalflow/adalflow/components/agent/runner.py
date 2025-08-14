@@ -20,10 +20,12 @@ from typing import (
 from typing_extensions import TypeAlias
 
 
-from adalflow.optim.parameter import Parameter
+from adalflow.optim.parameter import Parameter, ParameterType, OutputParameter
 from adalflow.utils import printc
 from adalflow.core.component import Component
 from adalflow.components.agent.agent import Agent
+from adalflow.optim.function import BackwardContext
+
 
 from adalflow.core.types import (
     GeneratorOutput,
@@ -53,6 +55,7 @@ from adalflow.tracing import (
     response_span,
     step_span,
 )
+from adalflow.optim.grad_component import GradComponent
 
 
 __all__ = ["Runner"]
@@ -68,9 +71,26 @@ AdalflowDataClass: TypeAlias = Type[
 ]  # Replace with your actual Adalflow dataclass type if available
 
 
+class CombineStepHistoryAndRunnerResult(GradComponent):
+    def __init__(self):
+        super().__init__(desc="Extract the final answer from the step history.")
+
+    def call(
+        self,
+        step_history: List[StepOutput], 
+        runner_result: RunnerResult,
+        task_desc: str,  # skip connection
+        id: Optional[str] = None,
+    ) -> str:
+        if not runner_result:
+            return ""
+        # answer = step_history[-1].observation
+        answer = runner_result.answer
+        return answer
+
 # The runner will create tool call request, add a unique call id.
 # TODO: move this to repo adalflow/agent
-class Runner(Component):
+class Runner(GradComponent):
     """Executes Agent instances with multi-step iterative planning and tool execution.
 
     The Runner orchestrates the execution of an Agent through multiple reasoning and action
@@ -106,6 +126,7 @@ class Runner(Component):
         max_steps: Optional[int] = None, # this will overwrite the agent's max_steps
         permission_manager: Optional[PermissionManager] = None,
         conversation_memory: Optional[ConversationMemory] = None,
+        training: Optional[bool] = False,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -118,7 +139,9 @@ class Runner(Component):
             permission_manager: Optional permission manager for tool approval
             conversation_memory: Optional conversation memory
         """
-        super().__init__(**kwargs)
+        Component.__init__(self, **kwargs)
+        GradComponent.__init__(self, desc="Generate a response using LLM model.", **kwargs)
+        # creates a backward engine if it is not passed in the kwargs
         self.agent = agent
         self.tool_manager = agent.tool_manager
         self.permission_manager = permission_manager
@@ -137,6 +160,7 @@ class Runner(Component):
         else:
             # overwrite the agent's max_steps
             self.agent.max_steps = max_steps
+
         self.answer_data_type = agent.answer_data_type or str
 
         self.step_history: List[StepOutput] = []
@@ -153,6 +177,11 @@ class Runner(Component):
         self._cancel_callbacks = []
         self._current_task = None  # Track the current running task
         self._current_streaming_result = None  # Track the current streaming result
+        self.training = training
+
+        # combine step history
+        self.combine_step_history_and_runner_result = CombineStepHistoryAndRunnerResult()
+
 
     def _init_permission_manager(self):
         """Initialize the permission manager and register tools that require approval."""
@@ -181,8 +210,6 @@ class Runner(Component):
         if permission_manager is not None:
             permission_manager.set_tool_manager(self.tool_manager)
 
-
-
     def is_cancelled(self) -> bool:
         """Check if execution has been cancelled."""
         return self._cancelled
@@ -204,15 +231,19 @@ class Runner(Component):
         self._cancelled = True
 
         # Try to emit a test event if we have a streaming result
-        if hasattr(self, '_current_streaming_result') and self._current_streaming_result:
+        if (
+            hasattr(self, "_current_streaming_result")
+            and self._current_streaming_result
+        ):
             try:
                 cancel_received_event = RunItemStreamEvent(
                     name="runner.cancel_received",
                     item=FinalOutputItem(
                         data={
-                        "status": "cancel_received",
-                        "message": "Cancel request received",
-                    })
+                            "status": "cancel_received",
+                            "message": "Cancel request received",
+                        }
+                    ),
                 )
                 self._current_streaming_result.put_nowait(cancel_received_event)
                 log.info("Emitted cancel_received event")
@@ -232,10 +263,7 @@ class Runner(Component):
         if self._current_task:
             try:
                 # Wait up to 1 second for task to cancel gracefully
-                await asyncio.wait_for(
-                    self._current_task,
-                    timeout=1.0
-                )
+                await asyncio.wait_for(self._current_task, timeout=1.0)
             except (asyncio.TimeoutError, asyncio.CancelledError):
                 # Task didn't cancel in time or was cancelled - that's ok
                 pass
@@ -253,16 +281,69 @@ class Runner(Component):
             return self._process_data(function._answer)
         return None
 
-
-    def _create_runner_result(self, answer: Any, step_history, error: Optional[str] = None,  ) -> RunnerResult:
+    def _create_runner_result(
+        self,
+        answer: Any,
+        step_history,
+        error: Optional[str] = None,
+        id: Optional[str] = None,
+    ) -> RunnerResult:
         """Create a RunnerResult object with the final answer and error."""
         return RunnerResult(
             answer=answer,
             step_history=step_history.copy(),
             error=error,
+            id=id,
             # ctx=self.ctx,
         )
-    def _create_execution_complete_stream_event(self, streaming_result: RunnerStreamingResult, final_output_item: FinalOutputItem):
+
+    def _create_trainable_runner_result(
+        self,
+        runner_result: RunnerResult,
+        name: str,
+        previous_output: Parameter,
+        prompt_kwargs: Dict[str, Any],
+        id: Optional[str] = None,
+    ) -> OutputParameter:
+        """Helper function to create a trainable OutputParameter with proper grad_fn setup.
+        
+        Args:
+            runner_result: The RunnerResult data
+            name: Name for the parameter
+            previous_output: The predecessor parameter to link to
+            prompt_kwargs: Original prompt arguments for gradient computation
+            id: Optional identifier
+            
+        Returns:
+            OutputParameter with grad_fn properly configured
+        """
+        runner_result_parameter = OutputParameter(
+            name=name,
+            data=runner_result,
+            param_type=ParameterType.OUTPUT,
+            requires_opt=True,
+        )
+        
+        runner_result_parameter.set_predecessors([previous_output])
+
+        runner_result_parameter.set_grad_fn(
+            BackwardContext(
+                backward_fn=self.backward,
+                backward_engine=self.backward_engine,
+                response=runner_result_parameter,
+                prompt_kwargs=prompt_kwargs,
+                template=self.agent.planner.template,
+                prompt_str=self.agent.planner.get_prompt(**prompt_kwargs),
+                disable_backward_engine=self._disable_backward_engine,
+                id=id,
+            )
+        )
+
+        return runner_result_parameter
+
+    def _create_execution_complete_stream_event(
+        self, streaming_result: RunnerStreamingResult, final_output_item: FinalOutputItem
+    ):
         """Complete the streaming execution by adding a sentinel."""
         final_output_event = RunItemStreamEvent(
             name="agent.execution_complete",
@@ -289,8 +370,14 @@ class Runner(Component):
                 )
             )
 
-    def create_response_span(self, runner_result, step_count: int, streaming_result: RunnerStreamingResult, runner_span_instance, workflow_status: str = "stream_completed"):
-
+    def create_response_span(
+        self,
+        runner_result,
+        step_count: int,
+        streaming_result: RunnerStreamingResult,
+        runner_span_instance,
+        workflow_status: str = "stream_completed",
+    ):
         runner_span_instance.span_data.update_attributes(
             {
                 "steps_executed": step_count + 1,
@@ -313,15 +400,13 @@ class Runner(Component):
         ):
             pass
 
-
-
-
     async def _process_stream_final_step(
         self,
         answer: Any,
         step_count: int,
         streaming_result,
-        runner_span_instance
+        runner_span_instance,
+        id: Optional[str] = None,
     ) -> FinalOutputItem:
         """Process the final step and trace it."""
         # processed_data = self._get_final_answer(function)
@@ -332,6 +417,7 @@ class Runner(Component):
         runner_result = self._create_runner_result(
             answer=answer,
             step_history=self.step_history,
+            id=id,
         )
 
         # Update runner span with final results
@@ -401,7 +487,9 @@ class Runner(Component):
                     except json.JSONDecodeError as e:
                         raise ValueError(f"Invalid JSON in data: {e}")
                     if not isinstance(data, dict):
-                        raise ValueError(f"Expected dict after JSON parsing, got {type(data)}")
+                        raise ValueError(
+                            f"Expected dict after JSON parsing, got {type(data)}"
+                        )
                 log.info(
                     f"initial answer after being evaluated using json: {data}, type: {type(data)}"
                 )
@@ -458,7 +546,7 @@ class Runner(Component):
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,  # global run id
-    ) -> RunnerResult:
+    ) -> Union[RunnerResult, OutputParameter]:
         """Execute the planner synchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -559,6 +647,7 @@ class Runner(Component):
                             last_output = RunnerResult(
                                 answer=processed_data,
                                 step_history=self.step_history.copy(),
+                                id=id,
                                 # ctx=self.ctx,
                             )
 
@@ -690,8 +779,182 @@ class Runner(Component):
                 answer=current_error or f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
                 step_history=self.step_history.copy(),
                 error=current_error,
+                id=id,
             )
 
+    # trainable version of Runner call 
+    def forward(
+        self,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        use_cache: Optional[bool] = None,
+        id: Optional[str] = None,
+    ) -> Parameter:
+        """Trainable version of call that chains generator outputs and returns a trainable Parameter.
+        
+        Each generator output becomes a trainable predecessor for the next one, and the final
+        result is wrapped in a trainable Parameter.
+        """
+        # Initialize tracking variables
+        self.agent.planner.training = True
+
+        previous_output = None
+        step_count = 0
+        self.step_history = []
+        
+        # Set up the initial prompt
+        prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
+        prompt_kwargs["step_history"] = self.step_history
+        
+        if self.use_conversation_memory:
+            self.conversation_memory.reset_pending_query()
+            prompt_kwargs["chat_history_str"] = self.conversation_memory()
+            query_metadata = {"context_str": prompt_kwargs.get("context_str", None)}
+            self.conversation_memory.add_user_query(
+                UserQuery(
+                    query_str=prompt_kwargs.get("input_str", None),
+                    metadata=query_metadata,
+                )
+            )
+        
+        prompt_kwargs["max_steps"] = self.max_steps
+        model_kwargs = model_kwargs.copy() if model_kwargs else {}
+        
+        # Main training loop
+        while step_count < self.max_steps:
+            try:
+                # Get the next generator output
+                current_output = self.agent.planner.forward(
+                    prompt_kwargs=prompt_kwargs,
+                    model_kwargs=model_kwargs,
+                    # use_cache=use_cache, # TODO no use_cache method for forward
+                    id=id,
+                    # predecessor=previous_output  # Chain to previous output
+                )
+                printc(
+                    f"agent planner prompt call: {self.agent.planner.get_prompt(**prompt_kwargs)}"
+                )
+
+                
+                # If this is the first step, we need to create a trainable parameter
+                trainable_output = current_output 
+                trainable_output.name = f"step_{step_count}"
+                trainable_output.requires_opt = True
+                if previous_output is not None:
+                    # Chain to previous trainable output
+                    # TODO make cleaner 
+                    if trainable_output.predecessors is None:
+                        trainable_output.predecessors = set()
+                    trainable_output.predecessors.add(previous_output)
+
+                previous_output = trainable_output
+
+                generator_output = current_output.data
+
+                printc(f"planner output: {generator_output}")
+                
+                # Process the function call if needed
+                if hasattr(generator_output, 'data') and isinstance(generator_output.data, Function):
+                    function = generator_output.data
+                    function.id = str(uuid.uuid4())
+                    
+                    # Handle final step
+                    if self._check_last_step(function):
+                        printc(f"Function answer: {function._answer}")
+                        processed_data = self._process_data(function._answer)
+                        printc(f"Final processed_data: {processed_data}")
+                        runner_result = RunnerResult(
+                            answer=processed_data,
+                            step_history=self.step_history.copy(),
+                            id=id,
+                        )
+                        return self._create_trainable_runner_result(
+                            runner_result=runner_result,
+                            name="Runner Result",
+                            previous_output=previous_output,
+                            prompt_kwargs=prompt_kwargs,
+                            id=id,
+                        )
+
+                        # return self.combine_step_history_and_runner_result(
+                        #     step_history=self.step_history,
+                        #     runner_result=runner_result,
+                        #     id=id,
+                        #     task_desc=self.agent.planner.prompt_kwargs["task_desc"],
+                        # )
+                    
+                    # Execute the function and update context
+                    function_results = self._tool_execute_sync(function)
+                    step_output = StepOutput(
+                        step=step_count,
+                        action=function,
+                        function=function,
+                        observation=function_results.output.observation if hasattr(function_results.output, 'observation') else function_results.output,
+                    )
+                    
+                    self.step_history.append(step_output)
+                    prompt_kwargs["step_history"] = self.step_history
+
+                # Update for next iteration
+                step_count += 1
+                
+            except Exception as e:
+                error_msg = f"Error in step {step_count}: {str(e)}"
+                log.error(error_msg)
+                runner_result = RunnerResult(
+                    answer=error_msg,
+                    step_history=self.step_history.copy(),
+                    error=error_msg,
+                    id=id,
+                )
+                return self._create_trainable_runner_result(
+                    runner_result=runner_result,
+                    name="Runner Error",
+                    previous_output=previous_output,
+                    prompt_kwargs=prompt_kwargs,
+                    id=id,
+                )
+                # return self.combine_step_history_and_runner_result(
+                #     step_history=self.step_history,
+                #     runner_result=runner_result,
+                #     id=id,
+                #     task_desc=self.agent.planner.prompt_kwargs["task_desc"],
+                # )
+        
+        # If we exit the loop without a final result
+        runner_result = RunnerResult(
+            answer=f"Max steps ({self.max_steps}) reached without completion",
+            step_history=self.step_history.copy(),
+            error="Max steps reached",
+            id=id,
+        )
+
+        runner_result_parameter = self._create_trainable_runner_result(
+            runner_result=runner_result,
+            name="Runner Incomplete",
+            previous_output=previous_output,
+            prompt_kwargs=prompt_kwargs,
+            id=id,
+        )
+
+        return runner_result_parameter
+
+        # return self.combine_step_history_and_runner_result(
+        #     step_history=step_history,
+        #     runner_result=runner_result,
+        #     id=id,
+        #     task_desc=self.agent.planner.prompt_kwargs["task_desc"],
+        # )
+
+    
+    def __call__(self, *args, **kwargs) -> Union[Parameter, RunnerResult]:
+        if self.training:
+            log.debug("Training mode")
+            return self.forward(*args, **kwargs)
+        else:
+            log.debug("Inference mode")
+            return self.call(*args, **kwargs)
+    
     def _tool_execute_sync(
         self,
         func: Function,
@@ -843,6 +1106,7 @@ class Runner(Component):
                             last_output = RunnerResult(
                                 answer=processed_data,
                                 step_history=self.step_history.copy(),
+                                id=id,
                                 # ctx=self.ctx,
                             )
 
@@ -980,6 +1244,7 @@ class Runner(Component):
                 answer=current_error or f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
                 step_history=self.step_history.copy(),
                 error=current_error,
+                id=id,
             )
 
     def astream(
@@ -1212,6 +1477,7 @@ class Runner(Component):
                                     step_count=step_count,
                                     streaming_result=streaming_result,
                                     runner_span_instance=runner_span_instance,
+                                    id=id,
                                 )
                                 stop_the_loop = True
                                 workflow_status = "stream_completed"
@@ -1361,6 +1627,7 @@ class Runner(Component):
                     answer=f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
                     error=current_error,
                     step_history=self.step_history.copy(),
+                    id=id,
 
                 )
                 final_output_item = FinalOutputItem(data=runner_result)
@@ -1383,6 +1650,7 @@ class Runner(Component):
                 answer=final_output_item.data.answer if final_output_item.data else None,
                 step_history=self.step_history.copy(),
                 error=current_error,
+                id=id,
             )
 
             self._create_execution_complete_stream_event(

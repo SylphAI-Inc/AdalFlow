@@ -3,6 +3,10 @@ from typing import Any, Callable, Dict, Tuple
 import adalflow as adal
 from adalflow.eval.answer_match_acc import AnswerMatchAcc
 from adalflow.datasets.types import HotPotQAData
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from benchmarks.hotpot_qa.config import load_datasets
 from benchmarks.hotpot_qa.adal_exp.build_multi_hop_rag import AgenticRAG
