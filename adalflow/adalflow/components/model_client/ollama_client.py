@@ -20,8 +20,19 @@ from adalflow.core.types import ModelType, GeneratorOutput, Function
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
 ollama = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
-import ollama
-from ollama import RequestError, ResponseError, GenerateResponse, Message
+
+# Import specific classes from the lazily imported module
+if ollama:
+    RequestError = ollama.RequestError
+    ResponseError = ollama.ResponseError
+    GenerateResponse = ollama.GenerateResponse
+    Message = ollama.Message
+else:
+    # Define placeholder classes when ollama is not available
+    RequestError = Exception
+    ResponseError = Exception
+    GenerateResponse = dict
+    Message = dict
 
 
 from adalflow.core.model_client import ModelClient
@@ -32,7 +43,7 @@ log = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-def extract_ollama_tool_calls(message: Message) -> Optional[List[Function]]:
+def extract_ollama_tool_calls(message: "Message") -> Optional[List[Function]]:
     """Extract tool calls from Ollama message response and convert to Function objects.
     
     Args:
@@ -68,7 +79,7 @@ def extract_ollama_tool_calls(message: Message) -> Optional[List[Function]]:
     return functions if functions else None
 
 
-def parse_generate_response(completion: GenerateResponse) -> "GeneratorOutput":
+def parse_generate_response(completion: "GenerateResponse") -> "GeneratorOutput":
     """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
     if "response" in completion:
         log.debug(f"response: {completion}")

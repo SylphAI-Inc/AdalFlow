@@ -298,6 +298,22 @@ class Agent(Component):
         # name the agent
         self.name = name
 
+        # save the following parameters to recreate the planner
+        self.model_client = model_client
+        self.model_kwargs = model_kwargs
+        self.model_type = model_type
+
+        # set the template
+        self.template = template or DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT
+        self.role_desc = role_desc or DEFAULT_ROLE_DESC
+
+        self.cache_path = cache_path
+        self.use_cache = use_cache
+
+        # set the default max steps
+        self.max_steps = max_steps or DEFAULT_MAX_STEPS
+        self.is_thinking_model = is_thinking_model
+
         # planner or model_client exists
 
         self.tool_manager = tool_manager or create_default_tool_manager(
@@ -323,8 +339,6 @@ class Agent(Component):
             answer_data_type=answer_data_type,
         )
         self.answer_data_type = answer_data_type  # save the final answer data type for the runner to communicate
-        self.max_steps = max_steps
-        self.is_thinking_model = is_thinking_model
 
         # check
         if not self.tool_manager:
@@ -333,6 +347,27 @@ class Agent(Component):
             raise ValueError("Planner must be provided to the agent. ")
         if self.max_steps < 1:
             raise ValueError("Max steps must be greater than 0.")
+        
+    def flip_thinking_model(self):
+        """Toggle the thinking model state."""
+        self.is_thinking_model = not self.is_thinking_model
+        log.debug(f"Thinking model is now {'enabled' if self.is_thinking_model else 'disabled'}.")
+
+        # we have to recrate the planner
+        self.planner = create_default_planner(
+            tool_manager=self.tool_manager,
+            model_client=self.model_client,
+            model_kwargs=self.model_kwargs,
+            model_type=self.model_type,
+            template=self.template,
+            role_desc=self.role_desc,
+            cache_path=self.cache_path,
+            use_cache=self.use_cache,
+            max_steps=self.max_steps,
+            is_thinking_model=self.is_thinking_model,
+            answer_data_type=self.answer_data_type,
+        )
+
 
     def is_training(self) -> bool:
         return self.planner.training
