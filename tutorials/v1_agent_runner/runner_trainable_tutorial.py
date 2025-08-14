@@ -129,82 +129,9 @@ def example_3_comparison_call_vs_forward():
     
     return call_result, forward_result
 
-
-def example_4_using_with_trainer():
-    """Example 4: How to use trainable results with AdalFlow trainer."""
-    print("\n=== Example 4: Using with Trainer ===")
-    
-    from adalflow.datasets.gsm8k import GSM8K
-    from adalflow.eval.answer_match_acc import AnswerMatchAcc
-    
-    # Load a small dataset for demonstration
-    train_data = GSM8K(split="train", size=5)
-    
-    agent = create_simple_agent()
-    runner = adal.Runner(agent=agent, training=True)
-    
-    # Create a simple trainer component
-    class RunnerTrainerDemo(adal.AdalComponent):
-        def __init__(self, runner):
-            eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
-            loss_fn = adal.EvalFnToTextLoss(
-                eval_fn=eval_fn,
-                eval_fn_desc="exact_match: 1 if str(y) == str(y_gt) else 0",
-            )
-            super().__init__(task=runner, eval_fn=eval_fn, loss_fn=loss_fn)
-        
-        def prepare_task(self, sample):
-            # This calls runner.forward() when in training mode
-            return self.task.forward, {"prompt_kwargs": {"input_str": sample.question}, "id": sample.id}
-        
-        def prepare_eval(self, sample, y_pred):
-            # y_pred will be an OutputParameter when using forward()
-            if isinstance(y_pred, OutputParameter):
-                y_label = y_pred.data.answer if y_pred.data.answer else ""
-            else:
-                y_label = y_pred.answer if y_pred.answer else ""
-            return self.eval_fn, {"y": y_label, "y_gt": sample.answer}
-        
-        def prepare_loss(self, sample, pred):
-            # pred is the OutputParameter from forward()
-            y_gt = adal.Parameter(
-                name="y_gt",
-                data=sample.answer,
-                eval_input=sample.answer,
-                requires_opt=False,
-            )
-            
-            # Set eval_input for the prediction
-            if hasattr(pred.data, 'answer') and pred.data.answer is not None:
-                pred.eval_input = pred.data.answer
-            else:
-                pred.eval_input = str(pred.data) if pred.data is not None else ""
-            
-            return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}, "id": sample.id}
-    
-    # Create trainer component
-    trainer_component = RunnerTrainerDemo(runner)
-    
-    # Test with a single sample
-    sample = train_data[0]
-    print(f"Sample question: {sample.question}")
-    print(f"Ground truth: {sample.answer}")
-    
-    # This will call runner.forward() and return trainable result
-    task_fn, task_kwargs = trainer_component.prepare_task(sample)
-    trainable_result = task_fn(**task_kwargs)
-    
-    print("Sample question: ", sample.question)
-    print(f"Trainable result type: {type(trainable_result)}")
-    print(f"Final answer: {trainable_result.data.answer}")
-    print(f"Is optimizable: {trainable_result.requires_opt}")
-    
-    return trainable_result
-
-
-def example_5_gradient_tracking():
+def example_4_gradient_tracking():
     """Example 5: Understanding gradient tracking in trainable results."""
-    print("\n=== Example 5: Gradient Tracking ===")
+    print("\n=== Example 4: Gradient Tracking ===")
     
     agent = create_simple_agent()
     runner = adal.Runner(agent=agent, training=True)
@@ -240,11 +167,10 @@ def main():
     
     try:
         # Run examples
-        # example_1_basic_forward_usage()
-        # example_2_extracting_final_output()
-        # example_3_comparison_call_vs_forward()
-        example_4_using_with_trainer()
-        # example_5_gradient_tracking()
+        example_1_basic_forward_usage()
+        example_2_extracting_final_output()
+        example_3_comparison_call_vs_forward()
+        example_4_gradient_tracking()
         
         print("\n" + "=" * 50)
         print("Tutorial completed successfully!")
@@ -252,8 +178,7 @@ def main():
         print("1. Use runner.forward() instead of runner.call() for trainable results")
         print("2. Set training=True when creating Runner for optimization")
         print("3. Forward() returns OutputParameter with gradient information")
-        print("4. Access final answer via result.data.answer")
-        print("5. Trainable results can be used with AdalFlow's optimization system")
+        print("4. Trainable results can be used with AdalFlow's optimization system")
         
     except Exception as e:
         print(f"Error occurred during tutorial: {e}")
