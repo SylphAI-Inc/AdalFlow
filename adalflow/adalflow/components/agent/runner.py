@@ -335,7 +335,7 @@ class Runner(GradComponent):
                 backward_engine=self.backward_engine,
                 response=runner_result_parameter,
                 prompt_kwargs=prompt_kwargs,
-                template=self.agent.planner.template,
+                template=getattr(self.agent.planner, 'template', None),
                 prompt_str=self.agent.planner.get_prompt(**prompt_kwargs),
                 disable_backward_engine=self._disable_backward_engine,
                 id=id,
