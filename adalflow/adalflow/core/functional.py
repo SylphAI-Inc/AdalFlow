@@ -26,6 +26,7 @@ import json
 import yaml
 import ast
 import threading
+import base64
 
 from inspect import signature, Parameter
 from dataclasses import fields, is_dataclass, MISSING, Field
@@ -1329,6 +1330,34 @@ def parse_json_str_to_obj(json_str: str) -> Union[Dict[str, Any], List[Any]]:
                 raise ValueError(
                     f"Got invalid JSON object with yaml.safe_load. Error: {e}. Got JSON string: {json_str}"
                 )
+
+
+########################################################################################
+# For image encoding
+########################################################################################
+def encode_image(image_path: str) -> str:
+    """Encode an image file to base64 string.
+    
+    Args:
+        image_path (str): Path to the image file.
+        
+    Returns:
+        str: Base64 encoded string of the image.
+        
+    Raises:
+        FileNotFoundError: If the image file does not exist.
+        PermissionError: If there's no permission to read the file.
+        Exception: For other errors during encoding.
+    """
+    try:
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode("utf-8")
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Image file not found: {image_path}")
+    except PermissionError:
+        raise PermissionError(f"Permission denied when reading image file: {image_path}")
+    except Exception as e:
+        raise Exception(f"Error encoding image {image_path}: {str(e)}")
 
 
 ########################################################################################

@@ -184,9 +184,9 @@ class Prompt(DataComponent):
         """
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
-            print(f"Prompt kwargs: {pass_kwargs}")
+            # print(f"Prompt kwargs: {pass_kwargs}")
             pass_kwargs = self._convert_prompt_kwargs_to_str(pass_kwargs)
-            print(f"Prompt kwargs after conversion: {pass_kwargs}")
+            # print(f"Prompt kwargs after conversion: {pass_kwargs}")
             prompt_str = self.jinja2_template.render(**pass_kwargs)
             return prompt_str
 

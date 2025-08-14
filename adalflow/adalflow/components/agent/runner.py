@@ -183,6 +183,9 @@ class Runner(GradComponent):
         self.combine_step_history_and_runner_result = CombineStepHistoryAndRunnerResult()
 
 
+        # support thinking model
+        self.is_thinking_model = agent.is_thinking_model if hasattr(agent, 'is_thinking_model')  else False
+
     def _init_permission_manager(self):
         """Initialize the permission manager and register tools that require approval."""
         if self.permission_manager and hasattr(self.agent, "tool_manager"):
@@ -634,8 +637,11 @@ class Runner(GradComponent):
                             break
 
                         function = output.data
+                        thinking = output.thinking if hasattr(output, 'thinking') else None
                         if function is not None:
-                            function.id = str(uuid.uuid4()) # add function id 
+                            function.id = str(uuid.uuid4()) # add function id
+                            if thinking is not None and self.is_thinking_model:
+                                function.thought = thinking
                         printc(f"function: {function}", color="yellow")
                         if function is None:
                             error_msg = output.error
@@ -1095,9 +1101,12 @@ class Runner(GradComponent):
                             break
 
                         function = output.data
+                        thinking = output.thinking if hasattr(output, 'thinking') else None
                         if function is not None:
                             # add a function id
                             function.id = str(uuid.uuid4())
+                            if thinking is not None and self.is_thinking_model:
+                                function.thought = thinking
                         printc(f"function: {function}", color="yellow")
 
                         if self._check_last_step(function):
@@ -1412,7 +1421,8 @@ class Runner(GradComponent):
                         else:
                             # yield the final planner response
                             if output.error is not None:
-                                if "400" in output.error or "429" in output.error: # context too long or rate limite, not recoverable
+                                if "400" in output.error or "429" or "404" in output.error: # context too long or rate limite, not recoverable
+                                    # 404 model not exist
                                     # create a final output item with error and stop the loop
                                     final_output_item = FinalOutputItem(
                                         error=output.error,
@@ -1439,6 +1449,7 @@ class Runner(GradComponent):
                         # handle function output 
 
                         function = output.data # here are the recoverable errors, should continue to step output
+                        thinking = output.thinking # check the reasoning model response
                         function.id = str(uuid.uuid4()) # add function id 
                         function_result = None
                         function_output_observation = None
@@ -1464,6 +1475,9 @@ class Runner(GradComponent):
                         else:
                             # for normal function
                             function.id = str(uuid.uuid4())
+
+                            if thinking is not None and self.is_thinking_model:
+                                function.thought = thinking
 
                             # TODO: simplify this
                             tool_call_id = function.id

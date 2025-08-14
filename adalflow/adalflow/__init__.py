@@ -1,4 +1,4 @@
-__version__ = "1.1.0"
+__version__ = "1.1.1" # DO NOT EDIT THIS LINE MANUALLY
 
 from adalflow.core.component import (
     Component,

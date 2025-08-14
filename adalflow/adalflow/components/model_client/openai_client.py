@@ -56,11 +56,49 @@ from adalflow.core.types import (
     OutputTokensDetails,
     GeneratorOutput,
 )
+from dataclasses import dataclass
 
-from adalflow.components.model_client.utils import parse_embedding_response
+from adalflow.components.model_client.utils import (
+    parse_embedding_response,
+    format_content_for_response_api,
+)
 
 log = logging.getLogger(__name__)
 T = TypeVar("T")
+
+
+@dataclass
+class ParsedResponseContent:
+    """Structured container for parsed response content from OpenAI Response API.
+
+    This dataclass provides a consistent interface for accessing different types
+    of content that can be returned by the Response API, including text, images,
+    tool calls, reasoning chains, and more.
+
+    Attributes:
+        text: The main text content from the response
+        images: List of image data (base64 or URLs) from image generation
+        tool_calls: List of other tool call results
+        reasoning: Reasoning chain from reasoning models
+        code_outputs: Outputs from code interpreter
+        raw_output: The original output array for advanced processing
+    """
+    text: Optional[str] = None
+    images: Optional[Union[str, List[str]]] = None
+    tool_calls: Optional[List[Dict[str, Any]]] = None
+    reasoning: Optional[List[Dict[str, Any]]] = None
+    code_outputs: Optional[List[Dict[str, Any]]] = None
+    raw_output: Optional[Any] = None
+
+    def __bool__(self) -> bool:
+        """Check if there's any content."""
+        return any([
+            self.text,
+            self.images,
+            self.tool_calls,
+            self.reasoning,
+            self.code_outputs
+        ])
 
 
 # OLD CHAT COMPLETION PARSING FUNCTIONS (COMMENTED OUT)
@@ -76,6 +114,230 @@ def get_response_output_text(response: Response) -> str:
     """Used to extract the data field for the reasoning model"""
     log.debug(f"raw response: {response}")
     return response.output_text
+
+
+def parse_response_output(response: Response) -> ParsedResponseContent:
+    """Parse response output that may include various types of content and tool calls.
+
+    The output array can contain:
+    - Output messages (with nested content items)
+    - Tool calls (file search, function, web search, computer use, etc.)
+    - Reasoning chains
+    - Image generation calls
+    - Code interpreter calls
+    - And more...
+
+    Returns:
+        ParsedResponseContent: Structured content with typed access to all response data
+    """
+    log.debug(f"raw response from api: {response}")
+
+    content = ParsedResponseContent()
+
+    # Store raw output for advanced users
+    if hasattr(response, 'output'):
+        content.raw_output = response.output
+
+    # First try to use output_text if available (SDK convenience property)
+    if hasattr(response, 'output_text') and response.output_text:
+        content.text = response.output_text
+    # Parse the output array manually if no output_text
+    if hasattr(response, 'output') and response.output:
+        parsed = _parse_output_array(response.output)
+        content.text = content.text or parsed.get("text")
+        content.images = parsed.get("images", [])
+        content.tool_calls = parsed.get("tool_calls")
+        content.reasoning = parsed.get("reasoning")
+        content.code_outputs = parsed.get("code_outputs")
+
+    return content
+
+
+
+def _parse_message(item) -> Dict[str, Any]:
+    """Parse a message item from the output array.
+
+    Args:
+        item: A message item with type="message" and content array
+
+    Returns:
+        Dict with parsed text and images from the message
+    """
+    result = {"text": None}
+
+    if hasattr(item, 'content') and isinstance(item.content, list):
+        # now pick the longer response 
+        text_parts = []
+
+        for content_item in item.content:
+            content_type = getattr(content_item, 'type', None)
+
+            if content_type == "output_text":
+                if hasattr(content_item, 'text'):
+                    text_parts.append(content_item.text)
+
+        if text_parts:
+            result["text"] = max(text_parts, key=len) if len(text_parts) > 1 else text_parts[0]
+
+    return result
+
+
+def _parse_reasoning(item) -> Dict[str, Any]:
+    """Parse a reasoning item from the output array.
+
+    Args:
+        item: A reasoning item with type="reasoning" and summary array
+
+    Returns:
+        Dict with extracted reasoning text and full structure
+    """
+    result = {"reasoning": None}
+
+    # Extract text from reasoning summary if available
+    if hasattr(item, 'summary') and isinstance(item.summary, list):
+        summary_texts = []
+        for summary_item in item.summary:
+            if hasattr(summary_item, 'type') and summary_item.type == "summary_text":
+                if hasattr(summary_item, 'text'):
+                    summary_texts.append(summary_item.text)
+
+        if summary_texts:
+            # Store reasoning text separately for later combination
+            result["reasoning"] = "\n".join(summary_texts)
+
+    return result
+
+
+def _parse_image(item) -> Dict[str, Any]:
+    """Parse an image generation call item from the output array.
+
+    Args:
+        item: An image generation item with type="image_generation_call" and result field
+
+    Returns:
+        Dict with extracted image data
+    """
+    result = {"images": None}
+
+    if hasattr(item, 'result'):
+        # The result contains the base64 image data or URL
+        result["images"] = item.result
+
+    return result
+
+
+def _parse_tool_call(item) -> Dict[str, Any]:
+    """Parse a tool call item from the output array.
+
+    Args:
+        item: A tool call item (various types ending in _call or containing tool_call)
+
+    Returns:
+        Dict with tool call information
+    """
+    item_type = getattr(item, 'type', None)
+
+    if item_type == "image_generation_call":
+        # Handle image generation - extract the result which contains the image data
+        if hasattr(item, 'result'):
+            # The result contains the base64 image data or URL
+            return {"images": item.result}
+    elif item_type == "code_interpreter_tool_call":
+        return {"code_outputs": [_serialize_item(item)]}
+    else:
+        # Generic tool call
+        return {
+            "tool_calls": [{
+                "type": item_type,
+                "content": _serialize_item(item)
+            }]
+        }
+
+    return {}
+
+
+def _parse_output_array(output_array) -> Dict[str, Any]:
+    """Parse the entire output array, processing all elements.
+
+    The output array typically contains:
+    1. Reasoning (optional) - thinking/reasoning before the response
+    2. Message - the actual response with content
+    3. Tool calls (optional) - any tool invocations
+
+    Returns:
+        Dict with keys: text, images, tool_calls, reasoning, code_outputs
+    """
+    result = {
+        "text": None,
+        "images": None,
+        "tool_calls": None,
+        "reasoning": None,
+        "code_outputs": None
+    }
+
+    if not output_array:
+        return result
+
+    # Process all items in the array
+    all_images = []
+    all_tool_calls = []
+    all_code_outputs = []
+    all_reasoning = None
+    text = None
+
+    for item in output_array:
+        item_type = getattr(item, 'type', None)
+
+        if item_type == "reasoning":
+            # Parse reasoning item
+            parsed = _parse_reasoning(item)
+            if parsed.get("reasoning"):
+                all_reasoning = parsed["reasoning"]
+
+        elif item_type == "message":
+            # Parse message item
+            parsed = _parse_message(item)
+            if parsed.get("text"):
+                text = parsed["text"]
+
+        elif item_type == "image_generation_call":
+            # Parse image generation call separately
+            parsed = _parse_image(item)
+            if parsed.get("images"):
+                all_images.append(parsed["images"])
+
+        elif item_type and ('call' in item_type or 'tool' in item_type):
+            # Parse other tool calls
+            parsed = _parse_tool_call(item)
+            if parsed.get("tool_calls"):
+                all_tool_calls.extend(parsed["tool_calls"])
+            if parsed.get("code_outputs"):
+                all_code_outputs.extend(parsed["code_outputs"])
+
+
+    result["text"] = text if text else None # TODO: they can potentially send multiple complete text messages, we might need to save all of them and only return the first that can convert to outpu parser
+
+    # Set other fields if they have content
+    result["images"] = all_images
+    if all_tool_calls:
+        result["tool_calls"] = all_tool_calls
+    if all_reasoning:
+        result["reasoning"] = all_reasoning
+    if all_code_outputs:
+        result["code_outputs"] = all_code_outputs
+
+    return result
+
+
+def _serialize_item(item) -> Dict[str, Any]:
+    """Convert an output item to a serializable dict."""
+    result = {}
+    for attr in dir(item):
+        if not attr.startswith('_'):
+            value = getattr(item, attr, None)
+            if value is not None and not callable(value):
+                result[attr] = value
+    return result
 
 
 # def _get_chat_completion_usage(completion: ChatCompletion) -> OpenAICompletionUsage:
@@ -144,31 +406,13 @@ def handle_streaming_response_sync(stream: Iterable) -> GeneratorType:
         yield event
 
 
-# OLD CHAT COMPLETION UTILITY FUNCTIONS (COMMENTED OUT)
-# def get_all_messages_content(completion: ChatCompletion) -> List[str]:
-#     r"""When the n > 1, get all the messages content."""
-#     return [c.message.content for c in completion.choices]
-
-
-# def get_probabilities(completion: ChatCompletion) -> List[List[TokenLogProb]]:
-#     r"""Get the probabilities of each token in the completion."""
-#     log_probs = []
-#     for c in completion.choices:
-#         content = c.logprobs.content
-#         print(content)
-#         log_probs_for_choice = []
-#         for openai_token_logprob in content:
-#             token = openai_token_logprob.token
-#             logprob = openai_token_logprob.logprob
-#             log_probs_for_choice.append(TokenLogProb(token=token, logprob=logprob))
-#         log_probs.append(log_probs_for_choice)
-#     return log_probs
 
 
 class OpenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the OpenAI API client.
 
-    Support both embedding and chat completion API, including multimodal capabilities.
+    Support both embedding and response API, including multimodal capabilities.
+
 
     Users (1) simplify use ``Embedder`` and ``Generator`` components by passing OpenAIClient() as the model_client.
     (2) can use this as an example to create their own API client or extend this class(copying and modifing the code) in their own project.
@@ -190,6 +434,217 @@ class OpenAIClient(ModelClient):
         - n: Number of images to generate (1 for DALL-E 3, 1-10 for DALL-E 2)
         - response_format: "url" or "b64_json"
 
+    Examples:
+        Basic text generation::
+
+            from adalflow.components.model_client import OpenAIClient
+            from adalflow.core import Generator
+
+            # Initialize client (uses OPENAI_API_KEY env var by default)
+            client = OpenAIClient()
+
+            # Create a generator for text
+            generator = Generator(
+                model_client=client,
+                model_kwargs={"model": "gpt-4o-mini"}
+            )
+
+            # Generate response
+            response = generator(prompt_kwargs={"input_str": "What is machine learning?"})
+            print(response.data)
+
+        Multimodal with URL image::
+
+            # Vision model with image from URL
+            generator = Generator(
+                model_client=OpenAIClient(),
+                model_kwargs={
+                    "model": "gpt-4o",
+                    "images": "https://example.com/chart.jpg"
+                }
+            )
+
+            response = generator(
+                prompt_kwargs={"input_str": "Analyze this chart and explain the trends"}
+            )
+
+        Multimodal with local images::
+
+            # Multiple local images
+            generator = Generator(
+                model_client=OpenAIClient(),
+                model_kwargs={
+                    "model": "gpt-4o",
+                    "images": [
+                        "/path/to/image1.jpg",
+                        "/path/to/image2.png"
+                    ]
+                }
+            )
+
+            response = generator(
+                prompt_kwargs={"input_str": "Compare these two images"}
+            )
+
+        Pre-formatted images with custom encoding::
+
+            import base64
+            from adalflow.core.functional import encode_image
+
+            # Option 1: Using the encode_image helper
+            base64_img = encode_image("/path/to/image.jpg")
+
+            # Option 2: Manual base64 encoding
+            with open("/path/to/image.png", "rb") as f:
+                base64_img = base64.b64encode(f.read()).decode('utf-8')
+
+            # Use pre-formatted image data
+            generator = Generator(
+                model_client=OpenAIClient(),
+                model_kwargs={
+                    "model": "gpt-4o",
+                    "images": [
+                        # Pre-formatted as base64 data URI
+                        f"data:image/png;base64,{base64_img}",
+                        # Or as a dict with type and image_url
+                        {
+                            "type": "input_image",
+                            "image_url": f"data:image/jpeg;base64,{base64_img}"
+                        },
+                        # Mix with regular URLs
+                        "https://example.com/chart.jpg"
+                    ]
+                }
+            )
+
+            response = generator(
+                prompt_kwargs={"input_str": "Analyze these images"}
+            )
+
+        Reasoning models (O1, O3)::
+
+            from adalflow.core.types import ModelType
+
+            # O3 reasoning model with effort configuration
+            generator = Generator(
+                model_client=OpenAIClient(),
+                model_type=ModelType.LLM_REASONING,
+                model_kwargs={
+                    "model": "o3",
+                    "reasoning": {
+                        "effort": "medium",  # low, medium, high
+                        "summary": "auto"    # detailed, auto, none
+                    }
+                }
+            )
+
+            response = generator(
+                prompt_kwargs={"input_str": "Solve this complex problem: ..."}
+            )
+
+        Image generation with DALL-E (legacy method)::
+
+            from adalflow.core.types import ModelType
+
+            # Generate an image using ModelType.IMAGE_GENERATION
+            generator = Generator(
+                model_client=OpenAIClient(),
+                model_type=ModelType.IMAGE_GENERATION,
+                model_kwargs={
+                    "model": "dall-e-3",
+                    "size": "1024x1792",
+                    "quality": "hd",
+                    "n": 1
+                }
+            )
+
+            response = generator(
+                prompt_kwargs={"input_str": "A futuristic city with flying cars at sunset"}
+            )
+            # response.data contains the image URL or base64 data
+
+        Image generation via tools (new API)::
+
+            import base64
+
+            # Generate images using the new tools API
+            generator = Generator(
+                model_client=OpenAIClient(),
+                model_kwargs={
+                    "model": "gpt-4o-mini",  # or any model that supports tools
+                    "tools": [{"type": "image_generation"}]
+                }
+            )
+
+            # Generate an image
+            response = generator(
+                prompt_kwargs={
+                    "input_str": "Generate an image of a gray tabby cat hugging an otter with an orange scarf"
+                }
+            )
+
+            # Access the generated image(s)
+            if isinstance(response.data, list):
+                # Multiple images
+                for i, img_base64 in enumerate(response.data):
+                    with open(f"generated_{i}.png", "wb") as f:
+                        f.write(base64.b64decode(img_base64))
+            elif isinstance(response.data, str):
+                # Single image
+                with open("generated.png", "wb") as f:
+                    f.write(base64.b64decode(response.data))
+            elif isinstance(response.data, dict) and "images" in response.data:
+                # Mixed response with text and images
+                print("Text:", response.data["text"])
+                for i, img_base64 in enumerate(response.data["images"]):
+                    with open(f"generated_{i}.png", "wb") as f:
+                        f.write(base64.b64decode(img_base64))
+
+        Embeddings::
+
+            from adalflow.core import Embedder
+
+            # Create embedder
+            embedder = Embedder(
+                model_client=OpenAIClient(),
+                model_kwargs={"model": "text-embedding-3-small"}
+            )
+
+            # Generate embeddings
+            embeddings = embedder(input=["Hello world", "Machine learning"])
+            print(embeddings.data)  # List of embedding vectors
+
+        Streaming responses::
+
+            from adalflow.components.model_client.utils import extract_text_from_response_stream
+
+            # Enable streaming
+            generator = Generator(
+                model_client=OpenAIClient(),
+                model_kwargs={
+                    "model": "gpt-4o",
+                    "stream": True
+                }
+            )
+
+            # Stream the response
+            response = generator(prompt_kwargs={"input_str": "Tell me a story"})
+
+            # Extract text from Response API streaming events
+            for event in response.raw_response:
+                text = extract_text_from_response_stream(event)
+                if text:
+                    print(text, end="")
+
+        Custom API endpoint::
+
+            # Use with third-party providers or local models
+            client = OpenAIClient(
+                base_url="https://api.custom-provider.com/v1/",
+                api_key="your-api-key",
+                headers={"X-Custom-Header": "value"}
+            )
+
     Args:
         api_key (Optional[str], optional): OpenAI API key. Defaults to `None`.
         non_streaming_chat_completion_parser (Callable[[Completion], Any], optional): Legacy parser for chat completions.
@@ -208,11 +663,13 @@ class OpenAIClient(ModelClient):
         headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.
 
     References:
-        - OpenAI API Overview: https://platform.openai.com/docs/introduction
+        - OpenAI API Overview: https://platform.openai.com/docs/introduction, https://platform.openai.com/docs/guides/images-vision?api-mode=responses
         - Embeddings Guide: https://platform.openai.com/docs/guides/embeddings
         - Chat Completion Models: https://platform.openai.com/docs/guides/text-generation
+        - Response api: https://platform.openai.com/docs/api-reference/responses/create, Analyze images and use them as input and/or generate images as output
         - Vision Models: https://platform.openai.com/docs/guides/vision
         - Image Generation: https://platform.openai.com/docs/guides/images
+        - reasoning: https://platform.openai.com/docs/guides/reasoning
 
     Note:
         - Ensure each OpenAIClient instance is used by one generator only.
@@ -224,10 +681,10 @@ class OpenAIClient(ModelClient):
         # OLD CHAT COMPLETION PARSER PARAMS (kept for backward compatibility)
         non_streaming_chat_completion_parser: Optional[
             Callable[[Completion], Any]
-        ] = None,  # non-streaming parser
+        ] = None,  # non-streaming parser - deprecated but accepted
         streaming_chat_completion_parser: Optional[
             Callable[[Completion], Any]
-        ] = None,  # streaming parser
+        ] = None,  # streaming parser - deprecated but accepted
         # Response API parsers (used for reasoning models)
         non_streaming_response_parser: Optional[Callable[[Response], Any]] = None,
         streaming_response_parser: Optional[Callable[[Response], Any]] = None,
@@ -241,8 +698,8 @@ class OpenAIClient(ModelClient):
 
         Args:
             api_key (Optional[str], optional): OpenAI API key. Defaults to None.
-            non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): Legacy parser for chat completions. Defaults to None.
-            streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): Legacy parser for streaming chat completions. Defaults to None.
+            non_streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for chat completions. Ignored, kept for backward compatibility. Defaults to None.
+            streaming_chat_completion_parser (Optional[Callable[[Completion], Any]], optional): DEPRECATED - Legacy parser for streaming chat completions. Ignored, kept for backward compatibility. Defaults to None.
             non_streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for non-streaming responses. Defaults to None.
             streaming_response_parser (Optional[Callable[[Response], Any]], optional): Parser for streaming responses. Defaults to None.
             input_type (Literal["text", "messages"]): Input type for the client. Defaults to "text".
@@ -251,6 +708,18 @@ class OpenAIClient(ModelClient):
             organization (Optional[str], optional): OpenAI organization key. Defaults to None.
             headers (Optional[Dict[str, str]], optional): Additional headers to include in API requests. Defaults to None.
         """
+        # Log deprecation warning if old parsers are provided
+        if non_streaming_chat_completion_parser is not None:
+            log.warning(
+                "non_streaming_chat_completion_parser is deprecated and will be ignored. "
+                "The OpenAI client now uses the Response API exclusively."
+            )
+        if streaming_chat_completion_parser is not None:
+            log.warning(
+                "streaming_chat_completion_parser is deprecated and will be ignored. "
+                "The OpenAI client now uses the Response API exclusively."
+            )
+
         super().__init__()
         self._api_key = api_key
         self.base_url = base_url
@@ -261,16 +730,6 @@ class OpenAIClient(ModelClient):
         self.async_client = None  # only initialize if the async call is called
         self._input_type = input_type
         self._api_kwargs = {}  # add api kwargs when the OpenAI Client is called
-
-        # OLD CHAT COMPLETION API PARSERS (COMMENTED OUT)
-        # # Chat Completion API Parsers
-        # # (used only for synchronous (stream + non-streaming) calls via create API)
-        # self.non_streaming_chat_completion_parser = (
-        #     non_streaming_chat_completion_parser or get_first_message_content
-        # )
-        # self.streaming_chat_completion_parser = (
-        #     streaming_chat_completion_parser or handle_streaming_chat_completion
-        # )
 
         # Response API parsers (RESPONSE API ONLY NOW)
         # (used for both synchronous and asynchronous (stream + non-streaming) calls via Response API)
@@ -316,48 +775,6 @@ class OpenAIClient(ModelClient):
             default_headers=self.headers,
         )
 
-    # def _parse_chat_completion(self, completion: ChatCompletion) -> "GeneratorOutput":
-    #     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message
-    #     try:
-    #         data = self.chat_completion_parser(completion)
-    #         usage = self.track_completion_usage(completion)
-    #         return GeneratorOutput(
-    #             data=data, error=None, raw_response=str(data), usage=usage
-    #         )
-    #     except Exception as e:
-    #         log.error(f"Error parsing the completion: {e}")
-    #         return GeneratorOutput(data=None, error=str(e), raw_response=completion)
-
-    # OLD CHAT COMPLETIONS API FUNCTION (COMMENTED OUT)
-    # def parse_chat_completion(
-    #     self,
-    #     completion: Union[
-    #         ChatCompletion, GeneratorType[ChatCompletionChunk, None, None], Response
-    #     ],
-    # ) -> "GeneratorOutput":
-    #     """Function handles a lot of logic is used for parsing both stream responses and nonstream responses.
-    #     # Determine parser based on completion type and streaming mode
-    #     parser = (
-    #         self.chat_completion_parser
-    #         if isinstance(completion, ChatCompletion)
-    #         else self.response_parser
-    #     )
-    #     log.debug(f"completion/response: {completion}, parser: {parser}")
-    #     try:
-    #         data = parser(completion)
-    #     except Exception as e:
-    #         log.error(f"Error parsing the completion: {e}")
-    #         return GeneratorOutput(data=None, error=str(e), raw_response=completion)
-
-    #     try:
-    #         usage = self.track_completion_usage(completion)
-    #         return GeneratorOutput(
-    #             data=None, error=None, raw_response=data, usage=usage
-    #         )
-    #     except Exception as e:
-    #         log.error(f"Error tracking the completion usage: {e}")
-    #         return GeneratorOutput(data=None, error=str(e), raw_response=data)
-
     # NEW RESPONSE API ONLY FUNCTION
     def parse_chat_completion(
         self,
@@ -369,59 +786,32 @@ class OpenAIClient(ModelClient):
         parser = self.response_parser
         log.info(f"completion/response: {completion}, parser: {parser}")
 
+        # Check if this is a Response with complex output (tools, images, etc.)
+        if isinstance(completion, Response):
+            parsed_content = parse_response_output(completion)
+            usage = self.track_completion_usage(completion)
+
+            data = parsed_content.text
+
+            thinking = None
+            if parsed_content.reasoning:
+                thinking = str(parsed_content.reasoning)
+
+
+            return GeneratorOutput(
+                data=data,  # only text
+                thinking=thinking,
+                images=parsed_content.images,  # List of image data (base64 or URLs)
+                tool_use=None,  # Will be populated when we handle function tool calls
+                error=None,
+                raw_response=data,
+                usage=usage
+            )
+        # Regular response handling (streaming or other)
         data = parser(completion)
         usage = self.track_completion_usage(completion)
         return GeneratorOutput(data=None, error=None, raw_response=data, usage=usage)
 
-    # OLD CHAT COMPLETIONS API FUNCTION (COMMENTED OUT)
-    # # NOTE: this is adapted to parse both completion and response
-    # def track_completion_usage(
-    #     self,
-    #     completion: Union[
-    #         ChatCompletion, GeneratorType[ChatCompletionChunk, None, None], Response, AsyncIterable
-    #     ],
-    # ) -> Union[CompletionUsage, ResponseUsage]:
-    #     # Handle the case where completion is an async generator of response stream events
-    #     try:
-    #         if isinstance(completion, Response):
-    #             # Handle Response object with ResponseUsage structure
-    #             input_tokens_details = InputTokensDetails(
-    #                 cached_tokens=getattr(completion.usage, "cached_tokens", 0)
-    #             )
-
-    #             output_tokens_details = OutputTokensDetails(
-    #                 reasoning_tokens=getattr(completion.usage, "reasoning_tokens", 0)
-    #             )
-
-    #             usage = AdalFlowResponseUsage(
-    #                 input_tokens=completion.usage.input_tokens,
-    #                 input_tokens_details=input_tokens_details,
-    #                 output_tokens=completion.usage.output_tokens,
-    #                 output_tokens_details=output_tokens_details,
-    #                 total_tokens=completion.usage.total_tokens,
-    #             )
-    #         # TODO implement __aiter__ and __iter__ for Response iterator
-    #         elif hasattr(completion, '__aiter__') or hasattr(completion, '__iter__'):
-    #             # Handle async generator or regular generator/iterator of response stream events
-    #             # For generators/iterators, we cannot consume them here as it would exhaust them
-    #             # The usage information will need to be tracked elsewhere when the stream is consumed
-    #             log.warning("Cannot track usage for generator/iterator. Usage tracking should be handled when consuming the stream.")
-    #             return CompletionUsage(
-    #                 completion_tokens=None, prompt_tokens=None, total_tokens=None
-    #             )
-    #         else:
-    #             # Handle ChatCompletion with CompletionUsage structure
-    #             usage = CompletionUsage(
-    #                 completion_tokens=completion.usage.completion_tokens,
-    #                 prompt_tokens=completion.usage.prompt_tokens,
-    #                 total_tokens=completion.usage.total_tokens,
-    #             )
-    #         return usage
-    #     except Exception as e:
-    #         log.error(f"Error tracking the completion usage: {e}")
-    #         return CompletionUsage(
-    #             completion_tokens=None, prompt_tokens=None, total_tokens=None
-    #         )
 
     # NEW RESPONSE API ONLY FUNCTION
     def track_completion_usage(
@@ -533,6 +923,7 @@ class OpenAIClient(ModelClient):
                 messages.append({"role": "system", "content": input})
         return messages
 
+    # adapted for the response api
     def convert_inputs_to_api_kwargs(
         self,
         input: Optional[Any] = None,
@@ -565,49 +956,24 @@ class OpenAIClient(ModelClient):
             if not isinstance(input, Sequence):
                 raise TypeError("input must be a sequence of text")
             final_model_kwargs["input"] = input
-        # elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
-        #     # convert input to messages
-        #     messages: List[Dict[str, str]] = []
-        #     images = final_model_kwargs.pop("images", None)
-        #     detail = final_model_kwargs.pop("detail", "auto")
-        #     messages = self._convert_llm_inputs_to_messages(input, images, detail)
-        #     final_model_kwargs["messages"] = messages
-
-        # replacing to use the model response API and save under input
         elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
-            # For Response API, input should be a string, not messages
-            # If input is already a string, use it directly
-            # if isinstance(input, str):
-            #     final_model_kwargs["input"] = input
-            # else:
-            #     # Convert structured input to string format if needed
-            #     final_model_kwargs["input"] = self._convert_llm_inputs_to_messages(input)
-            final_model_kwargs["input"] = input
-            # double check that this is cast to string
-        elif model_type == ModelType.IMAGE_GENERATION:
-            # For image generation, input is the prompt
-            final_model_kwargs["prompt"] = input
-            # Ensure model is specified
-            if "model" not in final_model_kwargs:
-                raise ValueError("model must be specified for image generation")
-            # Set defaults for DALL-E 3 if not specified
-            final_model_kwargs["size"] = final_model_kwargs.get("size", "1024x1024")
-            final_model_kwargs["quality"] = final_model_kwargs.get(
-                "quality", "standard"
-            )
-            final_model_kwargs["n"] = final_model_kwargs.get("n", 1)
-            final_model_kwargs["response_format"] = final_model_kwargs.get(
-                "response_format", "url"
-            )
+            # Check if images are provided for multimodal input
+            images = final_model_kwargs.pop("images", None)
 
-            # Handle image edits and variations
-            image = final_model_kwargs.get("image")
-            if isinstance(image, str) and os.path.isfile(image):
-                final_model_kwargs["image"] = self._encode_image(image)
+            if images:
+                # Use helper function to format content with images
+                content = format_content_for_response_api(input, images)
 
-            mask = final_model_kwargs.get("mask")
-            if isinstance(mask, str) and os.path.isfile(mask):
-                final_model_kwargs["mask"] = self._encode_image(mask)
+                # For responses.create API, wrap in user message format
+                final_model_kwargs["input"] = [
+                    {
+                        "role": "user",
+                        "content": content
+                    }
+                ]
+            else:
+                # Text-only input
+                final_model_kwargs["input"] = input
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
@@ -676,19 +1042,7 @@ class OpenAIClient(ModelClient):
                 log.debug("non-streaming call")
                 self.response_parser = self.non_streaming_response_parser
                 return self.sync_client.responses.create(**api_kwargs)
-        elif model_type == ModelType.IMAGE_GENERATION:
-            # Determine which image API to call based on the presence of image/mask
-            if "image" in api_kwargs:
-                if "mask" in api_kwargs:
-                    # Image edit
-                    response = self.sync_client.images.edit(**api_kwargs)
-                else:
-                    # Image variation
-                    response = self.sync_client.images.create_variation(**api_kwargs)
-            else:
-                # Image generation
-                response = self.sync_client.images.generate(**api_kwargs)
-            return response.data
+
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 
