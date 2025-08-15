@@ -282,7 +282,7 @@ class Runner(Component):
 
     def _add_assistant_response_to_memory(self, final_output_item: FinalOutputItem):
         # add the assistant response to the conversation memory
-        if self.use_conversation_memory:
+        if self.use_conversation_memory and self.conversation_memory._pending_user_query is not None:
             self.conversation_memory.add_assistant_response(
                 AssistantResponse(
                     response_str=final_output_item.data.answer,
