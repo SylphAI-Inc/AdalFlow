@@ -608,6 +608,39 @@ class Runner(Component):
                                 )
 
                             function_output = function_results.output
+                        real_function_output = None
+                        
+                        # Handle generator outputs in sync call
+                        if inspect.iscoroutine(function_output):
+                            # For sync call, we need to run the coroutine
+                            real_function_output = asyncio.run(function_output)
+                        elif inspect.isasyncgen(function_output):
+                            # Collect all values from async generator
+                            async def collect_async_gen():
+                                collected_items = []
+                                async for item in function_output:
+                                    if isinstance(item, ToolCallActivityRunItem):
+                                        # Skip activity items
+                                        continue
+                                    else:
+                                        collected_items.append(item)
+                                return collected_items
+                            real_function_output = asyncio.run(collect_async_gen())
+                        elif inspect.isgenerator(function_output):
+                            # Collect all values from sync generator
+                            collected_items = []
+                            for item in function_output:
+                                if isinstance(item, ToolCallActivityRunItem):
+                                    # Skip activity items
+                                    continue
+                                else:
+                                    collected_items.append(item)
+                            real_function_output = collected_items
+                        else:
+                            real_function_output = function_output
+                        
+                        # Use the processed output
+                        function_output = real_function_output
                             function_output_observation = function_output
                             if isinstance(function_output, ToolOutput) and hasattr(
                                 function_output, "observation"
@@ -893,6 +926,39 @@ class Runner(Component):
                                 func=function
                             )
                             function_output = function_results.output
+                            # add the process of the generator and async generator
+                            real_function_output = None
+                            
+                            # Handle generator outputs similar to astream implementation
+                            if inspect.iscoroutine(function_output):
+                                real_function_output = await function_output
+                            elif inspect.isasyncgen(function_output):
+                                # Collect all values from async generator
+                                collected_items = []
+                                async for item in function_output:
+                                    if isinstance(item, ToolCallActivityRunItem):
+                                        # Skip activity items in acall
+                                        continue
+                                    else:
+                                        collected_items.append(item)
+                                # Use collected items as output
+                                real_function_output = collected_items
+                            elif inspect.isgenerator(function_output):
+                                # Collect all values from sync generator
+                                collected_items = []
+                                for item in function_output:
+                                    if isinstance(item, ToolCallActivityRunItem):
+                                        # Skip activity items in acall
+                                        continue
+                                    else:
+                                        collected_items.append(item)
+                                # Use collected items as output
+                                real_function_output = collected_items
+                            else:
+                                real_function_output = function_output
+                            
+                            # Use the processed output
+                            function_output = real_function_output
                             function_output_observation = function_output
 
                             if isinstance(function_output, ToolOutput) and hasattr(
@@ -1503,7 +1569,10 @@ class Runner(Component):
                 name="agent.tool_call_start", item=tool_call_item
             )
             streaming_result.put_nowait(tool_call_event)
-
+        
+        # if streaming_result is not None:
+        #     result = await self.agent.tool_manager.execute_func_astream(func=func)
+        # else:
         result = await self.agent.tool_manager.execute_func_async(func=func)
 
         if not isinstance(result, FunctionOutput):
@@ -1566,6 +1635,18 @@ class Runner(Component):
                 real_function_output = await function_output
             elif inspect.isasyncgen(function_output):
                 async for item in function_output:
+                    if isinstance(item, ToolCallActivityRunItem):
+                        # add the tool_call_id to the item
+                        item.id = tool_call_id
+                        tool_call_event = RunItemStreamEvent(
+                            name="agent.tool_call_activity", item=item
+                        )
+                        streaming_result.put_nowait(tool_call_event)
+                    else:
+                        real_function_output = item
+
+            elif inspect.isgenerator(function_output):
+                for item in function_output:
                     if isinstance(item, ToolCallActivityRunItem):
                         # add the tool_call_id to the item
                         item.id = tool_call_id

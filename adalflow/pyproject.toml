@@ -102,6 +102,7 @@ azure-core = "^1.31.0"
 pyvis = "^0.3.2"
 uvicorn = "^0.35.0"
 fastapi = "^0.116.1"
+ipykernel = "^6.30.0"
 
 [tool.poetry.group.extra.dependencies]
 datasets = "^2.21.0"
