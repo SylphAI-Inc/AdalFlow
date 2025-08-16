@@ -501,13 +501,24 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">backoff</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">GeneratorOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">Function</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.utils.lazy_import</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
 
 <span class="n">ollama</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span><span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OLLAMA</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OLLAMA</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ollama</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ollama</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestError</span><span class="p">,</span> <span class="n">ResponseError</span><span class="p">,</span> <span class="n">GenerateResponse</span>
+
+<span class="c1"># Import specific classes from the lazily imported module</span>
+<span class="k">if</span> <span class="n">ollama</span><span class="p">:</span>
+    <span class="n">RequestError</span> <span class="o">=</span> <span class="n">ollama</span><span class="o">.</span><span class="n">RequestError</span>
+    <span class="n">ResponseError</span> <span class="o">=</span> <span class="n">ollama</span><span class="o">.</span><span class="n">ResponseError</span>
+    <span class="n">GenerateResponse</span> <span class="o">=</span> <span class="n">ollama</span><span class="o">.</span><span class="n">GenerateResponse</span>
+    <span class="n">Message</span> <span class="o">=</span> <span class="n">ollama</span><span class="o">.</span><span class="n">Message</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Define placeholder classes when ollama is not available</span>
+    <span class="n">RequestError</span> <span class="o">=</span> <span class="ne">Exception</span>
+    <span class="n">ResponseError</span> <span class="o">=</span> <span class="ne">Exception</span>
+    <span class="n">GenerateResponse</span> <span class="o">=</span> <span class="nb">dict</span>
+    <span class="n">Message</span> <span class="o">=</span> <span class="nb">dict</span>
 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.model_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelClient</span>
@@ -518,14 +529,64 @@
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="extract_ollama_tool_calls">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.extract_ollama_tool_calls">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_ollama_tool_calls</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Function</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract tool calls from Ollama message response and convert to Function objects.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        message: The message dict from Ollama response containing potential tool_calls</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        List of Function objects if tool_calls exist, None otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if not isinstance(message, dict):</span>
+    <span class="c1">#     log.warning(f&quot;Expected dict, got {type(message)}&quot;)</span>
+    <span class="c1">#     return None</span>
+        
+    <span class="n">tool_calls_data</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;tool_calls&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">message</span><span class="o">.</span><span class="n">tool_calls</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tool_calls_data</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No tool calls found in the message&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+        
+    <span class="n">functions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tool_call</span> <span class="ow">in</span> <span class="n">tool_calls_data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tool_call</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">):</span>
+            <span class="n">func_data</span> <span class="o">=</span> <span class="n">tool_call</span><span class="o">.</span><span class="n">function</span>
+            <span class="c1"># Extract function name and arguments</span>
+            <span class="n">func_name</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func_data</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">func_data</span><span class="o">.</span><span class="n">name</span> 
+            <span class="n">func_args</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func_data</span><span class="p">,</span> <span class="s2">&quot;arguments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">func_data</span><span class="o">.</span><span class="n">arguments</span>
+            
+            <span class="c1"># Create Function object with kwargs from arguments</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">func_name</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="n">func_args</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func_args</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="p">)</span>
+            <span class="n">functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">functions</span> <span class="k">if</span> <span class="n">functions</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+
 <div class="viewcode-block" id="parse_generate_response">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_generate_response">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">parse_generate_response</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">GenerateResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GeneratorOutput&quot;</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_generate_response</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="s2">&quot;GenerateResponse&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GeneratorOutput&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the completion to a str. We use the generate with prompt instead of chat with messages.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;response: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">raw_response</span> <span class="o">=</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">raw_response</span><span class="p">)</span>
+        
+        <span class="c1"># Check for tool calls in the completion</span>
+        <span class="n">tool_calls</span> <span class="o">=</span> <span class="n">extract_ollama_tool_calls</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+
+        <span class="n">one_tool_call</span> <span class="o">=</span> <span class="n">tool_calls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tool_calls</span> <span class="k">else</span> <span class="kc">None</span>
+        
+        <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">one_tool_call</span><span class="p">,</span>  <span class="c1"># Return first tool call as data</span>
+            <span class="n">tool_use</span><span class="o">=</span><span class="n">one_tool_call</span><span class="p">,</span>
+            <span class="n">raw_response</span><span class="o">=</span><span class="n">raw_response</span><span class="p">,</span>
+            <span class="n">api_response</span><span class="o">=</span><span class="n">completion</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -541,11 +602,25 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the chat message from the completion.&quot;&quot;&quot;</span>
     <span class="n">thinking</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">raw_response</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tool_calls</span> <span class="o">=</span> <span class="kc">None</span>
+    
     <span class="k">if</span> <span class="s2">&quot;message&quot;</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span> <span class="c1"># get both thinking and content </span>
         <span class="n">message</span> <span class="o">=</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span>
         <span class="n">raw_response</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">thinking</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;thinking&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">raw_response</span><span class="p">,</span> <span class="n">thinking</span><span class="o">=</span><span class="n">thinking</span><span class="p">,</span> <span class="n">api_response</span><span class="o">=</span><span class="n">completion</span><span class="p">)</span>
+        
+        <span class="c1"># Extract tool calls from the message</span>
+        <span class="n">tool_calls</span> <span class="o">=</span> <span class="n">extract_ollama_tool_calls</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="n">one_tool_call</span> <span class="o">=</span> <span class="n">tool_calls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tool_calls</span> <span class="k">else</span> <span class="kc">None</span>
+        
+        <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">one_tool_call</span><span class="p">,</span>  <span class="c1"># Return first tool call as data</span>
+            <span class="n">tool_use</span><span class="o">=</span><span class="n">one_tool_call</span><span class="p">,</span>
+            <span class="n">raw_response</span><span class="o">=</span><span class="n">raw_response</span><span class="p">,</span>
+            <span class="n">thinking</span><span class="o">=</span><span class="n">thinking</span><span class="p">,</span> 
+            <span class="n">api_response</span><span class="o">=</span><span class="n">completion</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing the chat message: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span>

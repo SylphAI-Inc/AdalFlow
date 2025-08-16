@@ -696,10 +696,22 @@
         <span class="p">)</span>  <span class="c1"># used by dynamic computation graph and backpropagation</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_estimated_token_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">use_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_cache</span>
+
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">estimated_token_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property to access the estimated token count from the last prompt.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The estimated token count from the last processed prompt.</span>
+<span class="sd">                 Returns 0 if no prompt has been processed yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estimated_token_count</span>
 
 <div class="viewcode-block" id="Generator.update_default_backward_pass_setup">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.update_default_backward_pass_setup">[docs]</a>
@@ -975,9 +987,10 @@
         <span class="n">composed_model_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_model_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">model_kwargs</span><span class="p">)</span>
 
         <span class="n">max_tokens</span> <span class="o">=</span> <span class="n">composed_model_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_tokens&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">prompt_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">count_tokens</span><span class="p">(</span><span class="n">prompt_str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_estimated_token_count</span> <span class="o">=</span> <span class="n">prompt_tokens</span>
         <span class="n">use_prompt_str</span> <span class="o">=</span> <span class="n">prompt_str</span>
         <span class="k">if</span> <span class="n">max_tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">prompt_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">count_tokens</span><span class="p">(</span><span class="n">prompt_str</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">prompt_tokens</span> <span class="o">&gt;</span> <span class="n">max_tokens</span><span class="p">:</span>
                 <span class="n">use_prompt_str</span> <span class="o">=</span> <span class="n">prompt_str</span><span class="p">[:</span><span class="n">max_tokens</span><span class="p">]</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>

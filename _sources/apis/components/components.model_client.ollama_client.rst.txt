@@ -13,6 +13,7 @@ ollama_client
 
    .. autosummary::
 
+      extract_ollama_tool_calls
       parse_chat_messsage
       parse_generate_response
 

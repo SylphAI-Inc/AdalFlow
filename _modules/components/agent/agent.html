@@ -484,7 +484,9 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for components.agent.agent</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="sd">&quot;&quot;&quot;Agent component for building conversational AI agents with tool integration.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
@@ -691,8 +693,8 @@
         <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;planner use cache: </span><span class="si">{</span><span class="n">planner</span><span class="o">.</span><span class="n">use_cache</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;planner cache path: </span><span class="si">{</span><span class="n">planner</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;planner use cache: </span><span class="si">{</span><span class="n">planner</span><span class="o">.</span><span class="n">use_cache</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;planner cache path: </span><span class="si">{</span><span class="n">planner</span><span class="o">.</span><span class="n">cache_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">planner</span>
 
@@ -786,6 +788,22 @@
         <span class="c1"># name the agent</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
+        <span class="c1"># save the following parameters to recreate the planner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">model_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">=</span> <span class="n">model_type</span>
+
+        <span class="c1"># set the template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span> <span class="o">=</span> <span class="n">role_desc</span> <span class="ow">or</span> <span class="n">DEFAULT_ROLE_DESC</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span> <span class="o">=</span> <span class="n">cache_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
+
+        <span class="c1"># set the default max steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span> <span class="ow">or</span> <span class="n">DEFAULT_MAX_STEPS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_thinking_model</span> <span class="o">=</span> <span class="n">is_thinking_model</span>
+
         <span class="c1"># planner or model_client exists</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span> <span class="o">=</span> <span class="n">tool_manager</span> <span class="ow">or</span> <span class="n">create_default_tool_manager</span><span class="p">(</span>
@@ -811,8 +829,6 @@
             <span class="n">answer_data_type</span><span class="o">=</span><span class="n">answer_data_type</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span> <span class="o">=</span> <span class="n">answer_data_type</span>  <span class="c1"># save the final answer data type for the runner to communicate</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_thinking_model</span> <span class="o">=</span> <span class="n">is_thinking_model</span>
 
         <span class="c1"># check</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">:</span>
@@ -821,6 +837,30 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Planner must be provided to the agent. &quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Max steps must be greater than 0.&quot;</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="Agent.flip_thinking_model">
+<a class="viewcode-back" href="../../../apis/components/components.agent.agent.html#components.agent.Agent.flip_thinking_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flip_thinking_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Toggle the thinking model state.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_thinking_model</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_thinking_model</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Thinking model is now </span><span class="si">{</span><span class="s1">&#39;enabled&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">is_thinking_model</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;disabled&#39;</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># we have to recrate the planner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">planner</span> <span class="o">=</span> <span class="n">create_default_planner</span><span class="p">(</span>
+            <span class="n">tool_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_manager</span><span class="p">,</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span>
+            <span class="n">role_desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span><span class="p">,</span>
+            <span class="n">cache_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="p">,</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span><span class="p">,</span>
+            <span class="n">max_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span>
+            <span class="n">is_thinking_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_thinking_model</span><span class="p">,</span>
+            <span class="n">answer_data_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">answer_data_type</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
 
 <div class="viewcode-block" id="Agent.is_training">
 <a class="viewcode-back" href="../../../apis/components/components.agent.agent.html#components.agent.Agent.is_training">[docs]</a>

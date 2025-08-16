@@ -493,10 +493,13 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_chat_messsage" title="components.model_client.ollama_client.parse_chat_messsage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_chat_messsage</span></code></a>(completion)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.ollama_client.extract_ollama_tool_calls" title="components.model_client.ollama_client.extract_ollama_tool_calls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_ollama_tool_calls</span></code></a>(message)</p></td>
+<td><p>Extract tool calls from Ollama message response and convert to Function objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_chat_messsage" title="components.model_client.ollama_client.parse_chat_messsage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_chat_messsage</span></code></a>(completion)</p></td>
 <td><p>Parse the chat message from the completion.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_generate_response" title="components.model_client.ollama_client.parse_generate_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_generate_response</span></code></a>(completion)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_generate_response" title="components.model_client.ollama_client.parse_generate_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_generate_response</span></code></a>(completion)</p></td>
 <td><p>Parse the completion to a str.</p></td>
 </tr>
 </tbody>
@@ -512,6 +515,20 @@
 </tbody>
 </table>
 </div>
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.ollama_client.extract_ollama_tool_calls">
+<span class="sig-name descname"><span class="pre">extract_ollama_tool_calls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Function</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#extract_ollama_tool_calls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.extract_ollama_tool_calls" title="Link to this definition">¶</a></dt>
+<dd><p>Extract tool calls from Ollama message response and convert to Function objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – The message dict from Ollama response containing potential tool_calls</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of Function objects if tool_calls exist, None otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="components.model_client.ollama_client.parse_generate_response">
 <span class="sig-name descname"><span class="pre">parse_generate_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenerateResponse</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#parse_generate_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.parse_generate_response" title="Link to this definition">¶</a></dt>
@@ -799,6 +816,7 @@ using <a class="reference internal" href="#components.model_client.ollama_client
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">ollama_client</a><ul>
+<li><a class="reference internal" href="#components.model_client.ollama_client.extract_ollama_tool_calls"><code class="docutils literal notranslate"><span class="pre">extract_ollama_tool_calls()</span></code></a></li>
 <li><a class="reference internal" href="#components.model_client.ollama_client.parse_generate_response"><code class="docutils literal notranslate"><span class="pre">parse_generate_response()</span></code></a></li>
 <li><a class="reference internal" href="#components.model_client.ollama_client.parse_chat_messsage"><code class="docutils literal notranslate"><span class="pre">parse_chat_messsage()</span></code></a></li>
 <li><a class="reference internal" href="#components.model_client.ollama_client.OllamaClient"><code class="docutils literal notranslate"><span class="pre">OllamaClient</span></code></a><ul>

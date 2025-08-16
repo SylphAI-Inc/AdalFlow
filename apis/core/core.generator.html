@@ -566,6 +566,24 @@ And we encourage you to only use it to parse the response to data format you wil
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">use_cache</span></span><a class="headerlink" href="#core.generator.Generator.use_cache" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="core.generator.Generator.estimated_token_count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">estimated_token_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#core.generator.Generator.estimated_token_count" title="Link to this definition">¶</a></dt>
+<dd><p>Property to access the estimated token count from the last prompt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>The estimated token count from the last processed prompt.</dt><dd><p>Returns 0 if no prompt has been processed yet.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="core.generator.Generator.update_default_backward_pass_setup">
 <span class="sig-name descname"><span class="pre">update_default_backward_pass_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BackwardPassSetup</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/generator.html#Generator.update_default_backward_pass_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.generator.Generator.update_default_backward_pass_setup" title="Link to this definition">¶</a></dt>
@@ -815,6 +833,7 @@ Or else, task.parameters will list teacher parameters.</p>
 <li><a class="reference internal" href="#core.generator.Generator.model_client"><code class="docutils literal notranslate"><span class="pre">Generator.model_client</span></code></a></li>
 <li><a class="reference internal" href="#core.generator.Generator.model_type"><code class="docutils literal notranslate"><span class="pre">Generator.model_type</span></code></a></li>
 <li><a class="reference internal" href="#core.generator.Generator.use_cache"><code class="docutils literal notranslate"><span class="pre">Generator.use_cache</span></code></a></li>
+<li><a class="reference internal" href="#core.generator.Generator.estimated_token_count"><code class="docutils literal notranslate"><span class="pre">Generator.estimated_token_count</span></code></a></li>
 <li><a class="reference internal" href="#core.generator.Generator.update_default_backward_pass_setup"><code class="docutils literal notranslate"><span class="pre">Generator.update_default_backward_pass_setup()</span></code></a></li>
 <li><a class="reference internal" href="#core.generator.Generator.set_cache_path"><code class="docutils literal notranslate"><span class="pre">Generator.set_cache_path()</span></code></a></li>
 <li><a class="reference internal" href="#core.generator.Generator.get_cache_path"><code class="docutils literal notranslate"><span class="pre">Generator.get_cache_path()</span></code></a></li>

@@ -2308,6 +2308,12 @@ and allows users to consume streaming events.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="core.types.RunnerStreamingResult.set_exception">
+<span class="sig-name descname"><span class="pre">set_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/types.html#RunnerStreamingResult.set_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.RunnerStreamingResult.set_exception" title="Link to this definition">¶</a></dt>
+<dd><p>Set an exception, ensuring it’s a proper exception object.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="core.types.RunnerStreamingResult.put_nowait">
 <span class="sig-name descname"><span class="pre">put_nowait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.RawResponsesStreamEvent" title="core.types.RawResponsesStreamEvent"><span class="pre">RawResponsesStreamEvent</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#core.types.RunItemStreamEvent" title="core.types.RunItemStreamEvent"><span class="pre">RunItemStreamEvent</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#RunnerStreamingResult.put_nowait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.RunnerStreamingResult.put_nowait" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2736,6 +2742,7 @@ for event in result.stream_to_json_sync(“live_events.json”):</p>
 <li><a class="reference internal" href="#core.types.RunnerStreamingResult.answer"><code class="docutils literal notranslate"><span class="pre">RunnerStreamingResult.answer</span></code></a></li>
 <li><a class="reference internal" href="#core.types.RunnerStreamingResult.step_history"><code class="docutils literal notranslate"><span class="pre">RunnerStreamingResult.step_history</span></code></a></li>
 <li><a class="reference internal" href="#core.types.RunnerStreamingResult.is_complete"><code class="docutils literal notranslate"><span class="pre">RunnerStreamingResult.is_complete</span></code></a></li>
+<li><a class="reference internal" href="#core.types.RunnerStreamingResult.set_exception"><code class="docutils literal notranslate"><span class="pre">RunnerStreamingResult.set_exception()</span></code></a></li>
 <li><a class="reference internal" href="#core.types.RunnerStreamingResult.put_nowait"><code class="docutils literal notranslate"><span class="pre">RunnerStreamingResult.put_nowait()</span></code></a></li>
 <li><a class="reference internal" href="#core.types.RunnerStreamingResult.stream_events"><code class="docutils literal notranslate"><span class="pre">RunnerStreamingResult.stream_events()</span></code></a></li>
 <li><a class="reference internal" href="#core.types.RunnerStreamingResult.stream_to_json"><code class="docutils literal notranslate"><span class="pre">RunnerStreamingResult.stream_to_json()</span></code></a></li>
