@@ -199,6 +199,10 @@ class FastAPIPermissionHandler(PermissionManager):
             log.info(
                 f"Approval endpoint called with URL request_id={request_id}, body={response}"
             )
+            log.info(f"Current queue state - Pending requests: {list(self.approval_queue.pending_requests.keys())}")
+            log.info(f"Current queue state - Response futures: {list(self.approval_queue.responses.keys())}")
+            log.info(f"Current queue state - Metadata: {list(self.approval_queue.request_metadata.keys())}")
+            
             if request_id not in self.approval_queue.request_metadata:
                 log.error(
                     f"Request {request_id} not found in metadata. Available: {list(self.approval_queue.request_metadata.keys())}"
