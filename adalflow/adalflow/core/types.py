@@ -82,14 +82,14 @@ class ModelClientType:
 
         model_client = ModelClientType.OPENAI
     """
-    
+
     _clients_cache = {}
-    
+
     def __class_getattr__(cls, name):
         """Dynamically import and return model clients on attribute access."""
         if name in cls._clients_cache:
             return cls._clients_cache[name]
-            
+
         client_mapping = {
             'COHERE': ('adalflow.components.model_client', 'CohereAPIClient'),
             'TRANSFORMERS': ('adalflow.components.model_client', 'TransformersClient'),
@@ -99,7 +99,7 @@ class ModelClientType:
             'GOOGLE_GENAI': ('adalflow.components.model_client', 'GoogleGenAIClient'),
             'OLLAMA': ('adalflow.components.model_client', 'OllamaClient'),
         }
-        
+
         if name in client_mapping:
             module_name, class_name = client_mapping[name]
             import importlib
@@ -107,7 +107,7 @@ class ModelClientType:
             client_class = getattr(module, class_name)
             cls._clients_cache[name] = client_class
             return client_class
-        
+
         raise AttributeError(f"'{cls.__name__}' object has no attribute '{name}'")
 
 
@@ -558,7 +558,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         # if the stream is already consumed and there is final data then just return the final data
         if count == 0 and self.data:
             yield self.data
-    
+
     def save_images(
         self,
         directory: str = ".",
@@ -568,46 +568,46 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         return_paths: bool = True
     ) -> Optional[List[str]]:
         """Save generated images to disk with automatic format conversion.
-        
+
         Args:
             directory: Directory to save images to (default: current directory)
             prefix: Filename prefix for saved images (default: "generated")
             format: Image format to save as (png, jpg, jpeg, webp, gif, bmp)
             decode_base64: Whether to decode base64 encoded images (default: True)
             return_paths: Whether to return the saved file paths (default: True)
-            
+
         Returns:
             If return_paths is True:
                 - List[str]: Paths to saved images (always returns a list, even for single image)
                 - None: If no images to save
             Otherwise returns None
-            
+
         Examples:
             >>> # Save single image as PNG (returns list with one element)
             >>> response.save_images()
             ['generated_0.png']
-            
+
             >>> # Save multiple images as JPEG with custom prefix
             >>> response.save_images(prefix="cat", format="jpg")
             ['cat_0.jpg', 'cat_1.jpg']
-            
+
             >>> # Save to specific directory
             >>> response.save_images(directory="/tmp/images", format="webp")
             ['/tmp/images/generated_0.webp']
         """
         if not self.images:
             return None
-            
+
         import os
         import base64
         from pathlib import Path
-        
+
         # Create directory if it doesn't exist
         Path(directory).mkdir(parents=True, exist_ok=True)
-        
+
         saved_paths = []
         images_to_save = self.images if isinstance(self.images, list) else [self.images]
-        
+
         try:
             # Try to import PIL for format conversion
             from PIL import Image
@@ -620,7 +620,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
                     f"PIL/Pillow is required for '{format}' format. "
                     "Install with: pip install Pillow"
                 )
-        
+
         for i, img_data in enumerate(images_to_save):
             # Determine if this is base64 or a URL
             is_base64 = False
@@ -634,15 +634,15 @@ class GeneratorOutput(DataClass, Generic[T_co]):
                     # Assume it's raw base64 if not a URL
                     is_base64 = True
                     base64_data = img_data
-            
+
             # Construct filename
             filename = f"{prefix}_{i}.{format}"
             filepath = os.path.join(directory, filename)
-            
+
             if is_base64 and decode_base64:
                 # Decode base64 and save
                 img_bytes = base64.b64decode(base64_data)
-                
+
                 if has_pil and format.lower() not in ["png"]:
                     # Use PIL to convert format
                     img = Image.open(io.BytesIO(img_bytes))
@@ -663,9 +663,9 @@ class GeneratorOutput(DataClass, Generic[T_co]):
                 with open(filepath + ".url", "w") as f:
                     f.write(img_data)
                 filepath = filepath + ".url"
-            
+
             saved_paths.append(filepath)
-        
+
         if return_paths:
             return saved_paths  # Always return a list
         return None
@@ -1573,6 +1573,16 @@ class RunnerStreamingResult:
     def is_complete(self) -> bool:
         """Check if the workflow execution is complete."""
         return self._is_complete
+    
+    def set_exception(self, exc: Any) -> None:
+        """Set an exception, ensuring it's a proper exception object."""
+        if exc is None:
+            self._exception = None
+        elif isinstance(exc, BaseException):
+            self._exception = exc
+        else:
+            # Convert non-exception to a proper exception
+            self._exception = RuntimeError(f"Non-exception error: {str(exc)}")
 
     def put_nowait(self, item: StreamEvent):
         # only RawResponsesStreamEvent and RunItemStreamEvent can be put into the queue
@@ -1604,7 +1614,12 @@ class RunnerStreamingResult:
         """
         while True:
             if self._exception:
-                raise self._exception
+                # Ensure we're raising a proper exception
+                if isinstance(self._exception, BaseException):
+                    raise self._exception
+                else:
+                    # Convert non-exception to a proper exception
+                    raise RuntimeError(str(self._exception))
 
             try:
                 # Wait for an event from the queue
@@ -1627,7 +1642,13 @@ class RunnerStreamingResult:
                         break
 
             except asyncio.CancelledError:
-                break
+                # Clean up and re-raise to allow proper cancellation
+                self._is_complete = True
+                raise
+            except Exception as e:
+                # Store unexpected exceptions
+                self.set_exception(e)
+                raise
 
     async def stream_to_json(
         self, file_name: str = "agent_events_stream.json"
@@ -1660,43 +1681,59 @@ class RunnerStreamingResult:
 
         first_event = True
 
-        async for event in self.stream_events():
-            event_count += 1
+        try:
+            async for event in self.stream_events():
+                event_count += 1
 
-            # Prepare event data
-            if hasattr(event, "to_dict"):
-                event_data = event.to_dict()
-            else:
-                event_data = str(event)
+                # Prepare event data
+                try:
+                    if hasattr(event, "to_dict"):
+                        event_data = event.to_dict()
+                    else:
+                        event_data = str(event)
+                except Exception as e:
+                    # If serialization fails, use a fallback representation
+                    event_data = f"<Error serializing event: {str(e)}>"
 
-            event_dict = {
-                "event_number": event_count,
-                "timestamp": datetime.now().isoformat(),
-                "event_type": type(event).__name__,
-                "event_data": event_data,
-            }
+                event_dict = {
+                    "event_number": event_count,
+                    "timestamp": datetime.now().isoformat(),
+                    "event_type": type(event).__name__,
+                    "event_data": event_data,
+                }
 
-            # Append to file in streaming fashion
-            with open(file_name, "r+") as f:
-                # Seek to end of file
-                f.seek(0, 2)
+                # Append to file in streaming fashion
+                try:
+                    with open(file_name, "r+") as f:
+                        # Seek to end of file
+                        f.seek(0, 2)
 
-                if first_event:
-                    # For first event, we're right after "[\n"
-                    first_event = False
-                else:
-                    # For subsequent events, go back to overwrite the previous "\n]"
-                    f.seek(f.tell() - 2)
-                    f.write(",\n")
+                        if first_event:
+                            # For first event, we're right after "[\n"
+                            first_event = False
+                        else:
+                            # For subsequent events, go back to overwrite the previous "\n]"
+                            f.seek(f.tell() - 2)
+                            f.write(",\n")
 
-                # Write the event
-                json.dump(event_dict, f, indent=2, cls=EventEncoder)
+                        # Write the event
+                        json.dump(event_dict, f, indent=2, cls=EventEncoder)
 
-                # Write closing bracket
-                f.write("\n]")
+                        # Write closing bracket
+                        f.write("\n]")
+                except (IOError, OSError) as e:
+                    # Log file write error but continue streaming
+                    logger.warning(f"Failed to write event to {file_name}: {e}")
 
-            # Yield the event so caller can process it
-            yield event
+                # Yield the event so caller can process it
+                yield event
+        except asyncio.CancelledError:
+            # Properly handle cancellation
+            raise
+        except Exception as e:
+            # Log unexpected errors
+            logger.error(f"Error in stream_to_json: {e}")
+            raise
 
         print(f"\nStreamed {event_count} events to {file_name}")
 

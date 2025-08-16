@@ -121,53 +121,116 @@ pip install adalflow
 ```python
 from adalflow import Agent, Runner
 from adalflow.components.model_client.openai_client import OpenAIClient
-
-# Create a simple agent
-agent = Agent(
-    name="Assistant",
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o", "temperature": 0.3}
+from adalflow.core.types import (
+    ToolCallActivityRunItem, 
+    RunItemStreamEvent,
+    ToolCallRunItem,
+    ToolOutputRunItem,
+    FinalOutputItem
 )
+import asyncio
 
-runner = Runner(agent=agent)
-
-result = runner.call(prompt_kwargs={"input_str": "Write a haiku about AI and coding"})
-print(result.answer)
-
-# Output:
-# Code flows like water,
-# AI minds think in patterns,
-# Logic blooms in bytes.
-```
-
-_Set your `OPENAI_API_KEY` environment variable to run this example._
-
-### Agent with Tools
-
-```python
+# Define tools
 def calculator(expression: str) -> str:
     """Evaluate a mathematical expression."""
     try:
         result = eval(expression)
-        return f"Result: {result}"
+        return f"The result of {expression} is {result}"
     except Exception as e:
         return f"Error: {e}"
 
+async def web_search(query: str="what is the weather in SF today?") -> str:
+    """Web search on query."""
+    await asyncio.sleep(0.5)
+    return "San Francisco will be mostly cloudy today with some afternoon sun, reaching about 67 °F (20 °C)."
+
+def counter(limit: int):
+    """A counter that counts up to a limit."""
+    final_output = []
+    for i in range(1, limit + 1):
+        stream_item = f"Count: {i}/{limit}"
+        final_output.append(stream_item)
+        yield ToolCallActivityRunItem(data=stream_item)
+    yield final_output
+
 # Create agent with tools
 agent = Agent(
-    name="CalculatorAgent",
-    tools=[calculator],
+    name="MyAgent",
+    tools=[calculator, web_search, counter],
     model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-4o", "temperature": 0.3}
+    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
+    max_steps=5
 )
 
 runner = Runner(agent=agent)
-
-result = runner.call(prompt_kwargs={"input_str": "Calculate 15 * 7 + 23"})
-print(result.answer)
-
-# Output: The result of 15 * 7 + 23 is 128.
 ```
+
+### 1. Synchronous Call Mode
+
+```python
+# Sync call - returns RunnerResult with complete execution history
+result = runner.call(
+    prompt_kwargs={"input_str": "Calculate 15 * 7 + 23 and count to 5"}
+)
+
+print(result.answer)
+# Output: The result of 15 * 7 + 23 is 128. The counter counted up to 5: 1, 2, 3, 4, 5.
+
+# Access step history
+for step in result.step_history:
+    print(f"Step {step.step}: {step.function.name} -> {step.observation}")
+# Output:
+# Step 0: calculator -> The result of 15 * 7 + 23 is 128
+# Step 1: counter -> ['Count: 1/5', 'Count: 2/5', 'Count: 3/5', 'Count: 4/5', 'Count: 5/5']
+```
+
+### 2. Asynchronous Call Mode
+
+```python
+# Async call - similar output structure to sync call
+result = await runner.acall(
+    prompt_kwargs={"input_str": "What's the weather in SF and calculate 42 * 3"}
+)
+
+print(result.answer)
+# Output: San Francisco will be mostly cloudy today with some afternoon sun, reaching about 67 °F (20 °C). 
+#         The result of 42 * 3 is 126.
+```
+
+### 3. Async Streaming Mode
+
+```python
+# Async streaming - real-time event processing
+streaming_result = runner.astream(
+    prompt_kwargs={"input_str": "Calculate 100 + 50 and count to 3"},
+)
+
+# Process streaming events in real-time
+async for event in streaming_result.stream_events():
+    if isinstance(event, RunItemStreamEvent):
+        if isinstance(event.item, ToolCallRunItem):
+            print(f"🔧 Calling: {event.item.data.name}")
+        elif isinstance(event.item, ToolCallActivityRunItem):
+            print(f"📝 Activity: {event.item.data}")
+        elif isinstance(event.item, ToolOutputRunItem):
+            print(f"✅ Output: {event.item.data.output}")
+        elif isinstance(event.item, FinalOutputItem):
+            print(f"🎯 Final: {event.item.data.answer}")
+
+# Output:
+# 🔧 Calling: calculator
+# ✅ Output: The result of 100 + 50 is 150
+# 🔧 Calling: counter
+# 📝 Activity: Count: 1/3
+# 📝 Activity: Count: 2/3
+# 📝 Activity: Count: 3/3
+# ✅ Output: ['Count: 1/3', 'Count: 2/3', 'Count: 3/3']
+# 🎯 Final: The result of 100 + 50 is 150. Counted to 3 successfully.
+```
+
+_Set your `OPENAI_API_KEY` environment variable to run these examples._
+
+**Try the full Agent tutorial in Colab:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/agents/agent_tutorial.ipynb)
 
 <!-- Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
 [Package changelog](https://github.com/SylphAI-Inc/AdalFlow/blob/main/adalflow/CHANGELOG.md). -->

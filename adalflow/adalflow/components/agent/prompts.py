@@ -1,3 +1,5 @@
+"""System prompts and task descriptions for agent components."""
+
 __all__ = [
     "default_role_desc",
     "adalflow_agent_task_desc",

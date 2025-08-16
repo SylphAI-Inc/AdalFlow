@@ -1,4 +1,32 @@
 
+## [1.1.2] - 2025-08-16
+
+### Improved
+
+#### Runner (`adalflow/components/agent/runner.py`)
+- Restructured `call()`, `acall()`, `astream()` for better generator processing performance
+- Fixed error handling for unrecoverable errors with proper recovery logic
+- Improved async generator consumption without blocking event loops
+- Removed debug print statements
+
+#### FunctionTool (`adalflow/core/func_tool.py`)
+- Added `FunctionType` enum (SYNC, ASYNC, SYNC_GENERATOR, ASYNC_GENERATOR)
+- Added `detect_function_type()` class method for accurate type detection
+- Fixed generator functions to return generator objects instead of consuming them
+- Cleaned up commented legacy code
+
+#### ToolManager (`adalflow/core/tool_manager.py`)
+- Updated `execute_func()` and `execute_func_async()` for proper generator handling
+- Enhanced error propagation in async contexts
+
+### Fixed
+- Fixed memory handling to check `_pending_user_query` before adding assistant response
+- Fixed async generator handling in sync contexts to avoid event loop blocking
+
+### Tests
+- Added comprehensive runner tests (`adalflow/tests/test_runner.py`)
+- Added generator function tests (`adalflow/tests/test_tool.py`)
+
 ## [1.1.1] - 2025-08-11
 
 ### Added

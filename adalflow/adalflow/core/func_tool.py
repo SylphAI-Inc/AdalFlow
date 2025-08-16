@@ -305,31 +305,16 @@ class FunctionTool(Component):
                 return asyncio.run(fn(*args, **kwargs))
         elif self.function_type == FunctionType.SYNC_GENERATOR:
             return fn(*args, **kwargs)
+            # output = []
+            # sync_gen = fn(*args, **kwargs)
+            # for event in sync_gen:
+            #     output.append(event)
+            # return output
+
         elif self.function_type == FunctionType.ASYNC_GENERATOR:
-            if is_running_in_event_loop():
-                loop = asyncio.get_running_loop()
-
-                async def collect_generator():
-                    result = []
-                    async for item in fn(*args, **kwargs):
-                        result.append(item)
-                        return result
-
-                task = loop.create_task(collect_generator())
-                output = asyncio.run_coroutine_threadsafe(task, loop).result()
-                return output
-
-            else:
-
-                # No event loop running, safe to create new one
-                async def collect_generator():
-                    result = []
-                    async for item in fn(*args, **kwargs):
-                        result.append(item)
-                    return result
-
-                output = asyncio.run(collect_generator())
-                return output
+            # For async generators in sync context, just return the generator object
+            # The runner will handle the collection of events
+            return fn(*args, **kwargs)
         else:
             raise ValueError(f"Unsupported function type: {self.function_type}")
 
@@ -396,7 +381,7 @@ class FunctionTool(Component):
             error=error,
         )
 
-        printc(f"call output: {function_output}", color="yellow")
+        log.debug(f"call output: {function_output}")
         return function_output
 
     def bicall(self, *args: Any, **kwargs: Any) -> Union[FunctionOutput, Parameter]:
@@ -413,8 +398,6 @@ class FunctionTool(Component):
             log.debug(f"bicall args: {args}, kwargs: {kwargs}, fn: {self.fn}")
             # TODO: might to support more types of functions
             output = self.fn(*args, **kwargs)
-            log.debug(f"output 1: {output}")
-            printc(f"output 1: {output}", color="yellow")
         except Exception as e:
             log.error(f"Error at calling {self.fn}: {e}")
             error = f"Error at calling {self.fn}: {e}"
@@ -441,7 +424,7 @@ class FunctionTool(Component):
             output=output,
             error=error,
         )
-        printc(f"function output: {output}", color="yellow")
+        log.debug(f"function output: {output}")
         return output
 
     async def acall(self, *args, **kwargs) -> Union[FunctionOutput, Parameter]:
@@ -457,13 +440,13 @@ class FunctionTool(Component):
         Note: For generators, users need to iterate over the generator themselves.
         """
         output, error = None, None
-        print("output arguments",args, kwargs)
+        log.debug(f"output arguments: {args}, {kwargs}")
 
         try:
             if self.function_type == FunctionType.SYNC:
                 # Sync function - call directly
                 output = self.fn(*args, **kwargs)
-                print("output in synchronous function call",output)
+                log.debug(f"output in synchronous function call: {output}")
 
             elif self.function_type == FunctionType.ASYNC:
                 # Async function - await the coroutine
@@ -508,6 +491,76 @@ class FunctionTool(Component):
         )
 
         return function_output
+
+    # async def acall(self, *args, **kwargs) -> Union[FunctionOutput, Parameter]:
+    #     """
+    #     Async call the function with automatic event collection for generators.
+
+    #     For different function types:
+    #     - SYNC: Returns FunctionOutput with the result
+    #     - ASYNC: Awaits the coroutine and returns FunctionOutput with the result
+    #     - SYNC_GENERATOR: Collects all values from the generator into a list
+    #     - ASYNC_GENERATOR: Collects all values from the async generator into a list
+
+    #     This method automatically collects all yielded values from generators into a list,
+    #     similar to how the sync call method handles async generators.
+    #     """
+    #     output, error = None, None
+
+    #     try:
+    #         if self.function_type == FunctionType.SYNC:
+    #             # Sync function - call directly
+    #             output = self.fn(*args, **kwargs)
+
+    #         elif self.function_type == FunctionType.ASYNC:
+    #             # Async function - await the coroutine
+    #             output = await self.fn(*args, **kwargs)
+
+    #         elif self.function_type == FunctionType.SYNC_GENERATOR:
+    #             # Sync generator - collect all values into a list
+    #             generator = self.fn(*args, **kwargs)
+    #             output = []
+    #             for item in generator:
+    #                 output.append(item)
+
+    #         elif self.function_type == FunctionType.ASYNC_GENERATOR:
+    #             # Async generator - collect all values into a list
+    #             async_generator = self.fn(*args, **kwargs)
+    #             output = []
+    #             async for item in async_generator:
+    #                 output.append(item)
+
+    #         else:
+    #             raise ValueError(f"Unsupported function type: {self.function_type}")
+
+    #     except Exception as e:
+    #         log.error(f"Error at calling {self.fn}: {e}")
+    #         error = f"Error at calling {self.fn}: {e}"
+
+    #     # Handle Parameter output (training mode)
+    #     if isinstance(output, Parameter):
+    #         if not self.training:
+    #             raise ValueError(
+    #                 f"FunctionTool {self.definition.func_name} is in eval mode, but the output is Parameter"
+    #             )
+    #         output.data = FunctionOutput(
+    #             name=self.definition.func_name,
+    #             input=Function(
+    #                 name=self.definition.func_name, args=args, kwargs=kwargs
+    #             ),
+    #             output=output.data,
+    #             error=error,
+    #         )
+    #         return output
+
+    #     function_output = FunctionOutput(
+    #         name=self.definition.func_name,
+    #         input=Function(name=self.definition.func_name, args=args, kwargs=kwargs),
+    #         output=output,
+    #         error=error,
+    #     )
+
+    #     return function_output
 
     # def execute(self, *args, **kwargs) -> FunctionOutput:
     #     r"""Execute the function synchronously or asynchronously based on the function type.
