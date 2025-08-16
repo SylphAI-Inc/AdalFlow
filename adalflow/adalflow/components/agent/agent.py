@@ -205,8 +205,8 @@ def create_default_planner(
         use_cache=use_cache,
     )
 
-    printc(f"planner use cache: {planner.use_cache}")
-    printc(f"planner cache path: {planner.cache_path}")
+    log.debug(f"planner use cache: {planner.use_cache}")
+    log.debug(f"planner cache path: {planner.cache_path}")
 
     return planner
 

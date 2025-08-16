@@ -330,7 +330,7 @@ class ToolManager(Component):
         else:
             try:
                 tool: FunctionTool = self.context[func.name]
-                printc(f"tool: {tool}", color="yellow")
+                log.debug(f"tool: {tool}")
 
                 output = None
 
@@ -341,7 +341,7 @@ class ToolManager(Component):
                     output = tool.call(*func.args, **use_func_kwargs)
                 else:
                     output = tool.call(*func.args, **func.kwargs)
-                    printc(f"output: {output}", color="yellow")
+                    log.debug(f"output: {output}")
                 if not isinstance(output, FunctionOutput):
                     raise ValueError(f"Output should be FunctionOutput. Got {output}")
                 return output
@@ -428,7 +428,7 @@ class ToolManager(Component):
     async def execute_func_async(self, func: Function) -> FunctionOutput:
         r"""Execute the function. If the function is sync, use await to execute it."""
         try:
-            printc(f"Executing async function: {func.name}", color="yellow")
+            log.debug(f"Executing async function: {func.name}")
             tool: FunctionTool = self.context[func.name]
             # await the async call
             try:
@@ -443,9 +443,9 @@ class ToolManager(Component):
             # it can only be coroutine or function output
             if inspect.iscoroutine(result):
                 result = await result
-                printc(f"result after await: {result}", color="yellow")
+                log.debug(f"result after await: {result}")
             else:
-                printc("result is not coroutine", color="yellow")
+                log.debug("result is not coroutine")
 
             if not isinstance(result, FunctionOutput):
                 error_msg = f"Output should be FunctionOutput. Got {result}"

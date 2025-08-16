@@ -381,7 +381,7 @@ class FunctionTool(Component):
             error=error,
         )
 
-        printc(f"call output: {function_output}", color="yellow")
+        log.debug(f"call output: {function_output}")
         return function_output
 
     def bicall(self, *args: Any, **kwargs: Any) -> Union[FunctionOutput, Parameter]:
@@ -398,8 +398,6 @@ class FunctionTool(Component):
             log.debug(f"bicall args: {args}, kwargs: {kwargs}, fn: {self.fn}")
             # TODO: might to support more types of functions
             output = self.fn(*args, **kwargs)
-            log.debug(f"output 1: {output}")
-            printc(f"output 1: {output}", color="yellow")
         except Exception as e:
             log.error(f"Error at calling {self.fn}: {e}")
             error = f"Error at calling {self.fn}: {e}"
@@ -426,7 +424,7 @@ class FunctionTool(Component):
             output=output,
             error=error,
         )
-        printc(f"function output: {output}", color="yellow")
+        log.debug(f"function output: {output}")
         return output
 
     async def acall(self, *args, **kwargs) -> Union[FunctionOutput, Parameter]:
@@ -442,13 +440,13 @@ class FunctionTool(Component):
         Note: For generators, users need to iterate over the generator themselves.
         """
         output, error = None, None
-        print("output arguments",args, kwargs)
+        log.debug(f"output arguments: {args}, {kwargs}")
 
         try:
             if self.function_type == FunctionType.SYNC:
                 # Sync function - call directly
                 output = self.fn(*args, **kwargs)
-                print("output in synchronous function call",output)
+                log.debug(f"output in synchronous function call: {output}")
 
             elif self.function_type == FunctionType.ASYNC:
                 # Async function - await the coroutine

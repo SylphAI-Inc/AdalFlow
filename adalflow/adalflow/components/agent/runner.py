@@ -18,6 +18,7 @@ from typing import (
     AsyncIterable,
 )
 from typing_extensions import TypeAlias
+import sys
 
 
 from adalflow.optim.parameter import Parameter
@@ -60,6 +61,37 @@ __all__ = ["Runner"]
 log = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)  # Changed to use Pydantic BaseModel
+
+
+def _is_unrecoverable_error(error: Optional[str]) -> bool:  # pragma: no cover
+    """Check if an error string indicates an unrecoverable error.
+    
+    Unrecoverable errors include:
+    - HTTP 400: Bad request (e.g., context too long)
+    - HTTP 429: Rate limit exceeded  
+    - HTTP 404: Model not found
+    - "Connection error": Network connection issues
+    
+    This is marked as uncoverable for testing purposes.
+    
+    Args:
+        error: Error string to check
+        
+    Returns:
+        True if the error is unrecoverable, False otherwise
+    """
+    if not error:
+        return False
+    
+    # Check for connection error string pattern (case insensitive)
+    if "connection error" in error.lower():
+        return True
+    
+    # Check for HTTP error codes
+    if "400" in error or "429" in error or "404" in error:
+        return True
+    
+    return False
 
 BuiltInType: TypeAlias = Union[str, int, float, bool, list, dict, tuple, set, None]
 PydanticDataClass: TypeAlias = Type[BaseModel]
@@ -517,18 +549,11 @@ class Runner(Component):
 
             while step_count < self.max_steps:
                 try:
+                    log.debug(f"Running step {step_count + 1}/{self.max_steps} with prompt_kwargs: {prompt_kwargs}")
                     # Create step span for each iteration
                     with step_span(
                         step_number=step_count, action_type="planning"
-                    ) as step_span_instance:
-                        printc(
-                            f"agent planner prompt call: {self.agent.planner.get_prompt(**prompt_kwargs)}"
-                        )
-                        printc(
-                            f"prompt kwargs: {prompt_kwargs}",
-                            color="yellow",
-                        )
-                        printc(f"model kwargs: {model_kwargs}", color="yellow")
+                    ) as step_span_instance:       
 
                         # Call the planner first to get the output
                         output = self.agent.planner.call(
@@ -538,26 +563,60 @@ class Runner(Component):
                             id=id,
                         )
 
-                        printc(f"planner output: {output}", color="yellow")
+                        log.debug(f"planner output: {output}")
 
                         # consistency with impl_astream, break if output is not a Generator Output 
                         if not isinstance(output, GeneratorOutput):
                             # Create runner finish event with error and stop the loop
                             current_error = (
-                                f"Expected GeneratorOutput, but got {type(output)}"
+                                f"Expected GeneratorOutput, but got {output}"
                             )
+                            # add this to the step history
+                            step_output = StepOutput(
+                                step=step_count,
+                                action=None,
+                                function=None,
+                                observation=current_error,
+                            )
+                            self.step_history.append(step_output)
                             break
 
                         function = output.data
-                        thinking = output.thinking if hasattr(output, 'thinking') else None
-                        if function is not None:
-                            function.id = str(uuid.uuid4()) # add function id
-                            if thinking is not None and self.is_thinking_model:
-                                function.thought = thinking
-                        printc(f"function: {function}", color="yellow")
-                        if function is None:
-                            error_msg = output.error
 
+                        log.debug(f"function: {function}")
+                        if function is None:
+                            error_msg = f"Run into error: {output.error}, raw response: {output.raw_response}"
+                            # Handle recoverable vs unrecoverable errors
+                            if output.error is not None:
+                                if _is_unrecoverable_error(output.error):
+                                    # Unrecoverable errors: context too long, rate limit, model not found
+                                    current_error = output.error
+                                    step_output = StepOutput(
+                                        step=step_count,
+                                        action=None,
+                                        function=None,
+                                        observation=f"Unrecoverable error: {output.error}",
+                                    )
+                                    self.step_history.append(step_output)
+                                    break  # Stop execution for unrecoverable errors
+                            # Recoverable errors: JSON format errors, parsing errors, etc.
+                            current_error = output.error
+                            step_output = StepOutput(
+                                step=step_count,
+                                action=None,
+                                function=None,
+                                observation=current_error,
+                            )
+                            self.step_history.append(step_output)
+                            step_count += 1
+                            continue  # Continue to next step for recoverable errors
+                        
+                        # start to process correct function
+                        function.id = str(uuid.uuid4()) # add function id
+                        thinking = output.thinking if hasattr(output, 'thinking') else None
+                        if thinking is not None and self.is_thinking_model:
+                            function.thought = thinking
+                            
 
                         if self._check_last_step(function):
                             processed_data = self._process_data(function._answer)
@@ -583,31 +642,21 @@ class Runner(Component):
                             break
 
                         step_output: Optional[StepOutput] = None
-                        if function is None:
-                            # create StepOutput
-                            step_output = StepOutput(
-                                step=step_count,
-                                action=None,
-                                function=None,
-                                observation=error_msg,
-                            )
-
-                        else:
 
                         # Create tool span for function execution
-                            with tool_span(
-                                tool_name=function.name,
-                                function_name=function.name,
-                                function_args=function.args,
-                                function_kwargs=function.kwargs,
-                            ) as tool_span_instance:
-                                function_results = self._tool_execute_sync(function)
-                                # Update span attributes using update_attributes for MLflow compatibility
-                                tool_span_instance.span_data.update_attributes(
-                                    {"output_result": function_results.output}
-                                )
+                        with tool_span(
+                            tool_name=function.name,
+                            function_name=function.name,
+                            function_args=function.args,
+                            function_kwargs=function.kwargs,
+                        ) as tool_span_instance:
+                            function_results = self._tool_execute_sync(function)
+                            # Update span attributes using update_attributes for MLflow compatibility
+                            tool_span_instance.span_data.update_attributes(
+                                {"output_result": function_results.output}
+                            )
 
-                            function_output = function_results.output
+                        function_output = function_results.output
                         real_function_output = None
                         
                         # Handle generator outputs in sync call
@@ -641,29 +690,29 @@ class Runner(Component):
                         
                         # Use the processed output
                         function_output = real_function_output
-                            function_output_observation = function_output
-                            if isinstance(function_output, ToolOutput) and hasattr(
-                                function_output, "observation"
-                            ):
-                                function_output_observation = function_output.observation
+                        function_output_observation = function_output
+                        if isinstance(function_output, ToolOutput) and hasattr(
+                            function_output, "observation"
+                        ):
+                            function_output_observation = function_output.observation
 
-                            # create a step output
-                            step_output = StepOutput(
-                                step=step_count,
-                                action=function,
-                                function=function,
-                                observation=function_output_observation,
-                            )
+                        # create a step output
+                        step_output = StepOutput(
+                            step=step_count,
+                            action=function,
+                            function=function,
+                            observation=function_output_observation,
+                        )
 
-                            # Update step span with results
-                            step_span_instance.span_data.update_attributes(
-                                {
-                                    "tool_name": function.name,
-                                    "tool_output": function_results,
-                                    "is_final": self._check_last_step(function),
-                                    "observation": function_output_observation,
-                                }
-                            )
+                        # Update step span with results
+                        step_span_instance.span_data.update_attributes(
+                            {
+                                "tool_name": function.name,
+                                "tool_output": function_results,
+                                "is_final": self._check_last_step(function),
+                                "observation": function_output_observation,
+                            }
+                        )
 
                         log.debug(
                             "The prompt with the prompt template is {}".format(
@@ -780,13 +829,14 @@ class Runner(Component):
 
         return result
 
+    # support both astream and non-stream
     async def acall(
         self,
         prompt_kwargs: Dict[str, Any],
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
-    ) -> RunnerResult:
+    ) -> Optional[RunnerResult]:
         """Execute the planner asynchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
@@ -801,11 +851,17 @@ class Runner(Component):
             RunnerResponse containing step history and final processed output
         """
 
+
+        workflow_status = "starting"
+        runner_id = id or f"async_runner_{hash(str(prompt_kwargs))}"
+
+        
+
         # Create runner span for tracing
         with runner_span(
-            runner_id=id or f"async_runner_{hash(str(prompt_kwargs))}",
+            runner_id=runner_id,
             max_steps=self.max_steps,
-            workflow_status="starting",
+            workflow_status= workflow_status,
         ) as runner_span_instance:
             # Reset cancellation flag at start of new execution
             self.reset_cancellation()
@@ -842,136 +898,178 @@ class Runner(Component):
             last_output = None
             current_error = None
 
-            while step_count < self.max_steps:
+            while step_count < self.max_steps and not self.is_cancelled():
                 try:
+                    log.debug(f"Running async step {step_count + 1}/{self.max_steps} with prompt_kwargs: {prompt_kwargs}")
 
                     # Create step span for each iteration
                     with step_span(
                         step_number=step_count, action_type="async_planning"
                     ) as step_span_instance:
-                        printc(
-                            f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
-                        )
+
+                        log.debug(f"Running async step {step_count + 1}/{self.max_steps} with prompt_kwargs: {prompt_kwargs}")
+                        
+                        if self.is_cancelled():
+                            raise asyncio.CancelledError("Execution cancelled by user")
 
                         # Call the planner first to get the output
-                        output = await self.agent.planner.acall(
+                        output: GeneratorOutput = await self.agent.planner.acall(
                             prompt_kwargs=prompt_kwargs,
                             model_kwargs=model_kwargs,
                             use_cache=use_cache,
                             id=id,
                         )
+ 
 
-                        printc(f"planner output: {output}", color="yellow")
+                        log.debug(f"planner output: {output}")
 
                         if not isinstance(output, GeneratorOutput):
                             # Create runner finish event with error and stop the loop
                             current_error = (
                                 f"Expected GeneratorOutput, but got {type(output)}"
                             )
-                            break
-
-                        function = output.data
-                        thinking = output.thinking if hasattr(output, 'thinking') else None
-                        if function is not None:
-                            # add a function id
-                            function.id = str(uuid.uuid4())
-                            if thinking is not None and self.is_thinking_model:
-                                function.thought = thinking
-                        printc(f"function: {function}", color="yellow")
-
-                        if self._check_last_step(function):
-                            processed_data = self._process_data(function._answer)
-                            # Wrap final output in RunnerResult
-                            last_output = RunnerResult(
-                                answer=processed_data,
-                                step_history=self.step_history.copy(),
-                                # ctx=self.ctx,
-                            )
-
-                            # Add assistant response to conversation memory
-                            if self.use_conversation_memory:
-                                self.conversation_memory.add_assistant_response(
-                                    AssistantResponse(
-                                        response_str=processed_data,
-                                        metadata={
-                                            "step_history": self.step_history.copy()
-                                        },
-                                    )
-                                )
-
-                            step_count += 1  # Increment step count before breaking
-                            break
-
-                        # Handle None function case
-                        if function is None:
-                            error_msg = output.error
+                            # create a step output for the error
                             step_output = StepOutput(
                                 step=step_count,
                                 action=None,
                                 function=None,
-                                observation=error_msg,
+                                observation=current_error,
                             )
                             self.step_history.append(step_output)
                             step_count += 1
-                            continue
+                            break
 
-                        # Create tool span for function execution
-                        with tool_span(
-                            tool_name=function.name,
-                            function_name=function.name,
-                            function_args=function.args,
-                            function_kwargs=function.kwargs,
-                        ) as tool_span_instance:
-                            function_results = await self._tool_execute_async(
-                                func=function
+                        planner_prompt = output.input
+ 
+
+
+                        function = output.data
+
+                        log.debug(f"function: {function}")
+                        if function is None:
+                            error_msg = f"Run into error: {output.error}, raw response: {output.raw_response}"
+                            # Handle recoverable vs unrecoverable errors
+                            if output.error is not None:
+                                if _is_unrecoverable_error(output.error):
+                                    # Unrecoverable errors: context too long, rate limit, model not found
+                                    current_error = output.error
+                                    step_output = StepOutput(
+                                        step=step_count,
+                                        action=None,
+                                        function=None,
+                                        observation=f"Unrecoverable error: {output.error}",
+                                    )
+                                    self.step_history.append(step_output)
+                                    step_count += 1
+                                    break  # Stop execution for unrecoverable errors
+                            # Recoverable errors: JSON format errors, parsing errors, etc.
+                            current_error = output.error
+                            step_output = StepOutput(
+                                step=step_count,
+                                action=None,
+                                function=None,
+                                observation=current_error,
                             )
-                            function_output = function_results.output
-                            # add the process of the generator and async generator
-                            real_function_output = None
-                            
-                            # Handle generator outputs similar to astream implementation
-                            if inspect.iscoroutine(function_output):
-                                real_function_output = await function_output
-                            elif inspect.isasyncgen(function_output):
-                                # Collect all values from async generator
-                                collected_items = []
-                                async for item in function_output:
-                                    if isinstance(item, ToolCallActivityRunItem):
-                                        # Skip activity items in acall
-                                        continue
-                                    else:
-                                        collected_items.append(item)
-                                # Use collected items as output
-                                real_function_output = collected_items
-                            elif inspect.isgenerator(function_output):
-                                # Collect all values from sync generator
-                                collected_items = []
-                                for item in function_output:
-                                    if isinstance(item, ToolCallActivityRunItem):
-                                        # Skip activity items in acall
-                                        continue
-                                    else:
-                                        collected_items.append(item)
-                                # Use collected items as output
-                                real_function_output = collected_items
-                            else:
-                                real_function_output = function_output
-                            
-                            # Use the processed output
-                            function_output = real_function_output
-                            function_output_observation = function_output
+                            self.step_history.append(step_output)
+                            step_count += 1
 
-                            if isinstance(function_output, ToolOutput) and hasattr(
-                                function_output, "observation"
-                            ):
-                                function_output_observation = (
-                                    function_output.observation
+                            continue  # Continue to next step for recoverable errors`
+
+
+
+                    thinking = output.thinking if hasattr(output, 'thinking') else None
+                    if function is not None:
+                        # add a function id
+                        function.id = str(uuid.uuid4())
+                        if thinking is not None and self.is_thinking_model:
+                            function.thought = thinking
+                            
+                            
+
+                    if self._check_last_step(function):
+                        answer = self._get_final_answer(function)
+                        # Wrap final output in RunnerResult
+                        last_output = RunnerResult(
+                            answer=answer,
+                            step_history=self.step_history.copy(),
+                            error=current_error,
+                            # ctx=self.ctx,
+                        )
+
+                        # Add assistant response to conversation memory
+                        if self.use_conversation_memory:
+                            self.conversation_memory.add_assistant_response(
+                                AssistantResponse(
+                                    response_str=answer,
+                                    metadata={
+                                        "step_history": self.step_history.copy()
+                                    },
                                 )
-
-                            # Update tool span attributes using update_attributes for MLflow compatibility
-                            tool_span_instance.span_data.update_attributes(
-                                {"output_result": function_output}
                             )
+
+
+
+                        step_count += 1  # Increment step count before breaking
+                            
+                        break
+
+                    # Create tool span for function execution
+                    with tool_span(
+                        tool_name=function.name,
+                        function_name=function.name,
+                        function_args=function.args,
+                        function_kwargs=function.kwargs,
+                    ) as tool_span_instance:
+                        function_results = await self._tool_execute_async(
+                            func=function
+                        )
+                        function_output = function_results.output
+                        # add the process of the generator and async generator
+                        real_function_output = None
+                        
+                        # Handle generator outputs similar to astream implementation
+                        if inspect.iscoroutine(function_output):
+                            real_function_output = await function_output
+                        elif inspect.isasyncgen(function_output):
+                            # Collect all values from async generator
+                            collected_items = []
+                            async for item in function_output:
+                                if isinstance(item, ToolCallActivityRunItem):
+                                    # Skip activity items in acall
+                                    continue
+                                else:
+                                    collected_items.append(item)
+                            # Use collected items as output
+                            real_function_output = collected_items
+                        elif inspect.isgenerator(function_output):
+                            # Collect all values from sync generator
+                            collected_items = []
+                            for item in function_output:
+                                if isinstance(item, ToolCallActivityRunItem):
+                                    # Skip activity items in acall
+                                    continue
+                                else:
+                                    collected_items.append(item)
+                            # Use collected items as output
+                            real_function_output = collected_items
+                        else:
+                            real_function_output = function_output
+                        
+                        # Use the processed output
+                        function_output = real_function_output
+                        function_output_observation = function_output
+
+                        if isinstance(function_output, ToolOutput) and hasattr(
+                            function_output, "observation"
+                        ):
+                            function_output_observation = (
+                                function_output.observation
+                            )
+
+                        # Update tool span attributes using update_attributes for MLflow compatibility
+                        tool_span_instance.span_data.update_attributes(
+                            {"output_result": function_output}
+                        )
 
                         step_output: StepOutput = StepOutput(
                             step=step_count,
@@ -1056,7 +1154,8 @@ class Runner(Component):
                 step_history=self.step_history.copy(),
                 error=current_error,
             )
-
+        
+    
     def astream(
         self,
         prompt_kwargs: Dict[str, Any],
@@ -1102,7 +1201,16 @@ class Runner(Component):
         id: Optional[str] = None,
         streaming_result: Optional[RunnerStreamingResult] = None,
     ) -> None:
-        """Execute the planner asynchronously for multiple steps with function calling support.
+        """
+        Behave exactly the same as `acall` but with streaming support.
+
+        - GeneratorOutput will be emitted as RawResponsesStreamEvent
+
+        - StepOutput will be emitted as RunItemStreamEvent with name "agent.step_complete".
+
+        - Finally, there will be a FinalOutputItem with the final answer or error.
+
+        Execute the planner asynchronously for multiple steps with function calling support.
 
         At the last step the action should be set to "finish" instead which terminates the sequence
 
@@ -1119,6 +1227,7 @@ class Runner(Component):
             max_steps=self.max_steps,
             workflow_status= workflow_status,
         ) as runner_span_instance:
+            
             # Reset cancellation flag at start of new execution
             self.step_history = []
             prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
@@ -1147,7 +1256,6 @@ class Runner(Component):
             step_count = 0
             final_output_item = None
             current_error = None
-            stop_the_loop = False # break
 
             # whenever we have the final output, we break the loop, this includes
             # (1) final_answer (check final step)
@@ -1160,7 +1268,7 @@ class Runner(Component):
 
             # ToolOutput
             # has three status: success, error, canceled
-            while step_count < self.max_steps and not self.is_cancelled() and not stop_the_loop:
+            while step_count < self.max_steps and not self.is_cancelled():
                 try:
                     # Create step span for each streaming iteration
                     # error handing: when run into any error, it creates a runner finish event. and stops the loop
@@ -1174,11 +1282,8 @@ class Runner(Component):
                                 self.agent.planner.get_prompt(**prompt_kwargs)
                             )
                         )
-                        printc(
-                            f"agent planner prompt: {self.agent.planner.get_prompt(**prompt_kwargs)}"
-                        )
-                        planner_prompt = self.agent.planner.get_prompt(**prompt_kwargs) # save it in the final step_output
 
+                        planner_prompt = self.agent.planner.get_prompt(**prompt_kwargs) # save it in the final step_output
 
                         # Check cancellation before calling planner
                         # TODO seems slightly unnecessary we are calling .cancel on the task in cancel which will raise this exception regardless unless we want to terminate earlier by checking the cancelled field
@@ -1201,9 +1306,17 @@ class Runner(Component):
                             final_output_item = FinalOutputItem(
                                 error=error_msg,
                             )
-                            stop_the_loop = True
                             workflow_status = "stream_failed"
                             current_error = error_msg
+                            # create a step output for the error
+                            step_output = StepOutput(
+                                step=step_count,
+                                action=None,
+                                function=None,
+                                observation=current_error,
+                            )
+                            self.step_history.append(step_output)
+                            step_count += 1
                             break
 
                         planner_prompt = output.input
@@ -1223,63 +1336,64 @@ class Runner(Component):
                                 wrapped_event = RawResponsesStreamEvent(data=event, input=planner_prompt)
                                 streaming_result.put_nowait(wrapped_event)
 
-                        else:
-                            # must emit the raw response event even with error:
-                            if output.data and output.error is None:
-                                log.debug(
-                                    f"Emitting raw response event from planner: {output.data}"
-                                )
-                                # if the output is not None, we can emit the raw response event
-                                wrapped_event = RawResponsesStreamEvent(
-                                    data=output.data, input=planner_prompt
-                                )
-                            else:
-                                log.warning(
-                                    f"Emitting raw response event with error from planner: {output.error}"
-                                )
-                                # if the output is None, we can still emit the raw response event with error
-                                wrapped_event = RawResponsesStreamEvent(
-                                    error=output.error, input=planner_prompt
-                                )
-                                current_error = output.error
-                            streaming_result.put_nowait(wrapped_event)
+                        else: # non-streaming cases
+                            # yield the final planner response
+                            if output.data is None:
 
-                            # if none recoverable error, we can continue to the next step
-                            if output.error and ("400" in output.error or "429" in output.error or "404" in output.error): # context too long or rate limit, not recoverable
-                                # create a final output item with error and stop the loop
-                                final_output_item = FinalOutputItem(
-                                    error=output.error,
+                                # recoverable errors, continue to create stepout
+                                current_error = output.error 
+                                # wrap the error in a RawResponsesStreamEvent
+                                wrapped_event = RawResponsesStreamEvent(
+                                    data=None,  # no data in this case
+                                    input=planner_prompt,
+                                    error= output.error,
                                 )
-                                stop_the_loop = True
-                                workflow_status = "stream_failed"
-                                current_error = output.error
-                                break
-                            log.debug(
-                                f"Continuing to next step despite error: {output.error}"
-                            )
-                            # # yield the final planner response
-                            # if output.error is not None:
-                            #     if "400" in output.error or "429" or "404" in output.error: # context too long or rate limite, not recoverable
-                            #         # 404 model not exist
-                            #         # create a final output item with error and stop the loop
-                            #         final_output_item = FinalOutputItem(
-                            #             error=output.error,
-                            #         )
-                            #         stop_the_loop = True
-                            #         workflow_status = "stream_failed"
-                            #         current_error = output.error
-                            #         break
-                            #     else: # recoverable such as json format error
-                            #         wrapped_event = RawResponsesStreamEvent(
-                            #             error=output.error,
-                            #         )
-                            #         current_error = output.error
-                            #     # check if the error is recoverable
-                            # else:
-                            #     wrapped_event = RawResponsesStreamEvent(
-                            #         data=output.data, input=planner_prompt
-                            #     )  # wrap on the data field to be the final output, the data might be null
-                            # streaming_result.put_nowait(wrapped_event)
+                                streaming_result.put_nowait(wrapped_event)
+
+        
+                                step_output = StepOutput(
+                                    step=step_count,
+                                    action=None,
+                                    function=None,
+                                    observation=current_error,
+                                )
+                                # emit the step complete event with error which matches the step_output
+                                step_item = StepRunItem(data=step_output)
+                                step_complete_event = RunItemStreamEvent(
+                                    name="agent.step_complete",
+                                    item=step_item,
+                                )
+                                streaming_result.put_nowait(step_complete_event)
+                                self.step_history.append(step_output)
+
+                                if output.error is not None:
+  
+                                    if _is_unrecoverable_error(output.error): # context too long or rate limite, not recoverable
+                                        # 404 model not exist
+                                        # create a final output item with error and stop the loop
+                                        final_output_item = FinalOutputItem(
+                                            error=output.error,
+                                        )
+                                        workflow_status = "stream_failed"
+                                        current_error = output.error
+                                        step_output = StepOutput(
+                                            step=step_count,
+                                            action=None,
+                                            function=None,
+                                            observation=f"Unrecoverable error: {output.error}",
+                                        )
+                                        self.step_history.append(step_output)
+                                        step_count += 1
+                                        break
+                                step_count += 1
+                                continue  # continue to next step
+                                    
+
+                            # normal functions
+                            wrapped_event = RawResponsesStreamEvent(
+                                data=output.data, input=planner_prompt
+                            )  # wrap on the data field to be the final output, the data might be null
+                            streaming_result.put_nowait(wrapped_event)
 
                         # asychronously consuming the raw response will
                         # update the data field of output with the result of the output processor
@@ -1288,113 +1402,96 @@ class Runner(Component):
 
                         function = output.data # here are the recoverable errors, should continue to step output
                         thinking = output.thinking # check the reasoning model response
+                        if thinking is not None and self.is_thinking_model:
+                            # if the thinking is not None, we will add it to the function
+                            if function is not None and isinstance(function, Function):
+                                function.thought = thinking
+
+                        function.id = str(uuid.uuid4()) # add function id 
                         function_result = None
                         function_output_observation = None
 
-                        if function is None or not isinstance(function, Function) or output.error: # for recoverable errors, continue to create stepout
-                            current_error = f"Error planning step {step_count}: Function is None, error: {output.error}"
-                            current_error = output.error
-                            # # create the final output
-                            # final_output_item = FinalOutputItem(
-                            #     error=current_error,
-                            # )
-                            # stop_the_loop = True  # no need to add the step
-                            # break
-                            # create a step output
-                            step_output: StepOutput = StepOutput(
-                                step=step_count,
-                                action=function,
-                                function=function,
-                                observation=f"Run into Error: {output.error} at parsing Action {output.raw_response}",
-                                planner_prompt=planner_prompt
+                        if thinking is not None and self.is_thinking_model:
+                            function.thought = thinking
+
+                        # TODO: simplify this
+                        tool_call_id = function.id
+                        tool_call_name = function.name
+                        log.debug(f"function: {function}")
+
+                        if self._check_last_step(function): # skip stepoutput 
+                            answer = self._get_final_answer(function)
+                            final_output_item = await self._process_stream_final_step(
+                                answer=answer,
+                                step_count=step_count,
+                                streaming_result=streaming_result,
+                                runner_span_instance=runner_span_instance,
                             )
-                            self.step_history.append(step_output)
-                        else:
-                            # for normal function
-                            function.id = str(uuid.uuid4())
+                            workflow_status = "stream_completed"
+                            break
 
-                            if thinking is not None and self.is_thinking_model:
-                                function.thought = thinking
+                        # Check if permission is required and emit permission event
+                        # TODO: trace the permission event
 
-                            # TODO: simplify this
-                            tool_call_id = function.id
-                            tool_call_name = function.name
-                            printc(f"function: {function}", color="yellow")
-
-                            if self._check_last_step(function):
-                                answer = self._get_final_answer(function)
-                                final_output_item = await self._process_stream_final_step(
-                                    answer=answer,
-                                    step_count=step_count,
-                                    streaming_result=streaming_result,
-                                    runner_span_instance=runner_span_instance,
-                                )
-                                stop_the_loop = True
-                                workflow_status = "stream_completed"
-                                break
-
-                            # Check if permission is required and emit permission event
-                            # TODO: trace the permission event
-
-                            function_output_observation = None
-                            function_result = None
-                            print("function name", function.name)
-                            complete_step = False
-                            if (
-                                self.permission_manager
-                                and self.permission_manager.is_approval_required(
-                                    function.name
-                                )
-                            ):
-                                permission_event = (
-                                    self.permission_manager.create_permission_event(
-                                        function
-                                    )
-                                )
-                                # there is an error
-                                if isinstance(permission_event, ToolOutput):
-                                    # need a tool complete event
-                                    function_result = FunctionOutput(
-                                        name=function.name,
-                                        input=function,
-                                        output=permission_event,
-                                    )
-                                    tool_complete_event = RunItemStreamEvent(
-                                        name="agent.tool_call_complete",
-                                        # error is already tracked in output
-                                        # TODO: error tracking is not needed in RunItem, it is tracked in the tooloutput status.
-                                        item=ToolOutputRunItem(
-                                            data=function_result,
-                                            id=tool_call_id,
-                                            error=permission_event.observation if permission_event.status == "error" else None, # error message sent to the frontend
-                                        ),
-                                    )
-                                    streaming_result.put_nowait(tool_complete_event)
-                                    function_output_observation = permission_event.observation
-                                    complete_step = True
-                                else:
-                                    permission_stream_event = RunItemStreamEvent(
-                                        name="agent.tool_permission_request",
-                                        item=permission_event,
-                                    )
-                                    streaming_result.put_nowait(permission_stream_event)
-                            if not complete_step:
-                                # Execute the tool with streaming support
-                                function_result, function_output, function_output_observation = await self.stream_tool_execution(
-                                    function=function,
-                                    tool_call_id=tool_call_id,
-                                    tool_call_name=tool_call_name,
-                                    streaming_result=streaming_result,
-                                )
-
-                            # Add step to history for approved tools (same as non-permission branch)
-                            step_output: StepOutput = StepOutput(
-                                step=step_count,
-                                action=function,
-                                function=function,
-                                observation=function_output_observation,
+                        function_output_observation = None
+                        function_result = None
+                        print("function name", function.name)
+                        complete_step = False
+                        if (
+                            self.permission_manager
+                            and self.permission_manager.is_approval_required(
+                                function.name
                             )
-                            self.step_history.append(step_output)
+                        ):
+                            permission_event = (
+                                self.permission_manager.create_permission_event(
+                                    function
+                                )
+                            )
+                            # there is an error
+                            if isinstance(permission_event, ToolOutput):
+                                # need a tool complete event
+                                function_result = FunctionOutput(
+                                    name=function.name,
+                                    input=function,
+                                    output=permission_event,
+                                )
+                                tool_complete_event = RunItemStreamEvent(
+                                    name="agent.tool_call_complete",
+                                    # error is already tracked in output
+                                    # TODO: error tracking is not needed in RunItem, it is tracked in the tooloutput status.
+                                    item=ToolOutputRunItem(
+                                        data=function_result,
+                                        id=tool_call_id,
+                                        error=permission_event.observation if permission_event.status == "error" else None, # error message sent to the frontend
+                                    ),
+                                )
+                                streaming_result.put_nowait(tool_complete_event)
+                                function_output_observation = permission_event.observation
+                                complete_step = True
+                            else:
+                                permission_stream_event = RunItemStreamEvent(
+                                    name="agent.tool_permission_request",
+                                    item=permission_event,
+                                )
+                                streaming_result.put_nowait(permission_stream_event)
+                        if not complete_step:
+                            # Execute the tool with streaming support
+                            function_result, function_output, function_output_observation = await self.stream_tool_execution(
+                                function=function,
+                                tool_call_id=tool_call_id,
+                                tool_call_name=tool_call_name,
+                                streaming_result=streaming_result,
+                            )
+
+                        # Add step to history for approved tools (same as non-permission branch)
+                        step_output: StepOutput = StepOutput(
+                            step=step_count,
+                            action=function,
+                            function=function,
+                            observation=function_output_observation,
+                        )
+                        self.step_history.append(step_output)
 
                         # Update step span with results (for both recoverable errors and normal function execution)
                         step_span_instance.span_data.update_attributes(
@@ -1465,7 +1562,6 @@ class Runner(Component):
                     # error_event = RunItemStreamEvent(
                     #     name="runner_finished", item=error_final_item
                     # )
-                    stop_the_loop = True
                     current_error = error_msg
                     break
 
@@ -1505,13 +1601,6 @@ class Runner(Component):
                 streaming_result=streaming_result,
                 final_output_item=final_output_item,
             )
-
-            # if not stop_the_loop:
-            #     printc(
-            #         f"Runner completed with {step_count} steps, final output: {runner_result.answer}",
-            #         color="green",
-            #     )
-            #     workflow_status = "stream_completed"
 
             # create response span for final output
             # if workflow_status  in ["stream_incomplete", "stream_failed"]:

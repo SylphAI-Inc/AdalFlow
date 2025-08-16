@@ -1,4 +1,7 @@
 <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px;">
+    <a href="https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/agents/agent_tutorial.ipynb" target="_blank" style="margin-right: 10px;">
+        <img alt="Try OpenAI Integration in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+    </a>
     <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/agent/tutorial_agent_basic.py" target="_blank" style="display: flex; align-items: center;">
         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
         <span style="vertical-align: middle;"> Open Source Code (Agent Basic)</span>
