@@ -188,6 +188,14 @@ class Runner(Component):
 
         # support thinking model
         self.is_thinking_model = agent.is_thinking_model if hasattr(agent, 'is_thinking_model')  else False
+        
+        # Token tracking
+        self._token_consumption: Dict[str, Any] = {
+            'total_prompt_tokens': 0,
+            'current_step_tokens': 0,
+            'steps_token_history': [],
+            'last_total_tokens': 0  # Track last total to calculate step difference
+        }
 
     def _init_permission_manager(self):
         """Initialize the permission manager and register tools that require approval."""
@@ -225,6 +233,35 @@ class Runner(Component):
     def reset_cancellation(self) -> None:
         """Reset the cancellation flag for a new execution."""
         self._cancelled = False
+    
+    def get_token_consumption(self) -> Dict[str, Any]:
+        """Get the current token consumption statistics.
+        
+        Returns:
+            Dict containing token consumption data:
+            - total_prompt_tokens: Total tokens consumed across all steps
+            - current_step_tokens: Tokens from the most recent step
+            - steps_token_history: List of token counts per step
+        """
+        return self._token_consumption.copy()
+    
+    def _update_token_consumption(self) -> None:
+        """Update token consumption statistics by checking the planner's accumulated token count.
+        
+        Since the generator accumulates tokens, we calculate the step tokens as the difference
+        from the last recorded total.
+        """
+        if hasattr(self.agent.planner, 'estimated_token_count'):
+            current_total = self.agent.planner.estimated_token_count
+            step_tokens = current_total - self._token_consumption['last_total_tokens']
+            
+            self._token_consumption['current_step_tokens'] = step_tokens
+            self._token_consumption['total_prompt_tokens'] = current_total
+            self._token_consumption['steps_token_history'].append(step_tokens)
+            self._token_consumption['last_total_tokens'] = current_total
+            
+            return step_tokens
+        return 0
 
     def register_cancel_callback(self, callback) -> None:
         """Register a callback to be called when execution is cancelled."""
@@ -562,6 +599,11 @@ class Runner(Component):
                             use_cache=use_cache,
                             id=id,
                         )
+                        
+                        # Track token usage
+                        step_tokens = self._update_token_consumption()
+                        if step_tokens > 0:
+                            log.debug(f"Step {step_count} - Prompt tokens: {step_tokens}, Total: {self._token_consumption['total_prompt_tokens']}")
 
                         log.debug(f"planner output: {output}")
 
@@ -919,7 +961,11 @@ class Runner(Component):
                             use_cache=use_cache,
                             id=id,
                         )
- 
+                        
+                        # Track token usage
+                        step_tokens = self._update_token_consumption()
+                        if step_tokens > 0:
+                            log.debug(f"Step {step_count} - Prompt tokens: {step_tokens}, Total: {self._token_consumption['total_prompt_tokens']}")
 
                         log.debug(f"planner output: {output}")
 
@@ -1297,6 +1343,11 @@ class Runner(Component):
                             use_cache=use_cache,
                             id=id,
                         )
+                        
+                        # Track token usage
+                        step_tokens = self._update_token_consumption()
+                        if step_tokens > 0:
+                            log.debug(f"Step {step_count} - Prompt tokens: {step_tokens}, Total: {self._token_consumption['total_prompt_tokens']}")
 
                         if not isinstance(output, GeneratorOutput):
                             # Create runner finish event with error and stop the loop
