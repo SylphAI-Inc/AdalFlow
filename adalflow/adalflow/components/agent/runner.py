@@ -1,3 +1,5 @@
+"""Agent runner component for managing and executing agent workflows."""
+
 from pydantic import BaseModel
 import logging
 import inspect
@@ -984,8 +986,6 @@ class Runner(Component):
                             self.step_history.append(step_output)
                             step_count += 1
                             break
-
-                        planner_prompt = output.input
  
 
 
@@ -1329,8 +1329,6 @@ class Runner(Component):
                             )
                         )
 
-                        planner_prompt = self.agent.planner.get_prompt(**prompt_kwargs) # save it in the final step_output
-
                         # Check cancellation before calling planner
                         # TODO seems slightly unnecessary we are calling .cancel on the task in cancel which will raise this exception regardless unless we want to terminate earlier by checking the cancelled field
                         if self.is_cancelled():
@@ -1370,7 +1368,6 @@ class Runner(Component):
                             step_count += 1
                             break
 
-                        planner_prompt = output.input
 
                         # handle the generator output data and error
                         wrapped_event = None
@@ -1384,7 +1381,7 @@ class Runner(Component):
                                 # TODO seems slightly unnecessary we are calling .cancel on the task in cancel which will raise this exception regardless
                                 if self.is_cancelled():
                                     raise asyncio.CancelledError("Execution cancelled by user")
-                                wrapped_event = RawResponsesStreamEvent(data=event, input=planner_prompt)
+                                wrapped_event = RawResponsesStreamEvent(data=event)
                                 streaming_result.put_nowait(wrapped_event)
 
                         else: # non-streaming cases
@@ -1396,7 +1393,6 @@ class Runner(Component):
                                 # wrap the error in a RawResponsesStreamEvent
                                 wrapped_event = RawResponsesStreamEvent(
                                     data=None,  # no data in this case
-                                    input=planner_prompt,
                                     error= output.error,
                                 )
                                 streaming_result.put_nowait(wrapped_event)
@@ -1442,7 +1438,7 @@ class Runner(Component):
 
                             # normal functions
                             wrapped_event = RawResponsesStreamEvent(
-                                data=output.data, input=planner_prompt
+                                data=output.data, 
                             )  # wrap on the data field to be the final output, the data might be null
                             streaming_result.put_nowait(wrapped_event)
 

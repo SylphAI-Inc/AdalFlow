@@ -38,13 +38,13 @@ class ApprovalResponse(BaseModel):
 
 
 class ApprovalQueue:
-    """Manages pending approval requests with expiration."""
+    """Manages pending approval requests with optional timeout."""
 
-    def __init__(self, timeout_seconds: int = 30):
+    def __init__(self, timeout_seconds: Optional[int] = None):
         self.pending_requests: Dict[str, FunctionRequest] = {}
         self.responses: Dict[str, asyncio.Future] = {}
         self.request_metadata: Dict[str, ApprovalRequest] = {}
-        self.timeout_seconds = timeout_seconds
+        self.timeout_seconds = timeout_seconds  # None means no timeout
 
     async def create_request(self, request: FunctionRequest) -> str:
         """Create a new approval request and return its ID."""
@@ -68,19 +68,27 @@ class ApprovalQueue:
         return request_id
 
     async def wait_for_response(self, request_id: str) -> ApprovalOutcome:
-        """Wait for approval response with timeout."""
+        """Wait for approval response with optional timeout."""
         if request_id not in self.responses:
             raise ValueError("Invalid request ID")
 
         try:
-            log.info(f"Starting to wait for Future for request {request_id}")
-            result = await asyncio.wait_for(
-                self.responses[request_id], timeout=self.timeout_seconds
-            )
+            log.info(f"Starting to wait for Future for request {request_id} (timeout: {self.timeout_seconds or 'indefinite'})")
+            
+            if self.timeout_seconds is None:
+                # Wait indefinitely for user approval
+                result = await self.responses[request_id]
+            else:
+                # Wait with timeout
+                result = await asyncio.wait_for(
+                    self.responses[request_id], timeout=self.timeout_seconds
+                )
+            
             log.info(f"Future resolved for request {request_id} with result {result}")
             # Status already set in approve endpoint
             return result
         except asyncio.TimeoutError:
+            log.warning(f"Request {request_id} timed out after {self.timeout_seconds} seconds")
             self.request_metadata[request_id].status = "expired"
             return ApprovalOutcome.CANCEL
         finally:
@@ -120,10 +128,7 @@ class ApprovalQueue:
 
     def get_pending_requests(self) -> List[ApprovalRequest]:
         """Get all pending approval requests."""
-        # Don't auto-expire requests - let them wait indefinitely for user approval
-        # The timeout in wait_for_response will handle actual expiration if needed
-        
-        # Return only pending requests
+        # Return only pending requests - they wait indefinitely for user approval
         return [
             metadata
             for metadata in self.request_metadata.values()
@@ -140,7 +145,7 @@ class FastAPIPermissionHandler(PermissionManager):
         self,
         app: Optional[FastAPI] = None,
         approval_mode: str = "default",
-        timeout_seconds: int = 30,
+        timeout_seconds: Optional[int] = None,
         api_prefix: str = "/api/v1/approvals",
     ):
         """
@@ -149,7 +154,7 @@ class FastAPIPermissionHandler(PermissionManager):
         Args:
             app: FastAPI application instance. If None, creates a new one.
             approval_mode: Mode for handling approvals
-            timeout_seconds: Timeout for approval requests
+            timeout_seconds: Timeout for approval requests in seconds. None means no timeout.
             api_prefix: URL prefix for API endpoints
         """
         self.approval_queue = ApprovalQueue(timeout_seconds)

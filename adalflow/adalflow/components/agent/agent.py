@@ -1,3 +1,5 @@
+"""Agent component for building conversational AI agents with tool integration."""
+
 from typing import (
     Dict,
     List,
