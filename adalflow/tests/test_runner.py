@@ -8,9 +8,14 @@ from adalflow.core.types import (
     RunnerResult,
     FinalOutputItem,
     RunItemStreamEvent,
+    RawResponsesStreamEvent,
 )
 
 from adalflow.components.agent.runner import Runner
+
+from adalflow.utils import get_logger 
+
+get_logger(level="DEBUG", enable_file=False)
 
 
 class DummyFunction(Function):
@@ -824,7 +829,7 @@ class TestRunnerBugFixes(unittest.TestCase):
         # Simulate planner returning None function multiple times
         agent = DummyAgent(
             planner=FakePlanner([
-                GeneratorOutput(data=None, error="Parsing error"),
+                GeneratorOutput(data=None, error="Parsing error"), # recoverable errors 
                 GeneratorOutput(data=None, error="Still parsing error")
             ]),
             answer_data_type=None
@@ -835,12 +840,58 @@ class TestRunnerBugFixes(unittest.TestCase):
         
         # Should return a result and handle None gracefully without crashing
         self.assertIsInstance(result, RunnerResult)
+        from adalflow.utils import printc
+        printc(f"Runner result: {result}")
         # Should have processed the None function in step history
         self.assertEqual(len(runner.step_history), 2)  # Will try max_steps=2
         # First step should have None function and error observation
         step = runner.step_history[0] 
         self.assertIsNone(step.function)
         self.assertEqual(step.observation, "Parsing error")
+
+    def test_null_function_handling_astream(self):
+        """Test that astream method handles None functions without crashing (fixes AttributeError on function.id)."""
+        async def _test_astream_null_function():
+            # Simulate planner returning None function multiple times
+            agent = DummyAgent(
+                planner=FakePlanner([
+                    GeneratorOutput(data=None, error="Parsing error"), # recoverable errors 
+                    GeneratorOutput(data=None, error="Still parsing error") # recoverable errors # raw with errors. 
+                ]),
+                answer_data_type=None
+            )
+            runner = Runner(agent=agent, max_steps=2)
+            
+            streaming_result = runner.astream(prompt_kwargs={})
+            
+            # Collect all events from the stream
+            events = []
+            async for event in streaming_result.stream_events():
+                events.append(event)
+
+            # ensure at least two raw events were generated
+            raw_events = [
+                e for e in events if isinstance(e, RawResponsesStreamEvent)
+            ]
+            self.assertGreaterEqual(len(raw_events), 2)  # Should have at least 2 raw events
+            # Should have step events for each None function handling
+            step_events = [e for e in events if isinstance(e, RunItemStreamEvent) and e.name == "agent.step_complete"]
+            self.assertEqual(len(step_events), 2)  # Will try max_steps=2
+            
+            # First step event should have None function and error observation
+            first_step_event = step_events[0]
+            step_data = first_step_event.item.data # The item contains the StepRunItem
+            self.assertIsNone(step_data.function)
+            self.assertEqual(step_data.observation, "Parsing error")
+            
+            # Should also check runner step history
+            self.assertEqual(len(runner.step_history), 2)
+            step = runner.step_history[0]
+            self.assertIsNone(step.function)
+            self.assertEqual(step.observation, "Parsing error")
+        
+        # Run the async test
+        asyncio.run(_test_astream_null_function())
 
     def test_null_function_handling_acall(self):
         """Test that acall method handles None functions without crashing."""

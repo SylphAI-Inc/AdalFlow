@@ -208,10 +208,22 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         )  # used by dynamic computation graph and backpropagation
 
         self._tokenizer: Tokenizer = Tokenizer()
+        self._estimated_token_count: int = 0
 
     @property
     def use_cache(self):
         return self._use_cache
+
+    
+    @property
+    def estimated_token_count(self) -> int:
+        """Property to access the estimated token count from the last prompt.
+        
+        Returns:
+            int: The estimated token count from the last processed prompt.
+                 Returns 0 if no prompt has been processed yet.
+        """
+        return self._estimated_token_count
 
     def update_default_backward_pass_setup(self, setup: BackwardPassSetup):
         self.backward_pass_setup = setup
@@ -460,9 +472,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
 
         max_tokens = composed_model_kwargs.get("max_tokens", None)
+        prompt_tokens = self._tokenizer.count_tokens(prompt_str)
+        self._estimated_token_count = prompt_tokens
         use_prompt_str = prompt_str
         if max_tokens is not None:
-            prompt_tokens = self._tokenizer.count_tokens(prompt_str)
             if prompt_tokens > max_tokens:
                 use_prompt_str = prompt_str[:max_tokens]
                 log.warning(

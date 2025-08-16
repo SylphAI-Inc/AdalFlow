@@ -56,6 +56,9 @@ Agent
 .. autosummary::
 
    components.agent.react
+   components.agent.agent
+   components.agent.runner
+   components.agent.prompts
 
 Data Process
 ~~~~~~~~~~~~~~~~~~~~

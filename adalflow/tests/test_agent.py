@@ -280,6 +280,104 @@ class TestAgent(unittest.TestCase):
         agent.planner.training = False
         self.assertFalse(agent.is_training())
 
+    def test_flip_thinking_model_toggles_state(self):
+        """Test that flip_thinking_model toggles the is_thinking_model state."""
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name="agent-thinking",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            is_thinking_model=False,
+        )
+
+        # Initially should not be in thinking model mode
+        self.assertFalse(agent.is_thinking_model)
+
+        # Flip to thinking model
+        agent.flip_thinking_model()
+        self.assertTrue(agent.is_thinking_model)
+
+        # Flip back to non-thinking model
+        agent.flip_thinking_model()
+        self.assertFalse(agent.is_thinking_model)
+
+    def test_flip_thinking_model_recreates_planner(self):
+        """Test that flip_thinking_model recreates the planner."""
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name="agent-planner-recreation",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            is_thinking_model=False,
+        )
+
+        # Store reference to original planner
+        original_planner = agent.planner
+        original_planner_id = id(original_planner)
+
+        # Flip thinking model state
+        agent.flip_thinking_model()
+
+        # Verify planner was recreated (different object)
+        new_planner = agent.planner
+        new_planner_id = id(new_planner)
+        self.assertNotEqual(original_planner_id, new_planner_id)
+        self.assertIsInstance(new_planner, DummyGenerator)
+
+    def test_flip_thinking_model_preserves_other_attributes(self):
+        """Test that flip_thinking_model preserves other agent attributes."""
+        mc = FallbackModelClient()
+        custom_kwargs = {"temperature": 0.5, "model": "test-model"}
+        agent = agent_module.Agent(
+            name="agent-preserve-attrs",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            model_kwargs=custom_kwargs,
+            max_steps=15,
+            is_thinking_model=False,
+        )
+
+        # Store original values
+        original_name = agent.name
+        original_max_steps = agent.max_steps
+        original_model_kwargs = agent.model_kwargs
+        original_model_client = agent.model_client
+
+        # Flip thinking model
+        agent.flip_thinking_model()
+
+        # Verify other attributes are preserved
+        self.assertEqual(agent.name, original_name)
+        self.assertEqual(agent.max_steps, original_max_steps)
+        self.assertEqual(agent.model_kwargs, original_model_kwargs)
+        self.assertEqual(agent.model_client, original_model_client)
+        self.assertTrue(agent.is_thinking_model)  # This should be flipped
+
+    def test_flip_thinking_model_with_initial_true(self):
+        """Test flip_thinking_model when initially set to True."""
+        mc = FallbackModelClient()
+        agent = agent_module.Agent(
+            name="agent-initial-thinking",
+            tools=[],
+            add_llm_as_fallback=False,
+            model_client=mc,
+            is_thinking_model=True,
+        )
+
+        # Initially should be in thinking model mode
+        self.assertTrue(agent.is_thinking_model)
+
+        # Flip to non-thinking model
+        agent.flip_thinking_model()
+        self.assertFalse(agent.is_thinking_model)
+
+        # Flip back to thinking model
+        agent.flip_thinking_model()
+        self.assertTrue(agent.is_thinking_model)
+
 
 if __name__ == "__main__":
     unittest.main()
