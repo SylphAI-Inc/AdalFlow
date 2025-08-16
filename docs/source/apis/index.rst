@@ -44,6 +44,9 @@ Functional components like model client, retriever, agent, local data processing
 .. autosummary::
 
    components.agent.react
+   components.agent.agent
+   components.agent.runner
+   components.agent.prompts
 
    components.model_client.anthropic_client
    components.model_client.cohere_client

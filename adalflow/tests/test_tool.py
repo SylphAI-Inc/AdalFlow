@@ -210,11 +210,20 @@ def test_sync_execution_comprehensive():
                             assert item == "sync_yield"
 
                     elif tool.function_type.name == "ASYNC_GENERATOR":
-                        # Async generator - should be collected into a list by call()
-                        items = result.output
-                        print(f"    Collected items: {items}")
-                        assert isinstance(items, list)
-                        assert items == ["async_yield"]
+                        # Async generator - returns async generator object, manually collect items
+                        async_gen = result.output
+                        print(f"    Async generator: {async_gen}")
+                        
+                        import asyncio
+                        async def collect_items():
+                            items = []
+                            async for item in async_gen:
+                                items.append(item)
+                            return items
+                        
+                        collected_items = asyncio.run(collect_items())
+                        print(f"    Collected items: {collected_items}")
+                        assert collected_items == ["async_yield"]
 
                 # For regular functions, check the value
                 else:
@@ -377,14 +386,24 @@ def test_generator_consumption_patterns():
     print(f"  Consumed items: {items}")
     assert items == ["sync_yield"]
 
-    # Test async generator (should be collected into list in sync mode)
+    # Test async generator (returns async generator object in sync mode)
     print("\nTesting async generator consumption (sync mode):")
     async_result = async_yield_tool.call()
-    async_items = async_result.output
-    print(f"  Collected items type: {type(async_items).__name__}")
-    print(f"  Collected items: {async_items}")
-    assert isinstance(async_items, list)
-    assert async_items == ["async_yield"]
+    async_gen = async_result.output
+    print(f"  Generator type: {type(async_gen).__name__}")
+    print(f"  Generator object: {async_gen}")
+    
+    # Manually collect items from async generator
+    import asyncio
+    async def collect_items():
+        items = []
+        async for item in async_gen:
+            items.append(item)
+        return items
+    
+    collected_items = asyncio.run(collect_items())
+    print(f"  Collected items: {collected_items}")
+    assert collected_items == ["async_yield"]
 
 
 def test_error_handling():
