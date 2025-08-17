@@ -364,17 +364,29 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # Now adding the data field to the output
         data = output.raw_response
 
-        # TODO implement support for synchronous iterator in the future
-        if self.output_processors:
-            if data:
-                try:
-                    data = self.output_processors(data)
-                    output.data = data
-                except Exception as e:
-                    log.error(f"Error processing the output processors: {e}")
-                    output.error = str(e)
+        # Check if this is a streaming response (generator/iterator)
+        from typing import Generator as GeneratorType
+        from collections.abc import AsyncGenerator as AsyncGeneratorABC
+        
+        is_streaming = isinstance(data, (GeneratorType, AsyncGeneratorABC)) or hasattr(data, '__iter__') and not isinstance(data, str)
+        
+        if is_streaming:
+            # For streaming responses, don't process with output_processors immediately
+            # The streaming data should be consumed by the caller
+            log.debug("Streaming response detected, skipping output processors")
+            output.data = None  # Will be populated when stream is consumed
         else:
-            output.data = data
+            # Non-streaming response processing
+            if self.output_processors:
+                if data:
+                    try:
+                        data = self.output_processors(data)
+                        output.data = data
+                    except Exception as e:
+                        log.error(f"Error processing the output processors: {e}")
+                        output.error = str(e)
+            else:
+                output.data = data
 
         return output
 
@@ -1266,12 +1278,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     output = self._post_call(completion)
                 except Exception as e:
                     log.error(f"Error processing the output: {e}")
-                    # Check if completion is a generator to avoid placing generator object in raw_response
-                    from typing import Generator as GeneratorType
-                    from collections.abc import AsyncGenerator as AsyncGeneratorABC
-                    raw_response = None if isinstance(completion, (GeneratorType, AsyncGeneratorABC)) else str(completion)
                     output = GeneratorOutput(
-                        raw_response=raw_response, error=str(e), id=id, input=prompt_str
+                        raw_response=str(completion), error=str(e), id=id, input=prompt_str
                     )
 
             # User only need to use one of them, no need to use them all.
@@ -1360,12 +1368,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     output = await self._async_post_call(completion)
                 except Exception as e:
                     log.error(f"Error processing the output: {e}")
-                    # Check if completion is a generator to avoid placing generator object in raw_response
-                    from typing import Generator as GeneratorType
-                    from collections.abc import AsyncGenerator as AsyncGeneratorABC
-                    raw_response = None if isinstance(completion, (GeneratorType, AsyncGeneratorABC)) else str(completion)
                     output = GeneratorOutput(
-                        raw_response=raw_response, error=str(e), id=id, input=prompt_str
+                        raw_response=str(completion), error=str(e), id=id, input=prompt_str
                     )
 
             # User only need to use one of them, no need to use them all.

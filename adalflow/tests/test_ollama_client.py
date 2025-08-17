@@ -125,13 +125,15 @@ class TestOllamaModelClient(unittest.TestCase):
             # Parse the result
             parsed = ollama_client.parse_chat_completion(result)
             
-            # For streaming, the parsed result should be the raw generator directly
-            self.assertTrue(hasattr(parsed, '__iter__'))
-            self.assertNotIsInstance(parsed, GeneratorOutput)
+            # For streaming, the parsed result should be a GeneratorOutput with raw_response containing the generator
+            self.assertIsInstance(parsed, GeneratorOutput)
+            self.assertIsNotNone(parsed.raw_response)
+            self.assertIsNone(parsed.data)  # data should be None for streaming until consumed
+            self.assertEqual(parsed.api_response, result)
             
-            # Verify we can iterate through the raw generator
+            # Verify we can iterate through the raw_response
             content_parts = []
-            for chunk in parsed:
+            for chunk in parsed.raw_response:
                 if "message" in chunk:
                     content_parts.append(chunk["message"]["content"])
             
@@ -172,13 +174,15 @@ class TestOllamaModelClient(unittest.TestCase):
         # Parse the result
         parsed = ollama_client.parse_chat_completion(result)
         
-        # For streaming, the parsed result should be the raw async generator directly
-        self.assertTrue(hasattr(parsed, '__aiter__'))
-        self.assertNotIsInstance(parsed, GeneratorOutput)
+        # For streaming, the parsed result should be a GeneratorOutput with raw_response containing the async generator
+        self.assertIsInstance(parsed, GeneratorOutput)
+        self.assertIsNotNone(parsed.raw_response)
+        self.assertIsNone(parsed.data)  # data should be None for streaming until consumed
+        self.assertEqual(parsed.api_response, result)
         
-        # Verify we can iterate through the raw async generator
+        # Verify we can iterate through the raw_response asynchronously
         content_parts = []
-        async for chunk in parsed:
+        async for chunk in parsed.raw_response:
             if "message" in chunk:
                 content_parts.append(chunk["message"]["content"])
         
