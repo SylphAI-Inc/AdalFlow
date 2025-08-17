@@ -1,9 +1,5 @@
 """
 Thread-safe file operations with configurable locking strategies.
-
-This module provides a clean abstraction for concurrent file operations,
-addressing the "too many open files" issue while maintaining performance
-and testability.
 """
 
 import os
