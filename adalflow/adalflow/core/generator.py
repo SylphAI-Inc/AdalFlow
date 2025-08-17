@@ -1266,8 +1266,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     output = self._post_call(completion)
                 except Exception as e:
                     log.error(f"Error processing the output: {e}")
+                    # Check if completion is a generator to avoid placing generator object in raw_response
+                    from typing import Generator as GeneratorType
+                    from collections.abc import AsyncGenerator as AsyncGeneratorABC
+                    raw_response = None if isinstance(completion, (GeneratorType, AsyncGeneratorABC)) else str(completion)
                     output = GeneratorOutput(
-                        raw_response=str(completion), error=str(e), id=id, input=prompt_str
+                        raw_response=raw_response, error=str(e), id=id, input=prompt_str
                     )
 
             # User only need to use one of them, no need to use them all.
@@ -1356,8 +1360,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                     output = await self._async_post_call(completion)
                 except Exception as e:
                     log.error(f"Error processing the output: {e}")
+                    # Check if completion is a generator to avoid placing generator object in raw_response
+                    from typing import Generator as GeneratorType
+                    from collections.abc import AsyncGenerator as AsyncGeneratorABC
+                    raw_response = None if isinstance(completion, (GeneratorType, AsyncGeneratorABC)) else str(completion)
                     output = GeneratorOutput(
-                        raw_response=str(completion), error=str(e), id=id, input=prompt_str
+                        raw_response=raw_response, error=str(e), id=id, input=prompt_str
                     )
 
             # User only need to use one of them, no need to use them all.

@@ -125,14 +125,13 @@ class TestOllamaModelClient(unittest.TestCase):
             # Parse the result
             parsed = ollama_client.parse_chat_completion(result)
             
-            # For streaming, the parsed result should be a GeneratorOutput with raw_response containing the generator
-            self.assertIsInstance(parsed, GeneratorOutput)
-            self.assertIsNotNone(parsed.raw_response)
-            self.assertEqual(parsed.api_response, result)
+            # For streaming, the parsed result should be the raw generator directly
+            self.assertTrue(hasattr(parsed, '__iter__'))
+            self.assertNotIsInstance(parsed, GeneratorOutput)
             
-            # Verify we can iterate through the raw_response
+            # Verify we can iterate through the raw generator
             content_parts = []
-            for chunk in parsed.raw_response:
+            for chunk in parsed:
                 if "message" in chunk:
                     content_parts.append(chunk["message"]["content"])
             
@@ -173,14 +172,13 @@ class TestOllamaModelClient(unittest.TestCase):
         # Parse the result
         parsed = ollama_client.parse_chat_completion(result)
         
-        # For streaming, the parsed result should be a GeneratorOutput with raw_response containing the async generator
-        self.assertIsInstance(parsed, GeneratorOutput)
-        self.assertIsNotNone(parsed.raw_response)
-        self.assertEqual(parsed.api_response, result)
+        # For streaming, the parsed result should be the raw async generator directly
+        self.assertTrue(hasattr(parsed, '__aiter__'))
+        self.assertNotIsInstance(parsed, GeneratorOutput)
         
-        # Verify we can iterate through the raw_response asynchronously
+        # Verify we can iterate through the raw async generator
         content_parts = []
-        async for chunk in parsed.raw_response:
+        async for chunk in parsed:
             if "message" in chunk:
                 content_parts.append(chunk["message"]["content"])
         
