@@ -19,10 +19,20 @@ JSON_OUTPUT_FORMAT = r"""Your output should be formatted as a standard JSON inst
 ```
 {{schema}}
 ```
--Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
--Use double quotes for the keys and string values.
--DO NOT mistake the "properties" and "type" in the schema for the actual fields in the JSON output.
--Follow the JSON formatting conventions."""
+**Schema Interpretation:**
+   - The "properties" and "type" fields in the schema are NOT the actual JSON keys
+   - Generate the correct nested JSON structure using the actual field names shown
+   - Follow the exact field names and data types specified in the schema
+   - **CRITICAL: Return actual data values, NOT the schema structure itself**
+- Output ONLY valid JSON without any markdown formatting or backticks
+- Use double quotes for all keys and string values
+- Ensure proper JSON syntax with correct comma placement
+- Do not include any text before or after the JSON object
+- When including string values with newlines, use \\n instead of actual line breaks
+- Properly escape special characters: use \\" for quotes, \\\\ for backslashes
+- For multiline strings, keep them on a single line with \\n characters
+**WARNING:** The JSON must be parseable by standard JSON parsers. Malformed JSON will cause parsing failures. When handling complex text with special characters, quotes, or formatting, prioritize proper escaping over readability.
+"""
 
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
 ```

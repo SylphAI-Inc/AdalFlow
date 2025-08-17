@@ -1,4 +1,57 @@
 
+## [1.1.3] - 2025-01-21
+
+### Added
+
+#### Output Parsers (`adalflow/components/output_parsers/`)
+- **JsonOutputParserPydanticModel**: New JSON output parser supporting Pydantic BaseModel classes
+  - Native Pydantic schema generation and validation
+  - Support for nested models and complex data structures
+  - Optional return of Pydantic objects or dictionaries
+  - Example-based instruction generation
+  - Comprehensive validation error handling
+
+#### TGD Optimizer (`adalflow/optim/text_grad/tgd_optimizer.py`)
+- **CustomizedXMLParser**: New XML parser for TGD optimizer output
+  - Supports reasoning, method, and proposed_variable fields
+  - Robust XML parsing with error handling
+  - Direct TGDData object creation
+
+### Improved
+
+#### JSON Output Format Instructions
+- **Enhanced schema interpretation guidance**: Added comprehensive instructions for proper JSON schema handling
+- **Critical formatting requirements**: Detailed JSON formatting rules with proper escaping
+- **Complex content handling**: Better support for special characters, nested quotes, and multiline content
+- **Validation checklist**: Step-by-step validation requirements for JSON output
+- **Warning system**: Clear warnings about JSON parsing failures
+
+#### DataClass Parser (`adalflow/components/output_parsers/dataclass_parser.py`)
+- Updated JSON output format with improved schema interpretation instructions
+- Better guidance for handling complex text with special characters
+- Enhanced validation requirements for JSON parsers
+
+#### OpenAI Client (`adalflow/components/model_client/openai_client.py`)
+- **Logging optimization**: Changed usage tracking warnings to debug level for cleaner logs
+- Reduced noise in logs for generator/iterator completion types
+
+#### JsonOutputParser (`adalflow/components/output_parsers/outputs.py`)
+- **Default format type change**: Now uses DataClassFormatType.SCHEMA by default instead of SIGNATURE_JSON
+- Enhanced format instructions with comprehensive JSON formatting requirements
+- Better error handling and validation guidance
+
+### Tests
+- **Comprehensive Pydantic parser tests**: Added extensive test coverage for JsonOutputParserPydanticModel
+  - Basic functionality and validation tests
+  - Complex nested model parsing tests  
+  - Schema generation and format instruction tests
+  - Error handling and edge case tests
+  - JSON with markdown wrapper tests
+
+### Dependencies
+- Added Pydantic dependency support for new JsonOutputParserPydanticModel
+- Enhanced XML parsing capabilities with xml.etree.ElementTree
+
 ## [1.1.2] - 2025-08-16
 
 ### Improved

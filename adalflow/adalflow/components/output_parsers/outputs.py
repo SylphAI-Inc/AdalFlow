@@ -8,8 +8,9 @@ Includes:
 """
 
 from dataclasses import is_dataclass
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Type, Union
 import logging
+import json
 
 from adalflow.core.component import DataComponent
 from adalflow.core.prompt_builder import Prompt
@@ -17,11 +18,15 @@ from adalflow.core.string_parser import YamlParser, ListParser, JsonParser
 from adalflow.core.base_data_class import DataClass, DataClassFormatType
 from adalflow.core.base_data_class import ExcludeType, IncludeType
 
+from pydantic import BaseModel, ValidationError
+
+
 
 __all__ = [
     "OutputParser",
     "YamlOutputParser",
     "JsonOutputParser",
+    "JsonOutputParserPydanticModel",
     "ListOutputParser",
     "BooleanOutputParser",
 ]
@@ -39,6 +44,11 @@ Examples:
 {{example}}
 ```
 {% endif %}
+**Schema Interpretation:**
+   - The "properties" and "type" fields in the schema are NOT the actual JSON keys
+   - Generate the correct nested JSON structure using the actual field names shown
+   - Follow the exact field names and data types specified in the schema
+   - **CRITICAL: Return actual data values, NOT the schema structure itself**
 - Output ONLY valid JSON without any markdown formatting or backticks
 - Use double quotes for all keys and string values
 - Ensure proper JSON syntax with correct comma placement
@@ -46,8 +56,53 @@ Examples:
 - When including string values with newlines, use \\n instead of actual line breaks
 - Properly escape special characters: use \\" for quotes, \\\\ for backslashes
 - For multiline strings, keep them on a single line with \\n characters
+**WARNING:** The JSON must be parseable by standard JSON parsers. Malformed JSON will cause parsing failures. When handling complex text with special characters, quotes, or formatting, prioritize proper escaping over readability.
+
 """
 
+"""**CRITICAL JSON FORMATTING REQUIREMENTS:**
+
+1. **Schema Interpretation:**
+   - The "properties" and "type" fields in the schema are NOT the actual JSON keys
+   - Generate the correct nested JSON structure using the actual field names shown
+   - Follow the exact field names and data types specified in the schema
+
+2. **Output Requirements:**
+   - Output ONLY valid JSON - no markdown, backticks, explanations, or comments
+   - Use double quotes for ALL keys and string values
+   - Ensure proper JSON syntax with correct comma placement (no trailing commas)
+   - Do not include any text before or after the JSON object
+
+3. **String Escaping (CRITICAL for complex text):**
+   - Escape double quotes inside strings: \\" 
+   - Escape backslashes: \\\\
+   - Escape forward slashes if needed: \\/
+   - Use \\n for newlines, \\t for tabs, \\r for carriage returns
+   - Keep multiline content on single lines with \\n characters
+
+4. **Complex Content Handling:**
+   - Unicode characters (émojis, accented letters, Chinese/Arabic): include directly
+   - Nested quotes: escape properly (\\"inner quotes\\")
+   - Special characters in addresses/names: escape appropriately
+   - Preserve formatting information using escape sequences
+
+5. **Data Type Handling:**
+   - Strings: always in double quotes with proper escaping
+   - Numbers: no quotes (unless schema specifies string type)
+   - Booleans: use true/false (lowercase)
+   - null values: use null (not undefined or empty string unless specified)
+   - Arrays: proper bracket notation with comma separation
+   - Objects: proper brace notation with escaped content
+
+6. **Validation Checklist:**
+   - All braces {} and brackets [] are properly matched
+   - All strings are quoted and special characters escaped
+   - No trailing commas after last elements
+   - Structure matches schema requirements exactly
+   - All required fields are present with correct types
+
+**WARNING:** The JSON must be parseable by standard JSON parsers. Malformed JSON will cause parsing failures. When handling complex text with special characters, quotes, or formatting, prioritize proper escaping over readability.
+"""
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
 ```
 {{schema}}
@@ -279,7 +334,7 @@ class JsonOutputParser(OutputParser):
                 Defaults to DataClassFormatType.SIGNATURE_JSON for less token usage compared with DataClassFormatType.SCHEMA.
                 Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
-        format_type = format_type or DataClassFormatType.SIGNATURE_JSON
+        format_type = format_type or DataClassFormatType.SCHEMA
         schema = self.data_class.format_class_str(
             format_type=format_type,
             exclude=self._exclude_fields,
@@ -324,6 +379,118 @@ class JsonOutputParser(OutputParser):
         s = f"""data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, \
             include_fields={self._include_fields}, return_data_class={self._return_data_class}"""
         return s
+
+
+class JsonOutputParserPydanticModel(OutputParser):
+    """JSON output parser using Pydantic BaseModel for schema extraction and validation.
+    
+    This parser works with Pydantic BaseModel classes instead of AdalFlow's DataClass,
+    providing better JSON schema generation and automatic validation.
+    
+    Args:
+        pydantic_model (Type[BaseModel]): The Pydantic model class to use for schema and validation
+        examples (List[BaseModel], optional): Example instances of the Pydantic model. Defaults to None.
+        return_pydantic_object (bool, optional): If True, returns parsed Pydantic object. If False, returns dict. Defaults to True.
+    
+    Examples:
+        >>> from pydantic import BaseModel
+        >>> from typing import List
+        >>>
+        >>> class User(BaseModel):
+        ...     name: str
+        ...     age: int
+        ...     emails: List[str]
+        >>>
+        >>> parser = JsonOutputParserPydanticModel(pydantic_model=User)
+        >>> format_instructions = parser.format_instructions()
+        >>> # Use in Generator with output_processors=parser
+    """
+    
+    def __init__(
+        self,
+        pydantic_model: Type[BaseModel],
+        examples: Optional[List[BaseModel]] = None,
+        return_pydantic_object: bool = True,
+    ):
+        super().__init__()
+        
+        
+        if not (isinstance(pydantic_model, type) and issubclass(pydantic_model, BaseModel)):
+            raise TypeError(
+                f"Provided model must be a Pydantic BaseModel class, got: {pydantic_model}"
+            )
+        
+        if examples is not None and len(examples) > 0:
+            if not isinstance(examples[0], pydantic_model):
+                raise TypeError(
+                    f"Provided examples must be instances of {pydantic_model.__name__}"
+                )
+        
+        self.pydantic_model = pydantic_model
+        self.examples = examples or []
+        self._return_pydantic_object = return_pydantic_object
+        
+        # Use the same JSON_OUTPUT_FORMAT template as the regular JsonOutputParser
+        self.output_format_prompt = Prompt(template=JSON_OUTPUT_FORMAT)
+        self.output_processors = JsonParser()
+    
+    def format_instructions(self) -> str:
+        """Return the formatted instructions with Pydantic model schema."""
+        # Get JSON schema from Pydantic model
+        schema = self._get_pydantic_schema()
+        
+        # Format examples if provided
+        example_str = ""
+        try:
+            if self.examples and len(self.examples) > 0:
+                example_jsons = []
+                for example in self.examples:
+                    example_json = example.model_dump_json(indent=2)
+                    example_jsons.append(example_json)
+                example_str = "\n________\n".join(example_jsons)
+                log.debug(f"{__class__.__name__} example_str: {example_str}")
+        except Exception as e:
+            log.error(f"Error in formatting examples for {__class__.__name__}: {e}")
+            example_str = None
+        
+        return self.output_format_prompt(schema=schema, example=example_str)
+    
+    def _get_pydantic_schema(self) -> str:
+        """Generate a JSON schema description from Pydantic model using native functionality."""
+        try:
+            # Get the JSON schema from Pydantic and format it as JSON string
+            json_schema = self.pydantic_model.model_json_schema()
+            return json.dumps(json_schema, indent=2)
+        except Exception as e:
+            log.error(f"Error generating Pydantic schema: {e}")
+            return f"Schema for {self.pydantic_model.__name__}"
+    
+    def call(self, input: str) -> Union[BaseModel, Dict[str, Any]]:
+        """Parse JSON string to Pydantic object or dict."""
+        try:
+            # First parse the JSON string to dict
+            output_dict = self.output_processors(input)
+            log.debug(f"{__class__.__name__} parsed dict: {output_dict}")
+            
+        except Exception as e:
+            log.error(f"Error parsing JSON string: {e}")
+            raise e
+        
+        if self._return_pydantic_object:
+            try:
+                # Use Pydantic's validation to create the object
+                return self.pydantic_model.model_validate(output_dict)
+            except ValidationError as e:
+                log.error(f"Pydantic validation error: {e}")
+                raise e
+            except Exception as e:
+                log.error(f"Error creating Pydantic object: {e}")
+                raise e
+        else:
+            return output_dict
+    
+    def _extra_repr(self) -> str:
+        return f"pydantic_model={self.pydantic_model.__name__}, examples={len(self.examples)}, return_pydantic_object={self._return_pydantic_object}"
 
 
 class ListOutputParser(OutputParser):

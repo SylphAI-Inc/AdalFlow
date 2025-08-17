@@ -14,9 +14,11 @@ from dataclasses import field, dataclass
 from adalflow.optim.optimizer import TextOptimizer, ParamsT
 from adalflow.optim.text_grad.backend_engine_prompt import VARIABLE_AND_PEERS_INFO
 from adalflow.optim.parameter import Parameter
+from adalflow.core import DataComponent
 
 from adalflow.core.base_data_class import DataClass
 from adalflow.core.types import GeneratorOutput
+import xml.etree.ElementTree as ET
 
 
 if TYPE_CHECKING:
@@ -264,6 +266,78 @@ class TGDOptimizerTrace(DataClass):
     )
 
 
+class CustomizedXMLParser(DataComponent):
+    """Custom XML parser for TGD optimizer output with reasoning, method, and proposed_variable fields."""
+    
+    def __init__(self):
+        super().__init__()
+        pass
+    
+    def get_output_format_str(self) -> str:
+        return """Please provide your response in the following XML format:
+
+<response>
+<reasoning>Your reasoning for why the variable is proposed this way</reasoning>
+<method>The final method used to propose the variable (e.g. prompting + editing)</method>
+<proposed_variable>The proposed variable content</proposed_variable>
+</response>
+
+Make sure to include all three fields and properly close all XML tags."""
+    
+    def call(self, input: str) -> TGDData:
+        """Parse the XML response and extract the three fields, returning TGDData directly."""
+        try:
+            # Clean the input and extract XML content
+            input = input.strip()
+            
+            # Try to find the response tags
+            start_tag = "<response>"
+            end_tag = "</response>"
+            
+            start_idx = input.find(start_tag)
+            end_idx = input.find(end_tag)
+            
+            if start_idx == -1 or end_idx == -1:
+                # Fallback: try to parse the entire input as XML
+                xml_content = input
+            else:
+                xml_content = input[start_idx:end_idx + len(end_tag)]
+            
+            # Parse XML
+            root = ET.fromstring(xml_content)
+            
+            # Extract fields
+            reasoning_elem = root.find('reasoning')
+            method_elem = root.find('method')
+            proposed_variable_elem = root.find('proposed_variable')
+            
+            reasoning = reasoning_elem.text.strip() if reasoning_elem is not None and reasoning_elem.text else ""
+            method = method_elem.text.strip() if method_elem is not None and method_elem.text else ""
+            proposed_variable = proposed_variable_elem.text.strip() if proposed_variable_elem is not None and proposed_variable_elem.text else ""
+            
+            # Create and return TGDData object directly
+            return TGDData(
+                reasoning=reasoning,
+                method=method,
+                proposed_variable=proposed_variable
+            )
+            
+        except ET.ParseError as e:
+            log.error(f"XML parsing error: {e}")
+            return TGDData(
+                reasoning="XML parsing failed",
+                method="Error",
+                proposed_variable=input
+            )
+        except Exception as e:
+            log.error(f"Error parsing XML output: {e}")
+            return TGDData(
+                reasoning="Parsing failed", 
+                method="Error",
+                proposed_variable=input
+            )
+
+
 new_variable_tags = ["<VARIABLE>", "</VARIABLE>"]
 
 
@@ -307,16 +381,13 @@ class TGDOptimizer(TextOptimizer):
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
-        from adalflow.components.output_parsers.dataclass_parser import DataClassParser
 
         super().__init__()
         self.params = params  # all parameters of prompts (even if non-trainable)
 
         self.constraints = constraints or []
         self.data_class = TGDData
-        self.output_parser = DataClassParser(
-            data_class=self.data_class, return_data_class=True, format_type="json"
-        )
+        self.output_parser = CustomizedXMLParser()
         self.optimizer_system_prompt = Prompt(
             template=optimizer_system_prompt,
             prompt_kwargs={
@@ -556,9 +627,10 @@ class TGDOptimizer(TextOptimizer):
 
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
+            # Handle CustomizedXMLParser output - it returns TGDData directly
             proposed_data: TGDData = (
                 response.data
-                if response.data is not None
+                if response.data is not None and isinstance(response.data, TGDData)
                 else TGDData(
                     reasoning="No reasoning",
                     proposed_variable=response.raw_response,

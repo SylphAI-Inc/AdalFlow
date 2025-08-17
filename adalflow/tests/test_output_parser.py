@@ -1,9 +1,12 @@
 # test_output_parsers.py
 import unittest
 from dataclasses import dataclass, field
+from typing import List, Optional
+from pydantic import BaseModel, Field, ValidationError
 from adalflow.components.output_parsers.outputs import (
     JsonOutputParser,
     YamlOutputParser,
+    JsonOutputParserPydanticModel,
 )
 from adalflow.core.base_data_class import DataClass
 
@@ -14,6 +17,28 @@ class User(DataClass):
     name: str = field(default="John", metadata={"description": "User name"})
 
     __input_fields__ = ["id", "name"]
+
+
+# Pydantic models for testing JsonOutputParserPydanticModel
+class UserPydantic(BaseModel):
+    id: int = Field(description="User ID")
+    name: str = Field(description="User name")
+    age: Optional[int] = Field(default=None, description="User age")
+    emails: List[str] = Field(default_factory=list, description="User email addresses")
+
+
+class ThoughtAction(BaseModel):
+    thought: str = Field(description="Reasoning behind the action")
+    action: str = Field(description="The action to take")
+    confidence: float = Field(ge=0.0, le=1.0, description="Confidence level")
+
+
+class ComplexOutput(BaseModel):
+    """A complex output model for testing nested structures"""
+    thought: str = Field(description="Reasoning")
+    name: str = Field(description="Function name")
+    kwargs: dict = Field(default_factory=dict, description="Function arguments")
+    metadata: Optional[UserPydantic] = Field(default=None, description="Optional metadata")
 
 
 class TestOutputParsers(unittest.TestCase):
@@ -179,6 +204,126 @@ class TestOutputParsers(unittest.TestCase):
         self.assertIn("_answer", parsed_output)
         self.assertEqual(parsed_output["_is_answer_final"], True)
         self.assertIn("bash", parsed_output["_answer"])  # Verify the bash code block is preserved
+
+    # Tests for JsonOutputParserPydanticModel
+    def test_pydantic_parser_basic_functionality(self):
+        """Test basic parsing with Pydantic model"""
+        parser = JsonOutputParserPydanticModel(pydantic_model=UserPydantic)
+        json_string = '{"id": 1, "name": "Alice", "age": 30, "emails": ["alice@test.com"]}'
+        
+        result = parser(json_string)
+        self.assertIsInstance(result, UserPydantic)
+        self.assertEqual(result.id, 1)
+        self.assertEqual(result.name, "Alice")
+        self.assertEqual(result.age, 30)
+        self.assertEqual(result.emails, ["alice@test.com"])
+
+    def test_pydantic_parser_return_dict(self):
+        """Test parsing with return_pydantic_object=False"""
+        parser = JsonOutputParserPydanticModel(pydantic_model=UserPydantic, return_pydantic_object=False)
+        json_string = '{"id": 2, "name": "Bob", "emails": []}'
+        
+        result = parser(json_string)
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result["id"], 2)
+        self.assertEqual(result["name"], "Bob")
+        self.assertEqual(result["emails"], [])
+
+    def test_pydantic_parser_with_examples(self):
+        """Test parser with example instances"""
+        example = UserPydantic(id=999, name="Example", age=25, emails=["example@test.com"])
+        parser = JsonOutputParserPydanticModel(pydantic_model=UserPydantic, examples=[example])
+        
+        # Test format_instructions includes examples
+        instructions = parser.format_instructions()
+        self.assertIn("example@test.com", instructions)
+        self.assertIn("Example", instructions)
+
+    def test_pydantic_parser_validation_error(self):
+        """Test that Pydantic validation errors are properly handled"""
+        parser = JsonOutputParserPydanticModel(pydantic_model=ThoughtAction)
+        invalid_json = '{"thought": "test", "action": "test", "confidence": 2.0}'  # confidence > 1.0
+        
+        with self.assertRaises(ValidationError):
+            parser(invalid_json)
+
+    def test_pydantic_parser_complex_nested_model(self):
+        """Test parsing with nested Pydantic models"""
+        parser = JsonOutputParserPydanticModel(pydantic_model=ComplexOutput)
+        complex_json = '''{
+            "thought": "Processing complex data",
+            "name": "complex_function",
+            "kwargs": {"param1": "value1", "param2": 42},
+            "metadata": {"id": 1, "name": "John", "age": 30, "emails": ["john@test.com"]}
+        }'''
+        
+        result = parser(complex_json)
+        self.assertIsInstance(result, ComplexOutput)
+        self.assertEqual(result.thought, "Processing complex data")
+        self.assertEqual(result.name, "complex_function")
+        self.assertEqual(result.kwargs["param1"], "value1")
+        self.assertIsInstance(result.metadata, UserPydantic)
+        self.assertEqual(result.metadata.name, "John")
+
+    def test_pydantic_parser_schema_generation(self):
+        """Test that schema generation works with native Pydantic functionality"""
+        parser = JsonOutputParserPydanticModel(pydantic_model=ThoughtAction)
+        schema = parser._get_pydantic_schema()
+        
+        # Should be valid JSON string
+        import json
+        schema_dict = json.loads(schema)
+        
+        # Verify schema structure
+        self.assertIn("properties", schema_dict)
+        self.assertIn("thought", schema_dict["properties"])
+        self.assertIn("action", schema_dict["properties"])
+        self.assertIn("confidence", schema_dict["properties"])
+        
+        # Check that descriptions are preserved
+        self.assertEqual(schema_dict["properties"]["thought"]["description"], "Reasoning behind the action")
+
+    def test_pydantic_parser_format_instructions(self):
+        """Test format_instructions method uses Pydantic schema"""
+        parser = JsonOutputParserPydanticModel(pydantic_model=UserPydantic)
+        instructions = parser.format_instructions()
+        
+        # Should contain schema information
+        self.assertIn("schema", instructions.lower())
+        self.assertIn("json", instructions.lower())
+        
+        # Should contain field descriptions from Pydantic model
+        self.assertIn("User ID", instructions)
+        self.assertIn("User name", instructions)
+
+    def test_pydantic_parser_json_with_markdown(self):
+        """Test parsing JSON wrapped in markdown blocks"""
+        parser = JsonOutputParserPydanticModel(pydantic_model=UserPydantic)
+        json_with_markdown = '''```json
+{"id": 3, "name": "Charlie", "age": 25}
+```'''
+        
+        result = parser(json_with_markdown)
+        self.assertIsInstance(result, UserPydantic)
+        self.assertEqual(result.id, 3)
+        self.assertEqual(result.name, "Charlie")
+        self.assertEqual(result.age, 25)
+
+    def test_pydantic_parser_invalid_model_type(self):
+        """Test that non-BaseModel classes raise TypeError"""
+        with self.assertRaises(TypeError):
+            JsonOutputParserPydanticModel(pydantic_model=dict)  # dict is not a BaseModel
+        
+        with self.assertRaises(TypeError):
+            JsonOutputParserPydanticModel(pydantic_model=User)  # DataClass is not BaseModel
+
+    def test_pydantic_parser_invalid_example_type(self):
+        """Test that invalid example types raise TypeError"""
+        with self.assertRaises(TypeError):
+            JsonOutputParserPydanticModel(
+                pydantic_model=UserPydantic, 
+                examples=[{"id": 1, "name": "test"}]  # dict instead of UserPydantic instance
+            )
 
 
 if __name__ == "__main__":

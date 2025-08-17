@@ -839,11 +839,11 @@ class OpenAIClient(ModelClient):
 
         # otherwise return the AdalFlowResponseUsage with None values with log warnings
         elif hasattr(completion, "__aiter__") or hasattr(completion, "__iter__"):
-            log.warning(
+            log.debug(
                 "Cannot track usage for generator/iterator. Usage tracking should be handled when consuming the stream."
             )
         else:
-            log.warning(f"Unknown completion type: {type(completion)}")
+            log.debug(f"Unknown completion type: {type(completion)}")
 
         return AdalFlowResponseUsage(
             input_tokens=None,
