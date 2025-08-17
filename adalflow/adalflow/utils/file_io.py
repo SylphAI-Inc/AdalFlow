@@ -4,6 +4,7 @@ import pickle
 import logging
 from typing import Mapping, Any, Optional, List, Dict
 
+from filelock import FileLock
 
 from adalflow.utils.serialization import to_dict, serialize, _deserialize_object_hook
 
@@ -22,11 +23,14 @@ def save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:
         f (str, optional): The file name. Defaults to "task".
     """
     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
+    lock_path = f + ".lock"
     try:
-        with open(f, "w") as file:
-            serialized_obj = serialize(obj)
-            file.write(serialized_obj)
-    except IOError as e:
+        with FileLock(lock_path):
+            with open(f, "w") as file:
+                serialized_obj = serialize(obj)
+                file.write(serialized_obj)
+    except Exception as e:
+        log.error(f"Failed to save object to JSON file {f}. Error: {e}")
         raise IOError(f"Error saving object to JSON file {f}: {e}")
 
 
@@ -51,23 +55,27 @@ def save_csv(
     import csv
 
     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
+    lock_path = f + ".lock"
     try:
-        with open(f, "w", newline="") as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames or obj[0].keys())
-            writer.writeheader()
-            for row in obj:
-                filtered_row = {k: v for k, v in row.items() if k in fieldnames}
-                # use json.dumps to serialize the object
-                for k, v in filtered_row.items():
-                    if (
-                        isinstance(v, dict)
-                        or isinstance(v, list)
-                        or isinstance(v, tuple)
-                        or isinstance(v, set)
-                    ):
-                        filtered_row[k] = json.dumps(v)
-                writer.writerow(filtered_row)
-    except IOError as e:
+        with FileLock(lock_path):
+            with open(f, "w", newline="") as csvfile:
+                fieldnames_to_use = fieldnames or obj[0].keys()
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames_to_use)
+                writer.writeheader()
+                for row in obj:
+                    filtered_row = {k: v for k, v in row.items() if k in fieldnames_to_use}
+                    # use json.dumps to serialize the object
+                    for k, v in filtered_row.items():
+                        if (
+                            isinstance(v, dict)
+                            or isinstance(v, list)
+                            or isinstance(v, tuple)
+                            or isinstance(v, set)
+                        ):
+                            filtered_row[k] = json.dumps(v)
+                    writer.writerow(filtered_row)
+    except Exception as e:
+        log.error(f"Failed to save object to CSV file {f}. Error: {e}")
         raise IOError(f"Error saving object to CSV file {f}: {e}")
 
 
@@ -79,11 +87,14 @@ def save_pickle(obj: Mapping[str, Any], f: str = "task.pickle") -> None:
         f (str, optional): The file name. Defaults to "task".
     """
     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
+    lock_path = f + ".lock"
     try:
-        with open(f, "wb") as file:
-            pickle.dump(obj, file)
+        with FileLock(lock_path):
+            with open(f, "wb") as file:
+                pickle.dump(obj, file)
     except Exception as e:
-        raise Exception(f"Error saving object to pickle file {f}: {e}")
+        log.error(f"Failed to save object to pickle file {f}. Error: {e}")
+        raise IOError(f"Error saving object to pickle file {f}: {e}")
 
 
 def save(obj: Mapping[str, Any], f: str = "task") -> None:
@@ -129,10 +140,12 @@ def load_json(f: str) -> Any:
     if not os.path.exists(f):
         raise FileNotFoundError(f"JSON file not found: {f}")
 
+    lock_path = f + ".lock"
     try:
-        with open(f, "r") as file:
-            data = json.load(file, object_hook=_deserialize_object_hook)
-            return data
+        with FileLock(lock_path):
+            with open(f, "r") as file:
+                data = json.load(file, object_hook=_deserialize_object_hook)
+                return data
     except json.JSONDecodeError as e:
         raise ValueError(f"Error decoding JSON file {f}: {e}")
     except Exception as e:
@@ -150,10 +163,12 @@ def load_standard_json(f: str) -> Any:
     if not os.path.exists(f):
         raise FileNotFoundError(f"JSON file not found: {f}")
 
+    lock_path = f + ".lock"
     try:
-        with open(f, "r") as file:
-            data = json.load(file)
-            return data
+        with FileLock(lock_path):
+            with open(f, "r") as file:
+                data = json.load(file)
+                return data
     except json.JSONDecodeError as e:
         raise ValueError(f"Error decoding JSON file {f}: {e}")
     except Exception as e:
@@ -169,11 +184,14 @@ def load_pickle(f: str = "task.pickle") -> Optional[Mapping[str, Any]]:
     if not os.path.exists(f):
         log.warning(f"File {f} does not exist.")
         return None
+    
+    lock_path = f + ".lock"
     try:
-        with open(f, "rb") as file:
-            return pickle.load(file)
+        with FileLock(lock_path):
+            with open(f, "rb") as file:
+                return pickle.load(file)
     except Exception as e:
-        raise Exception(f"Error loading object from pickle file {f}: {e}")
+        raise IOError(f"Error loading object from pickle file {f}: {e}")
 
 
 def load(f: str = "task") -> Optional[Mapping[str, Any]]:
@@ -204,9 +222,11 @@ def load_jsonl(f: str = None) -> List[Dict[str, Any]]:
         log.warning(f"File {f} does not exist.")
         return []
 
+    lock_path = f + ".lock"
     try:
-        with jsonlines.open(f) as reader:
-            return list(reader)
+        with FileLock(lock_path):
+            with jsonlines.open(f) as reader:
+                return list(reader)
     except Exception as e:
         log.error(f"Error loading jsonl file {f}: {e}")
         return []
@@ -226,12 +246,14 @@ def append_to_jsonl(f: str, data: Dict[str, Any]) -> None:
     except ImportError:
         raise ImportError("Please install jsonlines to use this function.")
     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
+    lock_path = f + ".lock"
     try:
-        with jsonlines.open(f, mode="a") as writer:
-            # call serialize to serialize the object
-            serialized_data = to_dict(data)
-            writer.write(serialized_data)
-            # writer.write(data)
+        with FileLock(lock_path):
+            with jsonlines.open(f, mode="a") as writer:
+                # call serialize to serialize the object
+                serialized_data = to_dict(data)
+                writer.write(serialized_data)
+                # writer.write(data)
     except Exception as e:
         log.error(f"Error appending data to jsonl file {f}: {e}")
 
@@ -248,9 +270,11 @@ def write_list_to_jsonl(f: str, data: List[Dict[str, Any]]) -> None:
     except ImportError:
         raise ImportError("Please install jsonlines to use this function.")
     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
+    lock_path = f + ".lock"
     try:
-        with jsonlines.open(f, mode="w") as writer:
-            for d in data:
-                writer.write(d)
+        with FileLock(lock_path):
+            with jsonlines.open(f, mode="w") as writer:
+                for d in data:
+                    writer.write(d)
     except Exception as e:
         log.error(f"Error writing data to jsonl file {f}: {e}")
