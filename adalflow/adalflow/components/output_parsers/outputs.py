@@ -57,7 +57,6 @@ Examples:
 - Properly escape special characters: use \\" for quotes, \\\\ for backslashes
 - For multiline strings, keep them on a single line with \\n characters
 **WARNING:** The JSON must be parseable by standard JSON parsers. Malformed JSON will cause parsing failures. When handling complex text with special characters, quotes, or formatting, prioritize proper escaping over readability.
-
 """
 
 """**CRITICAL JSON FORMATTING REQUIREMENTS:**

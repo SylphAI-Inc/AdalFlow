@@ -98,13 +98,15 @@ def test_error_double_user_query():
 
 
 def test_error_assistant_response_without_query():
-    """Test error when adding assistant response without user query."""
+    """Test that adding assistant response without user query returns None and logs warning."""
     memory = Memory()
 
-    with pytest.raises(ValueError) as exc_info:
-        memory.add_assistant_response("Random response")
-
-    assert "No pending user query found" in str(exc_info.value)
+    # Should return None instead of raising error
+    result = memory.add_assistant_response("Random response")
+    assert result is None
+    
+    # The conversation should remain empty
+    assert len(memory.current_conversation.dialog_turns) == 0
 
 
 def test_mixed_methods():

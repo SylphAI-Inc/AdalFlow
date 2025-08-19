@@ -135,7 +135,7 @@ class DataClassParser(DataComponent):
         if self._format_type == "yaml":
             schema = self._data_class.to_yaml_signature(include=self._output_fields)
             output_format_str = Prompt(template=YAML_OUTPUT_FORMAT)(schema=schema)
-        else:
+        elif self._format_type == "json":
             schema = self._data_class.to_json_signature(include=self._output_fields)
             output_format_str = Prompt(template=JSON_OUTPUT_FORMAT)(schema=schema)
         return output_format_str
