@@ -21,7 +21,7 @@ class Message(DataClass):
     id: str = field(default_factory=lambda: str(uuid4()))
     role: Literal["user", "assistant", "system"] = "user"
     content: str = ""
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None # example metadata: "step_history": List[Dict[str, Any]] for agent response, "images" for user query with images
     timestamp: datetime = field(default_factory=datetime.now)
     
     @classmethod
@@ -42,7 +42,7 @@ class Message(DataClass):
 
 @dataclass
 class Conversation(DataClass):
-    """A conversation organized as turns, where each turn can have multiple messages."""
+    """A conversation organized as turns, where each turn can have multiple messages and is one agent loop."""
     id: str = field(default_factory=lambda: str(uuid4()))
     user_id: Optional[str] = None
     turns: OrderedDict = field(default_factory=OrderedDict)  # turn_id -> List[Message]
@@ -61,9 +61,15 @@ class Conversation(DataClass):
             str: The message ID
         """
         if turn_id not in self.turns:
-            self.turns[turn_id] = []
-        self.turns[turn_id].append(message)
-        return message.id
+            raise ValueError(f"Turn '{turn_id}' does not exist. Please create the turn first.")
+        if not isinstance(message, Message):
+            raise TypeError("message must be an instance of Message")
+        
+        try:
+            self.turns[turn_id].append(message)
+            return message.id
+        except Exception as e:
+            raise RuntimeError(f"Failed to add message to turn '{turn_id}': {e}")
     
     def get_turn_messages(self, turn_id: str) -> List[Message]:
         """Get all messages in a specific turn."""
@@ -101,10 +107,13 @@ class Conversation(DataClass):
     
     def create_turn(self) -> str:
         """Create a new turn and return its ID."""
-        turn_id = str(uuid4())
-        self.turns[turn_id] = []
-        self._current_turn_id = turn_id
-        return turn_id
+        try:
+            turn_id = str(uuid4())
+            self.turns[turn_id] = []
+            self._current_turn_id = turn_id
+            return turn_id
+        except Exception as e:
+            raise RuntimeError(f"Failed to create turn: {e}")
 
 
 # Template for conversation formatting
@@ -176,29 +185,29 @@ class FlexibleConversationMemory(Component):
         Returns:
             str: The new turn ID
         """
-        return self.current_conversation.create_turn()
+        turn_id= self.current_conversation.create_turn()
+        return turn_id
         
-    def add_user_query(self, content: str, metadata: Optional[Dict] = None, turn_id: Optional[str] = None) -> str:
+    def add_user_query(self, content: str, turn_id: str, metadata: Optional[Dict] = None) -> str:
         """Add a user message to a turn.
         
         Args:
             content: The user's message content
+            turn_id: The turn ID to add the message to (required, must exist)
             metadata: Optional metadata
-            turn_id: Optional turn ID. If None, creates a new turn.
             
         Returns:
             str: The turn ID the message was added to
-        """
-        # Use provided turn_id or create new turn
-        if turn_id is None:
-            turn_id = self.create_turn()
-        elif turn_id not in self.current_conversation.turns:
-            # Turn doesn't exist, create it
-            self.current_conversation.turns[turn_id] = []
             
-        # Track as current turn
-        self.current_conversation._current_turn_id = turn_id
-        
+        Raises:
+            ValueError: If the turn_id doesn't exist
+        """
+        # Check if turn exists
+        if turn_id not in self.current_conversation.turns:
+            raise ValueError(
+                f"Turn '{turn_id}' does not exist. Please create the turn first using create_turn() "
+                f"or provide an existing turn ID. Available turns: {list(self.current_conversation.turns.keys())}"
+            )
         # Create and add the user message
         message = Message.from_user(content, metadata)
         self.current_conversation.add_message_to_turn(turn_id, message)
@@ -218,29 +227,28 @@ class FlexibleConversationMemory(Component):
     def add_assistant_response(
         self, 
         content: str,
+        turn_id: str,
         metadata: Optional[Dict] = None,
-        turn_id: Optional[str] = None
     ) -> str:
         """Add an assistant message to a turn.
         
         Args:
             content: The assistant's message content
+            turn_id: The turn ID to add the message to (required, must exist)
             metadata: Optional metadata
-            turn_id: Optional turn ID. If None, uses current turn or creates new.
                     
         Returns:
             str: The turn ID the message was added to
+            
+        Raises:
+            ValueError: If the turn_id doesn't exist
         """
-        # Determine which turn to use
-        if turn_id is None:
-            if self.current_conversation._current_turn_id:
-                turn_id = self.current_conversation._current_turn_id
-            else:
-                # No active turn, create new one for standalone response
-                turn_id = self.create_turn()
-        elif turn_id not in self.current_conversation.turns:
-            # Turn doesn't exist, create it
-            self.current_conversation.turns[turn_id] = []
+        # Check if turn exists
+        if turn_id not in self.current_conversation.turns:
+            raise ValueError(
+                f"Turn '{turn_id}' does not exist. Please create the turn first using create_turn() "
+                f"or provide an existing turn ID. Available turns: {list(self.current_conversation.turns.keys())}"
+            )
         
         # Create and add the assistant message
         message = Message.from_assistant(content, metadata)
@@ -258,23 +266,27 @@ class FlexibleConversationMemory(Component):
         
         return turn_id
     
-    def add_system_message(self, content: str, metadata: Optional[Dict] = None, turn_id: Optional[str] = None) -> str:
+    def add_system_message(self, content: str, turn_id: str, metadata: Optional[Dict] = None) -> str:
         """Add a system message to a turn.
         
         Args:
             content: The system message content
+            turn_id: The turn ID to add the message to (required, must exist)
             metadata: Optional metadata
-            turn_id: Optional turn ID. If None, creates a new turn.
             
         Returns:
             str: The turn ID the message was added to
-        """
-        # Use provided turn_id or create new turn
-        if turn_id is None:
-            turn_id = self.create_turn()
-        elif turn_id not in self.current_conversation.turns:
-            self.current_conversation.turns[turn_id] = []
             
+        Raises:
+            ValueError: If the turn_id doesn't exist
+        """
+        # Check if turn exists
+        if turn_id not in self.current_conversation.turns:
+            raise ValueError(
+                f"Turn '{turn_id}' does not exist. Please create the turn first using create_turn() "
+                f"or provide an existing turn ID. Available turns: {list(self.current_conversation.turns.keys())}"
+            )
+        
         # Create and add the system message
         message = Message.from_system(content, metadata)
         self.current_conversation.add_message_to_turn(turn_id, message)

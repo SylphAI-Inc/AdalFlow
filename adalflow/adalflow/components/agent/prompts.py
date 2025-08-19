@@ -28,7 +28,8 @@ REMEMBER:
     - If the last observation starts with "Run into error", you should try to fix the error in the next step.
 <END_OF_TASK_SPEC>
 """
-# TODO: access the max steps in the agent prompt or not
+# Chat history should be user: message, assistant: message + meta data {step_history}
+# step_history is the observations.
 DEFAULT_ADALFLOW_AGENT_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 {{task_desc}}
 - You cant use more than {{max_steps}} steps. At the {{max_steps}}th current step, must set `_is_answer_final` to True and provide the answer.
