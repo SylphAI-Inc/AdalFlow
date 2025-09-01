@@ -166,7 +166,7 @@ class FAISSRetriever(
             documents = [document_map_func(doc) for doc in documents]
         
         # check if documents list is empty to prevent IndexError
-        if not documents:
+        if len(documents) == 0:
             log.warning("empty documents list provided to build_index_from_documents")
             self.reset_index()
             return
