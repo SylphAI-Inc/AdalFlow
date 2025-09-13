@@ -3,7 +3,8 @@ import json
 import os
 import uuid
 from typing import Literal
-import subprocess
+import urllib.request
+import urllib.error
 from adalflow.utils.data import Dataset
 from adalflow.datasets.types import Example
 
@@ -75,23 +76,12 @@ class BigBenchHard(Dataset):
 
         print(f"Downloading dataset to {json_path}")
         try:
-            # Use subprocess and capture the return code
-            result = subprocess.call(
-                [
-                    "wget",
-                    f"https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/{self.task_name}.json",
-                    "-O",
-                    json_path,
-                ]
-            )
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(json_path), exist_ok=True)
 
-            # Check if wget failed (non-zero exit code)
-            if result != 0:
-                raise ValueError(
-                    f"Failed to download dataset for task '{self.task_name}'.\n"
-                    "Please verify the task name (the JSON file name) by checking the following link:\n"
-                    "https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh"
-                )
+            # Use urllib.request instead of wget for cross-platform compatibility
+            url = f"https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/{self.task_name}.json"
+            urllib.request.urlretrieve(url, json_path)
 
             # Check if the file is non-empty
             if not os.path.exists(json_path) or os.path.getsize(json_path) == 0:
@@ -99,10 +89,27 @@ class BigBenchHard(Dataset):
                     f"Downloaded file is empty. Please check the task name '{self.task_name}' or network issues."
                 )
 
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                raise ValueError(
+                    f"Task name '{self.task_name}' not found (HTTP 404).\n"
+                    "Please verify the task name (the JSON file name) by checking the following link:\n"
+                    "https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh"
+                ) from e
+            else:
+                raise ValueError(
+                    f"Failed to download dataset for task '{self.task_name}' (HTTP {e.code}).\n"
+                    "Please check your internet connection or try again later."
+                ) from e
+        except urllib.error.URLError as e:
+            raise ValueError(
+                f"Network error while downloading dataset for task '{self.task_name}'.\n"
+                "Please check your internet connection and try again."
+            ) from e
         except Exception as e:
             raise ValueError(
-                f"Either network issues or an incorrect task name: '{self.task_name}'.\n"
-                "Please verify the task name (the JSON file name) by checking the following link:\n"
+                f"Unexpected error while downloading dataset for task '{self.task_name}': {str(e)}\n"
+                "Please verify the task name by checking the following link:\n"
                 "https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/bbh"
             ) from e
 
