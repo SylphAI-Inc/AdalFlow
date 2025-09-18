@@ -164,6 +164,13 @@ class FAISSRetriever(
         if document_map_func:
             assert callable(document_map_func), "document_map_func should be callable"
             documents = [document_map_func(doc) for doc in documents]
+        
+        # check if documents list is empty to prevent IndexError
+        if len(documents) == 0:
+            log.warning("empty documents list provided to build_index_from_documents")
+            self.reset_index()
+            return
+            
         try:
             self.documents = documents
 
