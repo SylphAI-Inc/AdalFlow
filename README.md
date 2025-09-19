@@ -252,7 +252,7 @@ Go to [Documentation](https://adalflow.sylph.ai) for tracing, human-in-the-loop,
 
 # Collaborations
 
-We work closely with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/), under the leadership of [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang), who provides valuable support in driving project initiatives.
+We work closely with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/), under the leadership of [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang) and in collaboration with [Dr. Junyuan Hong](https://jyhong.gitlab.io/), who provides valuable support in driving project initiatives.
 
  <!-- alongside [Dr. Junyuan Hong](https://jyhong.gitlab.io/),  -->
 For collaboration, contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).
