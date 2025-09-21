@@ -128,6 +128,7 @@ class TestOllamaModelClient(unittest.TestCase):
             # For streaming, the parsed result should be a GeneratorOutput with raw_response containing the generator
             self.assertIsInstance(parsed, GeneratorOutput)
             self.assertIsNotNone(parsed.raw_response)
+            self.assertIsNone(parsed.data)  # data should be None for streaming until consumed
             self.assertEqual(parsed.api_response, result)
             
             # Verify we can iterate through the raw_response
@@ -176,6 +177,7 @@ class TestOllamaModelClient(unittest.TestCase):
         # For streaming, the parsed result should be a GeneratorOutput with raw_response containing the async generator
         self.assertIsInstance(parsed, GeneratorOutput)
         self.assertIsNotNone(parsed.raw_response)
+        self.assertIsNone(parsed.data)  # data should be None for streaming until consumed
         self.assertEqual(parsed.api_response, result)
         
         # Verify we can iterate through the raw_response asynchronously
