@@ -52,7 +52,7 @@
 - Added Pydantic dependency support for new JsonOutputParserPydanticModel
 - Enhanced XML parsing capabilities with xml.etree.ElementTree
 
-## [1.1.2] - 2025-08-16
+## [1.1.2] - 2025-09-24
 
 ### Improved
 
