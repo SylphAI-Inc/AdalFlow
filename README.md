@@ -245,9 +245,15 @@ Go to [Documentation](https://adalflow.sylph.ai) for tracing, human-in-the-loop,
 
 
 # Research
+[Sep 2025] [LAD-VF: LLM-Automatic Differentiation Enables Fine-Tuning-Free Robot Planning from Formal Methods Feedback](https://arxiv.org/pdf/2509.18384)
+- Fine-tuning-free robot planning using LLM auto-differentiation
+- Integration of formal methods feedback for robot control
+
 [Jan 2025] [Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
 - LLM Applications as auto-differentiation graphs
 - Token-efficient and better performance than DsPy
+
+
 
 
 # Collaborations
