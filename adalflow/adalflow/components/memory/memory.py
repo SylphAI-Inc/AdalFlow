@@ -177,15 +177,17 @@ class ConversationMemory(Component):
             assistant_response (Union[str, AssistantResponse]): The assistant's response message.
 
         Returns:
-            str: The ID of the completed dialog turn.
-
-        Raises:
-            ValueError: If there's no pending user query to respond to.
+            str: The ID of the completed dialog turn, or None if no pending query exists.
         """
         if self._pending_user_query is None:
-            raise ValueError(
-                "No pending user query found. Please add a user query first."
+            # Log a warning instead of raising an error
+            import logging
+            logging.warning(
+                "No pending user query found when adding assistant response. "
+                "This might happen if the response was already added or the conversation was reset. "
+                "Ignoring this assistant response to avoid duplication."
             )
+            return None  # Return None to indicate no turn was added
 
         assistant_response = (
             assistant_response

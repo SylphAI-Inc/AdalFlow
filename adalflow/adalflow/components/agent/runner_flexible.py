@@ -1,4 +1,4 @@
-"""Agent runner component for managing and executing agent workflows."""
+"""Agent runner component with flexible memory for managing and executing agent workflows."""
 
 from pydantic import BaseModel
 import logging
@@ -48,7 +48,7 @@ from adalflow.core.types import (
     AssistantResponse,
 )
 from adalflow.apps.permission_manager import PermissionManager
-from adalflow.components.memory.memory import ConversationMemory
+from adalflow.components.memory.flexible_memory import FlexibleConversationMemory
 from adalflow.core.functional import _is_pydantic_dataclass, _is_adalflow_dataclass
 from adalflow.tracing import (
     runner_span,
@@ -58,7 +58,7 @@ from adalflow.tracing import (
 )
 
 
-__all__ = ["Runner"]
+__all__ = ["RunnerFlexible"]
 
 log = logging.getLogger(__name__)
 
@@ -103,8 +103,8 @@ AdalflowDataClass: TypeAlias = Type[
 
 
 # The runner will create tool call request, add a unique call id.
-# TODO: move this to repo adalflow/agent
-class Runner(Component):
+# Runner with flexible memory and robust error handling
+class RunnerFlexible(Component):
     """Executes Agent instances with multi-step iterative planning and tool execution.
 
     The Runner orchestrates the execution of an Agent through multiple reasoning and action
@@ -139,7 +139,7 @@ class Runner(Component):
         ctx: Optional[Dict] = None,
         max_steps: Optional[int] = None, # this will overwrite the agent's max_steps
         permission_manager: Optional[PermissionManager] = None,
-        conversation_memory: Optional[ConversationMemory] = None,
+        conversation_memory: Optional[FlexibleConversationMemory] = None,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -198,6 +198,88 @@ class Runner(Component):
             'steps_token_history': [],
             'last_total_tokens': 0  # Track last total to calculate step difference
         }
+    
+    # ============== Safe Memory Operations ==============
+    def _safe_create_turn(self) -> Optional[str]:
+        """Safely create a new turn in memory.
+        
+        Returns:
+            Turn ID if successful, None if failed
+        """
+        if not self.use_conversation_memory:
+            return None
+        
+        try:
+            return self.conversation_memory.create_turn()
+        except Exception as e:
+            log.warning(f"Failed to create turn in memory: {e}")
+            return None
+    
+    def _safe_add_user_query(self, query: Union[str, UserQuery], turn_id: Optional[str], metadata: Optional[Dict] = None) -> Optional[str]:
+        """Safely add user query to memory.
+        
+        Returns:
+            Turn ID if successful, None if failed
+        """
+        if not self.use_conversation_memory or turn_id is None:
+            return None
+        
+        try:
+            if isinstance(query, str):
+                return self.conversation_memory.add_user_query(query, turn_id, metadata)
+            else:
+                return self.conversation_memory.add_user_query(query.query_str, turn_id, metadata or query.metadata)
+        except Exception as e:
+            log.warning(f"Failed to add user query to memory: {e}")
+            return None
+    
+    def _safe_add_assistant_response(self, response: Union[str, AssistantResponse], turn_id: Optional[str], metadata: Optional[Dict] = None) -> Optional[str]:
+        """Safely add assistant response to memory.
+        
+        Returns:
+            Turn ID if successful, None if failed
+        """
+        if not self.use_conversation_memory or turn_id is None:
+            return None
+        
+        try:
+            if isinstance(response, str):
+                return self.conversation_memory.add_assistant_response(response, turn_id, metadata)
+            else:
+                return self.conversation_memory.add_assistant_response(
+                    response.response_str, 
+                    turn_id, 
+                    metadata or response.metadata
+                )
+        except Exception as e:
+            log.warning(f"Failed to add assistant response to memory: {e}")
+            return None
+    
+    def _safe_get_conversation_history(self) -> str:
+        """Safely get conversation history from memory.
+        
+        Returns:
+            Conversation history string, empty string if failed
+        """
+        if not self.use_conversation_memory:
+            return ""
+        
+        try:
+            return self.conversation_memory() or ""
+        except Exception as e:
+            log.warning(f"Failed to get conversation history: {e}")
+            return ""
+    
+    def _safe_reset_pending_query(self) -> None:
+        """Safely reset pending query in memory."""
+        if not self.use_conversation_memory:
+            return
+        
+        try:
+            self.conversation_memory.reset_pending_query()
+        except Exception as e:
+            log.warning(f"Failed to reset pending query: {e}")
+            # Continue execution even if reset fails
 
     def _init_permission_manager(self):
         """Initialize the permission manager and register tools that require approval."""
@@ -357,25 +439,20 @@ class Runner(Component):
             raise e
 
     def _add_assistant_response_to_memory(self, final_output_item: FinalOutputItem, turn_id: Any = None):
-        # add the assistant response to the conversation memory
-        try:
-            if self.use_conversation_memory and turn_id is not None:
-                # Only add if we have a valid turn_id
-                self.conversation_memory.add_assistant_response(
-                    AssistantResponse(
-                        response_str=final_output_item.data.answer,
-                        metadata={
-                            "step_history": final_output_item.data.step_history.copy()
-                        },                 
-                    ),
-                    turn_id=turn_id
-                )
-            elif self.use_conversation_memory:
-                log.warning("Skipping add_assistant_response - no turn_id available")
-        except Exception as e:
-            log.error(f"Failed to add assistant response to memory: {e}")
-            # Don't re-raise, just log the error
-            return
+        # add the assistant response to the conversation memory using safe wrapper
+        if self.use_conversation_memory and turn_id is not None:
+            # Only add if we have a valid turn_id
+            self._safe_add_assistant_response(
+                AssistantResponse(
+                    response_str=final_output_item.data.answer,
+                    metadata={
+                        "step_history": final_output_item.data.step_history.copy()
+                    },                 
+                ),
+                turn_id=turn_id
+            )
+        elif self.use_conversation_memory:
+            log.warning("Skipping add_assistant_response - no turn_id available")
 
     def create_response_span(self, runner_result, step_count: int, streaming_result: RunnerStreamingResult, runner_span_instance, workflow_status: str = "stream_completed"):
 
@@ -413,8 +490,6 @@ class Runner(Component):
         turn_id: Any = None,
     ) -> FinalOutputItem:
         """Process the final step and trace it."""
-        # processed_data = self._get_final_answer(function)
-        # printc(f"processed_data: {processed_data}", color="yellow")
 
         # Runner result is the same as the sync/async call result
 
@@ -422,15 +497,6 @@ class Runner(Component):
             answer=answer,
             step_history=self.step_history,
         )
-
-        # Update runner span with final results
-        # self.create_response_span(
-        #     runner_result=runner_result,
-        #     step_count=step_count,
-        #     streaming_result=streaming_result,
-        #     runner_span_instance=runner_span_instance,
-        #     workflow_status="stream_completed",
-        # )
 
         # Emit execution complete event
         final_output_item = FinalOutputItem(data=runner_result)
@@ -584,19 +650,24 @@ class Runner(Component):
             turn_id = None
             if self.use_conversation_memory:
                 # Reset any pending query state before starting a new query
-                self.conversation_memory.reset_pending_query()
-
-                prompt_kwargs["chat_history_str"] = self.conversation_memory()
+                self._safe_reset_pending_query()
+                
+                # Create new turn
+                turn_id = self._safe_create_turn()
+                
+                prompt_kwargs["chat_history_str"] = self._safe_get_conversation_history()
                 # save the user query to the conversation memory
 
                 # meta data is all keys in the list of context_str
                 query_metadata = {"context_str": prompt_kwargs.get("context_str", None)}
-                turn_id = self.conversation_memory.add_user_query(
-                    UserQuery(
-                        query_str=prompt_kwargs.get("input_str", None),
-                        metadata=query_metadata,
+                if turn_id:
+                    self._safe_add_user_query(
+                        UserQuery(
+                            query_str=prompt_kwargs.get("input_str", None),
+                            metadata=query_metadata,
+                        ),
+                        turn_id=turn_id
                     )
-                )
 
             # set maximum number of steps for the planner into the prompt
             prompt_kwargs["max_steps"] = self.max_steps
@@ -694,7 +765,7 @@ class Runner(Component):
 
                             # Add assistant response to conversation memory
                             if self.use_conversation_memory and turn_id is not None:
-                                self.conversation_memory.add_assistant_response(
+                                self._safe_add_assistant_response(
                                     AssistantResponse(
                                         response_str=processed_data,
                                         metadata={
@@ -942,19 +1013,24 @@ class Runner(Component):
             turn_id = None
             if self.use_conversation_memory:
                 # Reset any pending query state before starting a new query
-                self.conversation_memory.reset_pending_query()
-
-                prompt_kwargs["chat_history_str"] = self.conversation_memory()
+                self._safe_reset_pending_query()
+                
+                # Create new turn
+                turn_id = self._safe_create_turn()
+                
+                prompt_kwargs["chat_history_str"] = self._safe_get_conversation_history()
                 # save the user query to the conversation memory
 
                 # meta data is all keys in the list of context_str
                 query_metadata = {"context_str": prompt_kwargs.get("context_str", None)}
-                turn_id = self.conversation_memory.add_user_query(
-                    UserQuery(
-                        query_str=prompt_kwargs.get("input_str", None),
-                        metadata=query_metadata,
+                if turn_id:
+                    self._safe_add_user_query(
+                        UserQuery(
+                            query_str=prompt_kwargs.get("input_str", None),
+                            metadata=query_metadata,
+                        ),
+                        turn_id=turn_id
                     )
-                )
 
             # set maximum number of steps for the planner into the prompt
             prompt_kwargs["max_steps"] = self.max_steps
@@ -1067,7 +1143,7 @@ class Runner(Component):
 
                         # Add assistant response to conversation memory
                         if self.use_conversation_memory and turn_id is not None:
-                            self.conversation_memory.add_assistant_response(
+                            self._safe_add_assistant_response(
                                 AssistantResponse(
                                     response_str=answer,
                                     metadata={
@@ -1306,19 +1382,23 @@ class Runner(Component):
             prompt_kwargs["step_history"] = self.step_history
             if self.use_conversation_memory:
                 # Reset any pending query state before starting a new query
-                self.conversation_memory.reset_pending_query()
+                self._safe_reset_pending_query()
 
-                prompt_kwargs["chat_history_str"] = self.conversation_memory()
+                # Create new turn
+                turn_id = self._safe_create_turn()
+                
+                prompt_kwargs["chat_history_str"] = self._safe_get_conversation_history()
                 # save the user query to the conversation memory
-
                 # meta data is all keys in the list of context_str
                 query_metadata = {"context_str": prompt_kwargs.get("context_str", None)}
-                turn_id = self.conversation_memory.add_user_query(
-                    UserQuery(
-                        query_str=prompt_kwargs.get("input_str", None),
-                        metadata=query_metadata,
+                if turn_id:
+                    self._safe_add_user_query(
+                        UserQuery(
+                            query_str=prompt_kwargs.get("input_str", None),
+                            metadata=query_metadata,
+                        ),
+                        turn_id
                     )
-                )
             # a reference to the step history
             # set maximum number of steps for the planner into the prompt
             prompt_kwargs["max_steps"] = self.max_steps
@@ -1366,6 +1446,8 @@ class Runner(Component):
                             use_cache=use_cache,
                             id=id,
                         )
+                        planner_prompt = self.agent.planner.get_prompt(**prompt_kwargs)
+                        log.debug(f"Planner output: {output}, prompt: {planner_prompt}")
                         
                         # Track token usage
                         step_tokens = self._update_token_consumption()
@@ -1468,6 +1550,7 @@ class Runner(Component):
                             # normal functions
                             wrapped_event = RawResponsesStreamEvent(
                                 data=output.data, 
+                                input=planner_prompt,
                             )  # wrap on the data field to be the final output, the data might be null
                             streaming_result.put_nowait(wrapped_event)
 
@@ -1626,7 +1709,7 @@ class Runner(Component):
 
                     # Add cancellation response to conversation memory
                     if self.use_conversation_memory and turn_id is not None:
-                        self.conversation_memory.add_assistant_response(
+                        self._safe_add_assistant_response(
                             AssistantResponse(
                                 response_str="I apologize, but the execution was cancelled by the user.",
                                 metadata={
