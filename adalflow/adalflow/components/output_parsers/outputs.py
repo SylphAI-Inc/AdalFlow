@@ -21,7 +21,6 @@ from adalflow.core.base_data_class import ExcludeType, IncludeType
 from pydantic import BaseModel, ValidationError
 
 
-
 __all__ = [
     "OutputParser",
     "YamlOutputParser",
@@ -144,7 +143,6 @@ class OutputParser(DataComponent):
     """
 
     def __init__(self, *args, **kwargs) -> None:
-        
         super().__init__()
         pass
 
@@ -209,7 +207,6 @@ class YamlOutputParser(OutputParser):
         exclude_fields: ExcludeType = None,
         return_data_class: bool = False,
     ):
-
         super().__init__()
         if not is_dataclass(data_class):
             raise TypeError(f"Provided class is not a dataclass: {data_class}")
@@ -334,7 +331,7 @@ class JsonOutputParser(OutputParser):
                 Defaults to DataClassFormatType.SIGNATURE_JSON for less token usage compared with DataClassFormatType.SCHEMA.
                 Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
-        format_type = format_type or DataClassFormatType.SCHEMA
+        format_type = format_type or DataClassFormatType.SIGNATURE_JSON
         schema = self.data_class.format_class_str(
             format_type=format_type,
             exclude=self._exclude_fields,
@@ -383,15 +380,15 @@ class JsonOutputParser(OutputParser):
 
 class JsonOutputParserPydanticModel(OutputParser):
     """JSON output parser using Pydantic BaseModel for schema extraction and validation.
-    
+
     This parser works with Pydantic BaseModel classes instead of AdalFlow's DataClass,
     providing better JSON schema generation and automatic validation.
-    
+
     Args:
         pydantic_model (Type[BaseModel]): The Pydantic model class to use for schema and validation
         examples (List[BaseModel], optional): Example instances of the Pydantic model. Defaults to None.
         return_pydantic_object (bool, optional): If True, returns parsed Pydantic object. If False, returns dict. Defaults to True.
-    
+
     Examples:
         >>> from pydantic import BaseModel
         >>> from typing import List
@@ -405,7 +402,7 @@ class JsonOutputParserPydanticModel(OutputParser):
         >>> format_instructions = parser.format_instructions()
         >>> # Use in Generator with output_processors=parser
     """
-    
+
     def __init__(
         self,
         pydantic_model: Type[BaseModel],
@@ -413,32 +410,33 @@ class JsonOutputParserPydanticModel(OutputParser):
         return_pydantic_object: bool = True,
     ):
         super().__init__()
-        
-        
-        if not (isinstance(pydantic_model, type) and issubclass(pydantic_model, BaseModel)):
+
+        if not (
+            isinstance(pydantic_model, type) and issubclass(pydantic_model, BaseModel)
+        ):
             raise TypeError(
                 f"Provided model must be a Pydantic BaseModel class, got: {pydantic_model}"
             )
-        
+
         if examples is not None and len(examples) > 0:
             if not isinstance(examples[0], pydantic_model):
                 raise TypeError(
                     f"Provided examples must be instances of {pydantic_model.__name__}"
                 )
-        
+
         self.pydantic_model = pydantic_model
         self.examples = examples or []
         self._return_pydantic_object = return_pydantic_object
-        
+
         # Use the same JSON_OUTPUT_FORMAT template as the regular JsonOutputParser
         self.output_format_prompt = Prompt(template=JSON_OUTPUT_FORMAT)
         self.output_processors = JsonParser()
-    
+
     def format_instructions(self) -> str:
         """Return the formatted instructions with Pydantic model schema."""
         # Get JSON schema from Pydantic model
         schema = self._get_pydantic_schema()
-        
+
         # Format examples if provided
         example_str = ""
         try:
@@ -452,9 +450,9 @@ class JsonOutputParserPydanticModel(OutputParser):
         except Exception as e:
             log.error(f"Error in formatting examples for {__class__.__name__}: {e}")
             example_str = None
-        
+
         return self.output_format_prompt(schema=schema, example=example_str)
-    
+
     def _get_pydantic_schema(self) -> str:
         """Generate a JSON schema description from Pydantic model using native functionality."""
         try:
@@ -464,18 +462,18 @@ class JsonOutputParserPydanticModel(OutputParser):
         except Exception as e:
             log.error(f"Error generating Pydantic schema: {e}")
             return f"Schema for {self.pydantic_model.__name__}"
-    
+
     def call(self, input: str) -> Union[BaseModel, Dict[str, Any]]:
         """Parse JSON string to Pydantic object or dict."""
         try:
             # First parse the JSON string to dict
             output_dict = self.output_processors(input)
             log.debug(f"{__class__.__name__} parsed dict: {output_dict}")
-            
+
         except Exception as e:
             log.error(f"Error parsing JSON string: {e}")
             raise e
-        
+
         if self._return_pydantic_object:
             try:
                 # Use Pydantic's validation to create the object
@@ -488,7 +486,7 @@ class JsonOutputParserPydanticModel(OutputParser):
                 raise e
         else:
             return output_dict
-    
+
     def _extra_repr(self) -> str:
         return f"pydantic_model={self.pydantic_model.__name__}, examples={len(self.examples)}, return_pydantic_object={self._return_pydantic_object}"
 
@@ -529,7 +527,6 @@ class BooleanOutputParser(OutputParser):
         return "The output should be a boolean value. True or False."
 
     def call(self, input: str) -> bool:
-
         input = input.strip()
         output = None
         # evaluate the expression to get the boolean value
