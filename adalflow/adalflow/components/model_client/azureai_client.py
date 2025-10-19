@@ -245,9 +245,10 @@ class AzureAIClient(ModelClient):
                 api_key=api_key, azure_endpoint=azure_endpoint, api_version=api_version
             )
         elif self._credential:
-            # credential = DefaultAzureCredential()
+            # Use the provided credential if available; otherwise fall back to DefaultAzureCredential
+            credential = self._credential or DefaultAzureCredential()
             token_provider = get_bearer_token_provider(
-                DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
+                credential, "https://cognitiveservices.azure.com/.default"
             )
             return AzureOpenAI(
                 azure_ad_token_provider=token_provider,
@@ -274,9 +275,10 @@ class AzureAIClient(ModelClient):
                 api_key=api_key, azure_endpoint=azure_endpoint, api_version=api_version
             )
         elif self._credential:
-            # credential = DefaultAzureCredential()
+            # Use the provided credential if available; otherwise fall back to DefaultAzureCredential
+            credential = self._credential or DefaultAzureCredential()
             token_provider = get_bearer_token_provider(
-                DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
+                credential, "https://cognitiveservices.azure.com/.default"
             )
             return AsyncAzureOpenAI(
                 azure_ad_token_provider=token_provider,
@@ -310,7 +312,7 @@ class AzureAIClient(ModelClient):
             data = self.chat_completion_parser(completion)
             usage = self.track_completion_usage(completion)
             return GeneratorOutput(
-                data=None, error=None, raw_response=data, usage=usage
+                data=data, error=None, raw_response=data, usage=usage
             )
         except Exception as e:
             log.error(f"Error parsing the completion: {e}")
