@@ -9,7 +9,6 @@ import numpy as np
 import uuid
 import time
 from copy import copy
-
 from adalflow.core.component import Component
 from adalflow.optim.optimizer import Optimizer, DemoOptimizer, TextOptimizer
 
@@ -81,7 +80,7 @@ class Trainer(Component):
     train_batch_size: Optional[int] = 4
 
     train_loader: Any
-    val_dataset = None
+    val_dataset = None  # Consistent validation dataset for scoring
     test_dataset = None
     strategy: Literal["random", "constrained"]
     optimization_order: Literal["sequential", "mix"] = (
@@ -333,7 +332,7 @@ class Trainer(Component):
 
         # Check the accuracy score
         if acc_score is not None:
-            print(Fore.GREEN + f"✔ Overall accuracy score: {acc_score:.2f}")
+            print(Fore.GREEN + f"✔ Overall accuracy score: {acc_score:.4f}")
         else:
             print(Fore.RED + "✘ Accuracy score not provided or calculated.")
 
@@ -473,7 +472,6 @@ class Trainer(Component):
                 seed=self.random_seed,
             )
         val_dataset = val_dataset or self.val_dataset
-
         test_dataset = test_dataset or self.test_dataset
 
         if not val_dataset:
@@ -513,7 +511,6 @@ class Trainer(Component):
 
         # config optimizers
         if len(self._get_trainable_demo_params()) > 0:
-
             for opt in self.demo_optimizers:
                 opt.config_shots(raw_shots=raw_shots, bootstrap_shots=bootstrap_shots)
                 opt.use_weighted_sampling(weighted=self.weighted_sampling)
@@ -528,7 +525,6 @@ class Trainer(Component):
 
         # configure backward engine
         if len(self._get_trainable_text_params()) > 0:
-
             if self.adaltask.backward_engine is None:
                 self.adaltask.configure_backward_engine(
                     backward_pass_setup=backward_pass_setup
@@ -631,7 +627,17 @@ class Trainer(Component):
 
             def run_text_optimizers(starting_step: int, trainer_results: TrainerResult):
                 if len(self.text_optimizers) > 0:
-                    if self.strategy == "random":
+                    # Check if TSGD-M is enabled
+                    if self.tsgd_m_enabled:
+                        printc("Using TSGD-M (Textual Gradient Descent with Momentum) training", "cyan")
+                        self._fit_text_grad_tsgd_m(
+                            train_loader,
+                            val_dataset,
+                            test_dataset,
+                            trainer_results,
+                            starting_step=starting_step,
+                        )
+                    elif self.strategy == "random":
                         self._fit_text_grad_random(
                             train_loader,
                             val_dataset,
@@ -697,7 +703,6 @@ class Trainer(Component):
         return max_steps // num_samples + 1
 
     def initial_validation(self, val_dataset: Any, test_dataset: Any):
-
         val_output = self.adaltask.validation_step(val_dataset, 0, self.num_workers)
         val_score = val_output.avg_score
         test_score = None
@@ -791,7 +796,17 @@ class Trainer(Component):
             if trainer_state and "hash_key" in trainer_state
             else str(uuid.uuid4())
         )
-        file_name_prefix = f"{self.strategy}_max_steps_{self.max_steps}_{hash_key}"
+        
+        # Add Gumbel configuration to filename
+        gumbel_suffix = ""
+        if hasattr(self, "use_gumbel_top_k") and self.use_gumbel_top_k:
+            gumbel_suffix = "_gumbel"
+            if hasattr(self, "use_evaluate_top_k") and self.use_evaluate_top_k:
+                gumbel_suffix += f"_etopk{self.evaluate_top_k_k}"
+
+        file_name_prefix = (
+            f"{self.strategy}_max_steps_{self.max_steps}{gumbel_suffix}_{hash_key}"
+        )
         ckpt_files = [
             f for f in os.listdir(self.ckpt_path) if f.startswith(file_name_prefix)
         ]
@@ -936,9 +951,7 @@ class Trainer(Component):
             self._demo_optimizers_propose()
             graph_path = os.path.join(debug_path, "student_graph")
 
-            demo_debug_result_path = losses_student[0].draw_graph(
-                filepath=graph_path
-            )  # noqa F841
+            demo_debug_result_path = losses_student[0].draw_graph(filepath=graph_path)  # noqa F841
 
             # test step
             self._demo_optimizers_step()
@@ -952,7 +965,6 @@ class Trainer(Component):
                 opt_params.extend(opt.params)
             # print(f"Opt params: {opt_params}")
             for name, param in self.adaltask.named_parameters():
-
                 if param.param_type == ParameterType.DEMOS:
                     print(
                         f"Demo param: {name}, value: {param.data}, param: {param.name}"
@@ -1017,18 +1029,18 @@ class Trainer(Component):
 
         total_loss.backward()
         t1 = time.time()
-        printc(f"finish loss backward in {t1-t0} seconds")
+        printc(f"finish loss backward in {t1 - t0} seconds")
         # test optimizer
         self._propose_text_optimizers()
         t2 = time.time()
-        printc(f"finish text optimizer step in {t2-t1} seconds")
+        printc(f"finish text optimizer step in {t2 - t1} seconds")
 
         debug_files: Dict = total_loss.draw_graph(filepath=debug_path, full_trace=True)
         t3 = time.time()
-        printc(f"finish draw_graph step in {t3-t2} seconds")
+        printc(f"finish draw_graph step in {t3 - t2} seconds")
         debug_output_file = total_loss.draw_output_subgraph(filepath=debug_path)
         t4 = time.time()
-        printc(f"finish draw_output_subgraph step in {t4-t3} seconds")
+        printc(f"finish draw_output_subgraph step in {t4 - t3} seconds")
         debug_component_file = total_loss.draw_component_subgraph(filepath=debug_path)
         debug_files.update(debug_output_file)
         debug_files.update(debug_component_file)
@@ -1120,14 +1132,6 @@ class Trainer(Component):
     def _step_text_optimizers(self):
         for text_optimizer in self.text_optimizers:
             text_optimizer.step()
-
-    def _add_history_text_optimizers(self, val_score: float):
-        if not isinstance(val_score, float):
-            raise ValueError(
-                f"val_score should be a float, got {type(val_score)}, {val_score}"
-            )
-        for text_optimizer in self.text_optimizers:
-            text_optimizer.add_score_to_params(round(val_score, 4))
 
     def _revert_text_optimizers(self):
         for text_optimizer in self.text_optimizers:
@@ -1436,11 +1440,6 @@ class Trainer(Component):
 
                     # test the model
                     test_score = None
-                    # if test_dataset is not None:
-                    #     test_output = self.adaltask.validation_step(
-                    #         test_dataset, total_steps, self.num_workers
-                    #     )
-                    #     test_score = test_output.avg_score
                     self._add_one_step_in_trainer_results(
                         trainer_results,
                         val_score,
@@ -1619,7 +1618,6 @@ class Trainer(Component):
         if self.save_traces:
             for i, demo_opt in enumerate(self.demo_optimizers):
                 for param in demo_opt.params:
-
                     teacher_traces = param._traces
                     student_traces = param._student_traces
 
@@ -1691,10 +1689,10 @@ class Trainer(Component):
         val_score = None
 
         for i in tdqm_loader:
-            print(f"Proposal: {i+1}")
+            print(f"Proposal: {i + 1}")
             start_time = time.time()
             self._propose_text_optimizers()
-            printc(f"Propose time: {time.time()-start_time}")
+            printc(f"Propose time: {time.time() - start_time}")
             new_prompts = self.adaltask._get_param_values()
             print("New prompts: ", new_prompts)
 
@@ -1710,7 +1708,6 @@ class Trainer(Component):
                 batch_val_score == batch_score
                 and batch_score >= self.batch_val_score_threshold
             ) or batch_val_score > batch_score:  # allow perfect subset to pass
-
                 printc(
                     f"Pass subset check:{use_eval_loss_fn}, {batch_val_score} > {batch_score}"
                 )
@@ -1736,17 +1733,11 @@ class Trainer(Component):
             val_score = val_output.avg_score
 
             if val_score > last_val_score:
-
-                print(f"Optimizer step: {val_score} > {last_val_score}")
+                print(f"Optimizer step: {val_score} vs last: {last_val_score}")
                 # track the effectiveness
                 self._track_effectiveness("valset", True)
                 self._step_text_optimizers()
                 self._add_history_text_optimizers(val_score)  # track top performor
-                # test the model
-                # test_output = self.adaltask.validation_step(
-                #     test_dataset, total_steps, self.num_workers
-                # )
-                # test_score = test_output.avg_score
                 test_score = None
                 self._add_one_step_in_trainer_results(
                     trainer_results,
@@ -1820,8 +1811,8 @@ class Trainer(Component):
                 self._zero_grad_text_optimizers()
                 pbar.set_description(f"Training Step: {current_step}")
                 self.adaltask.train()  # this will turn everything to train mode
-                try:
 
+                try:
                     y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
                 except Exception as e:
                     print(f"Error in train step: {e}")
@@ -1918,7 +1909,6 @@ class Trainer(Component):
         step: int,
         attempted_val_score: Optional[float] = None,
     ):
-
         step_results = TrainerStepResult(
             step=step,
             val_score=val_score,
@@ -1992,8 +1982,7 @@ class Trainer(Component):
         error_indices = [i for i, score in enumerate(acc_score_list) if score <= 0.5]
 
         if (
-            len(error_indices) + len(correct_indices)
-            <= max_moving_batch_size
+            len(error_indices) + len(correct_indices) <= max_moving_batch_size
             # and len(correct_indices) <= max_moving_batch_size
         ):
             return all_samples, all_losses, all_y_preds, acc_score_list
@@ -2197,11 +2186,11 @@ class Trainer(Component):
         tdqm_loader = tqdm(range(self.max_proposals_per_step), desc="Proposing")
 
         for i in tdqm_loader:
-
-            print(f"Proposal: {i+1}")
+            print(f"Proposal: {i + 1}")
             start_time = time.time()
+
             self._propose_text_optimizers()  # new prompts
-            printc(f"Propose time: {time.time()-start_time}")
+            printc(f"Propose time: {time.time() - start_time}")
             if include_demo_optimizers:
                 self._demo_optimizers_propose()
             new_prompts = self.adaltask._get_param_values()
@@ -2220,7 +2209,6 @@ class Trainer(Component):
                 val_score == subset_score
                 and subset_score >= self.batch_val_score_threshold
             ) or val_score > subset_score:  # allow perfect subset to pass
-
                 printc(
                     f"Pass minibatch check:{use_eval_loss_fn}, {val_score} > {subset_score}"
                 )
@@ -2273,7 +2261,6 @@ class Trainer(Component):
                 self._add_history_text_optimizers(val_score)
 
                 if include_demo_optimizers:
-
                     self._demo_optimizers_step()
 
                 # test the model
@@ -2395,3 +2382,826 @@ class Trainer(Component):
 
         save_json(trainer_results.to_dict(), self.ckpt_file)
         return trainer_results
+
+    ####################################################################################################
+    # TSGD-M: Textual Gradient Descent with Momentum
+    ####################################################################################################
+
+    def _sample_prompts_from_cache(self, k: int) -> List[Dict[str, Any]]:
+        """
+        Sample K prompts from all past iterations based on their scores.
+
+        Implements Algorithm step: "Sample K prompts Π_τ^* from all past iterations based on their scores"
+
+        Args:
+            k: Number of prompts to sample (momentum window size K)
+
+        Returns:
+            List of sampled prompt entries from cache
+        """
+        if not self.tsgd_m_cache or len(self.tsgd_m_cache) == 0:
+            return []
+
+        # Get all cache entries sorted by step
+        cache_entries = sorted(self.tsgd_m_cache.items(), key=lambda x: x[0])
+
+        # Calculate average scores for each cache entry
+        scored_entries = []
+        for step, entry in cache_entries:
+            if "val_scores" in entry and entry["val_scores"]:
+                avg_score = sum(entry["val_scores"]) / len(entry["val_scores"])
+                scored_entries.append((step, entry, avg_score))
+
+        if not scored_entries:
+            return []
+
+        # Select top K by average score (or all if fewer than K)
+        k_actual = min(k, len(scored_entries))
+        top_k_entries = sorted(scored_entries, key=lambda x: x[2], reverse=True)[:k_actual]
+
+        return [entry for _, entry, _ in top_k_entries]
+
+    def _evaluate_prompts_on_minibatch(
+        self,
+        prompts_to_eval: List[Dict[str, Any]],
+        val_minibatch: Any,
+        current_step: int,
+    ) -> List[float]:
+        """
+        Evaluate validation accuracy of multiple prompts on B_val mini-batch.
+
+        Implements Algorithm step: "Evaluate validation accuracy of Π_τ^* on B_val, denoted as V"
+
+        Args:
+            prompts_to_eval: List of prompt entries to evaluate
+            val_minibatch: Validation mini-batch data
+            current_step: Current training step
+
+        Returns:
+            List of validation scores for each prompt
+        """
+        val_scores = []
+
+        for i, prompt_entry in enumerate(prompts_to_eval):
+            if "prompt" not in prompt_entry:
+                val_scores.append(0.0)
+                continue
+
+            prompt_text = prompt_entry["prompt"]
+
+            # Set the prompt temporarily and evaluate
+            for param in self.text_optimizers[0].params:
+                if param.requires_opt:
+                    original_data = param.data
+                    param.data = prompt_text
+
+                    # Evaluate on mini-batch
+                    try:
+                        val_output = self.adaltask.validation_step(
+                            val_minibatch,
+                            current_step,
+                            self.num_workers,
+                        )
+                        val_score = val_output.avg_score
+                        val_scores.append(val_score)
+                        log.debug(f"  Prompt {i} score: {val_score:.1f}%")
+                    except Exception as e:
+                        log.error(f"Error evaluating prompt {i}: {e}")
+                        val_scores.append(0.0)
+                    finally:
+                        # Restore original prompt
+                        param.data = original_data
+
+        return val_scores
+
+    def _select_best_prompt(
+        self,
+        prompts_to_eval: List[Dict[str, Any]],
+        val_scores: List[float],
+    ) -> Dict[str, Any]:
+        """
+        Select the best prompt based on validation scores.
+
+        Implements Algorithm step: "Select the best prompt π_τ based on V"
+
+        Args:
+            prompts_to_eval: List of prompt entries
+            val_scores: Validation scores for each prompt
+
+        Returns:
+            Best performing prompt entry
+        """
+        if not val_scores or len(val_scores) == 0:
+            return prompts_to_eval[0] if prompts_to_eval else {}
+
+        best_idx = val_scores.index(max(val_scores))
+        best_prompt = prompts_to_eval[best_idx]
+
+        return best_prompt
+
+    def _add_to_tsgd_m_cache(
+        self,
+        step: int,
+        prompt: str,
+        gradient_info: str,
+        val_scores: List[float],
+    ):
+        """
+        Add (t, π_t, g_t, [v_t]) to cache Φ.
+
+        Implements Algorithm step: "Add (t+1, π_t+1, g_t+1, [v_t]) to Φ"
+
+        Args:
+            step: Training step t
+            prompt: Prompt text π_t
+            gradient_info: Gradient information g_t
+            val_scores: List of validation scores [v_t]
+        """
+        cache_entry = {
+            "step": step,
+            "prompt": prompt,
+            "gradient": gradient_info,
+            "val_scores": val_scores,
+            "timestamp": time.time(),
+        }
+
+        self.tsgd_m_cache[step] = cache_entry
+
+    def _fit_text_grad_tsgd_m(
+        self,
+        train_loader: Any,
+        val_dataset: Any,
+        test_dataset: Any,
+        trainer_results: TrainerResult = None,
+        starting_step: int = 0,
+    ) -> TrainerResult:
+        """
+        Textual Gradient Descent with Momentum (TSGD-M) implementation.
+
+        Algorithm from paper:
+        FOR t = 0 to T-1:
+            1. Draw training mini-batch B_train and validation mini-batch B_val
+            2. Sample K prompts Π_τ^* from all past iterations based on their scores
+            3. Evaluate validation accuracy of Π_τ^* on B_val, denoted as V
+            4. Select the best prompt π_τ based on V
+            5. Generate next prompt: π_{t+1} = P(π | g_τ, π_τ)
+            6. Compute gradient g_{t+1} on π_{t+1} and add (t+1, π_{t+1}, g_{t+1}, [v_t]) to Φ
+        """
+        logger.info("Fitting using Textual Gradient Descent with Momentum (TSGD-M)")
+        printc("Fitting using Textual Gradient Descent with Momentum (TSGD-M)", "green")
+
+        trainer_results = (
+            self._pre_fit(val_dataset, test_dataset)
+            if trainer_results is None
+            else trainer_results
+        )
+
+        self.adaltask.train()
+        self._zero_grad_text_optimizers()
+
+        num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
+        print(f"num_epochs: {num_epochs}, max_steps: {self.max_steps}")
+
+        current_step = starting_step
+
+        for epoch in tqdm(range(num_epochs), desc="Epoch (TSGD-M)"):
+            print(f"\n{'='*60}")
+            print(f"Epoch: {epoch}")
+            print(f"{'='*60}")
+
+            for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
+                current_step += 1
+                if current_step > self.max_steps + starting_step:
+                    print("Reached max steps")
+                    break
+
+                self._zero_grad_text_optimizers()
+                pbar.set_description(f"Training Step: {current_step} (TSGD-M)")
+                self.adaltask.train()
+
+                # STEP 1: Sample training and validation mini-batches
+                import random
+                if self.random_seed is not None:
+                    random.seed(self.random_seed + current_step)
+
+                actual_minibatch_size = self.evaluate_top_k_minibatch_size or 50
+                actual_minibatch_size = min(actual_minibatch_size, len(self.gumbel_val_dataset))
+                val_minibatch = random.sample(self.gumbel_val_dataset, actual_minibatch_size)
+
+                # STEP 2: Sample K prompts from all past iterations based on scores
+                print(f"\n[TSGD-M Step {current_step}] Sampling K={self.tsgd_m_momentum_window} prompts from cache...")
+                sampled_prompts = self._sample_prompts_from_cache(self.tsgd_m_momentum_window)
+
+                # STEP 3: Evaluate sampled prompts on validation mini-batch
+                if sampled_prompts:
+                    print(f"[TSGD-M Step {current_step}] Evaluating {len(sampled_prompts)} prompts on mini-batch...")
+                    val_scores = self._evaluate_prompts_on_minibatch(
+                        sampled_prompts,
+                        val_minibatch,
+                        current_step,
+                    )
+
+                    # STEP 4: Select best prompt
+                    best_prompt_entry = self._select_best_prompt(sampled_prompts, val_scores)
+
+                    # Set the best historical prompt as current
+                    if "prompt" in best_prompt_entry:
+                        print(f"[TSGD-M Step {current_step}] Setting best historical prompt before forward pass")
+                        for param in self.text_optimizers[0].params:
+                            if param.requires_opt:
+                                param.data = best_prompt_entry["prompt"]
+                else:
+                    print(f"[TSGD-M Step {current_step}] No prompts in cache yet, using current prompt")
+
+                # Forward pass on training batch
+                try:
+                    y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
+                except Exception as e:
+                    print(f"Error in train step: {e}")
+                    raise e
+
+                try:
+                    losses = self.adaltask.loss_step(batch, y_preds, steps, self.num_workers)
+                except Exception as e:
+                    print(f"Error in loss step: {e}")
+                    raise e
+
+                total_loss = sum_ops(losses)
+
+                # STEP 5+6: Generate next prompt and compute gradient
+                try:
+                    if not self.disable_backward:
+                        total_loss.backward()
+                except Exception as e:
+                    print(f"Error in backward: {e}")
+                    raise e
+
+                print(f"[TSGD-M Step {current_step}] Proposing new prompt...")
+
+                # Propose new prompt based on gradient
+                self._propose_text_optimizers()
+                new_prompts = self.adaltask._get_param_values()
+
+                # Get gradient information
+                gradient_info = ""
+                for text_optimizer in self.text_optimizers:
+                    if hasattr(text_optimizer, "params"):
+                        for param in text_optimizer.params:
+                            if param.requires_opt and hasattr(param, "gradients"):
+                                gradient_info += f"\n{param.name}: {len(param.gradients)} gradients"
+
+                # Evaluate on full validation set (less frequently)
+                if current_step % 4 == 0:
+                    val_output = self.adaltask.validation_step(
+                        val_dataset,
+                        current_step,
+                        self.num_workers,
+                    )
+                    val_score = val_output.avg_score
+                else:
+                    val_score = trainer_results.val_scores[-1] if trainer_results.val_scores else 0.0
+
+                # STEP 6: Add to cache
+                prompt_text = str(new_prompts[0]) if new_prompts else ""
+                self._add_to_tsgd_m_cache(
+                    step=current_step,
+                    prompt=prompt_text,
+                    gradient_info=gradient_info,
+                    val_scores=[val_score],
+                )
+
+                # Check if improvement and update
+                last_val_score = trainer_results.val_scores[-1] if trainer_results.val_scores else 0.0
+                if self._should_add_to_history(val_score, last_val_score):
+                    print(f"[TSGD-M Step {current_step}] ✓ Validation improved: {val_score:.1f}% > {last_val_score:.1f}%")
+                    self._step_text_optimizers()
+                    self._add_history_text_optimizers(val_score)
+                    self._add_one_step_in_trainer_results(
+                        trainer_results,
+                        val_score,
+                        None,
+                        new_prompts,
+                        current_step,
+                    )
+                    self._reset_steps_from_last_improvement_text_optimizers()
+                else:
+                    print(f"[TSGD-M Step {current_step}] ✗ No improvement: {val_score:.1f}% <= {last_val_score:.1f}%")
+                    self._add_failed_proposals_text_optimizers()
+                    self._revert_text_optimizers()
+                    self._add_one_step_in_trainer_results(
+                        trainer_results,
+                        last_val_score,
+                        None,
+                        new_prompts,
+                        current_step,
+                        attempted_val_score=val_score,
+                    )
+                    self._increment_step_from_last_improvement_text_optimizers()
+
+                # Save checkpoint
+                save_json(trainer_results.to_dict(), self.ckpt_file)
+
+        print(f"\n{'='*60}")
+        print("TSGD-M Training Complete")
+        print(f"Final validation score: {trainer_results.val_scores[-1] if trainer_results.val_scores else 'N/A'}")
+        print(f"Cache size: {len(self.tsgd_m_cache)}")
+        print(f"{'='*60}")
+
+        return trainer_results
+
+
+class TrainerGumbel(Trainer):
+    """Trainer extension with Gumbel-Top-K selection and TSGD-M support.
+
+    This class extends the base Trainer with advanced optimization features:
+
+    Args:
+        history_update_strategy: Strategy for updating prompt history
+            - "improvement_only": Only add if validation score improved (original behavior)
+            - "always": Always add to history (maximum exploration)
+            - "epsilon_greedy": Add with probability epsilon even if worse
+            - "confidence_based": Add if within confidence threshold
+        exploration_epsilon: Exploration probability for epsilon_greedy strategy (0.0-1.0)
+        confidence_threshold: Confidence threshold for confidence_based strategy (0.0-1.0)
+        tsgd_m_enabled: Enable TSGD-M (Textual Gradient Descent with Momentum) workflow
+        tsgd_m_momentum_window: Momentum window size (K) for sampling past prompts in TSGD-M
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Extract Gumbel-specific parameters before passing to parent
+        self.history_update_strategy: Literal[
+            "improvement_only", "always", "epsilon_greedy", "confidence_based"
+        ] = kwargs.pop("history_update_strategy", "always")
+        self.exploration_epsilon: float = kwargs.pop("exploration_epsilon", 0.2)
+        self.confidence_threshold: float = kwargs.pop("confidence_threshold", 0.1)
+        self.tsgd_m_enabled_param: bool = kwargs.pop("tsgd_m_enabled", False)
+        self.tsgd_m_momentum_window_param: int = kwargs.pop("tsgd_m_momentum_window", 5)
+
+        # Initialize parent
+        super().__init__(*args, **kwargs)
+
+        # Initialize Gumbel-specific attributes
+        self.gumbel_val_dataset: Optional[Any] = None
+
+        # Gumbel-Top-K tracking: stores validation scores across iterations
+        self.prompt_val_scores_dict: Dict[str, List[float]] = {}
+        self.prompt_val_acc_dict: Dict[str, List[List[int]]] = {}
+        self.prompt_order: List[str] = []
+
+        # Legacy tracking (for backward compatibility and Gumbel input)
+        self.batch_val_scores: List[float] = []
+        self.batch_val_acc_list: List[List[int]] = []
+        self.use_gumbel_top_k: bool = False
+
+        # Evaluate-Top-K workflow configuration
+        self.use_evaluate_top_k: bool = False
+        self.evaluate_top_k_k: int = 5
+        self.evaluate_top_k_n: int = 3
+        self.evaluate_top_k_minibatch_size: Optional[int] = None
+        self.evaluate_top_k_min_history: int = 3
+        self.evaluate_top_k_use_best_as_current: bool = False
+
+        # TSGD-M cache configuration
+        self.tsgd_m_cache: Dict[int, Dict[str, Any]] = {}
+        self.tsgd_m_momentum_window = self.tsgd_m_momentum_window_param
+        self.tsgd_m_enabled = self.tsgd_m_enabled_param
+
+    def _should_add_to_history(self, val_score: float, last_val_score: float) -> bool:
+        """Determine whether to add current prompt to history based on the configured strategy."""
+        if self.history_update_strategy == "always":
+            return True
+        elif self.history_update_strategy == "improvement_only":
+            return val_score > last_val_score
+        elif self.history_update_strategy == "epsilon_greedy":
+            if val_score > last_val_score:
+                return True
+            else:
+                return random.random() < self.exploration_epsilon
+        elif self.history_update_strategy == "confidence_based":
+            score_diff = abs(val_score - last_val_score)
+            if val_score > last_val_score:
+                return True
+            relative_diff = score_diff / max(last_val_score, 1.0)
+            return relative_diff <= self.confidence_threshold
+        else:
+            printc(
+                f"Warning: Unknown history_update_strategy '{self.history_update_strategy}', defaulting to 'always'",
+                "yellow",
+            )
+            return True
+
+    def _add_history_text_optimizers(
+        self,
+        val_score: float,
+        val_acc_list: Optional[List[int]] = None,
+        force_add: bool = False,
+    ):
+        """Add validation score to history for text optimizers with multi-evaluation tracking."""
+        if not isinstance(val_score, float):
+            raise ValueError(
+                f"val_score should be a float, got {type(val_score)}, {val_score}"
+            )
+
+        current_prompts = []
+        for text_optimizer in self.text_optimizers:
+            for param in text_optimizer.params:
+                if param.requires_opt:
+                    current_prompts.append(str(param.data))
+
+        if not current_prompts:
+            printc("Warning: No optimizable prompts found", "yellow")
+            return
+
+        current_prompt = current_prompts[0]
+        prompt_hash = hash_text_sha1(current_prompt)
+
+        if val_acc_list is None:
+            num_samples = 10
+            num_correct = int(round(val_score * num_samples / 100.0))
+            val_acc_list = [1] * num_correct + [0] * (num_samples - num_correct)
+
+        if prompt_hash not in self.prompt_val_scores_dict:
+            self.prompt_val_scores_dict[prompt_hash] = [val_score]
+            self.prompt_val_acc_dict[prompt_hash] = [val_acc_list]
+            self.prompt_order.append(prompt_hash)
+            printc(
+                f"✓ New prompt added to history (hash: {prompt_hash[:8]}..., score: {val_score:.1f}%)",
+                "green",
+            )
+        else:
+            self.prompt_val_scores_dict[prompt_hash].append(val_score)
+            self.prompt_val_acc_dict[prompt_hash].append(val_acc_list)
+            num_evals = len(self.prompt_val_scores_dict[prompt_hash])
+            avg_score = sum(self.prompt_val_scores_dict[prompt_hash]) / num_evals
+            printc(
+                f"↻ Prompt re-evaluated: {num_evals} evaluations, avg score: {avg_score:.1f}%",
+                "cyan",
+            )
+
+        self._rebuild_batch_val_scores()
+
+        avg_score = sum(self.prompt_val_scores_dict[prompt_hash]) / len(
+            self.prompt_val_scores_dict[prompt_hash]
+        )
+        for text_optimizer in self.text_optimizers:
+            text_optimizer.add_score_to_params(round(avg_score, 4))
+
+    def _rebuild_batch_val_scores(self):
+        """Rebuild batch_val_scores and batch_val_acc_list from prompt_val_scores_dict."""
+        self.batch_val_scores = []
+        self.batch_val_acc_list = []
+
+        for prompt_hash in self.prompt_order:
+            scores = self.prompt_val_scores_dict[prompt_hash]
+            acc_lists = self.prompt_val_acc_dict[prompt_hash]
+
+            avg_score = sum(scores) / len(scores)
+            self.batch_val_scores.append(avg_score)
+
+            aggregated_acc_list = []
+            for acc_list in acc_lists:
+                aggregated_acc_list.extend(acc_list)
+            self.batch_val_acc_list.append(aggregated_acc_list)
+
+        logger.debug(f"Rebuilt batch_val_scores: {len(self.batch_val_scores)} unique prompts")
+
+    def get_prompt_evaluation_stats(self) -> Dict[str, Any]:
+        """Get statistics about prompt evaluations."""
+        stats = {
+            "num_unique_prompts": len(self.prompt_order),
+            "total_evaluations": sum(
+                len(scores) for scores in self.prompt_val_scores_dict.values()
+            ),
+            "prompts_info": [],
+        }
+
+        for i, prompt_hash in enumerate(self.prompt_order):
+            scores = self.prompt_val_scores_dict[prompt_hash]
+            prompt_stats = {
+                "index": i,
+                "prompt_hash": prompt_hash[:8] + "...",
+                "num_evaluations": len(scores),
+                "scores": scores,
+                "avg_score": sum(scores) / len(scores),
+                "min_score": min(scores),
+                "max_score": max(scores),
+                "std_score": (
+                    sum((s - sum(scores) / len(scores)) ** 2 for s in scores)
+                    / len(scores)
+                )
+                ** 0.5
+                if len(scores) > 1
+                else 0.0,
+            }
+            stats["prompts_info"].append(prompt_stats)
+
+        return stats
+
+    def evaluate_and_select_top_prompts(
+        self,
+        val_dataset: Any,
+        k_select: int = 5,
+        top_n: int = 3,
+        use_gumbel: bool = True,
+        minibatch_size: Optional[int] = None,
+    ) -> Tuple[List[str], List[int], List[float]]:
+        """Evaluate top-K historical prompts on a new mini-batch and select top-N best performers."""
+        printc(f"\n[Evaluate & Select] K={k_select}, Top-N={top_n}, Gumbel={use_gumbel}", "cyan")
+
+        num_history = len(self.prompt_order)
+
+        if num_history == 0:
+            printc("  No history yet, using current prompt", "yellow")
+            current_prompts = []
+            for text_optimizer in self.text_optimizers:
+                for param in text_optimizer.params:
+                    if param.requires_opt:
+                        current_prompts.append(str(param.data))
+            if current_prompts:
+                return [current_prompts[0]], [0], [0.0]
+            return [], [], []
+
+        k_actual = min(k_select, num_history)
+        printc(f"  History size: {num_history}, selecting {k_actual} prompts", "white")
+
+        if k_actual == num_history:
+            selected_hashes = self.prompt_order
+            selected_indices = list(range(num_history))
+            printc(f"  Selecting all {num_history} prompts from history", "white")
+        else:
+            avg_scores = [
+                sum(self.prompt_val_scores_dict[h])
+                / len(self.prompt_val_scores_dict[h])
+                for h in self.prompt_order
+            ]
+
+            gumbel_selected = False
+            selected_indices = None
+
+            for text_optimizer in self.text_optimizers:
+                if hasattr(text_optimizer, "gumbel_top_k"):
+                    try:
+                        selected_indices = text_optimizer.gumbel_top_k(
+                            scores=avg_scores,
+                            k=k_actual,
+                            probs=False,
+                            temperature=0.6,
+                            noise_scale=0.4,
+                            seed=42,
+                        )
+                        gumbel_selected = True
+                        printc(f"  Gumbel-Top-K selected indices: {selected_indices}", "green")
+                        break
+                    except Exception as e:
+                        logger.warning(f"Gumbel selection failed: {e}, falling back to greedy")
+
+            if not gumbel_selected or selected_indices is None:
+                printc("  Gumbel not available, falling back to greedy selection", "yellow")
+                selected_indices = sorted(
+                    range(len(avg_scores)), key=lambda i: avg_scores[i], reverse=True
+                )[:k_actual]
+
+            selected_hashes = [self.prompt_order[i] for i in selected_indices]
+            selected_avg_scores = [avg_scores[i] for i in selected_indices]
+            printc(f"  Selected indices: {selected_indices}", "white")
+            printc(f"  Average scores: {[f'{s:.1f}' for s in selected_avg_scores]}", "white")
+
+        printc(f"  Evaluating {len(selected_hashes)} prompts on new mini-batch...", "white")
+
+        prompt_texts = []
+        for prompt_hash in selected_hashes:
+            for text_optimizer in self.text_optimizers:
+                if hasattr(text_optimizer, "params_history"):
+                    for param_id, history_list in text_optimizer.params_history.items():
+                        for hist_item in history_list:
+                            item_hash = hash_text_sha1(hist_item.value)
+                            if item_hash == prompt_hash:
+                                prompt_texts.append(hist_item.value)
+                                break
+                        if len(prompt_texts) == len(selected_hashes):
+                            break
+
+        if len(prompt_texts) < len(selected_hashes):
+            printc(
+                "  Warning: Could not retrieve all prompt texts, using available", "red"
+            )
+
+        minibatch_scores = []
+        minibatch_acc_lists = []
+
+        for i, prompt_text in enumerate(prompt_texts):
+            score, acc_list = self._evaluate_prompt_on_minibatch(
+                prompt_text, val_dataset
+            )
+            minibatch_scores.append(score)
+            minibatch_acc_lists.append(acc_list)
+
+            prompt_hash = selected_hashes[i]
+            self.prompt_val_scores_dict[prompt_hash].append(score)
+            self.prompt_val_acc_dict[prompt_hash].append(acc_list)
+
+            printc(
+                f"    Prompt {selected_indices[i]}: {score}, Eval history: {self.prompt_val_scores_dict[prompt_hash]}",
+                "white",
+            )
+
+        self._rebuild_batch_val_scores()
+
+        avg_scores = []
+        for i, prompt_hash in enumerate(selected_hashes):
+            all_scores = self.prompt_val_scores_dict[prompt_hash]
+            avg_score = sum(all_scores) / len(all_scores)
+            avg_scores.append(avg_score)
+            printc(
+                f"    Prompt {selected_indices[i]} avg across {len(all_scores)} evals: {avg_score}%",
+                "white",
+            )
+
+        top_n_actual = min(top_n, len(avg_scores))
+
+        printc(
+            f"  Applying greedy selection for selecting top-{top_n_actual} prompts (deterministic exploitation)...",
+            "white",
+        )
+
+        top_n_ranking = sorted(
+            range(len(avg_scores)), key=lambda i: avg_scores[i], reverse=True
+        )[:top_n_actual]
+
+        printc(f"  Greedy selected indices: {top_n_ranking}", "white")
+        printc(f"  Selected scores: {[f'{avg_scores[i]:.1f}' for i in top_n_ranking]}", "white")
+
+        final_prompts = [prompt_texts[i] for i in top_n_ranking]
+        final_indices = [selected_indices[i] for i in top_n_ranking]
+        final_scores = [avg_scores[i] for i in top_n_ranking]
+        final_acc_lists = [minibatch_acc_lists[i] for i in top_n_ranking]
+
+        printc(f"  Top-{top_n_actual} prompts for tuning (based on Gumbel selection):", "cyan")
+        for i, (idx, score, acc_list) in enumerate(
+            zip(final_indices, final_scores, final_acc_lists)
+        ):
+            printc(
+                f"    {i + 1}. Prompt {idx}: avg={score}, latest_acc_list: {acc_list}",
+                "white",
+            )
+
+        return final_prompts, final_indices, final_scores
+
+    def _select_via_gumbel_top_k(self, k: int) -> List[int]:
+        """Select top-K indices using Gumbel-Top-K on current averaged scores."""
+        avg_scores = [
+            sum(self.prompt_val_scores_dict[h]) / len(self.prompt_val_scores_dict[h])
+            for h in self.prompt_order
+        ]
+
+        scores_pct = [s if s <= 100 else s for s in avg_scores]
+
+        for text_optimizer in self.text_optimizers:
+            if hasattr(text_optimizer, "gumbel_top_k"):
+                return text_optimizer.gumbel_top_k(
+                    scores=scores_pct,
+                    k=k,
+                    probs=False,
+                )
+            else:
+                printc("No gumbel sampling function implemented.", "red")
+
+        return sorted(
+            range(len(avg_scores)), key=lambda i: avg_scores[i], reverse=True
+        )[:k]
+
+    def _evaluate_prompt_on_minibatch(
+        self, prompt_text: str, minibatch: List[Any]
+    ) -> Tuple[float, List[int]]:
+        """Evaluate a single prompt on a mini-batch."""
+        if not self.text_optimizers:
+            logger.warning("No text optimizers available for evaluation")
+            return 0.0, [0] * len(minibatch)
+
+        text_optimizer = self.text_optimizers[0]
+        optimizable_params = [p for p in text_optimizer.params if p.requires_opt]
+
+        if not optimizable_params:
+            logger.warning("No optimizable parameters found")
+            return 0.0, [0] * len(minibatch)
+
+        original_prompts = []
+        for param in optimizable_params:
+            original_prompts.append(param.data)
+            param.data = prompt_text
+
+        try:
+            val_output = self.adaltask.validation_step(
+                minibatch, batch_idx=0, num_workers=self.num_workers
+            )
+
+            accuracy = val_output.avg_score
+
+            if hasattr(val_output, "per_item_scores"):
+                acc_list = [
+                    1 if score > 0.5 else 0 for score in val_output.per_item_scores
+                ]
+            elif hasattr(val_output, "results"):
+                acc_list = [
+                    1 if getattr(r, "correct", False) else 0 for r in val_output.results
+                ]
+            else:
+                num_correct = int(round(accuracy * len(minibatch) / 100.0))
+                acc_list = [1] * num_correct + [0] * (len(minibatch) - num_correct)
+
+            return accuracy, acc_list
+
+        finally:
+            for param, original_prompt in zip(optimizable_params, original_prompts):
+                param.data = original_prompt
+
+    def _sample_prompts_from_cache(self, k: int) -> List[Dict[str, Any]]:
+        """Sample K prompts from all past iterations based on their scores."""
+        if not self.tsgd_m_cache or len(self.tsgd_m_cache) == 0:
+            return []
+
+        cache_entries = sorted(self.tsgd_m_cache.items(), key=lambda x: x[0])
+
+        scored_entries = []
+        for step, entry in cache_entries:
+            if "val_scores" in entry and entry["val_scores"]:
+                avg_score = sum(entry["val_scores"]) / len(entry["val_scores"])
+                scored_entries.append((step, entry, avg_score))
+
+        if not scored_entries:
+            return []
+
+        k_actual = min(k, len(scored_entries))
+        top_k_entries = sorted(scored_entries, key=lambda x: x[2], reverse=True)[:k_actual]
+
+        return [entry for _, entry, _ in top_k_entries]
+
+    def _evaluate_prompts_on_minibatch(
+        self,
+        prompts_to_eval: List[Dict[str, Any]],
+        val_minibatch: Any,
+        current_step: int,
+    ) -> List[float]:
+        """Evaluate validation accuracy of multiple prompts on B_val mini-batch."""
+        val_scores = []
+
+        for i, prompt_entry in enumerate(prompts_to_eval):
+            if "prompt" not in prompt_entry:
+                val_scores.append(0.0)
+                continue
+
+            prompt_text = prompt_entry["prompt"]
+
+            for param in self.text_optimizers[0].params:
+                if param.requires_opt:
+                    original_data = param.data
+                    param.data = prompt_text
+
+                    try:
+                        val_output = self.adaltask.validation_step(
+                            val_minibatch,
+                            current_step,
+                            self.num_workers,
+                        )
+                        val_score = val_output.avg_score
+                        val_scores.append(val_score)
+                        logger.debug(f"  Prompt {i} score: {val_score:.1f}%")
+                    except Exception as e:
+                        logger.error(f"Error evaluating prompt {i}: {e}")
+                        val_scores.append(0.0)
+                    finally:
+                        param.data = original_data
+
+        return val_scores
+
+    def _select_best_prompt(
+        self,
+        prompts_to_eval: List[Dict[str, Any]],
+        val_scores: List[float],
+    ) -> Dict[str, Any]:
+        """Select the best prompt based on validation scores."""
+        if not val_scores or len(val_scores) == 0:
+            return prompts_to_eval[0] if prompts_to_eval else {}
+
+        best_idx = val_scores.index(max(val_scores))
+        best_prompt = prompts_to_eval[best_idx]
+
+        return best_prompt
+
+    def _add_to_tsgd_m_cache(
+        self,
+        step: int,
+        prompt: str,
+        gradient_info: str,
+        val_scores: List[float],
+    ):
+        """Add (t, π_t, g_t, [v_t]) to cache Φ."""
+        cache_entry = {
+            "step": step,
+            "prompt": prompt,
+            "gradient": gradient_info,
+            "val_scores": val_scores,
+            "timestamp": time.time(),
+        }
+
+        self.tsgd_m_cache[step] = cache_entry
