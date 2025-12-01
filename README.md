@@ -253,6 +253,9 @@ Go to [Documentation](https://adalflow.sylph.ai) for tracing, human-in-the-loop,
 - LLM Applications as auto-differentiation graphs
 - Token-efficient and better performance than DsPy
 
+[Dec 2025] [Scaling Textual Gradients via Sampling-Based Momentum](https://arxiv.org/abs/2506.00400)
+- Stable, scalable prompt optimization using momentum-weighted textual gradient
+- Gumbel-Top-k sampling improves exploration and integrates seamlessly with TextGrad, DSPy-COPRO, and AdalFlow
 
 
 
