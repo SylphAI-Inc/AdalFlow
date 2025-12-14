@@ -345,13 +345,12 @@ class OllamaClient(ModelClient):
         # Check for async generator (async streaming)
         if hasattr(completion, '__aiter__'):
             log.debug("Async streaming response detected")
-            # For streaming, return GeneratorOutput with the generator in raw_response
-            # This matches the OpenAI client pattern
+            # For streaming, wrap the generator in GeneratorOutput with proper streaming support
             return GeneratorOutput(data=None, raw_response=completion, api_response=completion)
         # Check for sync generator (sync streaming)
         elif isinstance(completion, GeneratorType):
             log.debug("Sync streaming response detected")
-            # For streaming, return GeneratorOutput with the generator in raw_response
+            # For streaming, wrap the generator in GeneratorOutput with proper streaming support
             return GeneratorOutput(data=None, raw_response=completion, api_response=completion)
         # Non-streaming generate API
         elif self.generate:
