@@ -92,9 +92,7 @@ class RetrieverEvaluator(BaseEvaluator):
             gt_contexts ( List[List[str]]): List of ground truth context strings.
 
         Returns:
-            tuple:
-                - float: Average recall value.
-                - List[float]: Recall values for each query.
+            EvaluationResult: Evaluation result containing the average recall and precision, and the recall and precision list for each query.
         """
         if len(retrieved_contexts) != len(gt_contexts):
             raise ValueError(
