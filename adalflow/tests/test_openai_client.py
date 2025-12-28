@@ -761,6 +761,208 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(image_contents[1]["image_url"], "https://example.com/image2.jpg")
         self.assertTrue(image_contents[2]["image_url"].startswith("data:image/png;base64,"))
 
+    @patch(
+        "adalflow.components.model_client.openai_client.OpenAIClient.init_sync_client"
+    )
+    @patch("adalflow.components.model_client.openai_client.OpenAI")
+    def test_sync_streaming_response_format(self, MockSyncOpenAI, mock_init_sync_client):
+        """Test that sync streaming returns raw_response as generator and data field contains complete result."""
+        mock_sync_client = Mock()
+        MockSyncOpenAI.return_value = mock_sync_client
+        mock_init_sync_client.return_value = mock_sync_client
+
+        # Create streaming events generator
+        def mock_stream():
+            for event in self.streaming_events:
+                yield event
+
+        mock_sync_client.responses.create.return_value = mock_stream()
+        self.client.sync_client = mock_sync_client
+
+        # Test streaming API kwargs
+        api_kwargs = {
+            "model": "gpt-4", 
+            "input": "Tell me a story",
+            "stream": True
+        }
+
+        # Call sync streaming method
+        result = self.client.call(api_kwargs, ModelType.LLM)
+        
+        # Verify raw response is a generator
+        self.assertTrue(hasattr(result, '__iter__'), "raw_response should be iterable/generator")
+        
+        # Parse the response through the client's parser
+        parsed_result = self.client.parse_chat_completion(result)
+        
+        # Verify structure: raw_response should be the generator, data should be None for streaming
+        self.assertIsNotNone(parsed_result.raw_response, "raw_response should contain the generator")
+        self.assertIsNone(parsed_result.data, "data should be None for streaming responses")
+        
+        # Consume the generator to verify it works
+        events_collected = list(result)
+        self.assertEqual(len(events_collected), 3, "Should collect all streaming events")
+        
+        # Verify the final completed event contains the full result
+        final_event = events_collected[-1]
+        self.assertEqual(final_event.type, "response.completed")
+        self.assertEqual(final_event.response.output_text, "Once upon ")
+
+    async def test_async_streaming_response_format(self):
+        """Test that async streaming returns raw_response as async generator and data field handling."""
+        mock_async_client = AsyncMock()
+        
+        # Create async streaming events generator
+        async def mock_async_stream():
+            for event in self.streaming_events:
+                yield event
+                await asyncio.sleep(0.001)  # Small delay to simulate real streaming
+                
+        mock_async_client.responses.create.return_value = mock_async_stream()
+        self.client.async_client = mock_async_client
+        
+        # Test streaming API kwargs
+        api_kwargs = {
+            "model": "gpt-4",
+            "input": "Tell me a story", 
+            "stream": True
+        }
+        
+        # Call async streaming method
+        result = await self.client.acall(api_kwargs, ModelType.LLM)
+        
+        # Verify raw response is an async generator
+        self.assertTrue(hasattr(result, '__aiter__'), "raw_response should be async iterable")
+        
+        # Parse the response through the client's parser
+        parsed_result = self.client.parse_chat_completion(result)
+        
+        # Verify structure: raw_response should contain the generator, data should be None for streaming
+        self.assertIsNotNone(parsed_result.raw_response, "raw_response should contain the async generator")
+        self.assertIsNone(parsed_result.data, "data should be None for streaming responses")
+        
+        # Consume the async generator to verify it works and extract complete text
+        events_collected = []
+        complete_text = ""
+        
+        async for event in result:
+            events_collected.append(event)
+            # Extract text from streaming events
+            if hasattr(event, 'delta'):
+                complete_text += event.delta
+            elif hasattr(event, 'response') and hasattr(event.response, 'output_text'):
+                complete_text = event.response.output_text  # Final complete result
+        
+        self.assertEqual(len(events_collected), 3, "Should collect all streaming events")
+        self.assertEqual(complete_text, "Once upon ", "Should extract complete text from stream")
+        
+        # Verify the final completed event contains the full result
+        final_event = events_collected[-1] 
+        self.assertEqual(final_event.type, "response.completed")
+        self.assertEqual(final_event.response.output_text, "Once upon ")
+
+    async def test_streaming_text_extraction_and_final_result(self):
+        """Test that streaming properly extracts incremental text and provides final complete result."""
+        mock_async_client = AsyncMock()
+        
+        # Create more comprehensive streaming events with incremental text
+        async def comprehensive_mock_stream():
+            # Start event
+            start_event = Mock()
+            start_event.type = "response.created"
+            yield start_event
+            
+            # Multiple delta events building up text
+            delta_texts = ["Hello", " there!", " How", " are", " you?"]
+            for delta_text in delta_texts:
+                delta_event = Mock()
+                delta_event.type = "response.output_text.delta"
+                delta_event.delta = delta_text
+                yield delta_event
+                await asyncio.sleep(0.001)
+            
+            # Final completion event with complete text
+            complete_response = Mock()
+            complete_response.id = "resp-final"
+            complete_response.model = "gpt-4"
+            complete_response.output_text = "Hello there! How are you?"
+            complete_response.usage = ResponseUsage(
+                input_tokens=5, output_tokens=6, total_tokens=11,
+                input_tokens_details={"cached_tokens": 0},
+                output_tokens_details={"reasoning_tokens": 0}
+            )
+            
+            completion_event = Mock()
+            completion_event.type = "response.completed"
+            completion_event.response = complete_response
+            yield completion_event
+        
+        mock_async_client.responses.create.return_value = comprehensive_mock_stream()
+        self.client.async_client = mock_async_client
+        
+        api_kwargs = {
+            "model": "gpt-4",
+            "input": "Say hello", 
+            "stream": True
+        }
+        
+        # Get streaming result
+        result = await self.client.acall(api_kwargs, ModelType.LLM)
+        
+        # Verify it's an async generator
+        self.assertTrue(hasattr(result, '__aiter__'))
+        
+        # Process stream and extract text using the utility function
+        incremental_text = ""
+        final_complete_text = None
+        event_count = 0
+        
+        async for event in result:
+            event_count += 1
+            
+            # Use the utility function to extract text
+            text_fragment = extract_text_from_response_stream(event)
+            if text_fragment:
+                incremental_text += text_fragment
+            
+            # Check for final completion
+            if hasattr(event, 'type') and event.type == "response.completed":
+                if hasattr(event, 'response') and hasattr(event.response, 'output_text'):
+                    final_complete_text = event.response.output_text
+        
+        # Verify results
+        self.assertEqual(event_count, 7, "Should have start + 5 deltas + completion events")
+        self.assertEqual(incremental_text, "Hello there! How are you?", "Incremental text should match")
+        self.assertEqual(final_complete_text, "Hello there! How are you?", "Final complete text should match")
+        self.assertEqual(incremental_text, final_complete_text, "Incremental and final text should be identical")
+
+    def test_streaming_vs_non_streaming_data_field_behavior(self):
+        """Test that data field behavior differs correctly between streaming and non-streaming responses."""
+        # Test non-streaming: data field should contain the result
+        non_streaming_result = self.client.parse_chat_completion(self.mock_response)
+        self.assertIsNotNone(non_streaming_result.data, "Non-streaming should have data field populated")
+        self.assertEqual(non_streaming_result.data, "Hello, world!", "Data should contain response text")
+        self.assertEqual(non_streaming_result.raw_response, "Hello, world!", "Raw response should match data for non-streaming")
+        
+        # Test streaming: simulate the actual client behavior for streaming
+        # Set the parser to streaming mode first
+        original_parser = self.client.response_parser
+        self.client.response_parser = self.client.streaming_response_parser_sync
+        
+        def mock_generator():
+            yield from self.streaming_events
+            
+        streaming_result = self.client.parse_chat_completion(mock_generator())
+        self.assertIsNone(streaming_result.data, "Streaming should have data field as None")
+        self.assertIsNotNone(streaming_result.raw_response, "Streaming should have raw_response as generator")
+        
+        # Verify we can iterate over the raw_response  
+        events_from_raw = list(streaming_result.raw_response)
+        self.assertEqual(len(events_from_raw), 3, "Should be able to consume raw_response generator")
+        
+        # Restore original parser
+        self.client.response_parser = original_parser
+
 
 if __name__ == "__main__":
     unittest.main()
