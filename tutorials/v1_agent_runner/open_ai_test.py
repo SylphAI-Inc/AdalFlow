@@ -1,4 +1,5 @@
 from adalflow.components.agent import Agent, Runner
+from adalflow.components.model_client.openai_client import OpenAIClient
 
 import asyncio
 
@@ -20,6 +21,8 @@ guardrail_agent = Agent(
     name="Guardrail check",
     instructions="Check if the user is asking you to do their math homework.",
     output_type=MathHomeworkOutput,
+    model_client=OpenAIClient(api_key="fake_api_key"),
+    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
 )
 
 # Commented out until guardrail types are properly imported
@@ -38,6 +41,8 @@ guardrail_agent = Agent(
 agent = Agent(
     name="Customer support agent",
     instructions="You are a customer support agent. You help customers with their questions.",
+    model_client=OpenAIClient(api_key="fake_api_key"),
+    model_kwargs={"model": "gpt-4o", "temperature": 0.3},
     # input_guardrails=[math_guardrail],  # Commented out until guardrails are implemented
 )
 
