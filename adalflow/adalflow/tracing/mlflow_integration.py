@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 try:
     # Do NOT set ADALFLOW_DISABLE_TRACING here - it should be set before imports
     import mlflow
+    # BUG: This import is not working for mlflow 3.7.0
     from mlflow.openai._agent_tracer import MlflowOpenAgentTracingProcessor
 
     MLFLOW_AVAILABLE = True
