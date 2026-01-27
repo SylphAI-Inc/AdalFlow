@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 184" fill="none">
+  <g transform="translate(20, 20)">
+    <g transform="translate(0, 0)">
+      <path d="M 9.5,48 V 21.5 H 24 M 14.5,48 V 26.5 H 24" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(24, 0)">
+      <path d="M 0,21.5 H 24 M 0,26.5 H 24" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(48, 0)">
+      <rect x="0" y="0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(72, 0)">
+      <rect x="0" y="0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(96, 0)">
+      <rect x="0" y="0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(120, 0)">
+      <rect x="0" y="0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(144, 0)">
+      <rect x="0" y="0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(168, 0)">
+      <path d="M 0,21.5 H 24 M 0,26.5 H 24" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(192, 0)">
+      <path d="M 14.5,48 V 21.5 H 0 M 9.5,48 V 26.5 H 0" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(0, 48)">
+      <path d="M 9.5,0 V 48 M 14.5,0 V 48" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(48, 48)">
+      <path d="M 3.0,13.5 L 21.0,24.0 L 3.0,34.5" stroke="#00FF88" stroke-width="2" fill="none" stroke-linejoin="round"/>
+    </g>
+    <g transform="translate(144, 48)">
+      <circle cx="12.0" cy="24.0" r="12" stroke="#00FF88" stroke-width="2" fill="none"/>
+      <path d="M 12.0,12.0 A 12,12 0 0,1 12.0,36.0 Z" fill="#00FF88"/>
+    </g>
+    <g transform="translate(192, 48)">
+      <path d="M 9.5,0 V 48 M 14.5,0 V 48" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(0, 96)">
+      <path d="M 9.5,0 V 26.5 H 24 M 14.5,0 V 21.5 H 24" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(24, 96)">
+      <path d="M 0,21.5 H 24 M 0,26.5 H 24" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(48, 96)">
+      <rect x="0" y="24.0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(72, 96)">
+      <rect x="0" y="24.0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(96, 96)">
+      <rect x="0" y="24.0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(120, 96)">
+      <rect x="0" y="24.0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(144, 96)">
+      <rect x="0" y="24.0" width="25.0" height="24.0" fill="#00FF88"/>
+    </g>
+    <g transform="translate(168, 96)">
+      <path d="M 0,21.5 H 24 M 0,26.5 H 24" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+    <g transform="translate(192, 96)">
+      <path d="M 14.5,0 V 26.5 H 0 M 9.5,0 V 21.5 H 0" stroke="#00FF88" stroke-width="2" stroke-linecap="square" fill="none"/>
+    </g>
+  </g>
+</svg>
