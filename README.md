@@ -16,10 +16,8 @@
 </h2>
 
 <p align="center">
-    <a href="https://sylph.ai">
-        <img src="docs/source/_static/images/adal-face-logo.svg" alt="AdaL" height="70" style="vertical-align: middle;">&nbsp;&nbsp;
-        <img src="docs/source/_static/images/adal-text-logo.svg" alt="AdaL CLI" height="55" style="vertical-align: middle;">
-    </a>
+    <a href="https://sylph.ai"><img src="docs/source/_static/images/adal-face-logo.svg" alt="AdaL" height="100"></a>&nbsp;
+    <a href="https://sylph.ai"><img src="docs/source/_static/images/adal-text-logo.svg" alt="AdaL CLI" height="100"></a>
     <br><br>
     <strong>AdalFlow proudly powers <a href="https://sylph.ai">AdaL CLI</a></strong> — The AI coding agent
 </p>
