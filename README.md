@@ -266,6 +266,19 @@ Go to [Documentation](https://adalflow.sylph.ai) for tracing, human-in-the-loop,
 
 
 
+# Auto-Prompt Optimization Ecosystem
+
+AdalFlow is part of a growing ecosystem of libraries that automatically optimize LLM prompts and workflows. Here's how the landscape looks:
+
+| Library | Approach | Key Idea |
+|---------|----------|----------|
+| **[AdalFlow](https://github.com/SylphAI-Inc/AdalFlow)** | PyTorch-style auto-differentiation | LLM workflows as auto-diff graphs; unified textual gradient descent + few-shot bootstrap optimization in one training loop |
+| **[DSPy](https://github.com/stanfordnlp/dspy)** | Declarative programming | Write compositional Python code instead of prompts; compiler optimizes prompts and weights automatically |
+| **[Agent Lightning](https://github.com/microsoft/agent-lightning)** | Framework-agnostic agent trainer | Turn any agent (LangChain, OpenAI SDK, AutoGen, etc.) into an optimizable entity with minimal code changes; supports RL, auto-prompt optimization, and supervised fine-tuning |
+| **[TextGrad](https://github.com/zou-group/textgrad)** | Textual gradient descent | Automatic differentiation via text; uses LLM feedback as gradients to optimize prompts, code, and solutions |
+
+**Where AdalFlow fits:** AdalFlow draws inspiration from all of the above (see [Acknowledgements](#acknowledgements)) and unifies them into a single PyTorch-like framework. You get textual gradients (à la TextGrad), few-shot bootstrap (à la DSPy), and instruction history — all composable within `Parameter`, `Generator`, `AdalComponent`, and `Trainer`.
+
 # Collaborations
 
 We work closely with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/), under the leadership of [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang) and in collaboration with [Dr. Junyuan Hong](https://jyhong.gitlab.io/), who provides valuable support in driving project initiatives.

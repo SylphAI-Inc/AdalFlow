@@ -46,18 +46,19 @@ html_static_path = ["_static"]
 # autodoc_mock_imports = ["datasets"]
 
 html_theme_options = {
-    "light_logo": "images/AdalFlow.svg",  # For light mode
-    "dark_logo": "images/AdalFlow_black_bg.svg",  # For dark mode
+    "light_logo": "images/sylphai-symbol.png",
+    "dark_logo": "images/sylphai-symbol-dark.png",
     "top_of_page_button": "edit",  # Remove default Furo buttons
     "light_css_variables": {
-        "color-brand-primary": "#FF6F00",
+        "color-brand-primary": "#059669",
         "color-brand-content": "#1E2A38",
     },
     "dark_css_variables": {
-        "color-brand-primary": "#FF8F00",
+        "color-brand-primary": "#00FF88",
         "color-brand-content": "#CFD8DC",
     },
     "dark_mode_code_blocks": False,  # Remove mixed code block styling
+    "default_mode": "dark",  # Default to dark theme
     "theme_switcher": ["light", "dark"],  # Show only two theme options
     "collapse_navigation": False,
     "navigation_depth": 8,
@@ -139,9 +140,9 @@ html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
 ]
 
-html_title = "Build and Optimize LM Workflows"
+html_title = "AdalFlow"
 # html_title = "AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines"
-html_favicon = "./_static/images/LightRAG-logo-circle.png"
+html_favicon = "./_static/images/sylphai-symbol.png"
 # html_context = {
 #     "docstitle": "AdalFlow: The Lightning Library for LLM Applications"
 # }
