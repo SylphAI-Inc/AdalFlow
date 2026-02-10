@@ -4,13 +4,20 @@
 
    Getting Started <self>
 
-*"Say Goodbye to Manual Prompting"*
-
 Welcome to AdalFlow!
 ====================
 
-AdalFlow is a PyTorch-like library to build and auto-optimize any Language Model (LM) workflows, from Chatbots and RAG Systems to Agents. The library is a community-driven project, and we welcome everyone to join us in building the future of LLM applications!
+.. raw:: html
 
+   <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 8px; background: linear-gradient(135deg, rgba(0,255,136,0.08), rgba(0,255,136,0.03)); border: 1px solid rgba(0,255,136,0.3); margin-bottom: 12px;">
+      <span style="font-size: 0.92em; opacity: 0.75;">AdalFlow proudly powers</span>
+      <a href="https://sylph.ai" style="font-weight: 700; color: #00FF88; text-decoration: none; font-size: 0.95em;">AdaL CLI</a>
+      <span style="font-size: 0.85em; opacity: 0.5;">— The self-evolving coding agent</span>
+   </div>
+
+*"Say Goodbye to Manual Prompting"*
+
+AdalFlow is a PyTorch-like library to build and auto-optimize any Language Model (LM) workflows, from Chatbots and RAG Systems to Agents. The library is a community-driven project, and we welcome everyone to join us in building the future of LLM applications!
 
 Install AdalFlow and Run Your First Query
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -569,6 +576,18 @@ Auto-optimize your LLM workflow with both Prompt Tuning and Few-shot Learning
 
 
 
+Auto-Prompt Optimization Ecosystem
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AdalFlow is part of a growing ecosystem of libraries that automatically optimize LLM prompts and workflows:
+
+- `AdalFlow <https://github.com/SylphAI-Inc/AdalFlow>`_ — PyTorch-style auto-differentiation for LLM workflows. Unified textual gradient descent + few-shot bootstrap optimization in one training loop.
+- `DSPy <https://github.com/stanfordnlp/dspy>`_ — Declarative programming framework. Write compositional Python code instead of prompts; the compiler optimizes prompts and weights automatically.
+- `Agent Lightning <https://github.com/microsoft/agent-lightning>`_ — Microsoft's framework-agnostic agent trainer. Turn any agent (LangChain, OpenAI SDK, AutoGen, etc.) into an optimizable entity with RL, auto-prompt optimization, and supervised fine-tuning.
+- `TextGrad <https://github.com/zou-group/textgrad>`_ — Automatic differentiation via text. Uses LLM feedback as gradients to optimize prompts, code, and solutions.
+
+AdalFlow unifies ideas from all of the above into a single PyTorch-like framework — textual gradients (à la TextGrad), few-shot bootstrap (à la DSPy), and instruction history — all composable within ``Parameter``, ``Generator``, ``AdalComponent``, and ``Trainer``.
+
+
 Unites Research and Production
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Our team has experience in both AI research and production.
@@ -599,7 +618,7 @@ Community
          <img src="https://img.shields.io/badge/Bugs/Feature Requests-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
       </a>
       <a href="https://discord.gg/ezzszrRZvT" style="display: inline-block; margin-left: 10px;">
-        <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
+        <img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Us-5865F2?logo=discord&logoColor=white&style=flat-square">
       </a>
 
    </div>
@@ -648,9 +667,13 @@ Community
    :maxdepth: 1
    :hidden:
 
+   community
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
    design/index
-
-
 
 .. toctree::
    :glob:

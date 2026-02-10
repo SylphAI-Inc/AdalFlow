@@ -4,12 +4,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>optim.trainer.trainer - Build and Optimize LM Workflows</title>
+    <link rel="shortcut icon" href="../../../_static/sylphai-symbol.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+        <title>optim.trainer.trainer - AdalFlow</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=49b0bfd5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -22,7 +22,7 @@
   body {
     --color-code-background: #f8f8f8;
   --color-code-foreground: black;
-  --color-brand-primary: #FF6F00;
+  --color-brand-primary: #059669;
   --color-brand-content: #1E2A38;
   
   }
@@ -30,7 +30,7 @@
     body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FF8F00;
+  --color-brand-primary: #00FF88;
   --color-brand-content: #CFD8DC;
   
     }
@@ -38,7 +38,7 @@
       body:not([data-theme="light"]) {
         --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FF8F00;
+  --color-brand-primary: #00FF88;
   --color-brand-content: #CFD8DC;
   
       }
@@ -176,7 +176,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Build and Optimize LM Workflows</div></a>
+      <a href="../../../index.html"><div class="brand">AdalFlow</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -197,16 +197,17 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
-  
-  <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="../../../_static/images/AdalFlow.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="../../../_static/images/AdalFlow_black_bg.svg" alt="Dark Logo"/>
-  </div>
-  
-  <span class="sidebar-brand-text">Build and Optimize LM Workflows</span>
-  
-</a><div class="sidebar-github-section">
+      <div class="sidebar-sticky">
+<div class="sidebar-brand-custom">
+  <a class="sidebar-brand-logo-link" href="https://sylph.ai" target="_blank" rel="noopener">
+    <img class="sidebar-logo only-light" src="../../../_static/images/sylphai-symbol.png" alt="SylphAI"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/images/sylphai-symbol-dark.png" alt="SylphAI"/>
+  </a>
+  <span class="sidebar-brand-separator">/</span>
+  <a class="sidebar-brand-text-link" href="../../../index.html">
+    <span class="sidebar-brand-text">AdalFlow</span>
+  </a>
+</div><div class="sidebar-github-section">
     <a href="https://github.com/SylphAI-Inc/AdalFlow" class="sidebar-github-link">
         <i class="fa-brands fa-github"></i>
         <span class="github-text">GitHub</span>
@@ -295,6 +296,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/logging_tracing.html">Tracing</a></li>
 </ul>
 </li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../community.html">Community</a></li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../design/index.html">Blog</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Blog</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -495,7 +499,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span><span class="p">,</span> <span class="n">DemoOptimizer</span><span class="p">,</span> <span class="n">TextOptimizer</span>
 
@@ -569,7 +572,7 @@
     <span class="n">train_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
 
     <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="n">val_dataset</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">val_dataset</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Consistent validation dataset for scoring</span>
     <span class="n">test_dataset</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">strategy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="s2">&quot;constrained&quot;</span><span class="p">]</span>
     <span class="n">optimization_order</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sequential&quot;</span><span class="p">,</span> <span class="s2">&quot;mix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
@@ -829,7 +832,7 @@
 
         <span class="c1"># Check the accuracy score</span>
         <span class="k">if</span> <span class="n">acc_score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;✔ Overall accuracy score: </span><span class="si">{</span><span class="n">acc_score</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;✔ Overall accuracy score: </span><span class="si">{</span><span class="n">acc_score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="s2">&quot;✘ Accuracy score not provided or calculated.&quot;</span><span class="p">)</span>
 
@@ -978,7 +981,6 @@
                 <span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="n">val_dataset</span> <span class="o">=</span> <span class="n">val_dataset</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span>
-
         <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">test_dataset</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">val_dataset</span><span class="p">:</span>
@@ -1018,7 +1020,6 @@
 
         <span class="c1"># config optimizers</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_trainable_demo_params</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-
             <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
                 <span class="n">opt</span><span class="o">.</span><span class="n">config_shots</span><span class="p">(</span><span class="n">raw_shots</span><span class="o">=</span><span class="n">raw_shots</span><span class="p">,</span> <span class="n">bootstrap_shots</span><span class="o">=</span><span class="n">bootstrap_shots</span><span class="p">)</span>
                 <span class="n">opt</span><span class="o">.</span><span class="n">use_weighted_sampling</span><span class="p">(</span><span class="n">weighted</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weighted_sampling</span><span class="p">)</span>
@@ -1033,7 +1034,6 @@
 
         <span class="c1"># configure backward engine</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_trainable_text_params</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">backward_engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">configure_backward_engine</span><span class="p">(</span>
                     <span class="n">backward_pass_setup</span><span class="o">=</span><span class="n">backward_pass_setup</span>
@@ -1136,7 +1136,17 @@
 
             <span class="k">def</span><span class="w"> </span><span class="nf">run_text_optimizers</span><span class="p">(</span><span class="n">starting_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+                    <span class="c1"># Check if TSGD-M is enabled</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_enabled</span><span class="p">:</span>
+                        <span class="n">printc</span><span class="p">(</span><span class="s2">&quot;Using TSGD-M (Textual Gradient Descent with Momentum) training&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_fit_text_grad_tsgd_m</span><span class="p">(</span>
+                            <span class="n">train_loader</span><span class="p">,</span>
+                            <span class="n">val_dataset</span><span class="p">,</span>
+                            <span class="n">test_dataset</span><span class="p">,</span>
+                            <span class="n">trainer_results</span><span class="p">,</span>
+                            <span class="n">starting_step</span><span class="o">=</span><span class="n">starting_step</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_fit_text_grad_random</span><span class="p">(</span>
                             <span class="n">train_loader</span><span class="p">,</span>
                             <span class="n">val_dataset</span><span class="p">,</span>
@@ -1205,7 +1215,6 @@
 <div class="viewcode-block" id="Trainer.initial_validation">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.initial_validation">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">initial_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-
         <span class="n">val_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
         <span class="n">val_score</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
         <span class="n">test_score</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1305,7 +1314,17 @@
             <span class="k">if</span> <span class="n">trainer_state</span> <span class="ow">and</span> <span class="s2">&quot;hash_key&quot;</span> <span class="ow">in</span> <span class="n">trainer_state</span>
             <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
         <span class="p">)</span>
-        <span class="n">file_name_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="si">}</span><span class="s2">_max_steps_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">hash_key</span><span class="si">}</span><span class="s2">&quot;</span>
+        
+        <span class="c1"># Add Gumbel configuration to filename</span>
+        <span class="n">gumbel_suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;use_gumbel_top_k&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_gumbel_top_k</span><span class="p">:</span>
+            <span class="n">gumbel_suffix</span> <span class="o">=</span> <span class="s2">&quot;_gumbel&quot;</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;use_evaluate_top_k&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_evaluate_top_k</span><span class="p">:</span>
+                <span class="n">gumbel_suffix</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;_etopk</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluate_top_k_k</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">file_name_prefix</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="si">}</span><span class="s2">_max_steps_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}{</span><span class="n">gumbel_suffix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">hash_key</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">ckpt_files</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">file_name_prefix</span><span class="p">)</span>
         <span class="p">]</span>
@@ -1451,9 +1470,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_propose</span><span class="p">()</span>
             <span class="n">graph_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">debug_path</span><span class="p">,</span> <span class="s2">&quot;student_graph&quot;</span><span class="p">)</span>
 
-            <span class="n">demo_debug_result_path</span> <span class="o">=</span> <span class="n">losses_student</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span>
-                <span class="n">filepath</span><span class="o">=</span><span class="n">graph_path</span>
-            <span class="p">)</span>  <span class="c1"># noqa F841</span>
+            <span class="n">demo_debug_result_path</span> <span class="o">=</span> <span class="n">losses_student</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">graph_path</span><span class="p">)</span>  <span class="c1"># noqa F841</span>
 
             <span class="c1"># test step</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_step</span><span class="p">()</span>
@@ -1467,7 +1484,6 @@
                 <span class="n">opt_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
             <span class="c1"># print(f&quot;Opt params: {opt_params}&quot;)</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
-
                 <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">param_type</span> <span class="o">==</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Demo param: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, param: </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1532,18 +1548,18 @@
 
         <span class="n">total_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
         <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finish loss backward in </span><span class="si">{</span><span class="n">t1</span><span class="o">-</span><span class="n">t0</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finish loss backward in </span><span class="si">{</span><span class="n">t1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t0</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
         <span class="c1"># test optimizer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_propose_text_optimizers</span><span class="p">()</span>
         <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finish text optimizer step in </span><span class="si">{</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finish text optimizer step in </span><span class="si">{</span><span class="n">t2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t1</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
 
         <span class="n">debug_files</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">total_loss</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">debug_path</span><span class="p">,</span> <span class="n">full_trace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">t3</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finish draw_graph step in </span><span class="si">{</span><span class="n">t3</span><span class="o">-</span><span class="n">t2</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finish draw_graph step in </span><span class="si">{</span><span class="n">t3</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t2</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
         <span class="n">debug_output_file</span> <span class="o">=</span> <span class="n">total_loss</span><span class="o">.</span><span class="n">draw_output_subgraph</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">debug_path</span><span class="p">)</span>
         <span class="n">t4</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finish draw_output_subgraph step in </span><span class="si">{</span><span class="n">t4</span><span class="o">-</span><span class="n">t3</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finish draw_output_subgraph step in </span><span class="si">{</span><span class="n">t4</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t3</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
         <span class="n">debug_component_file</span> <span class="o">=</span> <span class="n">total_loss</span><span class="o">.</span><span class="n">draw_component_subgraph</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">debug_path</span><span class="p">)</span>
         <span class="n">debug_files</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">debug_output_file</span><span class="p">)</span>
         <span class="n">debug_files</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">debug_component_file</span><span class="p">)</span>
@@ -1635,14 +1651,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_step_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
             <span class="n">text_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_history_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;val_score should be a float, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
-            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">add_score_to_params</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_revert_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
@@ -1951,11 +1959,6 @@
 
                     <span class="c1"># test the model</span>
                     <span class="n">test_score</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="c1"># if test_dataset is not None:</span>
-                    <span class="c1">#     test_output = self.adaltask.validation_step(</span>
-                    <span class="c1">#         test_dataset, total_steps, self.num_workers</span>
-                    <span class="c1">#     )</span>
-                    <span class="c1">#     test_score = test_output.avg_score</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_add_one_step_in_trainer_results</span><span class="p">(</span>
                         <span class="n">trainer_results</span><span class="p">,</span>
                         <span class="n">val_score</span><span class="p">,</span>
@@ -2134,7 +2137,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_traces</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">demo_opt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">demo_opt</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-
                     <span class="n">teacher_traces</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">_traces</span>
                     <span class="n">student_traces</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">_student_traces</span>
 
@@ -2206,10 +2208,10 @@
         <span class="n">val_score</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tdqm_loader</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Proposal: </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Proposal: </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_propose_text_optimizers</span><span class="p">()</span>
-            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Propose time: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Propose time: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">new_prompts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">_get_param_values</span><span class="p">()</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New prompts: &quot;</span><span class="p">,</span> <span class="n">new_prompts</span><span class="p">)</span>
 
@@ -2225,7 +2227,6 @@
                 <span class="n">batch_val_score</span> <span class="o">==</span> <span class="n">batch_score</span>
                 <span class="ow">and</span> <span class="n">batch_score</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_val_score_threshold</span>
             <span class="p">)</span> <span class="ow">or</span> <span class="n">batch_val_score</span> <span class="o">&gt;</span> <span class="n">batch_score</span><span class="p">:</span>  <span class="c1"># allow perfect subset to pass</span>
-
                 <span class="n">printc</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Pass subset check:</span><span class="si">{</span><span class="n">use_eval_loss_fn</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">batch_val_score</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">batch_score</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
@@ -2251,17 +2252,11 @@
             <span class="n">val_score</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
 
             <span class="k">if</span> <span class="n">val_score</span> <span class="o">&gt;</span> <span class="n">last_val_score</span><span class="p">:</span>
-
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimizer step: </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">last_val_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimizer step: </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2"> vs last: </span><span class="si">{</span><span class="n">last_val_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="c1"># track the effectiveness</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_track_effectiveness</span><span class="p">(</span><span class="s2">&quot;valset&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_step_text_optimizers</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_history_text_optimizers</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span>  <span class="c1"># track top performor</span>
-                <span class="c1"># test the model</span>
-                <span class="c1"># test_output = self.adaltask.validation_step(</span>
-                <span class="c1">#     test_dataset, total_steps, self.num_workers</span>
-                <span class="c1"># )</span>
-                <span class="c1"># test_score = test_output.avg_score</span>
                 <span class="n">test_score</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_one_step_in_trainer_results</span><span class="p">(</span>
                     <span class="n">trainer_results</span><span class="p">,</span>
@@ -2335,8 +2330,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zero_grad_text_optimizers</span><span class="p">()</span>
                 <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training Step: </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># this will turn everything to train mode</span>
-                <span class="k">try</span><span class="p">:</span>
 
+                <span class="k">try</span><span class="p">:</span>
                     <span class="n">y_preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in train step: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2433,7 +2428,6 @@
         <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">attempted_val_score</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="n">step_results</span> <span class="o">=</span> <span class="n">TrainerStepResult</span><span class="p">(</span>
             <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
             <span class="n">val_score</span><span class="o">=</span><span class="n">val_score</span><span class="p">,</span>
@@ -2507,8 +2501,7 @@
         <span class="n">error_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">acc_score_list</span><span class="p">)</span> <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">error_indices</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">correct_indices</span><span class="p">)</span>
-            <span class="o">&lt;=</span> <span class="n">max_moving_batch_size</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">error_indices</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">correct_indices</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">max_moving_batch_size</span>
             <span class="c1"># and len(correct_indices) &lt;= max_moving_batch_size</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="n">all_samples</span><span class="p">,</span> <span class="n">all_losses</span><span class="p">,</span> <span class="n">all_y_preds</span><span class="p">,</span> <span class="n">acc_score_list</span>
@@ -2712,11 +2705,11 @@
         <span class="n">tdqm_loader</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_proposals_per_step</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Proposing&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tdqm_loader</span><span class="p">:</span>
-
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Proposal: </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Proposal: </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_propose_text_optimizers</span><span class="p">()</span>  <span class="c1"># new prompts</span>
-            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Propose time: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Propose time: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">include_demo_optimizers</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_propose</span><span class="p">()</span>
             <span class="n">new_prompts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">_get_param_values</span><span class="p">()</span>
@@ -2735,7 +2728,6 @@
                 <span class="n">val_score</span> <span class="o">==</span> <span class="n">subset_score</span>
                 <span class="ow">and</span> <span class="n">subset_score</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_val_score_threshold</span>
             <span class="p">)</span> <span class="ow">or</span> <span class="n">val_score</span> <span class="o">&gt;</span> <span class="n">subset_score</span><span class="p">:</span>  <span class="c1"># allow perfect subset to pass</span>
-
                 <span class="n">printc</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Pass minibatch check:</span><span class="si">{</span><span class="n">use_eval_loss_fn</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">subset_score</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
@@ -2788,7 +2780,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_history_text_optimizers</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">include_demo_optimizers</span><span class="p">:</span>
-
                     <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_step</span><span class="p">()</span>
 
                 <span class="c1"># test the model</span>
@@ -2909,7 +2900,839 @@
                 <span class="p">)</span>
 
         <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">trainer_results</span>
+
+    <span class="c1">####################################################################################################</span>
+    <span class="c1"># TSGD-M: Textual Gradient Descent with Momentum</span>
+    <span class="c1">####################################################################################################</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_prompts_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sample K prompts from all past iterations based on their scores.</span>
+
+<span class="sd">        Implements Algorithm step: &quot;Sample K prompts Π_τ^* from all past iterations based on their scores&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k: Number of prompts to sample (momentum window size K)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of sampled prompt entries from cache</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># Get all cache entries sorted by step</span>
+        <span class="n">cache_entries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Calculate average scores for each cache entry</span>
+        <span class="n">scored_entries</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">cache_entries</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;val_scores&quot;</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;val_scores&quot;</span><span class="p">]:</span>
+                <span class="n">avg_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;val_scores&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;val_scores&quot;</span><span class="p">])</span>
+                <span class="n">scored_entries</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">step</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">avg_score</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">scored_entries</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># Select top K by average score (or all if fewer than K)</span>
+        <span class="n">k_actual</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scored_entries</span><span class="p">))</span>
+        <span class="n">top_k_entries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">scored_entries</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="n">k_actual</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">entry</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">top_k_entries</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_prompts_on_minibatch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompts_to_eval</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">val_minibatch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">current_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate validation accuracy of multiple prompts on B_val mini-batch.</span>
+
+<span class="sd">        Implements Algorithm step: &quot;Evaluate validation accuracy of Π_τ^* on B_val, denoted as V&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prompts_to_eval: List of prompt entries to evaluate</span>
+<span class="sd">            val_minibatch: Validation mini-batch data</span>
+<span class="sd">            current_step: Current training step</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of validation scores for each prompt</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">val_scores</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prompt_entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">prompts_to_eval</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;prompt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prompt_entry</span><span class="p">:</span>
+                <span class="n">val_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">prompt_text</span> <span class="o">=</span> <span class="n">prompt_entry</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span>
+
+            <span class="c1"># Set the prompt temporarily and evaluate</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                    <span class="n">original_data</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span>
+                    <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">prompt_text</span>
+
+                    <span class="c1"># Evaluate on mini-batch</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">val_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span>
+                            <span class="n">val_minibatch</span><span class="p">,</span>
+                            <span class="n">current_step</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">val_score</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
+                        <span class="n">val_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Prompt </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> score: </span><span class="si">{</span><span class="n">val_score</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error evaluating prompt </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">val_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                    <span class="k">finally</span><span class="p">:</span>
+                        <span class="c1"># Restore original prompt</span>
+                        <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">original_data</span>
+
+        <span class="k">return</span> <span class="n">val_scores</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_best_prompt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompts_to_eval</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">val_scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select the best prompt based on validation scores.</span>
+
+<span class="sd">        Implements Algorithm step: &quot;Select the best prompt π_τ based on V&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prompts_to_eval: List of prompt entries</span>
+<span class="sd">            val_scores: Validation scores for each prompt</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Best performing prompt entry</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">val_scores</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">val_scores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">prompts_to_eval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">prompts_to_eval</span> <span class="k">else</span> <span class="p">{}</span>
+
+        <span class="n">best_idx</span> <span class="o">=</span> <span class="n">val_scores</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">val_scores</span><span class="p">))</span>
+        <span class="n">best_prompt</span> <span class="o">=</span> <span class="n">prompts_to_eval</span><span class="p">[</span><span class="n">best_idx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">best_prompt</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_tsgd_m_cache</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">gradient_info</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">val_scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add (t, π_t, g_t, [v_t]) to cache Φ.</span>
+
+<span class="sd">        Implements Algorithm step: &quot;Add (t+1, π_t+1, g_t+1, [v_t]) to Φ&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            step: Training step t</span>
+<span class="sd">            prompt: Prompt text π_t</span>
+<span class="sd">            gradient_info: Gradient information g_t</span>
+<span class="sd">            val_scores: List of validation scores [v_t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cache_entry</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">step</span><span class="p">,</span>
+            <span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+            <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">gradient_info</span><span class="p">,</span>
+            <span class="s2">&quot;val_scores&quot;</span><span class="p">:</span> <span class="n">val_scores</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache_entry</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_text_grad_tsgd_m</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">starting_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainerResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Textual Gradient Descent with Momentum (TSGD-M) implementation.</span>
+
+<span class="sd">        Algorithm from paper:</span>
+<span class="sd">        FOR t = 0 to T-1:</span>
+<span class="sd">            1. Draw training mini-batch B_train and validation mini-batch B_val</span>
+<span class="sd">            2. Sample K prompts Π_τ^* from all past iterations based on their scores</span>
+<span class="sd">            3. Evaluate validation accuracy of Π_τ^* on B_val, denoted as V</span>
+<span class="sd">            4. Select the best prompt π_τ based on V</span>
+<span class="sd">            5. Generate next prompt: π_{t+1} = P(π | g_τ, π_τ)</span>
+<span class="sd">            6. Compute gradient g_{t+1} on π_{t+1} and add (t+1, π_{t+1}, g_{t+1}, [v_t]) to Φ</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fitting using Textual Gradient Descent with Momentum (TSGD-M)&quot;</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="s2">&quot;Fitting using Textual Gradient Descent with Momentum (TSGD-M)&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">)</span>
+
+        <span class="n">trainer_results</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pre_fit</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">trainer_results</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">trainer_results</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zero_grad_text_optimizers</span><span class="p">()</span>
+
+        <span class="n">num_epochs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estimate_num_epochs</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;num_epochs: </span><span class="si">{</span><span class="n">num_epochs</span><span class="si">}</span><span class="s2">, max_steps: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">current_step</span> <span class="o">=</span> <span class="n">starting_step</span>
+
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Epoch (TSGD-M)&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch: </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">steps</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="n">pbar</span> <span class="o">:=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">))):</span>
+                <span class="n">current_step</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">current_step</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">+</span> <span class="n">starting_step</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reached max steps&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zero_grad_text_optimizers</span><span class="p">()</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training Step: </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2"> (TSGD-M)&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+                <span class="c1"># STEP 1: Sample training and validation mini-batches</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">+</span> <span class="n">current_step</span><span class="p">)</span>
+
+                <span class="n">actual_minibatch_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_top_k_minibatch_size</span> <span class="ow">or</span> <span class="mi">50</span>
+                <span class="n">actual_minibatch_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">actual_minibatch_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gumbel_val_dataset</span><span class="p">))</span>
+                <span class="n">val_minibatch</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gumbel_val_dataset</span><span class="p">,</span> <span class="n">actual_minibatch_size</span><span class="p">)</span>
+
+                <span class="c1"># STEP 2: Sample K prompts from all past iterations based on scores</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[TSGD-M Step </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2">] Sampling K=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_momentum_window</span><span class="si">}</span><span class="s2"> prompts from cache...&quot;</span><span class="p">)</span>
+                <span class="n">sampled_prompts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_prompts_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_momentum_window</span><span class="p">)</span>
+
+                <span class="c1"># STEP 3: Evaluate sampled prompts on validation mini-batch</span>
+                <span class="k">if</span> <span class="n">sampled_prompts</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TSGD-M Step </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2">] Evaluating </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sampled_prompts</span><span class="p">)</span><span class="si">}</span><span class="s2"> prompts on mini-batch...&quot;</span><span class="p">)</span>
+                    <span class="n">val_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_prompts_on_minibatch</span><span class="p">(</span>
+                        <span class="n">sampled_prompts</span><span class="p">,</span>
+                        <span class="n">val_minibatch</span><span class="p">,</span>
+                        <span class="n">current_step</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># STEP 4: Select best prompt</span>
+                    <span class="n">best_prompt_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_best_prompt</span><span class="p">(</span><span class="n">sampled_prompts</span><span class="p">,</span> <span class="n">val_scores</span><span class="p">)</span>
+
+                    <span class="c1"># Set the best historical prompt as current</span>
+                    <span class="k">if</span> <span class="s2">&quot;prompt&quot;</span> <span class="ow">in</span> <span class="n">best_prompt_entry</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TSGD-M Step </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2">] Setting best historical prompt before forward pass&quot;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                                <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">best_prompt_entry</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TSGD-M Step </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2">] No prompts in cache yet, using current prompt&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Forward pass on training batch</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">y_preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in train step: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">losses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">loss_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in loss step: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+
+                <span class="n">total_loss</span> <span class="o">=</span> <span class="n">sum_ops</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
+
+                <span class="c1"># STEP 5+6: Generate next prompt and compute gradient</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">disable_backward</span><span class="p">:</span>
+                        <span class="n">total_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in backward: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TSGD-M Step </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2">] Proposing new prompt...&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Propose new prompt based on gradient</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_propose_text_optimizers</span><span class="p">()</span>
+                <span class="n">new_prompts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">_get_param_values</span><span class="p">()</span>
+
+                <span class="c1"># Get gradient information</span>
+                <span class="n">gradient_info</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">text_optimizer</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="s2">&quot;gradients&quot;</span><span class="p">):</span>
+                                <span class="n">gradient_info</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">gradients</span><span class="p">)</span><span class="si">}</span><span class="s2"> gradients&quot;</span>
+
+                <span class="c1"># Evaluate on full validation set (less frequently)</span>
+                <span class="k">if</span> <span class="n">current_step</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">val_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span>
+                        <span class="n">val_dataset</span><span class="p">,</span>
+                        <span class="n">current_step</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">val_score</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">val_score</span> <span class="o">=</span> <span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+                <span class="c1"># STEP 6: Add to cache</span>
+                <span class="n">prompt_text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_prompts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">new_prompts</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_tsgd_m_cache</span><span class="p">(</span>
+                    <span class="n">step</span><span class="o">=</span><span class="n">current_step</span><span class="p">,</span>
+                    <span class="n">prompt</span><span class="o">=</span><span class="n">prompt_text</span><span class="p">,</span>
+                    <span class="n">gradient_info</span><span class="o">=</span><span class="n">gradient_info</span><span class="p">,</span>
+                    <span class="n">val_scores</span><span class="o">=</span><span class="p">[</span><span class="n">val_score</span><span class="p">],</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Check if improvement and update</span>
+                <span class="n">last_val_score</span> <span class="o">=</span> <span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span> <span class="k">else</span> <span class="mf">0.0</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_add_to_history</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="n">last_val_score</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TSGD-M Step </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2">] ✓ Validation improved: </span><span class="si">{</span><span class="n">val_score</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% &gt; </span><span class="si">{</span><span class="n">last_val_score</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_step_text_optimizers</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_history_text_optimizers</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_one_step_in_trainer_results</span><span class="p">(</span>
+                        <span class="n">trainer_results</span><span class="p">,</span>
+                        <span class="n">val_score</span><span class="p">,</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">new_prompts</span><span class="p">,</span>
+                        <span class="n">current_step</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reset_steps_from_last_improvement_text_optimizers</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TSGD-M Step </span><span class="si">{</span><span class="n">current_step</span><span class="si">}</span><span class="s2">] ✗ No improvement: </span><span class="si">{</span><span class="n">val_score</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% &lt;= </span><span class="si">{</span><span class="n">last_val_score</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_failed_proposals_text_optimizers</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_revert_text_optimizers</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_one_step_in_trainer_results</span><span class="p">(</span>
+                        <span class="n">trainer_results</span><span class="p">,</span>
+                        <span class="n">last_val_score</span><span class="p">,</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">new_prompts</span><span class="p">,</span>
+                        <span class="n">current_step</span><span class="p">,</span>
+                        <span class="n">attempted_val_score</span><span class="o">=</span><span class="n">val_score</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_increment_step_from_last_improvement_text_optimizers</span><span class="p">()</span>
+
+                <span class="c1"># Save checkpoint</span>
+                <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TSGD-M Training Complete&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final validation score: </span><span class="si">{</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cache size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">trainer_results</span></div>
+
+
+
+<div class="viewcode-block" id="TrainerGumbel">
+<a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.TrainerGumbel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainerGumbel</span><span class="p">(</span><span class="n">Trainer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trainer extension with Gumbel-Top-K selection and TSGD-M support.</span>
+
+<span class="sd">    This class extends the base Trainer with advanced optimization features:</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        history_update_strategy: Strategy for updating prompt history</span>
+<span class="sd">            - &quot;improvement_only&quot;: Only add if validation score improved (original behavior)</span>
+<span class="sd">            - &quot;always&quot;: Always add to history (maximum exploration)</span>
+<span class="sd">            - &quot;epsilon_greedy&quot;: Add with probability epsilon even if worse</span>
+<span class="sd">            - &quot;confidence_based&quot;: Add if within confidence threshold</span>
+<span class="sd">        exploration_epsilon: Exploration probability for epsilon_greedy strategy (0.0-1.0)</span>
+<span class="sd">        confidence_threshold: Confidence threshold for confidence_based strategy (0.0-1.0)</span>
+<span class="sd">        tsgd_m_enabled: Enable TSGD-M (Textual Gradient Descent with Momentum) workflow</span>
+<span class="sd">        tsgd_m_momentum_window: Momentum window size (K) for sampling past prompts in TSGD-M</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Extract Gumbel-specific parameters before passing to parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_update_strategy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+            <span class="s2">&quot;improvement_only&quot;</span><span class="p">,</span> <span class="s2">&quot;always&quot;</span><span class="p">,</span> <span class="s2">&quot;epsilon_greedy&quot;</span><span class="p">,</span> <span class="s2">&quot;confidence_based&quot;</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;history_update_strategy&quot;</span><span class="p">,</span> <span class="s2">&quot;always&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exploration_epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exploration_epsilon&quot;</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">confidence_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;confidence_threshold&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_enabled_param</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tsgd_m_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_momentum_window_param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tsgd_m_momentum_window&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Initialize parent</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Initialize Gumbel-specific attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gumbel_val_dataset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Gumbel-Top-K tracking: stores validation scores across iterations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_acc_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Legacy tracking (for backward compatibility and Gumbel input)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_val_scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_val_acc_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_gumbel_top_k</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Evaluate-Top-K workflow configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_evaluate_top_k</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_top_k_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_top_k_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_top_k_minibatch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_top_k_min_history</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_top_k_use_best_as_current</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># TSGD-M cache configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_momentum_window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_momentum_window_param</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_enabled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_enabled_param</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_should_add_to_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">last_val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine whether to add current prompt to history based on the configured strategy.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_update_strategy</span> <span class="o">==</span> <span class="s2">&quot;always&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_update_strategy</span> <span class="o">==</span> <span class="s2">&quot;improvement_only&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val_score</span> <span class="o">&gt;</span> <span class="n">last_val_score</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_update_strategy</span> <span class="o">==</span> <span class="s2">&quot;epsilon_greedy&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">val_score</span> <span class="o">&gt;</span> <span class="n">last_val_score</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">exploration_epsilon</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_update_strategy</span> <span class="o">==</span> <span class="s2">&quot;confidence_based&quot;</span><span class="p">:</span>
+            <span class="n">score_diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">val_score</span> <span class="o">-</span> <span class="n">last_val_score</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">val_score</span> <span class="o">&gt;</span> <span class="n">last_val_score</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">relative_diff</span> <span class="o">=</span> <span class="n">score_diff</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">last_val_score</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">relative_diff</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">confidence_threshold</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">printc</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Warning: Unknown history_update_strategy &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">history_update_strategy</span><span class="si">}</span><span class="s2">&#39;, defaulting to &#39;always&#39;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_history_text_optimizers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">val_acc_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">force_add</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add validation score to history for text optimizers with multi-evaluation tracking.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;val_score should be a float, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">current_prompts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                    <span class="n">current_prompts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">current_prompts</span><span class="p">:</span>
+            <span class="n">printc</span><span class="p">(</span><span class="s2">&quot;Warning: No optimizable prompts found&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">current_prompt</span> <span class="o">=</span> <span class="n">current_prompts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">prompt_hash</span> <span class="o">=</span> <span class="n">hash_text_sha1</span><span class="p">(</span><span class="n">current_prompt</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">val_acc_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">num_samples</span> <span class="o">=</span> <span class="mi">10</span>
+            <span class="n">num_correct</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">val_score</span> <span class="o">*</span> <span class="n">num_samples</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">))</span>
+            <span class="n">val_acc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_correct</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_samples</span> <span class="o">-</span> <span class="n">num_correct</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">prompt_hash</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">val_score</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_acc_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">val_acc_list</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompt_hash</span><span class="p">)</span>
+            <span class="n">printc</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;✓ New prompt added to history (hash: </span><span class="si">{</span><span class="n">prompt_hash</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s2">..., score: </span><span class="si">{</span><span class="n">val_score</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_acc_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_acc_list</span><span class="p">)</span>
+            <span class="n">num_evals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">])</span>
+            <span class="n">avg_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">])</span> <span class="o">/</span> <span class="n">num_evals</span>
+            <span class="n">printc</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;↻ Prompt re-evaluated: </span><span class="si">{</span><span class="n">num_evals</span><span class="si">}</span><span class="s2"> evaluations, avg score: </span><span class="si">{</span><span class="n">avg_score</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cyan&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rebuild_batch_val_scores</span><span class="p">()</span>
+
+        <span class="n">avg_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">add_score_to_params</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rebuild_batch_val_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rebuild batch_val_scores and batch_val_acc_list from prompt_val_scores_dict.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_val_scores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_val_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">prompt_hash</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span>
+            <span class="n">acc_lists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_acc_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span>
+
+            <span class="n">avg_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_val_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avg_score</span><span class="p">)</span>
+
+            <span class="n">aggregated_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">acc_list</span> <span class="ow">in</span> <span class="n">acc_lists</span><span class="p">:</span>
+                <span class="n">aggregated_acc_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">acc_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_val_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aggregated_acc_list</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rebuilt batch_val_scores: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_val_scores</span><span class="p">)</span><span class="si">}</span><span class="s2"> unique prompts&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TrainerGumbel.get_prompt_evaluation_stats">
+<a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.TrainerGumbel.get_prompt_evaluation_stats">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_prompt_evaluation_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get statistics about prompt evaluations.&quot;&quot;&quot;</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;num_unique_prompts&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span><span class="p">),</span>
+            <span class="s2">&quot;total_evaluations&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="k">for</span> <span class="n">scores</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;prompts_info&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prompt_hash</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span><span class="p">):</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span>
+            <span class="n">prompt_stats</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+                <span class="s2">&quot;prompt_hash&quot;</span><span class="p">:</span> <span class="n">prompt_hash</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;num_evaluations&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">),</span>
+                <span class="s2">&quot;scores&quot;</span><span class="p">:</span> <span class="n">scores</span><span class="p">,</span>
+                <span class="s2">&quot;avg_score&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">),</span>
+                <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">scores</span><span class="p">),</span>
+                <span class="s2">&quot;max_score&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">),</span>
+                <span class="s2">&quot;std_score&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">sum</span><span class="p">((</span><span class="n">s</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">)</span>
+                    <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="o">**</span> <span class="mf">0.5</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;prompts_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompt_stats</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">stats</span></div>
+
+
+<div class="viewcode-block" id="TrainerGumbel.evaluate_and_select_top_prompts">
+<a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.TrainerGumbel.evaluate_and_select_top_prompts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_and_select_top_prompts</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">k_select</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">top_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">use_gumbel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">minibatch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate top-K historical prompts on a new mini-batch and select top-N best performers.&quot;&quot;&quot;</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[Evaluate &amp; Select] K=</span><span class="si">{</span><span class="n">k_select</span><span class="si">}</span><span class="s2">, Top-N=</span><span class="si">{</span><span class="n">top_n</span><span class="si">}</span><span class="s2">, Gumbel=</span><span class="si">{</span><span class="n">use_gumbel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span>
+
+        <span class="n">num_history</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">num_history</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">printc</span><span class="p">(</span><span class="s2">&quot;  No history yet, using current prompt&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+            <span class="n">current_prompts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                        <span class="n">current_prompts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">current_prompts</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">current_prompts</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+        <span class="n">k_actual</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">k_select</span><span class="p">,</span> <span class="n">num_history</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  History size: </span><span class="si">{</span><span class="n">num_history</span><span class="si">}</span><span class="s2">, selecting </span><span class="si">{</span><span class="n">k_actual</span><span class="si">}</span><span class="s2"> prompts&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">k_actual</span> <span class="o">==</span> <span class="n">num_history</span><span class="p">:</span>
+            <span class="n">selected_hashes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span>
+            <span class="n">selected_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_history</span><span class="p">))</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Selecting all </span><span class="si">{</span><span class="n">num_history</span><span class="si">}</span><span class="s2"> prompts from history&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">avg_scores</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">h</span><span class="p">])</span>
+                <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">h</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span>
+            <span class="p">]</span>
+
+            <span class="n">gumbel_selected</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">selected_indices</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">text_optimizer</span><span class="p">,</span> <span class="s2">&quot;gumbel_top_k&quot;</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">selected_indices</span> <span class="o">=</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">gumbel_top_k</span><span class="p">(</span>
+                            <span class="n">scores</span><span class="o">=</span><span class="n">avg_scores</span><span class="p">,</span>
+                            <span class="n">k</span><span class="o">=</span><span class="n">k_actual</span><span class="p">,</span>
+                            <span class="n">probs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+                            <span class="n">noise_scale</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+                            <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">gumbel_selected</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Gumbel-Top-K selected indices: </span><span class="si">{</span><span class="n">selected_indices</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">)</span>
+                        <span class="k">break</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gumbel selection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">, falling back to greedy&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">gumbel_selected</span> <span class="ow">or</span> <span class="n">selected_indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">printc</span><span class="p">(</span><span class="s2">&quot;  Gumbel not available, falling back to greedy selection&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">)</span>
+                <span class="n">selected_indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">avg_scores</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">avg_scores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)[:</span><span class="n">k_actual</span><span class="p">]</span>
+
+            <span class="n">selected_hashes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_indices</span><span class="p">]</span>
+            <span class="n">selected_avg_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">avg_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_indices</span><span class="p">]</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Selected indices: </span><span class="si">{</span><span class="n">selected_indices</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+            <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Average scores: </span><span class="si">{</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">s</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">selected_avg_scores</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Evaluating </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">selected_hashes</span><span class="p">)</span><span class="si">}</span><span class="s2"> prompts on new mini-batch...&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+
+        <span class="n">prompt_texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">prompt_hash</span> <span class="ow">in</span> <span class="n">selected_hashes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">text_optimizer</span><span class="p">,</span> <span class="s2">&quot;params_history&quot;</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">param_id</span><span class="p">,</span> <span class="n">history_list</span> <span class="ow">in</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">params_history</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">for</span> <span class="n">hist_item</span> <span class="ow">in</span> <span class="n">history_list</span><span class="p">:</span>
+                            <span class="n">item_hash</span> <span class="o">=</span> <span class="n">hash_text_sha1</span><span class="p">(</span><span class="n">hist_item</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">item_hash</span> <span class="o">==</span> <span class="n">prompt_hash</span><span class="p">:</span>
+                                <span class="n">prompt_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist_item</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                                <span class="k">break</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prompt_texts</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_hashes</span><span class="p">):</span>
+                            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prompt_texts</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_hashes</span><span class="p">):</span>
+            <span class="n">printc</span><span class="p">(</span>
+                <span class="s2">&quot;  Warning: Could not retrieve all prompt texts, using available&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">minibatch_scores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">minibatch_acc_lists</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prompt_text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">prompt_texts</span><span class="p">):</span>
+            <span class="n">score</span><span class="p">,</span> <span class="n">acc_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_prompt_on_minibatch</span><span class="p">(</span>
+                <span class="n">prompt_text</span><span class="p">,</span> <span class="n">val_dataset</span>
+            <span class="p">)</span>
+            <span class="n">minibatch_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+            <span class="n">minibatch_acc_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acc_list</span><span class="p">)</span>
+
+            <span class="n">prompt_hash</span> <span class="o">=</span> <span class="n">selected_hashes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_acc_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acc_list</span><span class="p">)</span>
+
+            <span class="n">printc</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;    Prompt </span><span class="si">{</span><span class="n">selected_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">score</span><span class="si">}</span><span class="s2">, Eval history: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rebuild_batch_val_scores</span><span class="p">()</span>
+
+        <span class="n">avg_scores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prompt_hash</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected_hashes</span><span class="p">):</span>
+            <span class="n">all_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">prompt_hash</span><span class="p">]</span>
+            <span class="n">avg_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">all_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_scores</span><span class="p">)</span>
+            <span class="n">avg_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avg_score</span><span class="p">)</span>
+            <span class="n">printc</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;    Prompt </span><span class="si">{</span><span class="n">selected_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2"> avg across </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_scores</span><span class="p">)</span><span class="si">}</span><span class="s2"> evals: </span><span class="si">{</span><span class="n">avg_score</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">top_n_actual</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">top_n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">avg_scores</span><span class="p">))</span>
+
+        <span class="n">printc</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;  Applying greedy selection for selecting top-</span><span class="si">{</span><span class="n">top_n_actual</span><span class="si">}</span><span class="s2"> prompts (deterministic exploitation)...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">top_n_ranking</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">avg_scores</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">avg_scores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)[:</span><span class="n">top_n_actual</span><span class="p">]</span>
+
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Greedy selected indices: </span><span class="si">{</span><span class="n">top_n_ranking</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Selected scores: </span><span class="si">{</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">avg_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">top_n_ranking</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+
+        <span class="n">final_prompts</span> <span class="o">=</span> <span class="p">[</span><span class="n">prompt_texts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top_n_ranking</span><span class="p">]</span>
+        <span class="n">final_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">selected_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top_n_ranking</span><span class="p">]</span>
+        <span class="n">final_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">avg_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top_n_ranking</span><span class="p">]</span>
+        <span class="n">final_acc_lists</span> <span class="o">=</span> <span class="p">[</span><span class="n">minibatch_acc_lists</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top_n_ranking</span><span class="p">]</span>
+
+        <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Top-</span><span class="si">{</span><span class="n">top_n_actual</span><span class="si">}</span><span class="s2"> prompts for tuning (based on Gumbel selection):&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">acc_list</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="n">final_indices</span><span class="p">,</span> <span class="n">final_scores</span><span class="p">,</span> <span class="n">final_acc_lists</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">printc</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. Prompt </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">: avg=</span><span class="si">{</span><span class="n">score</span><span class="si">}</span><span class="s2">, latest_acc_list: </span><span class="si">{</span><span class="n">acc_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_prompts</span><span class="p">,</span> <span class="n">final_indices</span><span class="p">,</span> <span class="n">final_scores</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_via_gumbel_top_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select top-K indices using Gumbel-Top-K on current averaged scores.&quot;&quot;&quot;</span>
+        <span class="n">avg_scores</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">h</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_val_scores_dict</span><span class="p">[</span><span class="n">h</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_order</span>
+        <span class="p">]</span>
+
+        <span class="n">scores_pct</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">if</span> <span class="n">s</span> <span class="o">&lt;=</span> <span class="mi">100</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">avg_scores</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">text_optimizer</span><span class="p">,</span> <span class="s2">&quot;gumbel_top_k&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">gumbel_top_k</span><span class="p">(</span>
+                    <span class="n">scores</span><span class="o">=</span><span class="n">scores_pct</span><span class="p">,</span>
+                    <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                    <span class="n">probs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">printc</span><span class="p">(</span><span class="s2">&quot;No gumbel sampling function implemented.&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">avg_scores</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">avg_scores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)[:</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_prompt_on_minibatch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">prompt_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">minibatch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate a single prompt on a mini-batch.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No text optimizers available for evaluation&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">minibatch</span><span class="p">)</span>
+
+        <span class="n">text_optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">optimizable_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">params</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">optimizable_params</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No optimizable parameters found&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">minibatch</span><span class="p">)</span>
+
+        <span class="n">original_prompts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">optimizable_params</span><span class="p">:</span>
+            <span class="n">original_prompts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">prompt_text</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span>
+                <span class="n">minibatch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
+            <span class="p">)</span>
+
+            <span class="n">accuracy</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">val_output</span><span class="p">,</span> <span class="s2">&quot;per_item_scores&quot;</span><span class="p">):</span>
+                <span class="n">acc_list</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="mi">1</span> <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">val_output</span><span class="o">.</span><span class="n">per_item_scores</span>
+                <span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">val_output</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">):</span>
+                <span class="n">acc_list</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="mi">1</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s2">&quot;correct&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">val_output</span><span class="o">.</span><span class="n">results</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">num_correct</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">accuracy</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">minibatch</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">))</span>
+                <span class="n">acc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_correct</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">minibatch</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_correct</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">acc_list</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">original_prompt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">optimizable_params</span><span class="p">,</span> <span class="n">original_prompts</span><span class="p">):</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">original_prompt</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_prompts_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample K prompts from all past iterations based on their scores.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">cache_entries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">scored_entries</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">cache_entries</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;val_scores&quot;</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;val_scores&quot;</span><span class="p">]:</span>
+                <span class="n">avg_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;val_scores&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;val_scores&quot;</span><span class="p">])</span>
+                <span class="n">scored_entries</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">step</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">avg_score</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">scored_entries</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">k_actual</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scored_entries</span><span class="p">))</span>
+        <span class="n">top_k_entries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">scored_entries</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="n">k_actual</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">entry</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">top_k_entries</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_prompts_on_minibatch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompts_to_eval</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">val_minibatch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">current_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate validation accuracy of multiple prompts on B_val mini-batch.&quot;&quot;&quot;</span>
+        <span class="n">val_scores</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prompt_entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">prompts_to_eval</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;prompt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prompt_entry</span><span class="p">:</span>
+                <span class="n">val_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">prompt_text</span> <span class="o">=</span> <span class="n">prompt_entry</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                    <span class="n">original_data</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span>
+                    <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">prompt_text</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">val_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span>
+                            <span class="n">val_minibatch</span><span class="p">,</span>
+                            <span class="n">current_step</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">val_score</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
+                        <span class="n">val_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Prompt </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> score: </span><span class="si">{</span><span class="n">val_score</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error evaluating prompt </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">val_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                    <span class="k">finally</span><span class="p">:</span>
+                        <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">original_data</span>
+
+        <span class="k">return</span> <span class="n">val_scores</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_best_prompt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompts_to_eval</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">val_scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select the best prompt based on validation scores.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">val_scores</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">val_scores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">prompts_to_eval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">prompts_to_eval</span> <span class="k">else</span> <span class="p">{}</span>
+
+        <span class="n">best_idx</span> <span class="o">=</span> <span class="n">val_scores</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">val_scores</span><span class="p">))</span>
+        <span class="n">best_prompt</span> <span class="o">=</span> <span class="n">prompts_to_eval</span><span class="p">[</span><span class="n">best_idx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">best_prompt</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_tsgd_m_cache</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">gradient_info</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">val_scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add (t, π_t, g_t, [v_t]) to cache Φ.&quot;&quot;&quot;</span>
+        <span class="n">cache_entry</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">step</span><span class="p">,</span>
+            <span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+            <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">gradient_info</span><span class="p">,</span>
+            <span class="s2">&quot;val_scores&quot;</span><span class="p">:</span> <span class="n">val_scores</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsgd_m_cache</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache_entry</span></div>
 
 </pre></div>
         </article>
@@ -2923,7 +3746,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, SylphAI, Inc
+                Copyright &#169; 2026, SylphAI, Inc
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>

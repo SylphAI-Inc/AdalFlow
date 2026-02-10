@@ -19,6 +19,7 @@ tgd_optimizer
 
    .. autosummary::
 
+      CustomizedXMLParser
       HistoryPrompt
       Instruction
       TGDData

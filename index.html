@@ -5,12 +5,12 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tutorials" href="new_tutorials/index.html" />
 
-    <link rel="shortcut icon" href="_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>Build and Optimize LM Workflows</title>
+    <link rel="shortcut icon" href="_static/sylphai-symbol.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+        <title>AdalFlow</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=f0068426" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=49b0bfd5" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/css/rtd_sphinx_search.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
@@ -24,7 +24,7 @@
   body {
     --color-code-background: #f8f8f8;
   --color-code-foreground: black;
-  --color-brand-primary: #FF6F00;
+  --color-brand-primary: #059669;
   --color-brand-content: #1E2A38;
   
   }
@@ -32,7 +32,7 @@
     body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FF8F00;
+  --color-brand-primary: #00FF88;
   --color-brand-content: #CFD8DC;
   
     }
@@ -40,7 +40,7 @@
       body:not([data-theme="light"]) {
         --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FF8F00;
+  --color-brand-primary: #00FF88;
   --color-brand-content: #CFD8DC;
   
       }
@@ -178,7 +178,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Build and Optimize LM Workflows</div></a>
+      <a href="#"><div class="brand">AdalFlow</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -199,16 +199,17 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
-  
-  <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="_static/images/AdalFlow.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="_static/images/AdalFlow_black_bg.svg" alt="Dark Logo"/>
-  </div>
-  
-  <span class="sidebar-brand-text">Build and Optimize LM Workflows</span>
-  
-</a><div class="sidebar-github-section">
+      <div class="sidebar-sticky">
+<div class="sidebar-brand-custom">
+  <a class="sidebar-brand-logo-link" href="https://sylph.ai" target="_blank" rel="noopener">
+    <img class="sidebar-logo only-light" src="_static/images/sylphai-symbol.png" alt="SylphAI"/>
+    <img class="sidebar-logo only-dark" src="_static/images/sylphai-symbol-dark.png" alt="SylphAI"/>
+  </a>
+  <span class="sidebar-brand-separator">/</span>
+  <a class="sidebar-brand-text-link" href="#">
+    <span class="sidebar-brand-text">AdalFlow</span>
+  </a>
+</div><div class="sidebar-github-section">
     <a href="https://github.com/SylphAI-Inc/AdalFlow" class="sidebar-github-link">
         <i class="fa-brands fa-github"></i>
         <span class="github-text">GitHub</span>
@@ -297,6 +298,9 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/logging_tracing.html">Tracing</a></li>
 </ul>
 </li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="community.html">Community</a></li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="design/index.html">Blog</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Blog</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -489,9 +493,13 @@
         <article role="main" id="furo-main-content">
           <div class="toctree-wrapper compound">
 </div>
-<p><em>“Say Goodbye to Manual Prompting”</em></p>
 <section id="welcome-to-adalflow">
 <h1>Welcome to AdalFlow!<a class="headerlink" href="#welcome-to-adalflow" title="Link to this heading">¶</a></h1>
+<div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 8px; background: linear-gradient(135deg, rgba(0,255,136,0.08), rgba(0,255,136,0.03)); border: 1px solid rgba(0,255,136,0.3); margin-bottom: 12px;">
+   <span style="font-size: 0.92em; opacity: 0.75;">AdalFlow proudly powers</span>
+   <a href="https://sylph.ai" style="font-weight: 700; color: #00FF88; text-decoration: none; font-size: 0.95em;">AdaL CLI</a>
+   <span style="font-size: 0.85em; opacity: 0.5;">— The self-evolving coding agent</span>
+</div><p><em>“Say Goodbye to Manual Prompting”</em></p>
 <p>AdalFlow is a PyTorch-like library to build and auto-optimize any Language Model (LM) workflows, from Chatbots and RAG Systems to Agents. The library is a community-driven project, and we welcome everyone to join us in building the future of LLM applications!</p>
 <section id="install-adalflow-and-run-your-first-query">
 <h2>Install AdalFlow and Run Your First Query<a class="headerlink" href="#install-adalflow-and-run-your-first-query" title="Link to this heading">¶</a></h2>
@@ -912,6 +920,17 @@ AdalFlow handles all of them as optional packages, so that developers only need 
 <p><a class="reference internal" href="use_cases/question_answering.html#question-answering"><span class="std std-ref">Full Tutorial here</span></a>.</p>
 </div></div>
 </section>
+<section id="auto-prompt-optimization-ecosystem">
+<h2>Auto-Prompt Optimization Ecosystem<a class="headerlink" href="#auto-prompt-optimization-ecosystem" title="Link to this heading">¶</a></h2>
+<p>AdalFlow is part of a growing ecosystem of libraries that automatically optimize LLM prompts and workflows:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SylphAI-Inc/AdalFlow">AdalFlow</a> — PyTorch-style auto-differentiation for LLM workflows. Unified textual gradient descent + few-shot bootstrap optimization in one training loop.</p></li>
+<li><p><a class="reference external" href="https://github.com/stanfordnlp/dspy">DSPy</a> — Declarative programming framework. Write compositional Python code instead of prompts; the compiler optimizes prompts and weights automatically.</p></li>
+<li><p><a class="reference external" href="https://github.com/microsoft/agent-lightning">Agent Lightning</a> — Microsoft’s framework-agnostic agent trainer. Turn any agent (LangChain, OpenAI SDK, AutoGen, etc.) into an optimizable entity with RL, auto-prompt optimization, and supervised fine-tuning.</p></li>
+<li><p><a class="reference external" href="https://github.com/zou-group/textgrad">TextGrad</a> — Automatic differentiation via text. Uses LLM feedback as gradients to optimize prompts, code, and solutions.</p></li>
+</ul>
+<p>AdalFlow unifies ideas from all of the above into a single PyTorch-like framework — textual gradients (à la TextGrad), few-shot bootstrap (à la DSPy), and instruction history — all composable within <code class="docutils literal notranslate"><span class="pre">Parameter</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code>, and <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>.</p>
+</section>
 <section id="unites-research-and-production">
 <h2>Unites Research and Production<a class="headerlink" href="#unites-research-and-production" title="Link to this heading">¶</a></h2>
 <p>Our team has experience in both AI research and production.
@@ -933,10 +952,12 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
       <img src="https://img.shields.io/badge/Bugs/Feature Requests-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
    </a>
    <a href="https://discord.gg/ezzszrRZvT" style="display: inline-block; margin-left: 10px;">
-     <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
+     <img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Us-5865F2?logo=discord&logoColor=white&style=flat-square">
    </a>
 
 </div><div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
 </div>
@@ -972,7 +993,7 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, SylphAI, Inc
+                Copyright &#169; 2026, SylphAI, Inc
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>

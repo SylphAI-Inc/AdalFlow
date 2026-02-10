@@ -15,6 +15,7 @@ outputs
 
       BooleanOutputParser
       JsonOutputParser
+      JsonOutputParserPydanticModel
       ListOutputParser
       OutputParser
       YamlOutputParser

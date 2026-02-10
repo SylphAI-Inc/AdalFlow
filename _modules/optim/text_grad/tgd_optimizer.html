@@ -4,12 +4,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <link rel="shortcut icon" href="../../../_static/LightRAG-logo-circle.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>optim.text_grad.tgd_optimizer - Build and Optimize LM Workflows</title>
+    <link rel="shortcut icon" href="../../../_static/sylphai-symbol.png"/><!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+        <title>optim.text_grad.tgd_optimizer - AdalFlow</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f0068426" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=49b0bfd5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -22,7 +22,7 @@
   body {
     --color-code-background: #f8f8f8;
   --color-code-foreground: black;
-  --color-brand-primary: #FF6F00;
+  --color-brand-primary: #059669;
   --color-brand-content: #1E2A38;
   
   }
@@ -30,7 +30,7 @@
     body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FF8F00;
+  --color-brand-primary: #00FF88;
   --color-brand-content: #CFD8DC;
   
     }
@@ -38,7 +38,7 @@
       body:not([data-theme="light"]) {
         --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FF8F00;
+  --color-brand-primary: #00FF88;
   --color-brand-content: #CFD8DC;
   
       }
@@ -176,7 +176,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Build and Optimize LM Workflows</div></a>
+      <a href="../../../index.html"><div class="brand">AdalFlow</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -197,16 +197,17 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
-  
-  <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="../../../_static/images/AdalFlow.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="../../../_static/images/AdalFlow_black_bg.svg" alt="Dark Logo"/>
-  </div>
-  
-  <span class="sidebar-brand-text">Build and Optimize LM Workflows</span>
-  
-</a><div class="sidebar-github-section">
+      <div class="sidebar-sticky">
+<div class="sidebar-brand-custom">
+  <a class="sidebar-brand-logo-link" href="https://sylph.ai" target="_blank" rel="noopener">
+    <img class="sidebar-logo only-light" src="../../../_static/images/sylphai-symbol.png" alt="SylphAI"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/images/sylphai-symbol-dark.png" alt="SylphAI"/>
+  </a>
+  <span class="sidebar-brand-separator">/</span>
+  <a class="sidebar-brand-text-link" href="../../../index.html">
+    <span class="sidebar-brand-text">AdalFlow</span>
+  </a>
+</div><div class="sidebar-github-section">
     <a href="https://github.com/SylphAI-Inc/AdalFlow" class="sidebar-github-link">
         <i class="fa-brands fa-github"></i>
         <span class="github-text">GitHub</span>
@@ -295,6 +296,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/logging_tracing.html">Tracing</a></li>
 </ul>
 </li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../community.html">Community</a></li>
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../design/index.html">Blog</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Blog</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -495,14 +499,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextOptimizer</span><span class="p">,</span> <span class="n">ParamsT</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.text_grad.backend_engine_prompt</span><span class="w"> </span><span class="kn">import</span> <span class="n">VARIABLE_AND_PEERS_INFO</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.optim.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataComponent</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.base_data_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneratorOutput</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -762,6 +769,87 @@
 
 
 
+<div class="viewcode-block" id="CustomizedXMLParser">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.CustomizedXMLParser">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomizedXMLParser</span><span class="p">(</span><span class="n">DataComponent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom XML parser for TGD optimizer output with reasoning, method, and proposed_variable fields.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">pass</span>
+    
+<div class="viewcode-block" id="CustomizedXMLParser.get_output_format_str">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.CustomizedXMLParser.get_output_format_str">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_format_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;Please provide your response in the following XML format:</span>
+
+<span class="s2">&lt;response&gt;</span>
+<span class="s2">&lt;reasoning&gt;Your reasoning for why the variable is proposed this way&lt;/reasoning&gt;</span>
+<span class="s2">&lt;method&gt;The final method used to propose the variable (e.g. prompting + editing)&lt;/method&gt;</span>
+<span class="s2">&lt;proposed_variable&gt;The proposed variable content&lt;/proposed_variable&gt;</span>
+<span class="s2">&lt;/response&gt;</span>
+
+<span class="s2">Make sure to include all three fields and properly close all XML tags.&quot;&quot;&quot;</span></div>
+
+    
+<div class="viewcode-block" id="CustomizedXMLParser.call">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.CustomizedXMLParser.call">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TGDData</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the XML response and extract the three fields, returning TGDData directly.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Clean the input and extract XML content</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            
+            <span class="c1"># Try to find the response tags</span>
+            <span class="n">start_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;response&gt;&quot;</span>
+            <span class="n">end_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;/response&gt;&quot;</span>
+            
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">start_tag</span><span class="p">)</span>
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">end_tag</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">start_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">end_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Fallback: try to parse the entire input as XML</span>
+                <span class="n">xml_content</span> <span class="o">=</span> <span class="nb">input</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xml_content</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">end_tag</span><span class="p">)]</span>
+            
+            <span class="c1"># Parse XML</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">xml_content</span><span class="p">)</span>
+            
+            <span class="c1"># Extract fields</span>
+            <span class="n">reasoning_elem</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;reasoning&#39;</span><span class="p">)</span>
+            <span class="n">method_elem</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">)</span>
+            <span class="n">proposed_variable_elem</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;proposed_variable&#39;</span><span class="p">)</span>
+            
+            <span class="n">reasoning</span> <span class="o">=</span> <span class="n">reasoning_elem</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">reasoning_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">reasoning_elem</span><span class="o">.</span><span class="n">text</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">method_elem</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">method_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">method_elem</span><span class="o">.</span><span class="n">text</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">proposed_variable</span> <span class="o">=</span> <span class="n">proposed_variable_elem</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">proposed_variable_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">proposed_variable_elem</span><span class="o">.</span><span class="n">text</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            
+            <span class="c1"># Create and return TGDData object directly</span>
+            <span class="k">return</span> <span class="n">TGDData</span><span class="p">(</span>
+                <span class="n">reasoning</span><span class="o">=</span><span class="n">reasoning</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                <span class="n">proposed_variable</span><span class="o">=</span><span class="n">proposed_variable</span>
+            <span class="p">)</span>
+            
+        <span class="k">except</span> <span class="n">ET</span><span class="o">.</span><span class="n">ParseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;XML parsing error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">TGDData</span><span class="p">(</span>
+                <span class="n">reasoning</span><span class="o">=</span><span class="s2">&quot;XML parsing failed&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span>
+                <span class="n">proposed_variable</span><span class="o">=</span><span class="nb">input</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing XML output: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">TGDData</span><span class="p">(</span>
+                <span class="n">reasoning</span><span class="o">=</span><span class="s2">&quot;Parsing failed&quot;</span><span class="p">,</span> 
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span>
+                <span class="n">proposed_variable</span><span class="o">=</span><span class="nb">input</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
 <span class="n">new_variable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;VARIABLE&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;/VARIABLE&gt;&quot;</span><span class="p">]</span>
 
 
@@ -806,20 +894,17 @@
         <span class="n">max_past_history</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">max_failed_proposals</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>  <span class="c1"># quite effective</span>
         <span class="n">steps_from_last_improvement</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">one_parameter_at_a_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">one_parameter_at_a_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Prompt</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">adalflow.components.output_parsers.dataclass_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataClassParser</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>  <span class="c1"># all parameters of prompts (even if non-trainable)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">constraints</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span> <span class="o">=</span> <span class="n">TGDData</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_parser</span> <span class="o">=</span> <span class="n">DataClassParser</span><span class="p">(</span>
-            <span class="n">data_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">,</span> <span class="n">return_data_class</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_type</span><span class="o">=</span><span class="s2">&quot;json&quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_parser</span> <span class="o">=</span> <span class="n">CustomizedXMLParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_system_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
             <span class="n">template</span><span class="o">=</span><span class="n">optimizer_system_prompt</span><span class="p">,</span>
             <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
@@ -846,7 +931,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">steps_from_last_improvement</span> <span class="o">=</span> <span class="n">steps_from_last_improvement</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">target_param_index</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">one_parameter_at_a_time</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># one_parameter_at_a_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">one_parameter_at_a_time</span> <span class="o">=</span> <span class="n">one_parameter_at_a_time</span>
         <span class="c1"># initate the past history for each parameter</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -929,12 +1014,37 @@
 <div class="viewcode-block" id="TGDOptimizer.render_history">
 <a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.render_history">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">render_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render history for the optimizer prompt.</span>
+
+<span class="sd">        Selects top max_past_history prompts by their average score across</span>
+<span class="sd">        all evaluations (from trainer&#39;s multi-minibatch tracking).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of YAML strings for the top prompts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">param_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
 
+        <span class="c1"># Get all prompts in history</span>
+        <span class="n">all_prompts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">all_prompts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># If max_past_history is not set or we have fewer prompts, return all</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_past_history</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_prompts</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_past_history</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">history</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;reasoning&quot;</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">history</span> <span class="ow">in</span> <span class="n">all_prompts</span>
+            <span class="p">]</span>
+
+        <span class="c1"># Select top max_past_history by score (already sorted in add_history)</span>
+        <span class="n">top_prompts</span> <span class="o">=</span> <span class="n">all_prompts</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">max_past_history</span><span class="p">]</span>
+
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">history</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;reasoning&quot;</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">history</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">history</span> <span class="ow">in</span> <span class="n">top_prompts</span>
         <span class="p">]</span></div>
 
 
@@ -1094,9 +1204,10 @@
 
             <span class="n">prompt_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_optimizer</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TGD LLM optimizer prompt: </span><span class="si">{</span><span class="n">prompt_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Handle CustomizedXMLParser output - it returns TGDData directly</span>
             <span class="n">proposed_data</span><span class="p">:</span> <span class="n">TGDData</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">response</span><span class="o">.</span><span class="n">data</span>
-                <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">TGDData</span><span class="p">)</span>
                 <span class="k">else</span> <span class="n">TGDData</span><span class="p">(</span>
                     <span class="n">reasoning</span><span class="o">=</span><span class="s2">&quot;No reasoning&quot;</span><span class="p">,</span>
                     <span class="n">proposed_variable</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">raw_response</span><span class="p">,</span>
@@ -1156,6 +1267,202 @@
             <span class="n">param</span><span class="o">.</span><span class="n">step_data</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="TGDOptimizer.gumbel_top_k">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.gumbel_top_k">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gumbel_top_k</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scores</span><span class="p">,</span>
+        <span class="n">k</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">probs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>      
+        <span class="n">noise_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>     
+        <span class="n">counts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>          
+        <span class="n">ucb_beta</span><span class="o">=</span><span class="mf">0.0</span>      
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gumbel Top-k sampling with balanced exploration-exploitation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scores: list/1D array. If probs=False, treated as logits; if probs=True, treated as probabilities.</span>
+<span class="sd">            k: number of indices to sample (k &lt;= len(scores)).</span>
+<span class="sd">            probs: True if `scores` are probabilities.</span>
+<span class="sd">            seed: optional RNG seed.</span>
+
+<span class="sd">            temperature (float): temperature scaling. T&lt;1 amplifies differences; T&gt;1 increases randomness.</span>
+<span class="sd">            noise_scale (float): scale of Gumbel noise. 0 disables stochastic exploration.</span>
+<span class="sd">            counts (list/array or None): evaluation counts n_i per item (for optional UCB bonus).</span>
+<span class="sd">            ucb_beta (float): &gt;0 to enable a lightweight UCB bonus: β * sqrt(log(N+1)/(n_i+1)).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[int]: indices of the top-k (descending by perturbed score).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">n_items</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n_items</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">probs</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">1e-20</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+        <span class="n">T</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">temperature</span><span class="p">),</span> <span class="mf">1e-12</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">T</span>
+
+        <span class="n">explore_ucb</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="n">counts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ucb_beta</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_items</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;counts length must match scores length&quot;</span><span class="p">)</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">explore_ucb</span> <span class="o">=</span> <span class="n">ucb_beta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">total</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">counts</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">))</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">explore_ucb</span>
+
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">1e-20</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1e-20</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_items</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">noise_scale</span><span class="p">)</span> <span class="o">*</span> <span class="n">g</span>
+
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pre gumbel scores (after temp &amp; UCB):&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Gumbel noise (scaled):&quot;</span><span class="p">,</span> <span class="n">noise_scale</span> <span class="o">*</span> <span class="n">g</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;After gumbel scores:&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="n">topk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">k</span><span class="p">)[</span><span class="o">-</span><span class="n">k</span><span class="p">:]</span>
+        <span class="n">topk</span> <span class="o">=</span> <span class="n">topk</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">topk</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">topk</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TGDOptimizer.generate_top_k_scoring_function">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.generate_top_k_scoring_function">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_top_k_scoring_function</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch_val</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">batch_val_acc_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">window</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">epsilon_within</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate top-K indices using Gumbel-Max sampling.</span>
+
+<span class="sd">        This implements Softmax Acquisition via Gumbel-Max:</span>
+<span class="sd">        - Add Gumbel noise to historical scores</span>
+<span class="sd">        - Select top-K by perturbed scores</span>
+
+<span class="sd">        Based on: https://arxiv.org/pdf/2106.12059</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch_val: List of average validation scores (percentages) for each historical prompt.</span>
+<span class="sd">                       These are the average accuracies across multiple mini-batch evaluations.</span>
+<span class="sd">            batch_val_acc_list: List of lists containing individual success/fail records.</span>
+<span class="sd">                                Not used in this implementation but kept for compatibility.</span>
+<span class="sd">            window: Optional window size (not used, kept for compatibility)</span>
+<span class="sd">            k: Number of top prompts to select</span>
+<span class="sd">            epsilon_within: Epsilon for within-batch exploration (not used)</span>
+<span class="sd">            beta: Temperature parameter for Gumbel distribution (not used, default 1.0)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of indices (with size &lt;= k) in descending order by Gumbel values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert percentages to probabilities [0, 1]</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="o">/</span> <span class="mf">100.0</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">batch_val</span><span class="p">]</span>
+
+        <span class="c1"># Use Gumbel-Top-K to select indices</span>
+        <span class="c1"># indices = self.gumbel_top_k(scores=scores, k=k, probs=True)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gumbel_top_k</span><span class="p">(</span><span class="n">scores</span><span class="o">=</span><span class="n">scores</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">probs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">noise_scale</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">indices</span></div>
+
+
+<div class="viewcode-block" id="TGDOptimizer.top_k_selected_prompts">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimizer.html#optim.TGDOptimizer.top_k_selected_prompts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">top_k_selected_prompts</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch_val</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">batch_val_acc_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select top-K prompts using Gumbel-Top-K sampling.</span>
+
+<span class="sd">        This is the main entry point for Gumbel-based prompt selection.</span>
+<span class="sd">        It&#39;s called during the optimization loop to probabilistically</span>
+<span class="sd">        select promising historical prompts for refinement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch_val: List of average validation scores (percentages) for each</span>
+<span class="sd">                      historical prompt. The list index corresponds to the prompt</span>
+<span class="sd">                      iteration number.</span>
+<span class="sd">            batch_val_acc_list: List of lists containing individual success/fail</span>
+<span class="sd">                               records for each prompt.</span>
+<span class="sd">            k: Number of top prompts to select (defaults to self.max_past_history</span>
+<span class="sd">               if available, otherwise 3)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple of:</span>
+<span class="sd">            - selected_prompts: List of selected prompt strings</span>
+<span class="sd">            - selected_indices: List of selected prompt indices</span>
+<span class="sd">            - selected_metadata: Optional metadata (None for base implementation)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;max_past_history&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Get all params that require optimization</span>
+        <span class="n">optimizable_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">optimizable_params</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No optimizable parameters found&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[],</span> <span class="p">[],</span> <span class="kc">None</span>
+
+        <span class="c1"># For now, work with the first optimizable parameter</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">optimizable_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Get the history</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No history found for parameter </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="p">)],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span>
+
+        <span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">history</span><span class="p">:</span>
+            <span class="c1"># No history yet, return current parameter</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="p">)],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Only one prompt in history, return it</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">history</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span>
+
+        <span class="c1"># Ensure batch_val matches history length</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch_val</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;batch_val length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">batch_val</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;history length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">)</span><span class="si">}</span><span class="s2">). Using history scores.&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># Use historical scores instead</span>
+            <span class="n">batch_val</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">eval_score</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">history</span><span class="p">]</span>
+
+        <span class="c1"># Perform Gumbel-Top-K selection</span>
+        <span class="n">selected_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_top_k_scoring_function</span><span class="p">(</span>
+            <span class="n">batch_val</span><span class="o">=</span><span class="n">batch_val</span><span class="p">,</span>
+            <span class="n">batch_val_acc_list</span><span class="o">=</span><span class="n">batch_val_acc_list</span><span class="p">,</span>
+            <span class="n">k</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Extract selected prompts</span>
+        <span class="n">selected_prompts</span> <span class="o">=</span> <span class="p">[</span><span class="n">history</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_indices</span><span class="p">]</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">selected_prompts</span><span class="p">)</span><span class="si">}</span><span class="s2"> prompts via Gumbel-Top-K &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">)</span><span class="si">}</span><span class="s2"> candidates&quot;</span>
+        <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected indices: </span><span class="si">{</span><span class="n">selected_indices</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">selected_prompts</span><span class="p">,</span> <span class="n">selected_indices</span><span class="p">,</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="TGDOptimizer.to_dict">
@@ -1221,7 +1528,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, SylphAI, Inc
+                Copyright &#169; 2026, SylphAI, Inc
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
