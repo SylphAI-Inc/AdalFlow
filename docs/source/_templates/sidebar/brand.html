@@ -1,0 +1,13 @@
+{# Custom sidebar brand: Logo / AdalFlow #}
+<div class="sidebar-brand-custom">
+  <a class="sidebar-brand-logo-link" href="https://sylph.ai" target="_blank" rel="noopener">
+    {%- if theme_light_logo and theme_dark_logo %}
+    <img class="sidebar-logo only-light" src="{{ pathto('_static/' + theme_light_logo, 1) }}" alt="SylphAI"/>
+    <img class="sidebar-logo only-dark" src="{{ pathto('_static/' + theme_dark_logo, 1) }}" alt="SylphAI"/>
+    {%- endif %}
+  </a>
+  <span class="sidebar-brand-separator">/</span>
+  <a class="sidebar-brand-text-link" href="{{ pathto(master_doc) }}">
+    <span class="sidebar-brand-text">{{ docstitle if docstitle else project }}</span>
+  </a>
+</div>
