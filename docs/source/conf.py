@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../adalflow/adalflow"))
 
 project = "AdalFlow"
-copyright = "2025, SylphAI, Inc"
+copyright = "2026, SylphAI, Inc"
 author = "SylphAI, Inc"
 
 extensions = [
