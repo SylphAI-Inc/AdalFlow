@@ -9,14 +9,17 @@ Source code: https://github.com/google-deepmind/opro
 from typing import List, Dict, TYPE_CHECKING, Optional, Any
 import logging
 import re
+import numpy as np
 from dataclasses import field, dataclass
 
 from adalflow.optim.optimizer import TextOptimizer, ParamsT
 from adalflow.optim.text_grad.backend_engine_prompt import VARIABLE_AND_PEERS_INFO
 from adalflow.optim.parameter import Parameter
+from adalflow.core import DataComponent
 
 from adalflow.core.base_data_class import DataClass
 from adalflow.core.types import GeneratorOutput
+import xml.etree.ElementTree as ET
 
 
 if TYPE_CHECKING:
@@ -264,6 +267,78 @@ class TGDOptimizerTrace(DataClass):
     )
 
 
+class CustomizedXMLParser(DataComponent):
+    """Custom XML parser for TGD optimizer output with reasoning, method, and proposed_variable fields."""
+    
+    def __init__(self):
+        super().__init__()
+        pass
+    
+    def get_output_format_str(self) -> str:
+        return """Please provide your response in the following XML format:
+
+<response>
+<reasoning>Your reasoning for why the variable is proposed this way</reasoning>
+<method>The final method used to propose the variable (e.g. prompting + editing)</method>
+<proposed_variable>The proposed variable content</proposed_variable>
+</response>
+
+Make sure to include all three fields and properly close all XML tags."""
+    
+    def call(self, input: str) -> TGDData:
+        """Parse the XML response and extract the three fields, returning TGDData directly."""
+        try:
+            # Clean the input and extract XML content
+            input = input.strip()
+            
+            # Try to find the response tags
+            start_tag = "<response>"
+            end_tag = "</response>"
+            
+            start_idx = input.find(start_tag)
+            end_idx = input.find(end_tag)
+            
+            if start_idx == -1 or end_idx == -1:
+                # Fallback: try to parse the entire input as XML
+                xml_content = input
+            else:
+                xml_content = input[start_idx:end_idx + len(end_tag)]
+            
+            # Parse XML
+            root = ET.fromstring(xml_content)
+            
+            # Extract fields
+            reasoning_elem = root.find('reasoning')
+            method_elem = root.find('method')
+            proposed_variable_elem = root.find('proposed_variable')
+            
+            reasoning = reasoning_elem.text.strip() if reasoning_elem is not None and reasoning_elem.text else ""
+            method = method_elem.text.strip() if method_elem is not None and method_elem.text else ""
+            proposed_variable = proposed_variable_elem.text.strip() if proposed_variable_elem is not None and proposed_variable_elem.text else ""
+            
+            # Create and return TGDData object directly
+            return TGDData(
+                reasoning=reasoning,
+                method=method,
+                proposed_variable=proposed_variable
+            )
+            
+        except ET.ParseError as e:
+            log.error(f"XML parsing error: {e}")
+            return TGDData(
+                reasoning="XML parsing failed",
+                method="Error",
+                proposed_variable=input
+            )
+        except Exception as e:
+            log.error(f"Error parsing XML output: {e}")
+            return TGDData(
+                reasoning="Parsing failed", 
+                method="Error",
+                proposed_variable=input
+            )
+
+
 new_variable_tags = ["<VARIABLE>", "</VARIABLE>"]
 
 
@@ -303,20 +378,17 @@ class TGDOptimizer(TextOptimizer):
         max_past_history: int = 3,
         max_failed_proposals: int = 5,  # quite effective
         steps_from_last_improvement: int = 0,
-        one_parameter_at_a_time: bool = True,
+        one_parameter_at_a_time: bool = False,
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
-        from adalflow.components.output_parsers.dataclass_parser import DataClassParser
 
         super().__init__()
         self.params = params  # all parameters of prompts (even if non-trainable)
 
         self.constraints = constraints or []
         self.data_class = TGDData
-        self.output_parser = DataClassParser(
-            data_class=self.data_class, return_data_class=True, format_type="json"
-        )
+        self.output_parser = CustomizedXMLParser()
         self.optimizer_system_prompt = Prompt(
             template=optimizer_system_prompt,
             prompt_kwargs={
@@ -343,7 +415,7 @@ class TGDOptimizer(TextOptimizer):
         self.steps_from_last_improvement = steps_from_last_improvement
 
         self.target_param_index = None
-        self.one_parameter_at_a_time = False  # one_parameter_at_a_time
+        self.one_parameter_at_a_time = one_parameter_at_a_time
         # initate the past history for each parameter
         for param in self.params:
             self.params_history[param.id] = []
@@ -409,12 +481,37 @@ class TGDOptimizer(TextOptimizer):
                 self.params_history[param_id].pop()
 
     def render_history(self, param_id: str) -> List[str]:
+        """
+        Render history for the optimizer prompt.
+
+        Selects top max_past_history prompts by their average score across
+        all evaluations (from trainer's multi-minibatch tracking).
+
+        Returns:
+            List of YAML strings for the top prompts
+        """
         if param_id not in self.params_history:
             return []
 
+        # Get all prompts in history
+        all_prompts = self.params_history[param_id]
+
+        if not all_prompts:
+            return []
+
+        # If max_past_history is not set or we have fewer prompts, return all
+        if not self.max_past_history or len(all_prompts) <= self.max_past_history:
+            return [
+                history.to_yaml(exclude=["id", "method", "reasoning"])
+                for history in all_prompts
+            ]
+
+        # Select top max_past_history by score (already sorted in add_history)
+        top_prompts = all_prompts[:self.max_past_history]
+
         return [
             history.to_yaml(exclude=["id", "method", "reasoning"])
-            for history in self.params_history[param_id]
+            for history in top_prompts
         ]
 
     def add_failed_proposal(self):
@@ -556,9 +653,10 @@ class TGDOptimizer(TextOptimizer):
 
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
+            # Handle CustomizedXMLParser output - it returns TGDData directly
             proposed_data: TGDData = (
                 response.data
-                if response.data is not None
+                if response.data is not None and isinstance(response.data, TGDData)
                 else TGDData(
                     reasoning="No reasoning",
                     proposed_variable=response.raw_response,
@@ -612,6 +710,193 @@ class TGDOptimizer(TextOptimizer):
             param.step_data()
 
         self.proposing = False
+    
+    def gumbel_top_k(
+        self,
+        scores,
+        k,
+        *,
+        probs=False,
+        seed=None,
+        temperature=1.0,      
+        noise_scale=1.0,     
+        counts=None,          
+        ucb_beta=0.0      
+    ):
+        """
+        Gumbel Top-k sampling with balanced exploration-exploitation.
+
+        Args:
+            scores: list/1D array. If probs=False, treated as logits; if probs=True, treated as probabilities.
+            k: number of indices to sample (k <= len(scores)).
+            probs: True if `scores` are probabilities.
+            seed: optional RNG seed.
+
+            temperature (float): temperature scaling. T<1 amplifies differences; T>1 increases randomness.
+            noise_scale (float): scale of Gumbel noise. 0 disables stochastic exploration.
+            counts (list/array or None): evaluation counts n_i per item (for optional UCB bonus).
+            ucb_beta (float): >0 to enable a lightweight UCB bonus: β * sqrt(log(N+1)/(n_i+1)).
+
+        Returns:
+            List[int]: indices of the top-k (descending by perturbed score).
+        """
+        x = np.asarray(scores, dtype=np.float64)
+        n_items = x.shape[0]
+        if k <= 0:
+            return []
+        k = min(k, n_items)
+
+        if probs:
+            x = np.log(np.clip(x, 1e-20, None))
+
+        T = max(float(temperature), 1e-12)
+        x = x / T
+
+        explore_ucb = 0.0
+        if counts is not None and ucb_beta > 0.0:
+            counts = np.asarray(counts, dtype=np.float64)
+            if counts.shape[0] != n_items:
+                raise ValueError("counts length must match scores length")
+            total = np.maximum(counts.sum(), 1.0)
+            explore_ucb = ucb_beta * np.sqrt(np.log(total + 1.0) / (counts + 1.0))
+            x = x + explore_ucb
+
+        rng = np.random.default_rng(seed)
+        u = rng.uniform(low=1e-20, high=1.0 - 1e-20, size=n_items)
+        g = -np.log(-np.log(u))
+        y = x + float(noise_scale) * g
+
+
+        print("Pre gumbel scores (after temp & UCB):", x)
+        print("Gumbel noise (scaled):", noise_scale * g)
+        print("After gumbel scores:", y)
+
+        topk = np.argpartition(y, -k)[-k:]
+        topk = topk[np.argsort(y[topk])[::-1]]
+        return topk.tolist()
+
+    def generate_top_k_scoring_function(
+        self,
+        batch_val: List[float],
+        batch_val_acc_list: List[List[int]],
+        window: Optional[int] = None,
+        k: int = 5,
+        epsilon_within: float = 0.0,
+        beta: float = 1.0
+    ) -> List[int]:
+        """
+        Generate top-K indices using Gumbel-Max sampling.
+
+        This implements Softmax Acquisition via Gumbel-Max:
+        - Add Gumbel noise to historical scores
+        - Select top-K by perturbed scores
+
+        Based on: https://arxiv.org/pdf/2106.12059
+
+        Args:
+            batch_val: List of average validation scores (percentages) for each historical prompt.
+                       These are the average accuracies across multiple mini-batch evaluations.
+            batch_val_acc_list: List of lists containing individual success/fail records.
+                                Not used in this implementation but kept for compatibility.
+            window: Optional window size (not used, kept for compatibility)
+            k: Number of top prompts to select
+            epsilon_within: Epsilon for within-batch exploration (not used)
+            beta: Temperature parameter for Gumbel distribution (not used, default 1.0)
+
+        Returns:
+            List of indices (with size <= k) in descending order by Gumbel values
+        """
+        # Convert percentages to probabilities [0, 1]
+        scores = [s / 100.0 for s in batch_val]
+
+        # Use Gumbel-Top-K to select indices
+        # indices = self.gumbel_top_k(scores=scores, k=k, probs=True)
+        indices = self.gumbel_top_k(scores=scores, k=3, probs=False, temperature=0.6, noise_scale=0.4, seed=42)
+
+        return indices
+
+    def top_k_selected_prompts(
+        self,
+        batch_val: List[float],
+        batch_val_acc_list: List[List[int]],
+        k: Optional[int] = None
+    ):
+        """
+        Select top-K prompts using Gumbel-Top-K sampling.
+
+        This is the main entry point for Gumbel-based prompt selection.
+        It's called during the optimization loop to probabilistically
+        select promising historical prompts for refinement.
+
+        Args:
+            batch_val: List of average validation scores (percentages) for each
+                      historical prompt. The list index corresponds to the prompt
+                      iteration number.
+            batch_val_acc_list: List of lists containing individual success/fail
+                               records for each prompt.
+            k: Number of top prompts to select (defaults to self.max_past_history
+               if available, otherwise 3)
+
+        Returns:
+            Tuple of:
+            - selected_prompts: List of selected prompt strings
+            - selected_indices: List of selected prompt indices
+            - selected_metadata: Optional metadata (None for base implementation)
+        """
+        if k is None:
+            k = getattr(self, 'max_past_history', 3)
+
+        # Get all params that require optimization
+        optimizable_params = [p for p in self.params if p.requires_opt]
+
+        if not optimizable_params:
+            log.warning("No optimizable parameters found")
+            return [], [], None
+
+        # For now, work with the first optimizable parameter
+        param = optimizable_params[0]
+
+        # Get the history
+        if param.id not in self.params_history:
+            log.warning(f"No history found for parameter {param.id}")
+            return [str(param.data)], [0], None
+
+        history = self.params_history[param.id]
+
+        if not history:
+            # No history yet, return current parameter
+            return [str(param.data)], [0], None
+
+        if len(history) == 1:
+            # Only one prompt in history, return it
+            return [history[0].value], [0], None
+
+        # Ensure batch_val matches history length
+        if len(batch_val) != len(history):
+            log.warning(
+                f"batch_val length ({len(batch_val)}) does not match "
+                f"history length ({len(history)}). Using history scores."
+            )
+            # Use historical scores instead
+            batch_val = [h.eval_score for h in history]
+
+        # Perform Gumbel-Top-K selection
+        selected_indices = self.generate_top_k_scoring_function(
+            batch_val=batch_val,
+            batch_val_acc_list=batch_val_acc_list,
+            k=min(k, len(history))
+        )
+
+        # Extract selected prompts
+        selected_prompts = [history[i].value for i in selected_indices]
+
+        log.info(
+            f"Selected {len(selected_prompts)} prompts via Gumbel-Top-K "
+            f"from {len(history)} candidates"
+        )
+        log.debug(f"Selected indices: {selected_indices}")
+
+        return selected_prompts, selected_indices, None
 
     def to_dict(self):
         return {

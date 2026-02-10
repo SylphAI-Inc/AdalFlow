@@ -1,5 +1,6 @@
 from typing import Any, List, Optional
 import os
+import logging
 from adalflow.core import Component, Generator, Embedder, Sequential
 from adalflow.core.types import Document, ModelClientType
 from adalflow.core.string_parser import JsonParser
@@ -17,6 +18,8 @@ from adalflow.utils.global_config import get_adalflow_default_root_path
 
 setup_env()
 # TODO: RAG can potentially be a component itsefl and be provided to the users
+
+log = logging.getLogger(__name__)
 
 configs = {
     "embedder": {
@@ -156,10 +159,19 @@ class RAG(Component):
         self.db.save_state(self.index_path)
 
     def get_transformed_docs(self, filter_func=None):
-        return self.db.get_transformed_data("data_transformer", filter_func)
+        # fix: use keyword arguments to match the expected method signature
+        return self.db.get_transformed_data(key="data_transformer", filter_fn=filter_func)
 
     def prepare_retriever(self, filter_func=None):
+        # get filtered documents for this specific query
         self.transformed_docs = self.get_transformed_docs(filter_func)
+        
+        # handle case where no documents match the filter
+        if not self.transformed_docs:
+            log.warning("no documents found matching the filter criteria")
+            return
+            
+        # build the retriever index from the filtered documents
         self.retriever.build_index_from_documents(
             self.transformed_docs, document_map_func=lambda doc: doc.vector
         )

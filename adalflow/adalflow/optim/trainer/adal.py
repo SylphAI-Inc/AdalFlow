@@ -430,7 +430,7 @@ class AdalComponent(Component):
             tqdm_loader = tqdm(
                 total=len(futures),
                 position=0,
-                desc=f"Prediting step: {batch_idx}",
+                desc=f"Predicting step: {batch_idx}",
             )
             for future, i, sample in futures:
                 y_pred = future.result()

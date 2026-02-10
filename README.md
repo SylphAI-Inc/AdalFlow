@@ -5,15 +5,20 @@
 
 
 
-<h4 align="center">
-    <img alt="AdalFlow logo" src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
-</h4>
+
 
 <h2>
     <p align="center">
      ⚡ AdalFlow is a PyTorch-like library to build and auto-optimize any LM workflows, from Chatbots, RAG,  to Agents. ⚡
     </p>
 </h2>
+
+<p align="center">
+    <a href="https://sylph.ai"><img src="docs/source/_static/images/adal-face-logo.svg" alt="AdaL" height="100"></a>&nbsp;
+    <a href="https://sylph.ai"><img src="docs/source/_static/images/adal-text-logo.svg" alt="AdaL CLI" height="100"></a>
+    <br><br>
+    <strong>AdalFlow proudly powers <a href="https://sylph.ai">AdaL CLI</a></strong> — The AI coding agent
+</p>
 
 
 
@@ -245,14 +250,36 @@ Go to [Documentation](https://adalflow.sylph.ai) for tracing, human-in-the-loop,
 
 
 # Research
+[Sep 2025] [LAD-VF: LLM-Automatic Differentiation Enables Fine-Tuning-Free Robot Planning from Formal Methods Feedback](https://arxiv.org/pdf/2509.18384)
+- Fine-tuning-free robot planning using LLM auto-differentiation
+- Integration of formal methods feedback for robot control
+
 [Jan 2025] [Auto-Differentiating Any LLM Workflow: A Farewell to Manual Prompting](https://arxiv.org/abs/2501.16673)
 - LLM Applications as auto-differentiation graphs
 - Token-efficient and better performance than DsPy
 
+[Dec 2025] [Scaling Textual Gradients via Sampling-Based Momentum](https://arxiv.org/abs/2506.00400)
+- Stable, scalable prompt optimization using momentum-weighted textual gradient
+- Gumbel-Top-k sampling improves exploration and integrates seamlessly with TextGrad, DSPy-COPRO, and AdalFlow
+
+
+
+# Auto-Prompt Optimization Ecosystem
+
+AdalFlow is part of a growing ecosystem of libraries that automatically optimize LLM prompts and workflows. Here's how the landscape looks:
+
+| Library | Approach | Key Idea |
+|---------|----------|----------|
+| **[AdalFlow](https://github.com/SylphAI-Inc/AdalFlow)** | PyTorch-style auto-differentiation | LLM workflows as auto-diff graphs; unified textual gradient descent + few-shot bootstrap optimization in one training loop |
+| **[DSPy](https://github.com/stanfordnlp/dspy)** | Declarative programming | Write compositional Python code instead of prompts; compiler optimizes prompts and weights automatically |
+| **[Agent Lightning](https://github.com/microsoft/agent-lightning)** | Framework-agnostic agent trainer | Turn any agent (LangChain, OpenAI SDK, AutoGen, etc.) into an optimizable entity with minimal code changes; supports RL, auto-prompt optimization, and supervised fine-tuning |
+| **[TextGrad](https://github.com/zou-group/textgrad)** | Textual gradient descent | Automatic differentiation via text; uses LLM feedback as gradients to optimize prompts, code, and solutions |
+
+**Where AdalFlow fits:** AdalFlow draws inspiration from all of the above (see [Acknowledgements](#acknowledgements)) and unifies them into a single PyTorch-like framework. You get textual gradients (à la TextGrad), few-shot bootstrap (à la DSPy), and instruction history — all composable within `Parameter`, `Generator`, `AdalComponent`, and `Trainer`.
 
 # Collaborations
 
-We work closely with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/), under the leadership of [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang), who provides valuable support in driving project initiatives.
+We work closely with the [**VITA Group** at University of Texas at Austin](https://vita-group.github.io/), under the leadership of [Dr. Atlas Wang](https://www.ece.utexas.edu/people/faculty/atlas-wang) and in collaboration with [Dr. Junyuan Hong](https://jyhong.gitlab.io/), who provides valuable support in driving project initiatives.
 
  <!-- alongside [Dr. Junyuan Hong](https://jyhong.gitlab.io/),  -->
 For collaboration, contact [Li Yin](https://www.linkedin.com/in/li-yin-ai/).

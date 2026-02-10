@@ -18,7 +18,7 @@ import os
 
 
 from adalflow.core.retriever import Retriever
-from adalflow.core.embedder import Embedder
+from adalflow.core.embedder import Embedder, BatchEmbedder
 from adalflow.core.types import (
     RetrieverOutput,
     RetrieverOutputType,
@@ -95,7 +95,7 @@ class FAISSRetriever(
 
     def __init__(
         self,
-        embedder: Optional[Embedder] = None,
+        embedder: Optional[Union[Embedder, BatchEmbedder]] = None,
         top_k: int = 5,
         dimensions: Optional[int] = None,
         documents: Optional[Any] = None,
@@ -164,6 +164,13 @@ class FAISSRetriever(
         if document_map_func:
             assert callable(document_map_func), "document_map_func should be callable"
             documents = [document_map_func(doc) for doc in documents]
+        
+        # check if documents list is empty to prevent IndexError
+        if len(documents) == 0:
+            log.warning("empty documents list provided to build_index_from_documents")
+            self.reset_index()
+            return
+            
         try:
             self.documents = documents
 
@@ -282,10 +289,18 @@ class FAISSRetriever(
             record_map[len(valid_queries) - 1] = i
         # embed the queries, assume the length fits into a batch.
         try:
-            embeddings: EmbedderOutputType = self.embedder(valid_queries)
-            queries_embeddings: List[List[float]] = [
-                data.embedding for data in embeddings.data
-            ]
+            embeddings = self.embedder(valid_queries)
+            # Support BatchEmbedder which returns List[EmbedderOutputType]
+            if isinstance(embeddings, list):
+                queries_embeddings: List[List[float]] = []
+                for batch_output in embeddings:
+                    queries_embeddings.extend(
+                        [data.embedding for data in batch_output.data]
+                    )
+            else:
+                queries_embeddings: List[List[float]] = [
+                    data.embedding for data in embeddings.data
+                ]
 
         except Exception as e:
             log.error(f"Error embedding queries: {e}")

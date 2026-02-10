@@ -1,390 +1,307 @@
-/* custom.css */
+/* AdalFlow Modern Theme — custom.css */
 
 :root {
-	--pst-color-info: 23, 162, 184;
-	--pst-color-logo: #2EB5EB;
-	--bs-gray-500: #adb5bd;
-
-
+  --adal-green: #00FF88;
+  --adal-green-dim: rgba(0, 255, 136, 0.15);
+  --adal-green-border: rgba(0, 255, 136, 0.3);
+  --adal-radius: 8px;
+  --adal-transition: 0.2s ease;
 }
 
-.theme-switch-button {
-	display: none;
+/* ── Typography ── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.theme-version {
-	display: none;
+p {
+  font-size: 0.92em;
+  line-height: 1.7;
+  margin-bottom: 1.15rem;
 }
 
-.bd-sidebar-primary {
-	width: 100%;
-	/* Full width by default */
+h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; }
+h3 { font-size: 1.25rem; font-weight: 600; }
+
+/* ── Sidebar Brand (Logo / AdalFlow) ── */
+.sidebar-brand-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 0.5rem;
 }
 
-/* Adjust width for larger screens */
-@media (min-width: 768px) {
-
-	/* Example breakpoint for tablets and larger */
-	.bd-sidebar-primary {
-		width: 270px;
-		/* Adjust the width for larger screens */
-	}
+.sidebar-brand-logo-link {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: opacity var(--adal-transition);
 }
 
-.pre {
-	color: #0a7d91;
-	/* Change the color of ```` blocks */
+.sidebar-brand-logo-link:hover {
+  opacity: 0.7;
 }
 
-/* hide on this page */
-/* #pst-page-navigation-heading-2 {
-display: none;
-}  */
+.sidebar-brand-logo-link .sidebar-logo {
+  height: 28px !important;
+  width: auto !important;
+  max-height: 28px !important;
+}
+
+.sidebar-brand-separator {
+  font-size: 1.3rem;
+  font-weight: 300;
+  opacity: 0.3;
+  user-select: none;
+}
+
+.sidebar-brand-text-link {
+  text-decoration: none !important;
+  color: var(--color-foreground-primary) !important;
+  transition: opacity var(--adal-transition);
+}
+
+.sidebar-brand-text-link:hover {
+  opacity: 0.7;
+}
+
+.sidebar-brand-text {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* Hide default Furo brand if it still renders */
+.sidebar-brand {
+  display: none !important;
+}
 
 /* GitHub sidebar link */
 .sidebar-github-section {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--color-sidebar-background-border);
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--color-sidebar-background-border);
 }
 
 .sidebar-github-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: var(--color-brand-primary) !important;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-foreground-secondary) !important;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all var(--adal-transition);
 }
 
 .sidebar-github-link:hover {
-    opacity: 0.8;
-    transform: translateX(3px);
+  color: var(--adal-green) !important;
+  transform: translateX(2px);
 }
 
 .sidebar-github-link i {
-    font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
-.github-text {
-    font-size: 0.9rem;
-}
-
-.sidebar-brand .logo {
-    height: 42px;
-    width: auto;
-    margin: 0 auto 1rem;
-}
-
-/* .copyright {
-text-align: center;
-} */
-p {
-	font-size: 0.9em;
-	margin-bottom: 1.15rem;
-}
-
-/* Reduce code font size */
+/* ── Code blocks ── */
 .highlight pre {
-    font-size: 0.7em !important;
+  font-size: 0.78em !important;
+  line-height: 1.5;
+  border-radius: var(--adal-radius);
+  padding: 1em 1.2em;
 }
 
-/* Optional: Reduce line spacing */
 .highlight {
-    line-height: 1.2;
+  border-radius: var(--adal-radius);
 }
 
-html[data-theme=light] {
-	--pst-color-secondary: #3d3d3d;
-	/*change the secondary color, header link to gray */
-	--pst-color-link-hover: #25262;
-	/*change the side bar link color to black */
-	--pst-color-table-row-hover-bg: #f8f9fa;
-	/*change the table row hover color to light gray */
-	--sd-color-secondary: gray;
-	/*change the secondary color to black */
-	--sd-color-secondary-highlight: gray;
-	/*change the secondary highlight color to black */
+code.literal {
+  font-size: 0.88em;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
 }
 
+/* ── Content area ── */
 .bd-main .bd-content .bd-article-container {
-	max-width: 100%;
-	/* default is 60em */
-}
-
-h1 {
-	font-size: 2rem;
-	/* make the h1 in the code smaller */
-}
-
-/* .bd-page-width {
   max-width: 100%;
-} */
-
-.sig-name {
-	color: black;
-	/* set the class name and attributes to black */
-}
-
-.caption-text {
-	font-size: 14px;
-	/* Sets the smallest font size */
-	color: gray;
-	/* Sets the color to gray */
 }
 
 .bd-links__title {
-	/* remove the "section navigation" string*/
-	display: none;
+  display: none;
 }
 
+/* ── Tables ── */
 table {
-	width: auto;
-	/* Override fit-content which breaks Styler user guide ipynb */
+  width: auto;
+  border-radius: var(--adal-radius);
+  overflow: hidden;
 }
 
-/* Main index page overview cards */
+table tr:hover {
+  background-color: transparent !important;
+}
 
+.caption-text {
+  font-size: 13px;
+  color: var(--color-foreground-muted);
+}
+
+/* ── Cards ── */
 .intro-card {
-	padding: 30px 10px 20px 10px;
+  padding: 24px 16px 20px;
+  border-radius: var(--adal-radius);
+  transition: transform var(--adal-transition), box-shadow var(--adal-transition);
+}
+
+.intro-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .intro-card .sd-card-img-top {
-	margin: 10px;
-	height: 52px;
-	background: none !important;
+  margin: 10px;
+  height: 48px;
+  background: none !important;
 }
 
 .intro-card .sd-card-title {
-	color: var(--pst-color-primary);
-	font-size: var(--pst-font-size-h5);
-	padding: 1rem 0rem 0.5rem 0rem;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 0 0.4rem;
 }
 
 .intro-card .sd-card-footer {
-	border: none !important;
+  border: none !important;
 }
 
 .intro-card .sd-card-footer p.sd-card-text {
-	max-width: 220px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.intro-card .sd-btn-secondary {
-	background-color: #6c757d !important;
-	border-color: #6c757d !important;
-}
-
-.intro-card .sd-btn-secondary:hover {
-	background-color: #5a6268 !important;
-	border-color: #545b62 !important;
+  max-width: 220px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card,
 .card img {
-	background-color: var(--pst-color-background);
+  background-color: var(--color-background-primary);
 }
 
-/* Remove hover effect from table rows */
-table tr:hover {
-	background-color: transparent !important;
+/* ── Tabs (sphinx-tabs) ── */
+.sphinx-tabs .sphinx-tabs-tab {
+  font-size: 0.88em;
+  font-weight: 500;
+  padding: 0.5em 1em;
+  border-radius: var(--adal-radius) var(--adal-radius) 0 0;
+  transition: all var(--adal-transition);
 }
 
-/* Navigation bar style*/
-.navbar-header-items__end {
-	display: flex;
-	align-items: center;
+.sphinx-tabs .sphinx-tabs-tab[aria-selected="true"] {
+  font-weight: 600;
 }
 
-.navbar-icon-links {
-	display: flex;
-	align-items: center;
-	margin-right: 1rem;
-	/* Adjust as needed */
+/* ── Admonitions ── */
+.admonition {
+  border-radius: var(--adal-radius);
+  border-width: 0 0 0 3px;
 }
 
-.search-container {
-	flex: 1;
-	display: flex;
-	justify-content: flex-end;
+/* ── Links ── */
+a {
+  transition: color var(--adal-transition);
 }
 
-.DocSearch-Button {
-	display: flex;
-	align-items: center;
-	padding: 0.5rem 1rem;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	background-color: #fff;
-	color: #494a49;
-	cursor: pointer;
+/* ── Signature names (API docs) ── */
+.sig-name {
+  font-weight: 600;
 }
 
-.DocSearch-Button-Container {
-	display: flex;
-	align-items: center;
-	margin-right: 0.5rem;
-}
-
-.DocSearch-Button-Placeholder {
-	margin-left: 0.5rem;
-}
-
-/* Hide the duplicate search button */
+/* ── Search ── */
 .search-button-field {
-	display: none !important;
+  display: none !important;
 }
 
-/* Default banner layout */
+/* ── Responsive sidebar ── */
+.bd-sidebar-primary {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .bd-sidebar-primary {
+    width: 260px;
+  }
+}
+
+/* ── Scrollbar (webkit) ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.5);
+}
+
+/* ── Theme-specific overrides ── */
+
+/* Unified backgrounds: sidebar matches content */
+body[data-theme="light"],
+body:not([data-theme="dark"]) {
+  --color-sidebar-background: #ffffff;
+  --color-sidebar-background-border: #e8e8e8;
+  --color-background-primary: #ffffff;
+  --pst-color-secondary: #3d3d3d;
+  --pst-color-table-row-hover-bg: #f8f9fa;
+}
+
+body[data-theme="dark"] {
+  --color-sidebar-background: #1a1a1a;
+  --color-sidebar-background-border: #2a2a2a;
+  --color-background-primary: #1a1a1a;
+}
+
+/* Remove hard sidebar border for seamless look */
+.sidebar-drawer {
+  border-right: 1px solid var(--color-sidebar-background-border) !important;
+}
+
+/* ── Announcement banner (legacy, kept for compatibility) ── */
 .announcement-banner {
-	background-color: #7acef0;
-	/* Light blue background */
-	color: white;
-	/* White text color */
-	padding: 10px 20px;
-	position: fixed;
-	/* Fixed at the top */
-	width: 100%;
-	/* Full width */
-	z-index: 1000;
-	/* Make sure it's on top of other content */
-	top: 0;
-	/* Stick to the top */
-	left: 0;
-	/* Align to the left */
-	text-align: center;
-	/* Center the text */
-	display: flex;
-	/* Use Flexbox for layout */
-	align-items: center;
-	/* Center items vertically */
-	justify-content: center;
-	/* Center content horizontally */
-	box-sizing: border-box;
-	/* Ensure padding is included in width calculation */
-	flex-wrap: nowrap;
-	/* No wrapping */
-	font-size: 16px;
-	/* Adjust font size for smaller screens */
+  background-color: #7acef0;
+  color: white;
+  padding: 10px 20px;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-size: 14px;
 }
 
-.announcement-banner p {
-	margin: 0;
-	/* Remove default margin */
-	color: white;
-	/* White text color */
-	flex: 0 1 auto;
-	/* Do not allow the text to take up all available space */
-	word-wrap: break-word;
-	/* Ensure long words break and wrap */
-	text-align: center;
-	/* Center text */
-	font-size: 16px;
-	/* Adjust font size for smaller screens */
-}
-
-.announcement-banner a {
-	color: white !important;
-	/* Ensures that this color override takes precedence */
-}
-
+.announcement-banner p { margin: 0; color: white; }
+.announcement-banner a { color: white !important; }
 .announcement-banner button {
-	background: none;
-	border: none;
-	color: white;
-	font-size: 16px;
-	cursor: pointer;
-	flex-shrink: 0;
-	/* Prevent the button from shrinking */
-	display: flex;
-	align-items: center;
-	/* Center the button vertically */
-	margin-left: 10px;
-	/* Space between text and button */
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 10px;
 }
 
 .bd-header-announcement,
 .bd-header-announcement__content {
-	background-color: transparent;
-	/* Make background transparent */
-	padding: 0;
-	/* Remove padding if any */
-	margin: 0;
-	/* Remove margin if any */
-}
-
-/* Override styles for medium screens */
-@media (max-width: 1200px) {
-	.announcement-banner {
-		flex-direction: row;
-		/* Row layout for medium screens */
-		align-items: center;
-		/* Align items to the center */
-	}
-
-	.announcement-banner p {
-		text-align: center;
-		/* Center text */
-		width: auto;
-		/* Automatic width for text */
-	}
-
-	.announcement-banner button {
-		margin-left: 10px;
-		/* Add left margin */
-	}
-}
-
-/* Adjustments for even smaller screens */
-@media (max-width: 600px) {
-	.announcement-banner {
-		font-size: 14px;
-		/* Adjust font size for smaller screens */
-	}
-
-	.announcement-banner button {
-		font-size: 14px;
-		/* Adjust button size for smaller screens */
-	}
-
-	.announcement-banner p {
-		font-size: 14px;
-		/* Adjust text size for smaller screens */
-	}
-}
-
-/* Adjustments for smallest screens */
-@media (max-width: 500px) {
-	.announcement-banner {
-		font-size: 10px;
-		/* Further adjust font size for smaller screens */
-	}
-
-	.announcement-banner button {
-		font-size: 10px;
-		/* Further adjust button size for smaller screens */
-	}
-
-	.announcement-banner p {
-		font-size: 10px;
-		/* Further adjust text size for smaller screens */
-	}
-}
-
-@media (max-width: 380px) {
-	.announcement-banner {
-		font-size: 8px;
-		/* Further adjust font size for smallest screens */
-	}
-
-	.announcement-banner button {
-		font-size: 8px;
-		/* Further adjust button size for smallest screens */
-	}
-
-	.announcement-banner p {
-		font-size: 8px;
-		/* Further adjust text size for smallest screens */
-	}
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
 }

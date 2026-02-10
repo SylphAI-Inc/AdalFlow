@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import numpy as np
 
 from adalflow.components.retriever import FAISSRetriever
-from adalflow.core.embedder import Embedder
+from adalflow.core.embedder import Embedder, BatchEmbedder
 from adalflow.core.functional import normalize_vector
 from adalflow.core.types import (
     EmbedderOutput,
@@ -83,6 +83,30 @@ class TestFAISSRetriever(unittest.TestCase):
         self.retriever.reset_index()
         self.assertIsNone(self.retriever.index)
         self.assertEqual(self.retriever.total_documents, 0)
+
+    def test_retrieve_string_queries_with_batch_embedder(self):
+        """Test retrieve_string_queries with BatchEmbedder"""
+        batch_embedder = Mock(spec=BatchEmbedder)
+        # BatchEmbedder returns List[EmbedderOutputType]
+        batch_embedder.return_value = [
+            EmbedderOutput(
+                data=[Mock(embedding=emb) for emb in self.embeddings][
+                    0 : len(self.single_query)
+                ]
+            )
+        ]
+
+        retriever = FAISSRetriever(
+            embedder=batch_embedder, dimensions=self.dimensions
+        )
+        retriever.build_index_from_documents(self.embeddings)
+
+        queries = self.single_query
+        result = retriever.retrieve_string_queries(queries)
+        self.assertIsInstance(result[0], RetrieverOutput)
+        self.assertEqual(len(result), len(queries))
+        self.assertEqual(len(result[0].doc_indices), retriever.top_k)
+        self.assertEqual(len(result[0].doc_scores), retriever.top_k)
 
     def test_retrieve_non_normalized_embeddings_with_l2_metric(self):
         retriever = FAISSRetriever(

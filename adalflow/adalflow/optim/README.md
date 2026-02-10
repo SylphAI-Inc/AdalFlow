@@ -1,4 +1,58 @@
+# AdalFlow Optimizer
 
+This directory contains optimization implementations for LLM task pipelines in AdalFlow.
+
+## Recent Updates
+
+### Gumbel-Top-K Sampling and TSGD-M (November 2025)
+
+**New Features:**
+- **Gumbel-Top-K Sampling**: Probabilistic prompt selection using Gumbel-Max trick for balanced exploration-exploitation
+- **TSGD-M (Textual Gradient Descent with Momentum)**: Enhanced optimizer with momentum-based prompt refinement
+- **TrainerGumbel**: Extended trainer class with Gumbel-based selection and multiple history update strategies
+
+**Key Implementations:**
+
+1. **TGDOptimizer** (`text_grad/tgd_optimizer.py`):
+   - `gumbel_top_k()`: Implements Gumbel-Top-K sampling with temperature scaling, noise control, and optional UCB bonuses
+   - `generate_top_k_scoring_function()`: Softmax acquisition via Gumbel-Max sampling for selecting top-K historical prompts
+   - `top_k_selected_prompts()`: Main entry point for Gumbel-based prompt selection during optimization
+   - Improved `render_history()`: Better history management with multi-minibatch score tracking
+
+2. **TrainerGumbel** (`trainer/trainer.py`):
+   - Extends base Trainer with Gumbel-Top-K selection capabilities
+   - **History update strategies**:
+     - `improvement_only`: Add to history only when validation score improves
+     - `always`: Always add to history regardless of score
+     - `epsilon_greedy`: Explore with probability ε, else exploit
+     - `confidence_based`: Add if within confidence threshold
+   - **TSGD-M workflow**:
+     - Maintains prompt cache across iterations
+     - Samples K prompts from historical cache based on scores
+     - Evaluates sampled prompts on mini-batches before gradient computation
+     - Generates next prompt using best historical prompt + gradients
+   - **Key methods**:
+     - `_fit_text_grad_tsgd_m()`: Main TSGD-M training loop
+     - `_sample_prompts_from_cache()`: Sample top-K prompts from cache by score
+     - `_evaluate_prompts_on_minibatch()`: Evaluate prompts on validation mini-batch
+     - `_add_to_tsgd_m_cache()`: Add prompt, gradient, and scores to cache
+
+**Algorithm Reference:**
+- TSGD-M: https://arxiv.org/abs/2506.00400
+
+**Parameters:**
+```python
+TrainerGumbel(
+    # ... base trainer parameters ...
+    tsgd_m_enabled=True,              # Enable TSGD-M workflow
+    tsgd_m_momentum_window=5,         # K: number of prompts to sample from cache
+    history_update_strategy="always", # How to update history
+    exploration_epsilon=0.2,          # For epsilon_greedy strategy
+    confidence_threshold=0.1          # For confidence_based strategy
+)
+```
+
+---
 
 # Optimization goal
 
@@ -20,6 +74,7 @@ class OptimizeGoal(Enum):
 1. orpo: propose, test, and refine, and then test again
 2. text-grad: make it the same as the normal model auto-grad, might potentially support multiple parameters/generators
 3. Lazy brute-force: run all samples on the pipeline, throw each prompt, examples, input/output to a large-context-window llm and ask it to optimize each part, sys_few_shot.
+4. **TSGD-M (Textual Gradient Descent with Momentum)**: Momentum-based optimization that samples and evaluates K prompts from historical cache, then generates new prompts based on best historical prompt + gradients
 
 # Loss function
 
