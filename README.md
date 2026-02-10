@@ -5,9 +5,7 @@
 
 
 
-<h4 align="center">
-    <img alt="AdalFlow logo" src="https://raw.githubusercontent.com/SylphAI-Inc/AdalFlow/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
-</h4>
+
 
 <h2>
     <p align="center">
