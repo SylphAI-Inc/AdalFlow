@@ -27,6 +27,7 @@ from dataclasses import (
     field,
     InitVar,
 )
+from pydantic import BaseModel, Field as PydanticField
 from uuid import UUID
 from datetime import datetime
 import uuid
@@ -447,6 +448,128 @@ class Function(DataClass):
         )
 
     __output_fields__ = ["thought", "name", "kwargs", "_is_answer_final", "_answer"]
+
+
+class FunctionPydantic(BaseModel):
+    """The data modeling of a function call using Pydantic BaseModel.
+    
+    This is a Pydantic-based version of the Function class that uses BaseModel
+    and Field for validation and serialization.
+    
+    Example:
+        >>> def add(a, b):
+        ...     return a + b
+        >>> 
+        >>> # Create function call with kwargs
+        >>> func = FunctionPydantic(name="add", kwargs={"a": 1, "b": 2})
+        >>> # Evaluate the function
+        >>> result = context_map[func.name](**func.kwargs)
+        >>> 
+        >>> # Create function call with positional args
+        >>> func = FunctionPydantic(name="add", args=[1, 2])
+        >>> result = context_map[func.name](*func.args)
+    """
+    
+    id: Optional[str] = PydanticField(
+        default=None,
+        description="The id of the function call"
+    )
+    thought: Optional[str] = PydanticField(
+        default=None,
+        description="Your reasoning for this step. Be short for simple queries. For complex queries, provide a clear chain of thought."
+    )
+    name: str = PydanticField(
+        default="",
+        description="The name of the function"
+    )
+    args: Optional[List[Any]] = PydanticField(
+        default_factory=list,
+        description="The positional arguments of the function"
+    )
+    kwargs: Optional[Dict[str, Any]] = PydanticField(
+        default_factory=dict,
+        description="The keyword arguments of the function"
+    )
+    is_answer_final: Optional[bool] = PydanticField(
+        default=None,
+        alias="_is_answer_final",
+        description="Whether this current output is the final answer"
+    )
+    answer: Optional[Any] = PydanticField(
+        default=None,
+        alias="_answer",
+        description="The final answer if this is the final output"
+    )
+    
+    class Config:
+        populate_by_name = True  # Allow population by field name or alias
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+        }
+    
+    @classmethod
+    def from_function(
+        cls,
+        func: Union[Callable[..., Any], AsyncCallable],
+        thought: Optional[str] = None,
+        *args,
+        **kwargs,
+    ) -> "FunctionPydantic":
+        """Create a FunctionPydantic object from a function.
+        
+        Args:
+            func: The function to be converted
+            thought: Optional reasoning for this function call
+            *args: Positional arguments for the function
+            **kwargs: Keyword arguments for the function
+            
+        Returns:
+            FunctionPydantic: The FunctionPydantic object
+            
+        Example:
+            >>> def add(a, b):
+            ...     return a + b
+            >>> 
+            >>> # Create with positional arguments
+            >>> func = FunctionPydantic.from_function(add, "Add two numbers", 1, 2)
+            >>> print(func)
+            >>> # FunctionPydantic(thought='Add two numbers', name='add', args=[1, 2])
+        """
+        return cls(
+            thought=thought,
+            name=func.__name__,
+            args=list(args) if args else [],
+            kwargs=kwargs if kwargs else {},
+        )
+    
+    def to_dict(self, exclude_none: bool = True) -> Dict[str, Any]:
+        """Convert to dictionary representation.
+        
+        Args:
+            exclude_none: Whether to exclude None values
+            
+        Returns:
+            Dictionary representation of the function call
+        """
+        data = self.model_dump(exclude_none=exclude_none)
+        # Include aliased fields with their original names if present
+        if self.is_answer_final is not None:
+            data['_is_answer_final'] = self.is_answer_final
+        if self.answer is not None:
+            data['_answer'] = self.answer
+        return data
+    
+    def to_json(self, exclude_none: bool = True, indent: int = 2) -> str:
+        """Convert to JSON string representation.
+        
+        Args:
+            exclude_none: Whether to exclude None values
+            indent: JSON indentation level
+            
+        Returns:
+            JSON string representation
+        """
+        return self.model_dump_json(exclude_none=exclude_none, indent=indent)
 
 
 _action_desc = """FuncName(<kwargs>) \
@@ -1634,12 +1757,13 @@ class RunnerStreamingResult:
                     yield event
                     # mark the task as done
                     self._event_queue.task_done()
-                    # if the event is a RunItemStreamEvent and the name is agent.execution_complete then additionally break the loop
-                    if (
-                        isinstance(event, RunItemStreamEvent)
-                        and event.name == "agent.execution_complete"
-                    ):
-                        break
+                    # Don't break on agent.execution_complete - let QueueCompleteSentinel handle the break
+                    # This ensures the execution_complete event is properly processed by all consumers
+                    # if (
+                    #     isinstance(event, RunItemStreamEvent)
+                    #     and event.name == "agent.execution_complete"
+                    # ):
+                    #     break
 
             except asyncio.CancelledError:
                 # Clean up and re-raise to allow proper cancellation
