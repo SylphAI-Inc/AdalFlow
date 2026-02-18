@@ -26,10 +26,29 @@ from botocore.config import Config
 
 log = logging.getLogger(__name__)
 
-bedrock_runtime_exceptions = boto3.client(
-    service_name="bedrock-runtime",
-    region_name=os.getenv("AWS_REGION_NAME", "us-east-1"),
-).exceptions
+# Lazy initialization of bedrock exceptions to avoid AWS credential issues during import
+_bedrock_runtime_exceptions = None
+
+
+def get_bedrock_runtime_exceptions():
+    """Get bedrock runtime exceptions, creating the client lazily if needed."""
+    global _bedrock_runtime_exceptions
+    if _bedrock_runtime_exceptions is None:
+        try:
+            _bedrock_runtime_exceptions = boto3.client(
+                service_name="bedrock-runtime",
+                region_name=os.getenv("AWS_REGION_NAME", "us-east-1"),
+            ).exceptions
+        except Exception as e:
+            log.warning(f"Could not initialize bedrock client: {e}")
+
+            # Create a mock exceptions object to prevent import failures
+            class MockExceptions:
+                def __getattr__(self, name):
+                    return Exception
+
+            _bedrock_runtime_exceptions = MockExceptions()
+    return _bedrock_runtime_exceptions
 
 
 def get_first_message_content(completion: Dict) -> str:
@@ -41,7 +60,7 @@ def get_first_message_content(completion: Dict) -> str:
 __all__ = [
     "BedrockAPIClient",
     "get_first_message_content",
-    "bedrock_runtime_exceptions",
+    "get_bedrock_runtime_exceptions",
 ]
 
 
@@ -262,11 +281,11 @@ class BedrockAPIClient(ModelClient):
     @backoff.on_exception(
         backoff.expo,
         (
-            bedrock_runtime_exceptions.ThrottlingException,
-            bedrock_runtime_exceptions.ModelTimeoutException,
-            bedrock_runtime_exceptions.InternalServerException,
-            bedrock_runtime_exceptions.ModelErrorException,
-            bedrock_runtime_exceptions.ValidationException,
+            get_bedrock_runtime_exceptions().ThrottlingException,
+            get_bedrock_runtime_exceptions().ModelTimeoutException,
+            get_bedrock_runtime_exceptions().InternalServerException,
+            get_bedrock_runtime_exceptions().ModelErrorException,
+            get_bedrock_runtime_exceptions().ValidationException,
         ),
         max_time=2,
     )
