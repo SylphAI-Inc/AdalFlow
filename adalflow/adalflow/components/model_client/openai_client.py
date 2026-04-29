@@ -25,7 +25,6 @@ import backoff
 # optional import
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
-
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
 
 from openai import (
@@ -83,6 +82,7 @@ class ParsedResponseContent:
         code_outputs: Outputs from code interpreter
         raw_output: The original output array for advanced processing
     """
+
     text: Optional[str] = None
     images: Optional[Union[str, List[str]]] = None
     tool_calls: Optional[List[Dict[str, Any]]] = None
@@ -92,13 +92,9 @@ class ParsedResponseContent:
 
     def __bool__(self) -> bool:
         """Check if there's any content."""
-        return any([
-            self.text,
-            self.images,
-            self.tool_calls,
-            self.reasoning,
-            self.code_outputs
-        ])
+        return any(
+            [self.text, self.images, self.tool_calls, self.reasoning, self.code_outputs]
+        )
 
 
 # OLD CHAT COMPLETION PARSING FUNCTIONS (COMMENTED OUT)
@@ -135,14 +131,14 @@ def parse_response_output(response: Response) -> ParsedResponseContent:
     content = ParsedResponseContent()
 
     # Store raw output for advanced users
-    if hasattr(response, 'output'):
+    if hasattr(response, "output"):
         content.raw_output = response.output
 
     # First try to use output_text if available (SDK convenience property)
-    if hasattr(response, 'output_text') and response.output_text:
+    if hasattr(response, "output_text") and response.output_text:
         content.text = response.output_text
     # Parse the output array manually if no output_text
-    if hasattr(response, 'output') and response.output:
+    if hasattr(response, "output") and response.output:
         parsed = _parse_output_array(response.output)
         content.text = content.text or parsed.get("text")
         content.images = parsed.get("images", [])
@@ -151,7 +147,6 @@ def parse_response_output(response: Response) -> ParsedResponseContent:
         content.code_outputs = parsed.get("code_outputs")
 
     return content
-
 
 
 def _parse_message(item) -> Dict[str, Any]:
@@ -165,19 +160,21 @@ def _parse_message(item) -> Dict[str, Any]:
     """
     result = {"text": None}
 
-    if hasattr(item, 'content') and isinstance(item.content, list):
-        # now pick the longer response 
+    if hasattr(item, "content") and isinstance(item.content, list):
+        # now pick the longer response
         text_parts = []
 
         for content_item in item.content:
-            content_type = getattr(content_item, 'type', None)
+            content_type = getattr(content_item, "type", None)
 
             if content_type == "output_text":
-                if hasattr(content_item, 'text'):
+                if hasattr(content_item, "text"):
                     text_parts.append(content_item.text)
 
         if text_parts:
-            result["text"] = max(text_parts, key=len) if len(text_parts) > 1 else text_parts[0]
+            result["text"] = (
+                max(text_parts, key=len) if len(text_parts) > 1 else text_parts[0]
+            )
 
     return result
 
@@ -194,11 +191,11 @@ def _parse_reasoning(item) -> Dict[str, Any]:
     result = {"reasoning": None}
 
     # Extract text from reasoning summary if available
-    if hasattr(item, 'summary') and isinstance(item.summary, list):
+    if hasattr(item, "summary") and isinstance(item.summary, list):
         summary_texts = []
         for summary_item in item.summary:
-            if hasattr(summary_item, 'type') and summary_item.type == "summary_text":
-                if hasattr(summary_item, 'text'):
+            if hasattr(summary_item, "type") and summary_item.type == "summary_text":
+                if hasattr(summary_item, "text"):
                     summary_texts.append(summary_item.text)
 
         if summary_texts:
@@ -219,7 +216,7 @@ def _parse_image(item) -> Dict[str, Any]:
     """
     result = {"images": None}
 
-    if hasattr(item, 'result'):
+    if hasattr(item, "result"):
         # The result contains the base64 image data or URL
         result["images"] = item.result
 
@@ -235,23 +232,18 @@ def _parse_tool_call(item) -> Dict[str, Any]:
     Returns:
         Dict with tool call information
     """
-    item_type = getattr(item, 'type', None)
+    item_type = getattr(item, "type", None)
 
     if item_type == "image_generation_call":
         # Handle image generation - extract the result which contains the image data
-        if hasattr(item, 'result'):
+        if hasattr(item, "result"):
             # The result contains the base64 image data or URL
             return {"images": item.result}
     elif item_type == "code_interpreter_tool_call":
         return {"code_outputs": [_serialize_item(item)]}
     else:
         # Generic tool call
-        return {
-            "tool_calls": [{
-                "type": item_type,
-                "content": _serialize_item(item)
-            }]
-        }
+        return {"tool_calls": [{"type": item_type, "content": _serialize_item(item)}]}
 
     return {}
 
@@ -272,7 +264,7 @@ def _parse_output_array(output_array) -> Dict[str, Any]:
         "images": None,
         "tool_calls": None,
         "reasoning": None,
-        "code_outputs": None
+        "code_outputs": None,
     }
 
     if not output_array:
@@ -286,7 +278,7 @@ def _parse_output_array(output_array) -> Dict[str, Any]:
     text = None
 
     for item in output_array:
-        item_type = getattr(item, 'type', None)
+        item_type = getattr(item, "type", None)
 
         if item_type == "reasoning":
             # Parse reasoning item
@@ -306,7 +298,7 @@ def _parse_output_array(output_array) -> Dict[str, Any]:
             if parsed.get("images"):
                 all_images.append(parsed["images"])
 
-        elif item_type and ('call' in item_type or 'tool' in item_type):
+        elif item_type and ("call" in item_type or "tool" in item_type):
             # Parse other tool calls
             parsed = _parse_tool_call(item)
             if parsed.get("tool_calls"):
@@ -314,8 +306,9 @@ def _parse_output_array(output_array) -> Dict[str, Any]:
             if parsed.get("code_outputs"):
                 all_code_outputs.extend(parsed["code_outputs"])
 
-
-    result["text"] = text if text else None # TODO: they can potentially send multiple complete text messages, we might need to save all of them and only return the first that can convert to outpu parser
+    result["text"] = (
+        text if text else None
+    )  # TODO: they can potentially send multiple complete text messages, we might need to save all of them and only return the first that can convert to outpu parser
 
     # Set other fields if they have content
     result["images"] = all_images
@@ -333,7 +326,7 @@ def _serialize_item(item) -> Dict[str, Any]:
     """Convert an output item to a serializable dict."""
     result = {}
     for attr in dir(item):
-        if not attr.startswith('_'):
+        if not attr.startswith("_"):
             value = getattr(item, attr, None)
             if value is not None and not callable(value):
                 result[attr] = value
@@ -404,8 +397,6 @@ def handle_streaming_response_sync(stream: Iterable) -> GeneratorType:
     # already compatible as this is the OpenAI client
     for event in stream:
         yield event
-
-
 
 
 class OpenAIClient(ModelClient):
@@ -800,7 +791,6 @@ class OpenAIClient(ModelClient):
             if parsed_content.reasoning:
                 thinking = str(parsed_content.reasoning)
 
-
             return GeneratorOutput(
                 data=data,  # only text
                 thinking=thinking,
@@ -808,13 +798,12 @@ class OpenAIClient(ModelClient):
                 tool_use=None,  # Will be populated when we handle function tool calls
                 error=None,
                 raw_response=data,
-                usage=usage
+                usage=usage,
             )
         # Regular response handling (streaming or other)
         data = parser(completion)
         usage = self.track_completion_usage(completion)
         return GeneratorOutput(data=None, error=None, raw_response=data, usage=usage)
-
 
     # NEW RESPONSE API ONLY FUNCTION
     def track_completion_usage(
@@ -968,12 +957,7 @@ class OpenAIClient(ModelClient):
                 content = format_content_for_response_api(input, images)
 
                 # For responses.create API, wrap in user message format
-                final_model_kwargs["input"] = [
-                    {
-                        "role": "user",
-                        "content": content
-                    }
-                ]
+                final_model_kwargs["input"] = [{"role": "user", "content": content}]
             else:
                 # Text-only input
                 final_model_kwargs["input"] = input
