@@ -409,6 +409,9 @@ def handle_streaming_response_sync(stream: Iterable) -> GeneratorType:
 
 
 class OpenAIClient(ModelClient):
+    _REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
+    _UNSUPPORTED_REASONING_KWARGS = ("frequency_penalty",)
+
     __doc__ = r"""A component wrapper for the OpenAI API client.
 
     Support both embedding and response API, including multimodal capabilities.
@@ -978,6 +981,34 @@ class OpenAIClient(ModelClient):
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
 
+    def _strip_unsupported_reasoning_kwargs(self, api_kwargs: Dict) -> Dict:
+        """Return a copy of api_kwargs with unsupported reasoning-model params removed.
+
+        Checks whether the request targets a reasoning model by inspecting the
+        ``model`` key against ``_REASONING_MODEL_PREFIXES``, then drops any keys
+        listed in ``_UNSUPPORTED_REASONING_KWARGS``.
+        """
+        model: str = api_kwargs.get("model", "")
+        is_reasoning = any(
+            model.startswith(prefix) for prefix in self._REASONING_MODEL_PREFIXES
+        )
+        if not is_reasoning:
+            return api_kwargs
+
+        cleaned = {
+            k: v
+            for k, v in api_kwargs.items()
+            if k not in self._UNSUPPORTED_REASONING_KWARGS
+        }
+        stripped = [k for k in api_kwargs if k not in cleaned]
+        if stripped:
+            log.debug(
+                "Stripped unsupported kwargs for reasoning model '%s': %s",
+                model,
+                stripped,
+            )
+        return cleaned
+
     def parse_image_generation_response(self, response: List[Image]) -> GeneratorOutput:
         """Parse the image generation response into a GeneratorOutput."""
         try:
@@ -1032,6 +1063,7 @@ class OpenAIClient(ModelClient):
         #         self.chat_completion_parser = self.non_streaming_chat_completion_parser
         #         return self.sync_client.chat.completions.create(**api_kwargs)
         elif model_type == ModelType.LLM_REASONING or model_type == ModelType.LLM:
+            api_kwargs = self._strip_unsupported_reasoning_kwargs(api_kwargs)
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("streaming call")
                 self.response_parser = (
@@ -1087,6 +1119,7 @@ class OpenAIClient(ModelClient):
         #         # setting response parser as async non-streaming parser for Response API
         #         return await self.async_client.responses.create(**api_kwargs)
         elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
+            api_kwargs = self._strip_unsupported_reasoning_kwargs(api_kwargs)
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("async streaming call")
                 self.response_parser = (

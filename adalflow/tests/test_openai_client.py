@@ -762,5 +762,45 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(image_contents[2]["image_url"].startswith("data:image/png;base64,"))
 
 
+    def test_strip_unsupported_reasoning_kwargs_removes_frequency_penalty(self):
+        """frequency_penalty is stripped for reasoning model prefixes."""
+        for model in ("o1", "o3-mini", "o4-turbo", "gpt-5"):
+            with self.subTest(model=model):
+                kwargs = {"model": model, "input": "hi", "frequency_penalty": 0.5}
+                result = self.client._strip_unsupported_reasoning_kwargs(kwargs)
+                self.assertNotIn("frequency_penalty", result)
+                self.assertEqual(result["model"], model)
+                self.assertEqual(result["input"], "hi")
+
+    def test_strip_unsupported_reasoning_kwargs_preserves_non_reasoning_models(self):
+        """frequency_penalty is NOT stripped for non-reasoning models."""
+        kwargs = {"model": "gpt-4o", "input": "hi", "frequency_penalty": 0.5}
+        result = self.client._strip_unsupported_reasoning_kwargs(kwargs)
+        self.assertIn("frequency_penalty", result)
+        self.assertEqual(result["frequency_penalty"], 0.5)
+
+    def test_strip_unsupported_reasoning_kwargs_leaves_other_kwargs_intact(self):
+        """Other kwargs like temperature and max_tokens are never removed."""
+        kwargs = {
+            "model": "o3-mini",
+            "input": "hi",
+            "temperature": 0.7,
+            "max_tokens": 100,
+            "frequency_penalty": 0.5,
+        }
+        result = self.client._strip_unsupported_reasoning_kwargs(kwargs)
+        self.assertIn("temperature", result)
+        self.assertIn("max_tokens", result)
+        self.assertNotIn("frequency_penalty", result)
+
+    def test_strip_unsupported_reasoning_kwargs_does_not_mutate_input(self):
+        """The helper must return a new dict and leave the original untouched."""
+        kwargs = {"model": "o1", "input": "hi", "frequency_penalty": 0.5}
+        original = kwargs.copy()
+        result = self.client._strip_unsupported_reasoning_kwargs(kwargs)
+        self.assertEqual(kwargs, original)
+        self.assertIsNot(result, kwargs)
+
+
 if __name__ == "__main__":
     unittest.main()
