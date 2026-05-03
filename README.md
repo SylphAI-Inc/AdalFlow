@@ -407,3 +407,49 @@ Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive 
 [![Star History Chart](https://api.star-history.com/svg?repos=SylphAI-Inc/AdalFlow&type=Date)](https://star-history.com/#SylphAI-Inc/AdalFlow&Date) -->
 <!--
 <a href="https://trendshift.io/repositories/11559" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11559" alt="SylphAI-Inc%2FAdalFlow | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a> -->
+
+# FAQ
+
+## General
+
+**What is AdalFlow?**
+AdalFlow is a PyTorch-like library to build and auto-optimize any LM (Language Model) workflows, from Chatbots and RAG to Agents. It provides a unified auto-differentiative framework for both zero-shot optimization and few-shot prompt optimization.
+
+**How does AdalFlow differ from LangChain or LlamaIndex?**
+AdalFlow focuses on auto-optimization of LM workflows with its unique LLM-AutoDiff framework. It allows you to switch between models via configuration, provides built-in tracing with MLflow integration, and achieves state-of-the-art accuracy in auto-prompt optimization.
+
+**Is AdalFlow open-source?**
+Yes, AdalFlow is 100% open-source under the MIT license. It requires no additional API setup for Human-in-the-Loop and Tracing functionalities.
+
+## Setup & Configuration
+
+**How do I install AdalFlow?**
+Install with pip: `pip install adalflow`. Requires Python 3.9+.
+
+**Which LLM providers are supported?**
+AdalFlow is model-agnostic and supports OpenAI, Anthropic, Google, and any provider with an OpenAI-compatible API. You can switch models via configuration without code changes.
+
+**How do I set up API keys?**
+Set environment variables for your LLM provider (e.g., `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`). AdalFlow reads these automatically.
+
+## Usage
+
+**What types of applications can I build?**
+AdalFlow supports Chatbots, RAG (Retrieval Augmented Generation), Agents, classical NLP tasks, and any custom LM workflow. The modular architecture lets you compose components flexibly.
+
+**How does auto-optimization work?**
+AdalFlow provides automatic prompt optimization using its LLM-AutoDiff framework. You define your task pipeline, and the library optimizes prompts automatically using zero-shot or few-shot techniques, achieving higher accuracy than manual prompting.
+
+**Can I use AdalFlow with local models?**
+Yes. AdalFlow supports any OpenAI-compatible API, including local models served via Ollama, vLLM, or other inference servers.
+
+## Troubleshooting
+
+**Import errors after installation**
+Ensure you have Python 3.9+ and upgrade pip: `pip install --upgrade pip adalflow`. Check for conflicts with other AI libraries.
+
+**LLM API calls fail**
+Verify your API keys are set as environment variables. Test with a simple request first. Check your provider's rate limits and account status.
+
+**Auto-optimization produces poor results**
+Start with a well-defined task pipeline and sufficient training examples. Review the optimized prompts in the documentation. Consider adjusting the optimization parameters for your specific use case.
