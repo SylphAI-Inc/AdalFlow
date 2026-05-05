@@ -907,3 +907,52 @@ def test_tool_manager_with_grad_component():
     # ensure it is the forward method that is called
     output = test_com.tools_manager.tools[1](1, 2)
     assert output.data.output == -1
+
+
+# ---- Function None-args/kwargs normalisation (issue #479) ----
+
+
+def test_function_none_args_normalised_to_empty_list():
+    """Function(args=None) must not store None; __post_init__ normalises it to []."""
+    func = Function(name="my_tool", args=None, kwargs={"city": "Budapest"})
+    assert func.args == [], "args=None should be normalised to []"
+    assert func.kwargs == {"city": "Budapest"}
+
+
+def test_function_none_kwargs_normalised_to_empty_dict():
+    """Function(kwargs=None) must not store None; __post_init__ normalises it to {}."""
+    func = Function(name="my_tool", args=[1, 2], kwargs=None)
+    assert func.args == [1, 2]
+    assert func.kwargs == {}, "kwargs=None should be normalised to {}"
+
+
+def test_function_both_none_normalised():
+    """Function(args=None, kwargs=None) normalises both fields."""
+    func = Function(name="my_tool", args=None, kwargs=None)
+    assert func.args == []
+    assert func.kwargs == {}
+
+
+def test_function_tool_call_with_none_args_does_not_raise():
+    """tool.call(*func.args, **func.kwargs) must not raise when the LLM omits args."""
+
+    def weather(city: str) -> str:
+        return f"Weather in {city}"
+
+    tool = FunctionTool(fn=weather)
+    func = Function(name="weather", args=None, kwargs={"city": "Budapest"})
+
+    output = tool.call(*func.args, **func.kwargs)
+    assert output.output == "Weather in Budapest"
+
+
+def test_tool_manager_execute_func_with_none_args():
+    """ToolManager.execute_func must succeed when func.args is None."""
+
+    def greet(name: str) -> str:
+        return f"Hello, {name}!"
+
+    manager = ToolManager(tools=[FunctionTool(fn=greet)])
+    func = Function(name="greet", args=None, kwargs={"name": "Alice"})
+    result = manager.execute_func(func)
+    assert result.output == "Hello, Alice!"
