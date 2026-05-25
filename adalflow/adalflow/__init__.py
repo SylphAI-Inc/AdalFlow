@@ -52,11 +52,6 @@ from adalflow.optim import (
     TGDOptimizer,
     EvalFnToTextLoss,
     LLMAsTextLoss,
-    optimize_anything,
-    log,
-    EngineConfig,
-    GEPAConfig,
-    OptimizeAnythingResult,
 )
 
 from adalflow.optim.types import ParameterType
@@ -108,11 +103,6 @@ __all__ = [
     "TGDOptimizer",
     "EvalFnToTextLoss",
     "LLMAsTextLoss",
-    "optimize_anything",
-    "log",
-    "EngineConfig",
-    "GEPAConfig",
-    "OptimizeAnythingResult",
     "setup_env",
     "get_logger",
     "Prompt",
