@@ -1431,6 +1431,104 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             response_value = f"Error: {gradient_response.error}, Raw response: {gradient_response.raw_response}"
         return response_value
 
+    def select_from_options(
+        self,
+        options: List[str],
+        prompt_kwargs: Optional[Dict[str, Union[str, Parameter]]] = {},
+        model_kwargs: Optional[Dict] = {},
+        allow_partial_match: bool = True,
+        case_sensitive: bool = False,
+        id: Optional[str] = None,
+    ) -> str:
+        """Select from a constrained set of options using logprobs.
+        
+        This method forces the model to select from a predefined set of options,
+        similar to the Guidance library's constrained generation capabilities.
+        
+        Args:
+            options: List of valid options the model can select from
+            prompt_kwargs: Prompt arguments to fill in the template
+            model_kwargs: Model arguments for the API call
+            allow_partial_match: Whether to allow partial matches
+            case_sensitive: Whether option matching is case sensitive
+            id: Optional ID for tracing
+            
+        Returns:
+            The selected option from the predefined list
+            
+        Example:
+            generator = Generator(
+                model_client=OpenAIClient(),
+                model_kwargs={"model": "gpt-3.5-turbo"}
+            )
+            
+            # Force selection from specific options
+            result = generator.select_from_options(
+                options=["positive", "negative", "neutral"],
+                prompt_kwargs={"input_str": "How do you feel about this?"}
+            )
+            # Returns one of: "positive", "negative", "neutral"
+        """
+        from adalflow.components.output_parsers import ConstrainedSelectionParser
+        
+        parser = ConstrainedSelectionParser(
+            options=options,
+            allow_partial_match=allow_partial_match,
+            case_sensitive=case_sensitive
+        )
+        
+        selection_instructions = parser.get_format_instructions()
+        
+        original_template = self.template
+        modified_template = f"{original_template}\n\n{selection_instructions}"
+        
+        self.template = modified_template
+        
+        try:
+            # Use logprob-based selection when the client implements it
+            try:
+                input_text = self.get_prompt(**(prompt_kwargs or {}))
+                composed_model_kwargs = self._compose_model_kwargs(
+                    **(model_kwargs or {})
+                )
+                completion, logprobs = self.model_client.call_with_logprobs(
+                    input=input_text,
+                    model_kwargs=composed_model_kwargs,
+                    model_type=self.model_type,
+                )
+
+                try:
+                    response_text = completion.choices[0].message.content
+                except Exception:
+                    response_text = str(completion)
+
+                return parser.call(
+                    {"response": response_text, "logprobs": logprobs}
+                )
+            except NotImplementedError:
+                log.debug(
+                    "Model client does not implement logprobs; falling back to text matching."
+                )
+            except AttributeError:
+                log.debug(
+                    "Model client has no logprob support; falling back to text matching."
+                )
+            except Exception as e:
+                log.error(f"Error calling model client with logprobs: {e}")
+                raise
+
+            # Fallback to regular call with text-based matching
+            result = self.call(
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+                id=id,
+            )
+            if hasattr(result, "data") and result.data is not None:
+                return parser.call(result.data)
+            return parser.call(str(result))
+        finally:
+            self.template = original_template
+
 
 class BackwardEngine(Generator):  # it is a generator with defaule template
 

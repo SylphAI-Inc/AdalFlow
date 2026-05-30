@@ -219,10 +219,14 @@ BatchEmbedderOutputType = List[EmbedderOutputType]
 ######################################################################################
 @dataclass
 class TokenLogProb:
-    r"""similar to openai.ChatCompletionTokenLogprob"""
+    r"""Represents a single token log probability returned by a model."""
 
     token: str
     logprob: float
+    choice_index: Optional[int] = field(
+        default=None,
+        metadata={"desc": "Index of the choice this token belongs to"},
+    )
 
 
 @dataclass

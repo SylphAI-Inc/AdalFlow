@@ -1,6 +1,7 @@
 r"""ModelClient is the protocol and base class for all models(either via APIs or local models) to communicate with components."""
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
+from adalflow.core.types import TokenLogProb
 
 
 from adalflow.core.component import DataComponent
@@ -124,4 +125,34 @@ Check the subclasses in `components/model_client/` directory for the functional 
         """List all available models from this provider"""
         raise NotImplementedError(
             f"{type(self).__name__} must implement list_models method"
+        )
+    
+    def call_with_logprobs(
+        self, 
+        model_kwargs: Dict = {},
+        model_type: ModelType = ModelType.UNDEFINED
+    ) -> tuple[Any, List[List["TokenLogProb"]]]:
+        """Call the API with logprobs enabled for constrained generation.
+        
+        Args:
+            model_kwargs: Model-specific keyword arguments. Implementations should
+                enable logprobs in the underlying request.
+            model_type: Type of model call
+            
+        Returns:
+            Tuple of (completion, logprobs) where logprobs is a list of token logprob
+            objects for each choice. Each TokenLogProb includes the associated
+            ``choice_index`` when available.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} (Optional) must implement call_with_logprobs method"
+        )
+    
+    def _extract_logprobs(self, completion: Any) -> List[List["TokenLogProb"]]:
+        """Extract logprobs from completion response.
+        
+        This method should be overridden by subclasses to handle their specific API format.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} (Optional) must implement _extract_logprobs method"
         )

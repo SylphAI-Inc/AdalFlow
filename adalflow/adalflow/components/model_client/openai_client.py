@@ -24,7 +24,7 @@ import backoff
 
 # optional import
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
-
+from adalflow.core.types import TokenLogProb
 
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
 
@@ -1116,6 +1116,78 @@ class OpenAIClient(ModelClient):
             return response.data
         else:
             raise ValueError(f"model_type {model_type} is not supported")
+
+    def _extract_logprobs(self, completion: Any) -> List[List["TokenLogProb"]]:
+        """Extract logprobs from OpenAI completion response.
+        
+        Args:
+            completion: OpenAI completion response
+            
+        Returns:
+            List of token logprobs for each choice
+        """        
+        logprobs = []
+        
+        try:
+            if hasattr(completion, "choices"):
+                for choice in completion.choices:
+                    if hasattr(choice, "logprobs") and choice.logprobs:
+                        choice_logprobs = []
+                        for token_logprob in choice.logprobs.content:
+                            choice_logprobs.append(
+                                TokenLogProb(
+                                    token=token_logprob.token,
+                                    logprob=token_logprob.logprob,
+                                    choice_index=getattr(choice, "index", None),
+                                )
+                            )
+                        logprobs.append(choice_logprobs)
+                    else:
+                        logprobs.append([])
+        except Exception as e:
+            log.error(f"Failed to extract logprobs: {e}")
+            raise e
+        
+        return logprobs
+
+    def call_with_logprobs(
+        self, 
+        input: str = "",
+        model_kwargs: Dict = {},
+        model_type: ModelType = ModelType.UNDEFINED
+    ) -> tuple[Any, List[List[TokenLogProb]]]:
+        """Call the API with logprobs enabled for constrained generation.
+        
+        This method uses the traditional chat.completions API which supports logprobs,
+        instead of the new responses API which doesn't.
+        
+        Args:
+            input: The input text to process
+            model_kwargs: Model parameters
+            model_type: Type of model call
+            
+        Returns:
+            Tuple of (completion, logprobs) where logprobs is a list of token logprobs
+        """
+        
+        log.debug("call with logprobs using chat.completions")
+        
+        messages = [{"role": "user", "content": str(input)}]
+        
+        chat_kwargs = {
+            "model": model_kwargs.get("model", "gpt-3.5-turbo"),
+            "messages": messages,
+            "logprobs": True,
+            "top_logprobs": 5,
+            "temperature": model_kwargs.get("temperature", 0.1),
+            "max_tokens": model_kwargs.get("max_tokens", 1000),
+        }
+        
+        completion = self.sync_client.chat.completions.create(**chat_kwargs)
+        
+        logprobs = self._extract_logprobs(completion)
+        
+        return completion, logprobs
 
     @classmethod
     def from_dict(cls: type[T], data: Dict[str, Any]) -> T:
