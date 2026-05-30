@@ -18,14 +18,19 @@ from adalflow.core.prompt_builder import Prompt
 from adalflow.utils import setup_env, printc, get_logger
 from adalflow.components.model_client.openai_client import OpenAIClient
 import httpx
+import pytest
 
 # Setup environment
-setup_env()
+try:
+    setup_env()
+except FileNotFoundError:
+    # Skip setup_env if .env file doesn't exist for testing
+    pass
 get_logger(level="DEBUG", enable_file=False)
 
 # Model configuration
 openai_model = {
-    "model_client": OpenAIClient(),
+    "model_client": OpenAIClient(api_key="fake_api_key"),
     "model_kwargs": {"model": "gpt-4o-mini", "max_tokens": 4096},
 }
 
@@ -67,6 +72,7 @@ def run_fastapi_server(app, port=8000):
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
 
 
+@pytest.mark.asyncio
 async def test_api_approval_flow():
     """Test the API-based approval flow."""
     print("\n" + "=" * 80)
