@@ -730,6 +730,51 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         # Assertions
         self.assertEqual("".join(text_chunks), "The answer is 42.")
 
+    def test_convert_inputs_to_api_kwargs_reasoning_model_strips_unsupported_params(self):
+        """Test that unsupported Chat Completion parameters are removed for reasoning models."""
+        model_kwargs = {
+            "model": "o3-mini",
+            "frequency_penalty": 0,
+            "presence_penalty": 0,
+            "temperature": 0.0,
+            "top_p": 0.99,
+            "reasoning": {"effort": "medium", "summary": "auto"},
+        }
+        result = self.client.convert_inputs_to_api_kwargs(
+            input="Solve this problem",
+            model_kwargs=model_kwargs,
+            model_type=ModelType.LLM_REASONING,
+        )
+        # Unsupported params should be removed
+        self.assertNotIn("frequency_penalty", result)
+        self.assertNotIn("presence_penalty", result)
+        self.assertNotIn("temperature", result)
+        self.assertNotIn("top_p", result)
+        # Supported params should remain
+        self.assertEqual(result["model"], "o3-mini")
+        self.assertIn("reasoning", result)
+        self.assertEqual(result["reasoning"]["effort"], "medium")
+
+    def test_convert_inputs_to_api_kwargs_llm_keeps_all_params(self):
+        """Test that regular LLM model_type keeps all parameters including frequency_penalty."""
+        model_kwargs = {
+            "model": "gpt-4o",
+            "frequency_penalty": 0,
+            "presence_penalty": 0,
+            "temperature": 0.0,
+            "top_p": 0.99,
+        }
+        result = self.client.convert_inputs_to_api_kwargs(
+            input="Hello",
+            model_kwargs=model_kwargs,
+            model_type=ModelType.LLM,
+        )
+        # All params should be preserved for regular LLM
+        self.assertIn("frequency_penalty", result)
+        self.assertIn("presence_penalty", result)
+        self.assertIn("temperature", result)
+        self.assertIn("top_p", result)
+
     def test_multiple_images_input(self):
         """Test multimodal input with multiple images."""
         # Test with multiple images

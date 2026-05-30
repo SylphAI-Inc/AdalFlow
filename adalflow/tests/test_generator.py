@@ -313,5 +313,51 @@ class TestGeneratorIntegration(unittest.TestCase):
         self.assertIsInstance(output, GeneratorOutput)
 
 
+class TestGetDefaultMapping(unittest.TestCase):
+    """Test Generator._get_default_mapping handles all edge cases."""
+
+    def test_data_with_output_fields(self):
+        """When output.data is a DataClass with output fields, mapping should use them."""
+        from adalflow.core.base_data_class import DataClass
+        from adalflow.core.types import GeneratorOutput
+
+        class SampleOutput(DataClass):
+            answer: str = ""
+            score: float = 0.0
+
+        SampleOutput.set_output_fields(["answer", "score"])
+        data = SampleOutput()
+        data.answer = "test"
+        data.score = 0.9
+        output = GeneratorOutput(data=data)
+        mapping, fields = Generator._get_default_mapping(output)
+        self.assertIn("answer", fields)
+        self.assertIn("score", fields)
+        self.assertIn("answer", mapping)
+        self.assertIn("score", mapping)
+
+    def test_raw_response_only(self):
+        """When only raw_response is present, mapping should map 'Example' to raw_response."""
+        output = GeneratorOutput(raw_response="some text")
+        mapping, fields = Generator._get_default_mapping(output)
+        self.assertEqual(fields, ["Answer"])
+        self.assertIn("Example", mapping)
+
+    def test_both_data_and_raw_response_none(self):
+        """When both data and raw_response are None (API call failed),
+        should return empty mapping instead of raising UnboundLocalError."""
+        output = GeneratorOutput(data=None, raw_response=None, error="API call failed")
+        mapping, fields = Generator._get_default_mapping(output)
+        self.assertEqual(fields, [])
+        self.assertEqual(mapping, {})
+
+    def test_data_none_raw_response_empty_string(self):
+        """When raw_response is an empty string (falsy), should fall through to the else branch."""
+        output = GeneratorOutput(data=None, raw_response="")
+        mapping, fields = Generator._get_default_mapping(output)
+        self.assertEqual(fields, [])
+        self.assertEqual(mapping, {})
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -272,6 +272,16 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             output_fields = ["Answer"]
             output_mapping["Example"] = output_mapping["raw_response"]
             del output_mapping["raw_response"]
+        else:
+            # When both output.data and output.raw_response are None
+            # (e.g. API call failed entirely), provide a safe fallback
+            # to prevent UnboundLocalError at the return statement.
+            output_fields = []
+            output_mapping = {}
+            log.warning(
+                "Generator output has neither data nor raw_response. "
+                "Returning empty mapping. This usually indicates a failed API call."
+            )
 
         return output_mapping, output_fields
 
