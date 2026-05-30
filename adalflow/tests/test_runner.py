@@ -1082,6 +1082,233 @@ class TestRunnerBugFixes(unittest.TestCase):
             runner._process_data('"just a string"')
         self.assertIn("Expected dict after JSON parsing", str(cm.exception))
 
+    def test_execution_complete_event_emitted_once(self):
+        """Test that agent.execution_complete event is emitted exactly once.
+        
+        Edge Case: Previously, execution_complete was emitted twice - once in 
+        _process_stream_final_step and again outside the loop. This test ensures
+        it's only emitted once.
+        """
+        async def async_test():
+            from adalflow.core.types import FunctionOutput
+            
+            # Create a function with _is_answer_final=True
+            fn = DummyFunction(
+                name="answer_output", 
+                _is_answer_final=True, 
+                _answer="test_complete"
+            )
+            agent = DummyAgent(
+                planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
+                answer_data_type=None,
+            )
+            runner = Runner(agent=agent)
+            
+            async def mock_tool_execute_async(func, streaming_result=None):
+                return FunctionOutput(name=func.name, input=func, output="test_complete")
+            
+            runner._tool_execute_async = mock_tool_execute_async
+            
+            # Start streaming
+            streaming_result = runner.astream(prompt_kwargs={})
+            
+            # Collect all execution_complete events
+            execution_complete_events = []
+            all_events = []
+            
+            async for event in streaming_result.stream_events():
+                all_events.append(event)
+                if (isinstance(event, RunItemStreamEvent) and 
+                    event.name == "agent.execution_complete"):
+                    execution_complete_events.append(event)
+            
+            # Should have exactly one execution_complete event
+            self.assertEqual(len(execution_complete_events), 1, 
+                           f"Expected 1 execution_complete event, got {len(execution_complete_events)}")
+            
+            # Verify the event contains correct data
+            final_event = execution_complete_events[0]
+            self.assertIsInstance(final_event.item, FinalOutputItem)
+            self.assertIsInstance(final_event.item.data, RunnerResult)
+            self.assertEqual(final_event.item.data.answer, "test_complete")
+            
+        asyncio.run(async_test())
+
+    def test_execution_complete_event_properly_consumed(self):
+        """Test that execution_complete event is properly consumed by stream_to_json.
+        
+        Edge Case: Previously, stream_events() would break immediately after yielding
+        execution_complete, preventing proper consumption by stream_to_json and other
+        consumers. This test ensures the event is properly consumed.
+        """
+        async def async_test():
+            from adalflow.core.types import FunctionOutput
+            import json
+            import os
+            import tempfile
+            
+            # Create a function with _is_answer_final=True
+            fn = DummyFunction(
+                name="answer_output",
+                _is_answer_final=True,
+                _answer="stream_to_json_test"
+            )
+            agent = DummyAgent(
+                planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
+                answer_data_type=None,
+            )
+            runner = Runner(agent=agent)
+            
+            async def mock_tool_execute_async(func, streaming_result=None):
+                return FunctionOutput(name=func.name, input=func, output="stream_to_json_test")
+            
+            runner._tool_execute_async = mock_tool_execute_async
+            
+            # Create temp file for JSON output
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                temp_file = f.name
+            
+            try:
+                # Start streaming to JSON
+                streaming_result = runner.astream(prompt_kwargs={})
+                
+                # Stream to JSON file
+                events_consumed = []
+                async for event in streaming_result.stream_to_json(temp_file):
+                    if isinstance(event, RunItemStreamEvent):
+                        events_consumed.append(event.name)
+                
+                # Verify execution_complete was consumed
+                self.assertIn("agent.execution_complete", events_consumed,
+                            "execution_complete event was not consumed by stream_to_json")
+                
+                # Verify JSON file contains the execution_complete event
+                with open(temp_file, 'r') as f:
+                    json_content = json.load(f)
+                
+                # Check that execution_complete event is in the JSON
+                execution_complete_found = False
+                for event_entry in json_content:
+                    if (event_entry.get("event_type") == "RunItemStreamEvent" and
+                        "agent.execution_complete" in str(event_entry.get("event_data", {}))):
+                        execution_complete_found = True
+                        break
+                
+                self.assertTrue(execution_complete_found,
+                              "execution_complete event not found in JSON file")
+                
+            finally:
+                # Clean up temp file
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+        
+        asyncio.run(async_test())
+
+    def test_no_duplicate_execution_complete_on_incomplete(self):
+        """Test that execution_complete is only emitted once even when max_steps reached.
+        
+        Edge Case: When the loop ends without a final answer (max_steps reached),
+        execution_complete should be emitted only once in the cleanup section.
+        """
+        async def async_test():
+            from adalflow.core.types import FunctionOutput
+            
+            # Create functions that are NOT final
+            functions = [
+                DummyFunction(name=f"step_{i}", _is_answer_final=False)
+                for i in range(3)
+            ]
+            outputs = [GeneratorOutput(data=fn) for fn in functions]
+            
+            agent = DummyAgent(
+                planner=FakeStreamingPlanner(outputs),
+                answer_data_type=None,
+                max_steps=3  # Will reach max_steps without final answer
+            )
+            runner = Runner(agent=agent)
+            
+            async def mock_tool_execute_async(func, streaming_result=None):
+                return FunctionOutput(name=func.name, input=func, output=f"output_{func.name}")
+            
+            runner._tool_execute_async = mock_tool_execute_async
+            
+            # Start streaming
+            streaming_result = runner.astream(prompt_kwargs={})
+            
+            # Collect all execution_complete events
+            execution_complete_events = []
+            
+            async for event in streaming_result.stream_events():
+                if (isinstance(event, RunItemStreamEvent) and 
+                    event.name == "agent.execution_complete"):
+                    execution_complete_events.append(event)
+            
+            # Should have exactly one execution_complete event even when incomplete
+            self.assertEqual(len(execution_complete_events), 1,
+                           f"Expected 1 execution_complete event for incomplete run, got {len(execution_complete_events)}")
+            
+            # Verify it contains the "No output generated" message
+            final_event = execution_complete_events[0]
+            self.assertIsInstance(final_event.item, FinalOutputItem)
+            self.assertIsInstance(final_event.item.data, RunnerResult)
+            self.assertIn("No output generated", final_event.item.data.answer)
+            
+        asyncio.run(async_test())
+
+    def test_execution_complete_with_early_break_scenario(self):
+        """Test execution_complete event when consumer breaks early from stream.
+        
+        Edge Case: Test that even if a consumer breaks early from the stream,
+        the execution_complete event is available for consumption if they
+        resume iteration (after our fix).
+        """
+        async def async_test():
+            from adalflow.core.types import FunctionOutput
+            
+            fn = DummyFunction(
+                name="answer_output",
+                _is_answer_final=True,
+                _answer="early_break_test"
+            )
+            agent = DummyAgent(
+                planner=FakeStreamingPlanner([GeneratorOutput(data=fn)]),
+                answer_data_type=None,
+            )
+            runner = Runner(agent=agent)
+            
+            async def mock_tool_execute_async(func, streaming_result=None):
+                return FunctionOutput(name=func.name, input=func, output="early_break_test")
+            
+            runner._tool_execute_async = mock_tool_execute_async
+            
+            # Start streaming
+            streaming_result = runner.astream(prompt_kwargs={})
+            
+            # First consumer breaks after raw event
+            first_consumer_events = []
+            async for event in streaming_result.stream_events():
+                first_consumer_events.append(event)
+                if isinstance(event, RawResponsesStreamEvent):
+                    break  # Break early after first event
+            
+            # Second consumer continues from where first left off
+            second_consumer_events = []
+            async for event in streaming_result.stream_events():
+                second_consumer_events.append(event)
+                if isinstance(event, RunItemStreamEvent):
+                    second_consumer_events.append(event)
+            
+            # Check if execution_complete was available to second consumer
+            execution_complete_found = any(
+                isinstance(e, RunItemStreamEvent) and e.name == "agent.execution_complete"
+                for e in second_consumer_events
+            )
+            
+            self.assertTrue(execution_complete_found,
+                          "execution_complete should be available even after early break")
+            
+        asyncio.run(async_test())
+
 
 if __name__ == "__main__":
     unittest.main()
