@@ -26,10 +26,10 @@ def use_all_providers():
     )
     # need to run ollama pull llama3.2:1b first to use this model
 
-    # aws_bedrock_llm = adal.Generator(
-    #     model_client=adal.BedrockAPIClient(),
-    #     model_kwargs={"modelId": "amazon.mistral.instruct-7b"},
-    # )
+    aws_bedrock_llm = adal.Generator(
+        model_client=adal.BedrockAPIClient(),
+        model_kwargs={"model": "mistral.mistral-7b-instruct-v0:2"},
+    )
 
     prompt_kwargs = {"input_str": "What is the meaning of life in one sentence?"}
 
@@ -38,14 +38,14 @@ def use_all_providers():
     anthropic_response = anthropic_llm(prompt_kwargs)
     google_gen_ai_response = google_gen_ai_llm(prompt_kwargs)
     ollama_response = ollama_llm(prompt_kwargs)
-    # aws_bedrock_llm_response = aws_bedrock_llm(prompt_kwargs)
+    aws_bedrock_llm_response = aws_bedrock_llm(prompt_kwargs)
 
     print(f"OpenAI: {openai_response}\n")
     print(f"Groq: {groq_response}\n")
     print(f"Anthropic: {anthropic_response}\n")
     print(f"Google GenAI: {google_gen_ai_response}\n")
     print(f"Ollama: {ollama_response}\n")
-    # print(f"AWS Bedrock: {aws_bedrock_llm_response}\n")
+    print(f"AWS Bedrock: {aws_bedrock_llm_response}\n")
 
 
 if __name__ == "__main__":

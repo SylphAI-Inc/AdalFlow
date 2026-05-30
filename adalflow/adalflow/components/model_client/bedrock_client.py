@@ -63,6 +63,7 @@ class BedrockAPIClient(ModelClient):
     Setup:
     1. Install boto3: `pip install boto3`
     2. Ensure you have the AWS credentials set up. There are four variables you can optionally set:
+        Either AWS_PROFILE_NAME or (AWS_REGION_NAME and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY) are needed
         - AWS_PROFILE_NAME: The name of the AWS profile to use.
         - AWS_REGION_NAME: The name of the AWS region to use.
         - AWS_ACCESS_KEY_ID: The AWS access key ID.
@@ -89,10 +90,9 @@ class BedrockAPIClient(ModelClient):
         self.generator = Generator(
             model_client=BedrockAPIClient(),
             model_kwargs={
-                "modelId": "anthropic.claude-3-sonnet-20240229-v1:0",
-                "inferenceConfig": {
-                    "temperature": 0.8
-                }
+                "model": "mistral.mistral-7b-instruct-v0:2",
+                "temperature": 0.8,
+                "max_tokens": 100
             }, template=template
         )
 
@@ -108,8 +108,8 @@ class BedrockAPIClient(ModelClient):
 
     def __init__(
         self,
-        aws_profile_name="default",
-        aws_region_name="us-west-2",  # Use a supported default region
+        aws_profile_name=None,
+        aws_region_name=None,
         aws_access_key_id=None,
         aws_secret_access_key=None,
         aws_session_token=None,
@@ -132,6 +132,12 @@ class BedrockAPIClient(ModelClient):
         self.chat_completion_parser = (
             chat_completion_parser or get_first_message_content
         )
+        self.inference_parameters = [
+            "maxTokens",
+            "temperature",
+            "topP",
+            "stopSequences",
+        ]
 
     def init_sync_client(self):
         """
@@ -224,21 +230,70 @@ class BedrockAPIClient(ModelClient):
             total_tokens=usage["totalTokens"],
         )
 
-    def list_models(self):
+    def list_models(self, **kwargs):
         # Initialize Bedrock client (not runtime)
+        # Reference: https://docs.aws.amazon.com/bedrock/latest/APIReference/API_ListFoundationModels.html
 
         try:
-            response = self._client.list_foundation_models()
-            models = response.get("models", [])
+            response = self._client.list_foundation_models(**kwargs)
+            models = response.get("modelSummaries", [])
             for model in models:
                 print(f"Model ID: {model['modelId']}")
-                print(f"  Name: {model['name']}")
-                print(f"  Description: {model['description']}")
-                print(f"  Provider: {model['provider']}")
+                print(f"  Name: {model['modelName']}")
+                print(f"  Model ARN: {model['modelArn']}")
+                print(f"  Provider: {model['providerName']}")
+                print(f"  Input: {model['inputModalities']}")
+                print(f"  Output: {model['outputModalities']}")
+                print(f"  InferenceTypesSupported: {model['inferenceTypesSupported']}")
                 print("")
 
         except Exception as e:
             print(f"Error listing models: {e}")
+
+    def _validate_and_process_config_keys(self, api_kwargs: Dict):
+        """
+        Validate and process the model ID in API kwargs.
+
+        :param api_kwargs: Dictionary of API keyword arguments
+        :raises KeyError: If 'model' key is missing
+        """
+        if "model" in api_kwargs:
+            api_kwargs["modelId"] = api_kwargs.pop("model")
+        else:
+            raise KeyError("The required key 'model' is missing in model_kwargs.")
+
+        # In .converse() `maxTokens`` is the key for maximum tokens limit
+        if "max_tokens" in api_kwargs:
+            api_kwargs["maxTokens"] = api_kwargs.pop("max_tokens")
+
+        return api_kwargs
+
+    def _separate_parameters(self, api_kwargs: Dict) -> tuple:
+        """
+        Separate inference configuration and additional model request fields.
+
+        :param api_kwargs: Dictionary of API keyword arguments
+        :return: Tuple of (inference_config, additional_model_request_fields)
+        """
+        inference_config = {}
+        additional_model_request_fields = {}
+        keys_to_remove = set()
+        excluded_keys = {"modelId"}
+
+        # Categorize parameters
+        for key, value in list(api_kwargs.items()):
+            if key in self.inference_parameters:
+                inference_config[key] = value
+                keys_to_remove.add(key)
+            elif key not in excluded_keys:
+                additional_model_request_fields[key] = value
+                keys_to_remove.add(key)
+
+        # Remove categorized keys from api_kwargs
+        for key in keys_to_remove:
+            api_kwargs.pop(key, None)
+
+        return api_kwargs, inference_config, additional_model_request_fields
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -252,9 +307,19 @@ class BedrockAPIClient(ModelClient):
         """
         api_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
+            # Validate and process model ID
+            api_kwargs = self._validate_and_process_config_keys(api_kwargs)
+
+            # Separate inference config and additional model request fields
+            api_kwargs, inference_config, additional_model_request_fields = (
+                self._separate_parameters(api_kwargs)
+            )
+
             api_kwargs["messages"] = [
                 {"role": "user", "content": [{"text": input}]},
             ]
+            api_kwargs["inferenceConfig"] = inference_config
+            api_kwargs["additionalModelRequestFields"] = additional_model_request_fields
         else:
             raise ValueError(f"Model type {model_type} not supported")
         return api_kwargs
