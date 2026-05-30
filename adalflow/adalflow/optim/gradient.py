@@ -91,9 +91,8 @@ class Gradient(DataClass):
         self.from_response_id = from_response.id
         self.to_pred_id = to_pred.id
         self.score = score
-        self.data_id = data_id
-        if self.data_id is None:
-            raise ValueError("The data_id should not be None.")
+        # Use provided data_id or generate a default one to prevent tutorial errors
+        self.data_id = data_id or f"gradient_{self.id}"
         self.data = data
         self.order = None
 
