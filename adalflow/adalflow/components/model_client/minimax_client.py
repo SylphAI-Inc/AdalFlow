@@ -16,8 +16,8 @@ This client extends :class:`OpenAIClient` and customizes:
   - The base URL to ``https://api.minimax.io/v1``
   - The API key environment variable to ``MINIMAX_API_KEY``
 
-Available models include ``MiniMax-M2.7``, ``MiniMax-M2.5``, and ``MiniMax-M2.5-highspeed``
-(204K context window).
+Available models include ``MiniMax-M3`` (default; 512K context, up to 128K output, image input),
+``MiniMax-M2.7``, and ``MiniMax-M2.7-highspeed``.
 
 References:
   - To obtain your API key, sign up at: https://www.minimaxi.com/
@@ -36,7 +36,7 @@ References:
     generator = Generator(
         model_client=MiniMaxClient(),
         model_kwargs={
-            "model": "MiniMax-M2.7",
+            "model": "MiniMax-M3",
             "temperature": 0.7,
             "stream": False,
         }

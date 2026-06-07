@@ -38,7 +38,7 @@ class TestMiniMaxClient(unittest.IsolatedAsyncioTestCase):
 
         self.api_kwargs = {
             "input": "What is the meaning of life?",
-            "model": "MiniMax-M2.7",
+            "model": "MiniMax-M3",
         }
 
     def test_minimax_client_init(self):
@@ -173,7 +173,7 @@ class TestMiniMaxClient(unittest.IsolatedAsyncioTestCase):
             gen = Generator(
                 model_client=client,
                 model_kwargs={
-                    "model": "MiniMax-M2.7",
+                    "model": "MiniMax-M3",
                     "temperature": 0.7,
                     "max_tokens": 1000,
                 },
@@ -198,7 +198,7 @@ class TestMiniMaxClient(unittest.IsolatedAsyncioTestCase):
             api_kwargs = client.convert_inputs_to_api_kwargs(
                 input="Hello, world!",
                 model_kwargs={
-                    "model": "MiniMax-M2.7",
+                    "model": "MiniMax-M3",
                     "temperature": 0.7,
                 },
                 model_type=ModelType.LLM,
@@ -207,27 +207,27 @@ class TestMiniMaxClient(unittest.IsolatedAsyncioTestCase):
             # Verify the structure for Response API
             self.assertIn("input", api_kwargs)
             self.assertIn("model", api_kwargs)
-            self.assertEqual(api_kwargs["model"], "MiniMax-M2.7")
+            self.assertEqual(api_kwargs["model"], "MiniMax-M3")
             self.assertEqual(api_kwargs["temperature"], 0.7)
 
             # Verify input content
             self.assertEqual(api_kwargs["input"], "Hello, world!")
 
-    def test_minimax_convert_inputs_m25_highspeed(self):
-        """Test input conversion with MiniMax-M2.5-highspeed model."""
+    def test_minimax_convert_inputs_m27_highspeed(self):
+        """Test input conversion with MiniMax-M2.7-highspeed model."""
         with patch("os.getenv", side_effect=getenv_side_effect):
             client = MiniMaxClient(api_key="fake_api_key")
 
             api_kwargs = client.convert_inputs_to_api_kwargs(
                 input="Summarize this text.",
                 model_kwargs={
-                    "model": "MiniMax-M2.5-highspeed",
+                    "model": "MiniMax-M2.7-highspeed",
                     "temperature": 0.5,
                 },
                 model_type=ModelType.LLM,
             )
 
-            self.assertEqual(api_kwargs["model"], "MiniMax-M2.5-highspeed")
+            self.assertEqual(api_kwargs["model"], "MiniMax-M2.7-highspeed")
             self.assertEqual(api_kwargs["temperature"], 0.5)
 
     def test_minimax_from_dict_to_dict(self):
