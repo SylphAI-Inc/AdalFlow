@@ -50,6 +50,11 @@ DeepSeekClient = LazyImport(
     OptionalPackages.OPENAI,
 )
 
+AtlasCloudClient = LazyImport(
+    "adalflow.components.model_client.atlascloud_client.AtlasCloudClient",
+    OptionalPackages.OPENAI,
+)
+
 MistralClient = LazyImport(
     "adalflow.components.model_client.mistral_client.MistralClient",
     OptionalPackages.MISTRAL,
@@ -119,6 +124,7 @@ __all__ = [
     "OllamaClient",
     "TogetherClient",
     "DeepSeekClient",
+    "AtlasCloudClient",
     "MistralClient",
     "XAIClient",
     "FireworksClient",
