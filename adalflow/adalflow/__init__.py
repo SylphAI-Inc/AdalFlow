@@ -71,6 +71,7 @@ from adalflow.components.model_client import (
     CohereAPIClient,
     BedrockAPIClient,
     DeepSeekClient,
+    AtlasCloudClient,
     TogetherClient,
     AnthropicAPIClient,
 )
@@ -149,6 +150,7 @@ __all__ = [
     "GoogleGenAIClient",
     "GroqAPIClient",
     "DeepSeekClient",
+    "AtlasCloudClient",
     "OllamaClient",
     "TransformersClient",
     "AnthropicAPIClient",
