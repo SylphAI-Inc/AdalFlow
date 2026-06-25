@@ -98,6 +98,7 @@ class ModelClientType:
             'OPENAI': ('adalflow.components.model_client', 'OpenAIClient'),
             'GOOGLE_GENAI': ('adalflow.components.model_client', 'GoogleGenAIClient'),
             'OLLAMA': ('adalflow.components.model_client', 'OllamaClient'),
+            'TWELVELABS': ('adalflow.components.model_client', 'TwelveLabsClient'),
         }
 
         if name in client_mapping:

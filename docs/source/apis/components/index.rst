@@ -24,6 +24,8 @@ ModelClient
 
    components.model_client.ollama_client
 
+   components.model_client.twelvelabs_client
+
    components.model_client.utils
 
 
