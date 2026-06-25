@@ -3,12 +3,25 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock, AsyncMock
 
+import pytest
+
 from adalflow.core.types import ModelType, EmbedderOutput, GeneratorOutput
-from adalflow.components.model_client.twelvelabs_client import (
-    TwelveLabsClient,
-    DEFAULT_EMBEDDER_MODEL,
-    DEFAULT_LLM_MODEL,
-)
+
+# twelvelabs is an optional dependency (extras = ["twelvelabs"]); importing the
+# client hard-fails via safe_import when the SDK is absent. CI runs a plain
+# `poetry install` without extras, so skip this whole module rather than error
+# at collection time.
+try:
+    from adalflow.components.model_client.twelvelabs_client import (
+        TwelveLabsClient,
+        DEFAULT_EMBEDDER_MODEL,
+        DEFAULT_LLM_MODEL,
+    )
+except ImportError:
+    pytest.skip(
+        "twelvelabs SDK not installed; install with the 'twelvelabs' extra to run these tests",
+        allow_module_level=True,
+    )
 
 
 def _fake_embedding_response(vec, model_name=DEFAULT_EMBEDDER_MODEL):
