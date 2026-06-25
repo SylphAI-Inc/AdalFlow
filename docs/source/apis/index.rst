@@ -54,6 +54,7 @@ Functional components like model client, retriever, agent, local data processing
    components.model_client.groq_client
    components.model_client.openai_client
    components.model_client.transformers_client
+   components.model_client.twelvelabs_client
    components.model_client.utils
 
    components.data_process.data_components

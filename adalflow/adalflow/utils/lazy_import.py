@@ -52,6 +52,10 @@ class OptionalPackages(Enum):
         "Please install transformers with: pip install transformers",
     )
     COHERE = ("cohere", "Please install cohere with: pip install cohere")
+    TWELVELABS = (
+        "twelvelabs",
+        "Please install twelvelabs with: pip install twelvelabs",
+    )
     OLLAMA = ("ollama", "Please install ollama with: pip install ollama")
     # AWS
     BOTO3 = (

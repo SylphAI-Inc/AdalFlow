@@ -32,6 +32,10 @@ AnthropicAPIClient = LazyImport(
     "adalflow.components.model_client.anthropic_client.AnthropicAPIClient",
     OptionalPackages.ANTHROPIC,
 )
+TwelveLabsClient = LazyImport(
+    "adalflow.components.model_client.twelvelabs_client.TwelveLabsClient",
+    OptionalPackages.TWELVELABS,
+)
 BedrockAPIClient = LazyImport(
     "adalflow.components.model_client.bedrock_client.BedrockAPIClient",
     OptionalPackages.BOTO3,
@@ -124,6 +128,7 @@ __all__ = [
     "FireworksClient",
     "SambaNovaClient",
     "AzureAIClient",
+    "TwelveLabsClient",
     # Utils functions
     "process_images_for_response_api",
     "format_content_for_response_api",
