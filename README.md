@@ -235,6 +235,10 @@ async for event in streaming_result.stream_events():
 
 _Set your `OPENAI_API_KEY` environment variable to run these examples._
 
+_Using the local (Hugging Face `transformers`) model clients instead of a hosted API? See
+[AGENTS.md](./AGENTS.md) for install requirements and measured GPU behavior on
+Turing-class (e.g. Tesla T4) hardware._
+
 **Try the full Agent tutorial in Colab:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SylphAI-Inc/AdalFlow/blob/main/notebooks/agents/agent_tutorial.ipynb)
 
 <!-- Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
