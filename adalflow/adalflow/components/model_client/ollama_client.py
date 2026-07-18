@@ -367,8 +367,15 @@ class OllamaClient(ModelClient):
         Pull the embedding from response['embedding'] and store it Embedding dataclass
         """
         try:
-            embeddings = Embedding(embedding=response["embedding"], index=0)
-            return EmbedderOutput(data=[embeddings])
+            if "embedding" in response:
+                # results from legacy `embeddings` api
+                embeddings = [Embedding(embedding=response["embedding"], index=0)]
+            else:
+                embeddings = [
+                    Embedding(embedding=embed, index=i)
+                    for i, embed in enumerate(response["embeddings"])
+                ]
+            return EmbedderOutput(data=embeddings)
         except Exception as e:
             log.error(f"Error parsing the embedding response: {e}")
             return EmbedderOutput(data=[], error=str(e), raw_response=response)
@@ -380,7 +387,6 @@ class OllamaClient(ModelClient):
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""Convert the input and model_kwargs to api_kwargs for the Ollama SDK client."""
-        # TODO: ollama will support batch embedding in the future: https://ollama.com/blog/embedding-models
         self.generate = False  # reset generate to False
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
@@ -388,9 +394,8 @@ class OllamaClient(ModelClient):
                 final_model_kwargs["prompt"] = input
                 return final_model_kwargs
             else:
-                raise ValueError(
-                    "Ollama does not support batch embedding yet. It only accepts a single string for input for now. Make sure you are not passing a list of strings"
-                )
+                final_model_kwargs["input"] = input
+            return final_model_kwargs
         elif model_type == ModelType.LLM:
             if input is not None and input != "":
                 # check if "generate" is in model_kwargs, and if it is set to True, then we use generate api
@@ -426,7 +431,10 @@ class OllamaClient(ModelClient):
         if self.sync_client is None:
             raise RuntimeError("Sync client is not initialized")
         if model_type == ModelType.EMBEDDER:
-            return self.sync_client.embeddings(**api_kwargs)
+            if "prompt" in api_kwargs:
+                return self.sync_client.embeddings(**api_kwargs)
+            else:
+                return self.sync_client.embed(**api_kwargs)
         if model_type == ModelType.LLM:
             if "generate" in api_kwargs and api_kwargs["generate"]:
                 # remove generate from api_kwargs
@@ -452,7 +460,11 @@ class OllamaClient(ModelClient):
         if "model" not in api_kwargs:
             raise ValueError("model must be specified")
         if model_type == ModelType.EMBEDDER:
-            return await self.async_client.embeddings(**api_kwargs)
+            if "prompt" in api_kwargs:
+                # using deprecated api for backward compatibility
+                return await self.async_client.embeddings(**api_kwargs)
+            else:
+                return await self.async_client.embed(**api_kwargs)
         if model_type == ModelType.LLM: # in default we use chat 
             # create a message from the input
             if "generate" in api_kwargs and api_kwargs["generate"]:
