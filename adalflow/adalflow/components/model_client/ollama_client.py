@@ -361,7 +361,7 @@ class OllamaClient(ModelClient):
             return parse_chat_messsage(completion)
 
     def parse_embedding_response(
-        self, response: Dict[str, List[float]]
+        self, response: Dict[str, Union[List[float], List[List[float]]]]
     ) -> EmbedderOutput:
         r"""Parse the embedding response to a structure AdalFlow components can understand.
         Pull the embedding from response['embedding'] and store it Embedding dataclass

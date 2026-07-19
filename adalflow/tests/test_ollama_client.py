@@ -71,7 +71,6 @@ class TestOllamaModelClient(unittest.TestCase):
 
     def test_ollama_embedding_client(self):
         client = OllamaClient()
-        ollama_client = Mock(spec=client)
         print("Testing ollama embedding client")
 
         # run the model
@@ -87,10 +86,14 @@ class TestOllamaModelClient(unittest.TestCase):
             "prompt": "Welcome",
             "model": "jina/jina-embeddings-v2-base-en:latest",
         }
-
-        output = ollama_client.call(
-            api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
-        ).return_value = {"embedding": [-0.7391586899757385]}
+        with patch.object(
+            client.sync_client,
+            "embeddings",
+            return_value={"embedding": [-0.7391586899757385]},
+        ):
+            output = client.call(
+                api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
+            )
         assert output == {"embedding": [-0.7391586899757385]}
 
         assert client.parse_embedding_response(output) == EmbedderOutput(
@@ -104,7 +107,6 @@ class TestOllamaModelClient(unittest.TestCase):
             self.skipTest("ollama version below `0.4.0`")
 
         client = OllamaClient()
-        mock_client = Mock(client)
 
         # run the model
         kwargs = {
@@ -120,9 +122,12 @@ class TestOllamaModelClient(unittest.TestCase):
             "model": "jina/jina-embeddings-v2-base-en:latest",
         }
 
-        output = mock_client.call(
-            api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
-        ).return_value = {"embeddings": [[0.1], [0.2]]}
+        with patch.object(
+                client.sync_client,
+                "embed",
+                return_value={"embeddings": [[0.1], [0.2]]},
+        ):
+            output = client.call(api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER)
         assert output == {"embeddings": [[0.1], [0.2]]}
 
         embedder_output = client.parse_embedding_response(response=output)
