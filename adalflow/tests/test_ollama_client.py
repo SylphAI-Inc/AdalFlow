@@ -1,11 +1,9 @@
 import unittest
 import asyncio
-from unittest.mock import Mock, AsyncMock, MagicMock, patch
-from adalflow.core.types import ModelType, GeneratorOutput, Function
+from unittest.mock import Mock, AsyncMock, patch
+from adalflow.core.types import ModelType, GeneratorOutput, Function, Embedding, EmbedderOutput
 from adalflow.components.model_client.ollama_client import OllamaClient, extract_ollama_tool_calls
-from typing import AsyncGenerator, Generator
-from ollama import ChatResponse, Message
-from types import SimpleNamespace
+from ollama import Message
 
 # Create mock Ollama types that behave like the real ones
 # These simulate the actual Ollama API response objects
@@ -70,30 +68,72 @@ class TestOllamaModelClient(unittest.TestCase):
         assert output == {"message": "Hello"}
 
     def test_ollama_embedding_client(self):
-        ollama_client = Mock(spec=OllamaClient())
+        client = OllamaClient()
         print("Testing ollama embedding client")
 
         # run the model
         kwargs = {
             "model": "jina/jina-embeddings-v2-base-en:latest",
         }
-        api_kwargs = ollama_client.convert_inputs_to_api_kwargs(
+        api_kwargs = client.convert_inputs_to_api_kwargs(
             input="Welcome",
             model_kwargs=kwargs,
             model_type=ModelType.EMBEDDER,
-        ).return_value = {
-            "prompt": "Welcome",
-            "model": "jina/jina-embeddings-v2-base-en:latest",
-        }
+        )
         assert api_kwargs == {
             "prompt": "Welcome",
             "model": "jina/jina-embeddings-v2-base-en:latest",
         }
-
-        output = ollama_client.call(
-            api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
-        ).return_value = {"embedding": [-0.7391586899757385]}
+        with patch.object(
+            client.sync_client,
+            "embeddings",
+            return_value={"embedding": [-0.7391586899757385]},
+        ):
+            output = client.call(
+                api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
+            )
         assert output == {"embedding": [-0.7391586899757385]}
+
+        assert client.parse_embedding_response(output) == EmbedderOutput(
+            data=[Embedding(embedding=[-0.7391586899757385], index=0)]
+        )
+
+
+    def test_ollama_embed_client(self):
+        import ollama
+        if not hasattr(ollama, "embed"):
+            self.skipTest("ollama version below `0.4.0`")
+
+        client = OllamaClient()
+
+        # run the model
+        kwargs = {
+            "model": "jina/jina-embeddings-v2-base-en:latest",
+        }
+        api_kwargs = client.convert_inputs_to_api_kwargs(
+            input=["Welcome"] * 2,
+            model_kwargs=kwargs,
+            model_type=ModelType.EMBEDDER,
+        )
+        assert api_kwargs == {
+            "input": ["Welcome"] * 2,
+            "model": "jina/jina-embeddings-v2-base-en:latest",
+        }
+
+        with patch.object(
+                client.sync_client,
+                "embed",
+                return_value={"embeddings": [[0.1], [0.2]]},
+        ):
+            output = client.call(api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER)
+        assert output == {"embeddings": [[0.1], [0.2]]}
+
+        embedder_output = client.parse_embedding_response(response=output)
+
+        assert embedder_output == EmbedderOutput(data=[
+            Embedding(embedding=[0.1], index=0),
+            Embedding(embedding=[0.2], index=1),
+        ])
 
     def test_sync_streaming_chat(self):
         """Test synchronous streaming with chat API"""
