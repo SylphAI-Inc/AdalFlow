@@ -1,11 +1,9 @@
 import unittest
 import asyncio
-from unittest.mock import Mock, AsyncMock, MagicMock, patch
+from unittest.mock import Mock, AsyncMock, patch
 from adalflow.core.types import ModelType, GeneratorOutput, Function, Embedding, EmbedderOutput
 from adalflow.components.model_client.ollama_client import OllamaClient, extract_ollama_tool_calls
-from typing import AsyncGenerator, Generator
-from ollama import ChatResponse, Message
-from types import SimpleNamespace
+from ollama import Message
 
 # Create mock Ollama types that behave like the real ones
 # These simulate the actual Ollama API response objects
