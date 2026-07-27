@@ -256,6 +256,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         output: "GeneratorOutput" = None,
     ) -> Tuple[Dict[str, Callable], List[str]]:
 
+        output_mapping: Dict[str, Callable] = {}
+        output_fields: List[str] = []
+
         if (
             output.data
             and isinstance(output.data, DataClass)
