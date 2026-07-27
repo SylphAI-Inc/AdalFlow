@@ -1032,6 +1032,15 @@ class OpenAIClient(ModelClient):
         #         self.chat_completion_parser = self.non_streaming_chat_completion_parser
         #         return self.sync_client.chat.completions.create(**api_kwargs)
         elif model_type == ModelType.LLM_REASONING or model_type == ModelType.LLM:
+            # Reasoning models (o1, o3, o4 series) do not support certain parameters
+            # in the Responses API. Strip them to avoid BadRequestError.
+            model_name = api_kwargs.get("model", "")
+            if model_name and any(model_name.startswith(prefix) for prefix in ("o1", "o3", "o4")):
+                for unsupported in ("frequency_penalty", "presence_penalty", "temperature"):
+                    if unsupported in api_kwargs:
+                        log.debug(f"Removing unsupported parameter '{unsupported}' for reasoning model '{model_name}'")
+                        api_kwargs.pop(unsupported)
+
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("streaming call")
                 self.response_parser = (
@@ -1087,6 +1096,15 @@ class OpenAIClient(ModelClient):
         #         # setting response parser as async non-streaming parser for Response API
         #         return await self.async_client.responses.create(**api_kwargs)
         elif model_type == ModelType.LLM or model_type == ModelType.LLM_REASONING:
+            # Reasoning models (o1, o3, o4 series) do not support certain parameters
+            # in the Responses API. Strip them to avoid BadRequestError.
+            model_name = api_kwargs.get("model", "")
+            if model_name and any(model_name.startswith(prefix) for prefix in ("o1", "o3", "o4")):
+                for unsupported in ("frequency_penalty", "presence_penalty", "temperature"):
+                    if unsupported in api_kwargs:
+                        log.debug(f"Removing unsupported parameter '{unsupported}' for reasoning model '{model_name}'")
+                        api_kwargs.pop(unsupported)
+
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("async streaming call")
                 self.response_parser = (
