@@ -1036,7 +1036,7 @@ class OpenAIClient(ModelClient):
             # in the Responses API. Strip them to avoid BadRequestError.
             model_name = api_kwargs.get("model", "")
             if model_name and any(model_name.startswith(prefix) for prefix in ("o1", "o3", "o4")):
-                for unsupported in ("frequency_penalty", "presence_penalty", "temperature"):
+                for unsupported in ("frequency_penalty", "presence_penalty", "temperature", "top_p"):
                     if unsupported in api_kwargs:
                         log.debug(f"Removing unsupported parameter '{unsupported}' for reasoning model '{model_name}'")
                         api_kwargs.pop(unsupported)
@@ -1100,7 +1100,7 @@ class OpenAIClient(ModelClient):
             # in the Responses API. Strip them to avoid BadRequestError.
             model_name = api_kwargs.get("model", "")
             if model_name and any(model_name.startswith(prefix) for prefix in ("o1", "o3", "o4")):
-                for unsupported in ("frequency_penalty", "presence_penalty", "temperature"):
+                for unsupported in ("frequency_penalty", "presence_penalty", "temperature", "top_p"):
                     if unsupported in api_kwargs:
                         log.debug(f"Removing unsupported parameter '{unsupported}' for reasoning model '{model_name}'")
                         api_kwargs.pop(unsupported)

@@ -261,6 +261,32 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(output.usage.input_tokens, 20)
         self.assertEqual(output.usage.total_tokens, 30)
 
+    def test_call_removes_top_p_for_reasoning_models(self):
+        mock_sync_client = Mock()
+        mock_sync_client.responses.create.return_value = self.mock_response
+        self.client.sync_client = mock_sync_client
+        api_kwargs = {"model": "o3-mini", "input": "Hello", "top_p": 0.9}
+
+        self.client.call(api_kwargs=api_kwargs, model_type=ModelType.LLM_REASONING)
+
+        mock_sync_client.responses.create.assert_called_once_with(
+            model="o3-mini", input="Hello"
+        )
+
+    async def test_acall_removes_top_p_for_reasoning_models(self):
+        mock_async_client = Mock()
+        mock_async_client.responses.create = AsyncMock(return_value=self.mock_response)
+        self.client.async_client = mock_async_client
+        api_kwargs = {"model": "o3-mini", "input": "Hello", "top_p": 0.9}
+
+        await self.client.acall(
+            api_kwargs=api_kwargs, model_type=ModelType.LLM_REASONING
+        )
+
+        mock_async_client.responses.create.assert_awaited_once_with(
+            model="o3-mini", input="Hello"
+        )
+
     @patch("adalflow.components.model_client.openai_client.AsyncOpenAI")
     async def test_acall_llm_with_vision(self, MockAsyncOpenAI):
         mock_async_client = AsyncMock()
