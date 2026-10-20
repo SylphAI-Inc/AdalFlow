@@ -17,6 +17,23 @@ from adalflow.optim.harness.ledger import (
     expected_rollouts,
     expected_sessions,
 )
+from adalflow.optim.harness.refine import (
+    PARALLEL,
+    SEQUENTIAL,
+    RefinementResult,
+    SelectionRecord,
+    StageRecord,
+    refine_harness,
+)
+from adalflow.optim.harness.roles import (
+    DOMAIN,
+    PROCEDURE,
+    BlindSelector,
+    EditProposal,
+    HarnessEditor,
+    RoleOutputError,
+    Selection,
+)
 from adalflow.optim.harness.probe import (
     HarnessExecutor,
     ProbeResult,
@@ -39,4 +56,17 @@ __all__ = [
     "ProbeResult",
     "RunnerExecutor",
     "render_trajectory",
+    "PARALLEL",
+    "SEQUENTIAL",
+    "RefinementResult",
+    "SelectionRecord",
+    "StageRecord",
+    "refine_harness",
+    "DOMAIN",
+    "PROCEDURE",
+    "BlindSelector",
+    "EditProposal",
+    "HarnessEditor",
+    "RoleOutputError",
+    "Selection",
 ]
