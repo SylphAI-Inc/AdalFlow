@@ -57,6 +57,9 @@ from adalflow.optim import (
     EngineConfig,
     GEPAConfig,
     OptimizeAnythingResult,
+    ModelROILedger,
+    FrozenPrefixMemorySnapshot,
+    DecisionCard,
 )
 
 from adalflow.optim.types import ParameterType
@@ -113,6 +116,9 @@ __all__ = [
     "EngineConfig",
     "GEPAConfig",
     "OptimizeAnythingResult",
+    "ModelROILedger",
+    "FrozenPrefixMemorySnapshot",
+    "DecisionCard",
     "setup_env",
     "get_logger",
     "Prompt",
