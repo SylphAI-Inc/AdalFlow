@@ -33,6 +33,17 @@ from adalflow.optim.harness.roles import (
     HarnessEditor,
     RoleOutputError,
     Selection,
+    VERDICTS,
+    EditVerdict,
+    Experience,
+    ExperienceReflector,
+    Reflection,
+)
+from adalflow.optim.harness.library import (
+    DomainRun,
+    ExperienceLibrary,
+    LibraryEntry,
+    run_domain,
 )
 from adalflow.optim.harness.probe import (
     HarnessExecutor,
@@ -69,4 +80,13 @@ __all__ = [
     "HarnessEditor",
     "RoleOutputError",
     "Selection",
+    "VERDICTS",
+    "EditVerdict",
+    "Experience",
+    "ExperienceReflector",
+    "Reflection",
+    "DomainRun",
+    "ExperienceLibrary",
+    "LibraryEntry",
+    "run_domain",
 ]

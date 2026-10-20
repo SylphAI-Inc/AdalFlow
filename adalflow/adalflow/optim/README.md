@@ -4,6 +4,25 @@ This directory contains optimization implementations for LLM task pipelines in A
 
 ## Recent Updates
 
+### Label-free Harness Optimization (`harness/`)
+
+Optimizes an agent's *harness* -- system prompt, guardrails, memory, tool guidance and
+on-demand skills -- with the model fixed and **no labels**, after Harness²
+([Xu et al., 2026](https://arxiv.org/abs/2610.14224)); independent implementation.
+
+- `Harness` (`harness/harness.py`): the editable components, validation, diffs,
+  `to_agent()` (skills load through a `load_skill` tool). Scripts and plugins are not
+  supported, so the optimizer never writes code that runs.
+- `refine_harness` (`harness/refine.py`): task-level propose -> probe -> compose ->
+  blind select, in `parallel` or `sequential` mode with budget `k`
+  (R = 4k rollouts, P = 3k editor sessions, asserted by `HarnessBudgetLedger`).
+- `HarnessEditor`, `BlindSelector`, `ExperienceReflector` (`harness/roles.py`): JSON
+  roles on `Generator`; the selector sees only anonymized deliverables.
+- `ExperienceLibrary` + `run_domain` (`harness/library.py`): adopted harnesses and
+  evidence-supported lessons per mode and domain, shown to later tasks.
+
+Demo: `python use_cases/harness_optimization/ledger_demo.py` (scripted, no credentials).
+
 ### Gumbel-Top-K Sampling and TSGD-M (November 2025)
 
 **New Features:**
