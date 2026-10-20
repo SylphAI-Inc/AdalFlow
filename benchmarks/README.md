@@ -10,6 +10,7 @@ Contributors are encouraged to write benchmarks for their code, in addition to u
 - `harness_optimization/` — label-free harness refinement on a tool-using domain, scored with labels on held-out tasks against prompt-only rewriting (real model).
 - `arc_bench/` — ARC-Bench-style smoke benchmark harness for autonomous research-agent prototypes.
 - `itinerary_roi_bench/` — Coordinator + worker itinerary planning smoke benchmark for `ModelROILedger` and `FrozenPrefixMemorySnapshot`.
+- `harness2_roi/` — Imports [Harness²](https://github.com/google-research/harness2) run outputs (measured Codex token usage, judged scores) into `ModelROILedger`.
 
 ## ARC-Bench-style smoke benchmark
 
