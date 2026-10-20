@@ -20,6 +20,9 @@ on-demand skills -- with the model fixed and **no labels**, after Harness²
   roles on `Generator`; the selector sees only anonymized deliverables.
 - `ExperienceLibrary` + `run_domain` (`harness/library.py`): adopted harnesses and
   evidence-supported lessons per mode and domain, shown to later tasks.
+- `HarnessOptimizer` (`harness/optimizer.py`): one entry point that configures every
+  role from one model setting; `from_agent`, `build_agent`, `refine`, `run_domain`,
+  `estimate`.
 
 Demo: `python use_cases/harness_optimization/ledger_demo.py` (scripted, no credentials).
 

@@ -19,22 +19,29 @@ Using it with your own agent:
 
 ```python
 from adalflow.components.model_client import OpenAIClient
-from adalflow.optim.harness import (
-    BlindSelector, Harness, HarnessEditor, RunnerExecutor, refine_harness,
-)
+from adalflow.optim.harness import HarnessOptimizer
 
-client, kw = OpenAIClient(), {"model": "gpt-4o-mini"}
-executor = RunnerExecutor(
-    agent_factory=lambda h: h.to_agent(model_client=client, model_kwargs=kw, tools=[...])
+opt = HarnessOptimizer(
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-4o-mini"},
+    base="You answer billing questions.",   # or a Harness
+    tools=[search],
+    k=2,                                     # R = 4k rollouts, P = 3k editor sessions
+    # editor_client=..., editor_model_kwargs=...  (a stronger model for the editor)
 )
-result = refine_harness(
-    task="...",
-    base=Harness(system_prompt="..."),
-    executor=executor,
-    editor=HarnessEditor(model_client=client, model_kwargs=kw),
-    selector=BlindSelector(model_client=client, model_kwargs=kw),
-    k=2,
-    mode="parallel",
-)
-print(result.best_harness.render_role_desc())
+print(opt.estimate(1).total_calls_max)       # upper bound on model calls
+result = opt.refine("...")
+result.best_harness.save("harness.json")
+agent = opt.build_agent(result.best_harness)
 ```
+
+Start from an agent you already have with `HarnessOptimizer.from_agent(agent)`: it
+takes the agent's `role_desc` (`## Guardrails` / `## Memory` / `## Tool guidance`
+sections are split out), model, tools and `max_steps`. `opt.run_domain(tasks, domain,
+library_dir)` refines several tasks in order and stores lessons for later tasks.
+Rollout agents are built with `use_cache=False` so repeated runs are independent; set
+`agent_kwargs={"use_cache": True}` only for deployment. Progress is logged at `INFO`
+by `adalflow.optim.harness.refine`.
+
+`refine_harness`, `run_domain`, `HarnessEditor`, `BlindSelector`, `ExperienceReflector`
+and `RunnerExecutor` stay available for custom setups (e.g. a non-Runner executor).

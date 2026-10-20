@@ -245,6 +245,45 @@ class Harness:
             skills=skills,
         )
 
+    @classmethod
+    def from_prompt(cls, text: str) -> "Harness":
+        """Parses a role description, splitting out ``## Guardrails``-style sections.
+
+        Inverse of ``render_role_desc`` for harnesses without skills; text without
+        those headings becomes the system prompt. A ``## Skills`` section cannot be
+        recovered (only the descriptions are rendered): load the saved JSON instead.
+        """
+        titles = {title: name for name, title in _SECTION_TITLES.items()}
+        heading = re.compile(
+            r"^## (%s|Skills)[ \t]*$" % "|".join(map(re.escape, titles)), re.M
+        )
+        parts = heading.split(text)
+        found: Dict[str, List[str]] = {"system_prompt": [parts[0].strip()]}
+        for title, body in zip(parts[1::2], parts[2::2]):
+            if title == "Skills":
+                raise ValueError(
+                    "role description has a Skills section; skill bodies are not in "
+                    "the prompt, so load the saved harness JSON instead"
+                )
+            found.setdefault(titles[title], []).append(body.strip())
+        return cls(
+            **{
+                name: "\n\n".join(t for t in texts if t)
+                for name, texts in found.items()
+            }
+        )
+
+    @classmethod
+    def from_agent(cls, agent: Any) -> "Harness":
+        """A harness from an existing ``Agent``'s string ``role_desc``."""
+        role_desc = getattr(agent, "role_desc", None)
+        if not isinstance(role_desc, str):
+            raise TypeError(
+                "agent.role_desc is a Prompt template; render it and use "
+                "Harness.from_prompt(text), or build the Harness directly"
+            )
+        return cls.from_prompt(role_desc)
+
     def copy(self) -> "Harness":
         return Harness.from_dict(self.to_dict())
 

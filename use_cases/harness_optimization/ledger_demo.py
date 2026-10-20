@@ -30,14 +30,9 @@ if str(PROJECT_ROOT / "adalflow") not in sys.path:
 from adalflow.core.model_client import ModelClient  # noqa: E402
 from adalflow.core.types import GeneratorOutput  # noqa: E402
 from adalflow.optim.harness import (  # noqa: E402
-    BlindSelector,
-    ExperienceLibrary,
-    ExperienceReflector,
     Harness,
-    HarnessEditor,
+    HarnessOptimizer,
     ProbeResult,
-    RunnerExecutor,
-    run_domain,
 )
 
 LEDGERS: Dict[str, List[float]] = {
@@ -54,11 +49,7 @@ def task_text(ledger_id: str) -> str:
 
 # ------------------------------------------------------------------ scripted roles
 class ScriptedClient(ModelClient):
-    """Deterministic replies computed from the rendered prompt."""
-
-    def __init__(self, reply):
-        super().__init__()
-        self.reply = reply
+    """Deterministic replies computed from the rendered prompt, for every role."""
 
     def convert_inputs_to_api_kwargs(
         self, input=None, model_kwargs={}, model_type=None
@@ -66,7 +57,12 @@ class ScriptedClient(ModelClient):
         return {"prompt": input}
 
     def call(self, api_kwargs={}, model_type=None):
-        return self.reply(api_kwargs["prompt"])
+        prompt = api_kwargs["prompt"]
+        if "## Deliverable A" in prompt:
+            return _selector_reply(prompt)
+        if "harness-refinement step" in prompt:
+            return _reflector_reply(prompt)
+        return _editor_reply(prompt)
 
     def parse_chat_completion(self, completion):
         return GeneratorOutput(data=None, raw_response=completion)
@@ -153,32 +149,25 @@ class ScriptedLedgerAgent:
         )
 
 
-def build(provider: str, model: str):
+def build(provider: str, model: str, k: int, mode: str) -> HarnessOptimizer:
     if provider == "scripted":
-        kw = {"model": "scripted"}
-        return (
-            ScriptedLedgerAgent(),
-            HarnessEditor(model_client=ScriptedClient(_editor_reply), model_kwargs=kw),
-            BlindSelector(
-                model_client=ScriptedClient(_selector_reply), model_kwargs=kw
-            ),
-            ExperienceReflector(
-                model_client=ScriptedClient(_reflector_reply), model_kwargs=kw
-            ),
+        return HarnessOptimizer(
+            editor_client=ScriptedClient(),
+            editor_model_kwargs={"model": "scripted"},
+            executor=ScriptedLedgerAgent(),
+            base=BASE,
+            k=k,
+            mode=mode,
         )
     from adalflow.components.model_client import OpenAIClient
 
-    client, kw = OpenAIClient(), {"model": model}
-    executor = RunnerExecutor(
-        agent_factory=lambda h: h.to_agent(
-            model_client=client, model_kwargs=kw, max_steps=5
-        )
-    )
-    return (
-        executor,
-        HarnessEditor(model_client=client, model_kwargs=kw),
-        BlindSelector(model_client=client, model_kwargs=kw),
-        ExperienceReflector(model_client=client, model_kwargs=kw),
+    return HarnessOptimizer(
+        model_client=OpenAIClient(),
+        model_kwargs={"model": model},
+        base=BASE,
+        agent_kwargs={"max_steps": 5},
+        k=k,
+        mode=mode,
     )
 
 
@@ -195,19 +184,14 @@ def main() -> None:
     parser.add_argument("--library", type=Path, help="Library dir (default: temp).")
     args = parser.parse_args()
 
-    executor, editor, selector, reflector = build(args.provider, args.model)
+    opt = build(args.provider, args.model, args.k, args.mode)
+    est = opt.estimate(len(LEDGERS), reflect=True)
+    print(f"at most {est.total_calls_max} model calls ({est.rollouts} rollouts)")
     with tempfile.TemporaryDirectory() as tmp:
-        library = ExperienceLibrary(args.library or Path(tmp), mode=args.mode)
-        runs = run_domain(
+        runs = opt.run_domain(
             [(tid, task_text(tid)) for tid in LEDGERS],
             "accounting",
-            BASE,
-            executor,
-            editor,
-            reflector,
-            library,
-            selector,
-            k=args.k,
+            args.library or Path(tmp),
         )
         report = []
         for run in runs:

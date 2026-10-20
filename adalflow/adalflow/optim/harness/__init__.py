@@ -45,6 +45,7 @@ from adalflow.optim.harness.library import (
     LibraryEntry,
     run_domain,
 )
+from adalflow.optim.harness.optimizer import CostEstimate, HarnessOptimizer
 from adalflow.optim.harness.probe import (
     HarnessExecutor,
     ProbeResult,
@@ -89,4 +90,6 @@ __all__ = [
     "ExperienceLibrary",
     "LibraryEntry",
     "run_domain",
+    "CostEstimate",
+    "HarnessOptimizer",
 ]

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import random
 import string
 from dataclasses import dataclass, field
@@ -45,6 +46,8 @@ __all__ = [
     "RefinementResult",
     "refine_harness",
 ]
+
+log = logging.getLogger(__name__)
 
 PARALLEL = "parallel"
 SEQUENTIAL = "sequential"
@@ -194,6 +197,7 @@ def _run_stage(
         )
         stages.append(record)
         ledger.session(label, attempts=attempt)
+        log.info("harness stage %s (%s): %s", label, role, record.changes)
         return harness
     stages.append(
         StageRecord(
@@ -207,6 +211,7 @@ def _run_stage(
         )
     )
     ledger.session(label, attempts=max_retries + 1, fell_back=True)
+    log.warning("harness stage %s (%s) fell back: %s", label, role, error)
     return current.copy()
 
 
@@ -219,6 +224,11 @@ def _probe(
 ) -> ProbeResult:
     run = executor.execute(harness, task, label)
     ledger.rollout(label)
+    log.info(
+        "harness probe %s: %s",
+        label,
+        "delivered" if run.delivered else (run.error or "no answer"),
+    )
     return run
 
 
