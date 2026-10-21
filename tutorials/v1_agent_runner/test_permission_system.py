@@ -12,18 +12,23 @@ from adalflow.core.prompt_builder import Prompt
 from adalflow.utils import setup_env, printc
 from adalflow.components.model_client.openai_client import OpenAIClient
 from adalflow.components.model_client.anthropic_client import AnthropicAPIClient
+import pytest
 
 # Setup environment
-setup_env()
+try:
+    setup_env()
+except FileNotFoundError:
+    # Skip setup_env if .env file doesn't exist for testing
+    pass
 
 # Model configurations
 claude_model = {
-    "model_client": AnthropicAPIClient(),
+    "model_client": AnthropicAPIClient(api_key="fake_anthropic_key"),
     "model_kwargs": {"model": "claude-3-opus-20240229", "max_tokens": 4096},
 }
 
 openai_model = {
-    "model_client": OpenAIClient(),
+    "model_client": OpenAIClient(api_key="fake_api_key"),
     "model_kwargs": {"model": "gpt-4o-mini", "max_tokens": 4096},
 }
 
@@ -59,6 +64,7 @@ def write_file(filename: str, content: str) -> ToolOutput:
     )
 
 
+@pytest.mark.asyncio
 async def test_sync_execution():
     """Test synchronous execution with permission checks."""
     print("\n=== Testing Synchronous Execution ===\n")
@@ -98,6 +104,7 @@ async def test_sync_execution():
     print(f"\nFinal result: {result}")
 
 
+@pytest.mark.asyncio
 async def test_async_execution():
     """Test asynchronous execution with permission checks."""
     print("\n=== Testing Asynchronous Execution ===\n")
@@ -135,6 +142,7 @@ async def test_async_execution():
     print(f"\nFinal result: {result}")
 
 
+@pytest.mark.asyncio
 async def test_streaming_execution():
     """Test streaming execution with permission events."""
     print("\n=== Testing Streaming Execution ===\n")
@@ -193,11 +201,12 @@ async def test_streaming_execution():
     print(f"Final answer: {streaming_result.answer}")
 
 
+@pytest.mark.asyncio
 async def test_auto_approval():
     """Test with auto approval mode."""
     print("\n=== Testing Auto Approval Mode ===\n")
 
-    from adalflow.core.cli_permission_handler import AutoApprovalHandler
+    from adalflow.apps.cli_permission_handler import AutoApprovalHandler
 
     # Create role description
     role_desc = Prompt(
@@ -232,6 +241,7 @@ async def test_auto_approval():
     print(f"\nFinal result: {result}")
 
 
+@pytest.mark.asyncio
 async def test_mixed_approval():
     """Test with mixed approval settings - some tools require approval, others don't."""
     print("\n=== Testing Mixed Approval Settings ===\n")
