@@ -29,6 +29,24 @@ Demo: `python use_cases/harness_optimization/ledger_demo.py` (scripted, no crede
 Held-out comparison against prompt-only rewriting, with real-model results:
 `benchmarks/harness_optimization/`.
 
+### LLM-guided Evolution (`evolution/`)
+
+Evolves programs, prompts or configs with an LLM that reads each candidate's
+evaluation feedback (failing cases, tracebacks, stderr) and rewrites it, after GEPA
+and OpenEvolve; independent implementation.
+
+- `evolve` (`evolution/loop.py`): select parent -> propose -> evaluate -> archive,
+  under a budget of evaluator calls; JSONL event log; stops on score, budget or stalls.
+- `Archive` (`evolution/archive.py`): per-instance Pareto parent selection (keeps
+  candidates that solve different cases) or greedy `best`.
+- `LLMProposer` (`evolution/proposer.py`): `Generator`-based, fenced-block output,
+  retries on unusable replies.
+- `PythonEvaluator` / `run_python` (`evolution/sandbox.py`): each candidate runs in a
+  separate process with a timeout, rlimits and no inherited environment. Process
+  isolation only, not a security boundary.
+
+Demo: `python use_cases/evolution/evolve_function_demo.py` (scripted model, real tests).
+
 ### Gumbel-Top-K Sampling and TSGD-M (November 2025)
 
 **New Features:**
