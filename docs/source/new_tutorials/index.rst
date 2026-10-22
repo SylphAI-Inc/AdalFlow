@@ -26,6 +26,12 @@ Tutorials
 
 .. toctree::
    :maxdepth: 1
+   :caption: Self-Improvement
+
+   Optimizing Agent Harnesses <harness_optimization>
+
+.. toctree::
+   :maxdepth: 1
    :caption: Others
 
    prompt
