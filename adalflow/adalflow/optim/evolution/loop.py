@@ -9,7 +9,7 @@ from pathlib import Path
 from random import Random
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from adalflow.optim.evolution.archive import PARETO, Archive
+from adalflow.optim.evolution.archive import PARETO, RESAMPLE, Archive
 from adalflow.optim.evolution.proposer import Proposer
 from adalflow.optim.evolution.types import Candidate, Evaluation, to_evaluation
 
@@ -28,6 +28,8 @@ class EvolutionResult:
     duplicates: int = 0
     stopped: str = "budget"  # "budget" | "stop_score" | "stalled"
     events: List[Dict[str, Any]] = field(default_factory=list)
+    # "seed" / "best" -> Evaluation on the held-out evaluator, when one was given.
+    holdout: Dict[str, Evaluation] = field(default_factory=dict)
 
     @property
     def improved(self) -> bool:
@@ -59,6 +61,7 @@ def evolve(
     stop_score: Optional[float] = None,
     max_stalls: int = 5,
     log_path: Union[str, Path, None] = None,
+    holdout: Optional[Callable[[str], Any]] = None,
 ) -> EvolutionResult:
     """Evolves ``seed`` with ``proposer`` under a budget of evaluator calls.
 
@@ -68,11 +71,16 @@ def evolve(
             Exceptions are recorded as failed evaluations.
         proposer: e.g. ``LLMProposer``.
         max_evaluations: total evaluator calls, seed included.
-        selection: ``"pareto"`` (per-instance, GEPA-style) or ``"best"`` (greedy).
+        selection: ``"pareto"`` (per-instance, GEPA-style), ``"best"`` (greedy) or
+            ``"resample"`` (every proposal from the seed, no inspiration: the
+            best-of-N baseline to compare a search strategy against).
         stop_score: stop once a candidate reaches this score.
         max_stalls: stop after this many proposals in a row that failed or repeated
             an earlier candidate.
         log_path: append one JSON line per event (candidate, failure, duplicate).
+        holdout: an evaluator on instances the search never sees. The seed and the
+            final best are scored on it after the search (not counted in
+            ``max_evaluations``), so overfitting to ``evaluate`` shows up as a gap.
     """
     if max_evaluations < 1:
         raise ValueError("max_evaluations must be >= 1")
@@ -120,7 +128,9 @@ def evolve(
             result.stopped = "stalled"
             break
         parent = archive.select_parent(rng, selection)
-        inspiration = archive.select_inspiration(rng, parent)
+        inspiration = (
+            None if selection == RESAMPLE else archive.select_inspiration(rng, parent)
+        )
         try:
             proposal = proposer.propose(parent, inspiration)
         except Exception as exc:  # model or parse failure: count it, try again
@@ -157,4 +167,20 @@ def evolve(
             result.stopped = "stop_score"
 
     result.best = archive.best()
+    if holdout is not None:
+        targets = {"seed": seed_candidate}
+        if result.best is not None:
+            targets["best"] = result.best
+        for name, candidate in targets.items():
+            result.holdout[name] = _evaluate(holdout, candidate.text)
+            ev = result.holdout[name]
+            record(
+                {
+                    "event": "holdout",
+                    "role": name,
+                    "id": candidate.id,
+                    "score": ev.score,
+                    "error": ev.error,
+                }
+            )
     return result

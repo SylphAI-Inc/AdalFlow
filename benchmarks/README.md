@@ -8,6 +8,7 @@ Contributors are encouraged to write benchmarks for their code, in addition to u
 
 - `optimize_anything/` — scaffolds for the `optimize_anything` API (heuristic string mutations, no LLM).
 - `harness_optimization/` — label-free harness refinement on a tool-using domain, scored with labels on held-out tasks against prompt-only rewriting (real model).
+- `evolution/` — `adalflow.optim.evolution` search strategies vs. a best-of-N baseline at equal budget, scored on held-out instances (real model).
 - `arc_bench/` — ARC-Bench-style smoke benchmark harness for autonomous research-agent prototypes.
 - `itinerary_roi_bench/` — Coordinator + worker itinerary planning smoke benchmark for `ModelROILedger` and `FrozenPrefixMemorySnapshot`.
 

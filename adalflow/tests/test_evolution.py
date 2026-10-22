@@ -20,6 +20,7 @@ from adalflow.optim.evolution import (
     Evaluation,
     LLMProposer,
     ProposalError,
+    RESAMPLE,
     PythonEvaluator,
     evolve,
     extract_candidate,
@@ -273,6 +274,49 @@ def test_evolve_records_evaluator_and_proposer_failures():
     assert res.best is None and res.proposal_failures == 2 and not res.improved
     with pytest.raises(ValueError):
         evolve(SEED, broken, proposer, max_evaluations=0)
+
+
+def test_resample_baseline_always_starts_from_the_seed():
+    # Without building on c1, the seed's feedback only ever leads to AVERAGED.
+    proposer, client = _proposer()
+    res = evolve(
+        SEED,
+        PythonEvaluator(EVALUATOR),
+        proposer,
+        max_evaluations=6,
+        selection=RESAMPLE,
+        max_stalls=2,
+    )
+    assert [c.parent_id for c in res.archive.candidates] == [None, "c0"]
+    assert res.best.text == AVERAGED and res.best.score == 0.75
+    assert res.stopped == "stalled" and res.duplicates == 2
+    assert all("Inspiration" not in p for p in client.prompts)
+    with pytest.raises(ValueError):
+        Archive().select_parent(Random(0), "nope")
+
+
+def test_holdout_scores_seed_and_best_outside_the_budget(tmp_path):
+    def holdout(text):
+        return 1.0 if "ValueError" in text else 0.5
+
+    proposer, _ = _proposer()
+    log_path = tmp_path / "run.jsonl"
+    res = evolve(
+        SEED,
+        PythonEvaluator(EVALUATOR),
+        proposer,
+        max_evaluations=6,
+        stop_score=1.0,
+        log_path=log_path,
+        holdout=holdout,
+    )
+    assert res.evaluations == 3
+    assert res.holdout["seed"].score == 0.5 and res.holdout["best"].score == 1.0
+    events = [json.loads(line) for line in log_path.read_text().splitlines()]
+    assert [(e["role"], e["id"]) for e in events if e["event"] == "holdout"] == [
+        ("seed", "c0"),
+        ("best", "c2"),
+    ]
 
 
 def test_sandbox_uses_the_current_interpreter():

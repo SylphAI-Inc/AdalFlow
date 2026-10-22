@@ -38,7 +38,10 @@ and OpenEvolve; independent implementation.
 - `evolve` (`evolution/loop.py`): select parent -> propose -> evaluate -> archive,
   under a budget of evaluator calls; JSONL event log; stops on score, budget or stalls.
 - `Archive` (`evolution/archive.py`): per-instance Pareto parent selection (keeps
-  candidates that solve different cases) or greedy `best`.
+  candidates that solve different cases), greedy `best`, or `resample` (always the
+  seed: a best-of-N baseline at the same budget).
+- `evolve(..., holdout=...)` scores the seed and the final best on held-out instances
+  after the search, so gains that do not generalize show up.
 - `LLMProposer` (`evolution/proposer.py`): `Generator`-based, fenced-block output,
   retries on unusable replies.
 - `PythonEvaluator` / `run_python` (`evolution/sandbox.py`): each candidate runs in a
@@ -46,6 +49,8 @@ and OpenEvolve; independent implementation.
   isolation only, not a security boundary.
 
 Demo: `python use_cases/evolution/evolve_function_demo.py` (scripted model, real tests).
+Strategy comparison with held-out scores and real-model results:
+`benchmarks/evolution/`.
 
 ### Gumbel-Top-K Sampling and TSGD-M (November 2025)
 

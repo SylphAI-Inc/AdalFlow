@@ -4,6 +4,9 @@ Pareto selection follows GEPA (Agrawal et al., 2025): a candidate is a possible 
 if it is the best on at least one instance and not dominated across instances, and it
 is sampled in proportion to how many instances it is best on. This keeps candidates
 that solve different cases alive instead of collapsing onto the mean-score leader.
+
+``RESAMPLE`` always returns the seed, so every proposal is an independent sample from
+it: a best-of-N baseline at the same evaluation budget.
 """
 
 from __future__ import annotations
@@ -13,10 +16,12 @@ from typing import Dict, List, Optional
 
 from adalflow.optim.evolution.types import Candidate
 
-__all__ = ["Archive", "PARETO", "BEST"]
+__all__ = ["Archive", "PARETO", "BEST", "RESAMPLE"]
 
 PARETO = "pareto"
 BEST = "best"
+RESAMPLE = "resample"
+STRATEGIES = (PARETO, BEST, RESAMPLE)
 _EPS = 1e-12
 
 
@@ -91,10 +96,12 @@ class Archive:
 
     def select_parent(self, rng: Random, strategy: str = PARETO) -> Candidate:
         """A parent to improve. With nothing evaluated yet, the latest candidate."""
-        if strategy not in (PARETO, BEST):
-            raise ValueError(f"strategy must be {PARETO!r} or {BEST!r}")
+        if strategy not in STRATEGIES:
+            raise ValueError(f"strategy must be one of {STRATEGIES}")
         if not self.candidates:
             raise ValueError("the archive is empty")
+        if strategy == RESAMPLE:
+            return self.candidates[0]
         if not self.evaluated():
             return self.candidates[-1]  # e.g. a seed that crashed: fix it first
         if strategy == BEST:

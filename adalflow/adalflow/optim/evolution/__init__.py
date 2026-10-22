@@ -6,7 +6,7 @@ are scored in a separate process (``PythonEvaluator``), in the spirit of OpenEvo
 Independent implementation.
 """
 
-from adalflow.optim.evolution.archive import BEST, PARETO, Archive
+from adalflow.optim.evolution.archive import BEST, PARETO, RESAMPLE, Archive
 from adalflow.optim.evolution.loop import EvolutionResult, evolve
 from adalflow.optim.evolution.proposer import (
     PROPOSE_TEMPLATE,
@@ -24,6 +24,7 @@ __all__ = [
     "Archive",
     "BEST",
     "PARETO",
+    "RESAMPLE",
     "EvolutionResult",
     "evolve",
     "PROPOSE_TEMPLATE",
