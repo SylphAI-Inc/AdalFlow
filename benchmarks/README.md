@@ -7,6 +7,7 @@ Contributors are encouraged to write benchmarks for their code, in addition to u
 ## Available benchmark areas
 
 - `optimize_anything/` — GEPA / optimize-anything style benchmark scaffolds.
+- `harness_optimization/` — label-free harness refinement on a tool-using domain, scored with labels on held-out tasks against prompt-only rewriting (real model).
 - `arc_bench/` — ARC-Bench-style smoke benchmark harness for autonomous research-agent prototypes.
 
 ## ARC-Bench-style smoke benchmark

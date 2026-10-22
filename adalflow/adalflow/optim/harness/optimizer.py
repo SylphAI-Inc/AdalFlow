@@ -10,7 +10,9 @@ or start from an agent you already have with ``HarnessOptimizer.from_agent(agent
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import statistics
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -21,7 +23,7 @@ from adalflow.optim.harness.harness import (
 )
 from adalflow.optim.harness.ledger import expected_rollouts, expected_sessions
 from adalflow.optim.harness.library import DomainRun, ExperienceLibrary, run_domain
-from adalflow.optim.harness.probe import HarnessExecutor, RunnerExecutor
+from adalflow.optim.harness.probe import HarnessExecutor, ProbeResult, RunnerExecutor
 from adalflow.optim.harness.refine import PARALLEL, RefinementResult, refine_harness
 from adalflow.optim.harness.roles import (
     BlindSelector,
@@ -29,7 +31,7 @@ from adalflow.optim.harness.roles import (
     HarnessEditor,
 )
 
-__all__ = ["CostEstimate", "HarnessOptimizer"]
+__all__ = ["CostEstimate", "HarnessEvaluation", "HarnessOptimizer"]
 
 # Agent settings carried over by ``from_agent`` (besides model, tools and role_desc).
 _AGENT_SETTINGS = ("max_steps", "answer_data_type", "is_thinking_model", "model_type")
@@ -54,6 +56,22 @@ class CostEstimate:
             + self.selector_calls_max
             + self.reflector_calls_max
         )
+
+
+@dataclass
+class HarnessEvaluation:
+    """Labeled scores of one harness: task id -> one score per repeat."""
+
+    scores: Dict[str, List[float]]
+    runs: Dict[str, List[ProbeResult]] = field(default_factory=dict)
+
+    @property
+    def mean(self) -> float:
+        """Mean over tasks of each task's mean score (tasks weigh equally)."""
+        return statistics.mean(statistics.mean(v) for v in self.scores.values())
+
+    def task_means(self) -> Dict[str, float]:
+        return {task: statistics.mean(v) for task, v in self.scores.items()}
 
 
 class HarnessOptimizer:
@@ -234,6 +252,42 @@ class HarnessOptimizer:
             include_existing=include_existing,
             always_on_cap=self.always_on_cap,
         )
+
+    def evaluate(
+        self,
+        harness: Optional[Harness],
+        tasks: Sequence[Tuple[str, str]],
+        score: Callable[[str, ProbeResult], float],
+        *,
+        repeats: int = 1,
+        workers: int = 1,
+    ) -> HarnessEvaluation:
+        """Scores ``harness`` on labeled ``(task_id, task_text)`` pairs.
+
+        Refinement never sees labels; this is the separate measurement step, e.g. on
+        held-out tasks, to check that a refined harness is actually better.
+        ``score(task_id, probe)`` returns a number (1.0 / 0.0 for exact answers).
+        Each task runs ``repeats`` times; ``workers`` > 1 runs rollouts in threads.
+        """
+        if repeats < 1:
+            raise ValueError("repeats must be >= 1")
+        harness = harness if harness is not None else self.base
+        jobs = [(task_id, text, i) for task_id, text in tasks for i in range(repeats)]
+
+        def run(job: Tuple[str, str, int]) -> ProbeResult:
+            task_id, text, i = job
+            return self.executor.execute(harness, text, f"{task_id}#{i}")
+
+        if workers > 1:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                probes = list(pool.map(run, jobs))
+        else:
+            probes = [run(job) for job in jobs]
+        result = HarnessEvaluation(scores={}, runs={})
+        for (task_id, _, _), probe in zip(jobs, probes):
+            result.scores.setdefault(task_id, []).append(float(score(task_id, probe)))
+            result.runs.setdefault(task_id, []).append(probe)
+        return result
 
     def estimate(self, n_tasks: int = 1, *, reflect: bool = False) -> CostEstimate:
         """Upper bounds on model calls for ``n_tasks`` (``reflect`` for run_domain)."""

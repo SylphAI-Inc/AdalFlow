@@ -129,3 +129,24 @@ def test_estimate_and_argument_checks():
         HarnessOptimizer()
     with pytest.raises(ValueError, match="executor"):
         HarnessOptimizer(editor_client=ScriptedClient(_one_model))
+
+
+@pytest.mark.parametrize("workers", [1, 3])
+def test_evaluate_scores_a_harness_on_labeled_tasks(workers):
+    opt, client = _optimizer()
+    want = f"Total: {sum(ROWS):.2f}"
+
+    def exact(task_id, probe):
+        return float(probe.answer == want)
+
+    tasks = [("a", TASK), ("b", TASK)]
+    base = opt.evaluate(None, tasks, exact, repeats=2, workers=workers)
+    assert base.scores == {"a": [0.0, 0.0], "b": [0.0, 0.0]} and base.mean == 0.0
+    fixed = opt.evaluate(
+        Harness(system_prompt="Keep signed amounts."), tasks, exact, repeats=2
+    )
+    assert fixed.mean == 1.0 and fixed.task_means() == {"a": 1.0, "b": 1.0}
+    assert sorted(p.label for p in fixed.runs["a"]) == ["a#0", "a#1"]
+    assert client.prompts == []  # measurement calls no optimization role
+    with pytest.raises(ValueError, match="repeats"):
+        opt.evaluate(None, tasks, exact, repeats=0)

@@ -22,9 +22,12 @@ on-demand skills -- with the model fixed and **no labels**, after Harness²
   evidence-supported lessons per mode and domain, shown to later tasks.
 - `HarnessOptimizer` (`harness/optimizer.py`): one entry point that configures every
   role from one model setting; `from_agent`, `build_agent`, `refine`, `run_domain`,
-  `estimate`.
+  `estimate`, and `evaluate` (labeled scoring on held-out tasks, kept separate from
+  the label-free refinement).
 
 Demo: `python use_cases/harness_optimization/ledger_demo.py` (scripted, no credentials).
+Held-out comparison against prompt-only rewriting, with real-model results:
+`benchmarks/harness_optimization/`.
 
 ### Gumbel-Top-K Sampling and TSGD-M (November 2025)
 
