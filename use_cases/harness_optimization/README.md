@@ -15,6 +15,19 @@ with deterministic stand-ins, so it demonstrates the mechanics only: base runs, 
 candidates, k compositions, blind selection, and a stored lesson that the second
 task's editor sees. It says nothing about how much a real model improves.
 
+`refine_existing_agent.py` is the end-to-end path with real models: start from an
+`Agent` whose system prompt is stale, `HarnessOptimizer.from_agent`, `estimate`,
+`refine` (no labels), save the refined harness, score base vs refined on held-out
+tasks with `evaluate`, and deploy with `build_agent`.
+
+```bash
+python use_cases/harness_optimization/refine_existing_agent.py \
+    --provider openai --agent-model gpt-4o-mini --editor-model gpt-4o
+```
+
+Tutorial: `docs/source/new_tutorials/harness_optimization.md`. Held-out benchmark:
+`benchmarks/harness_optimization/`.
+
 Using it with your own agent:
 
 ```python
