@@ -18,6 +18,14 @@ from .optimize_anything import (
     GEPAConfig,
     OptimizeAnythingResult,
 )
+from .model_roi_ledger import (
+    ModelROILedger,
+    FrozenPrefixMemorySnapshot,
+    DecisionCard,
+    DecisionOption,
+    InvocationTelemetry,
+    TaskModelSummary,
+)
 
 
 __all__ = [
@@ -44,6 +52,12 @@ __all__ = [
     "EngineConfig",
     "GEPAConfig",
     "OptimizeAnythingResult",
+    "ModelROILedger",
+    "FrozenPrefixMemorySnapshot",
+    "DecisionCard",
+    "DecisionOption",
+    "InvocationTelemetry",
+    "TaskModelSummary",
 ]
 
 for name in __all__:

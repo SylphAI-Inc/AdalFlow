@@ -8,6 +8,7 @@ Contributors are encouraged to write benchmarks for their code, in addition to u
 
 - `optimize_anything/` — GEPA / optimize-anything style benchmark scaffolds.
 - `arc_bench/` — ARC-Bench-style smoke benchmark harness for autonomous research-agent prototypes.
+- `itinerary_roi_bench/` — Coordinator + worker itinerary planning smoke benchmark for `ModelROILedger` and `FrozenPrefixMemorySnapshot`.
 
 ## ARC-Bench-style smoke benchmark
 
