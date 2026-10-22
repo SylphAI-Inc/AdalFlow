@@ -138,12 +138,15 @@ class PermissionManager:
         if not self.is_approval_required(tool_name):
             return True, func, None
 
-        # If approval is required but no callback is set, default to allow with warning
-        if not self.approval_callback:
+        # Approval is required but nobody can be asked: deny (fail closed).
+        # Match the error path below ("Default to deny on error for safety").
+        # Use callable() so falsy placeholders (None, "", 0) and non-callables
+        # cannot silently execute a require_approval=True tool.
+        if not callable(self.approval_callback):
             log.warning(
-                f"No approval callback set, allowing tool '{tool_name}' by default"
+                f"No approval callback set, denying tool '{tool_name}' that requires approval"
             )
-            return True, func, None
+            return False, None, None
 
         # Ensure to use the same id as the func
         request = FunctionRequest(id=func.id, tool_name=tool_name, tool=func)
