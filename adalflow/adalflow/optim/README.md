@@ -38,8 +38,16 @@ and OpenEvolve; independent implementation.
 - `evolve` (`evolution/loop.py`): select parent -> propose -> evaluate -> archive,
   under a budget of evaluator calls; JSONL event log; stops on score, budget or stalls.
 - `Archive` (`evolution/archive.py`): per-instance Pareto parent selection (keeps
-  candidates that solve different cases), greedy `best`, or `resample` (always the
-  seed: a best-of-N baseline at the same budget).
+  candidates that solve different cases), greedy `best`, `map_elites` (one elite per
+  behavior cell from a user `descriptor`, parents uniform over cells), or `resample`
+  (always the seed: a best-of-N baseline at the same budget).
+- `evolve(..., islands=k, migrate_every=m)`: sub-populations with periodic migration
+  of each island's best as the next island's inspiration.
+- `evolve(..., confirm=n)` for noisy evaluators: a candidate that beats the best on
+  its first score is re-evaluated with the incumbent to `1 + n` samples each, and
+  only fully sampled candidates can be the best. In simulation this mainly makes
+  the reported best score honest; it improves the true quality found only when the
+  noise is large relative to the gains (`benchmarks/evolution/noise_sim.py`).
 - `evolve(..., holdout=...)` scores the seed and the final best on held-out instances
   after the search, so gains that do not generalize show up.
 - `LLMProposer` (`evolution/proposer.py`): `Generator`-based, fenced-block output,

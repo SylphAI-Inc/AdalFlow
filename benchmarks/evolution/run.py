@@ -5,7 +5,9 @@
         --budget 12 --out runs/evolution_bench
 
 ``resample`` is the baseline: every proposal is an independent sample from the seed
-(best-of-N). ``pareto`` and ``best`` build on earlier candidates. Each run writes its
+(best-of-N). ``pareto`` and ``best`` build on earlier candidates; ``map_elites`` keeps
+one elite per behavior cell (tasks with a descriptor); ``islands`` is ``pareto`` on 3
+islands with migration every 4 proposals. Each run writes its
 event log to ``<out>/<task>-<strategy>-<repeat>.jsonl``; ``summary.json`` and
 ``summary.md`` hold the per-run numbers and the aggregate table. Requires an API key
 for the chosen provider; not run in CI. ``--check`` scores each task's seed on both
@@ -45,8 +47,21 @@ def make_client(provider: str):
     return OpenAIClient()
 
 
+# strategy name -> evolve() keyword arguments
+STRATEGIES: Dict[str, Dict[str, Any]] = {
+    "pareto": {"selection": "pareto"},
+    "best": {"selection": "best"},
+    "resample": {"selection": "resample"},
+    "map_elites": {"selection": "map_elites"},
+    "islands": {"selection": "pareto", "islands": 3, "migrate_every": 4},
+}
+
+
 def one_run(args, task_name: str, strategy: str, repeat: int) -> Dict[str, Any]:
     task = TASKS[task_name]
+    options = dict(STRATEGIES[strategy])
+    if task.descriptor is not None:
+        options["descriptor"] = task.descriptor
     proposer = LLMProposer(
         task.objective,
         model_client=make_client(args.provider),
@@ -59,12 +74,12 @@ def one_run(args, task_name: str, strategy: str, repeat: int) -> Dict[str, Any]:
         PythonEvaluator(task.search_evaluator, timeout=60),
         proposer,
         max_evaluations=args.budget,
-        selection=strategy,
         random_seed=repeat,
         stop_score=task.stop_score,
         max_stalls=args.budget,  # keep sampling to the full budget
         log_path=log_path,
         holdout=PythonEvaluator(task.holdout_evaluator, timeout=60),
+        **options,
     )
     curve, best = [], float("-inf")
     for c in res.archive.candidates:
@@ -79,6 +94,7 @@ def one_run(args, task_name: str, strategy: str, repeat: int) -> Dict[str, Any]:
         "stopped": res.stopped,
         "proposal_failures": res.proposal_failures,
         "duplicates": res.duplicates,
+        "cells": len(res.archive.elites()) if task.descriptor else None,
         "search_seed": res.seed.score,
         "search_best": res.best.score if res.best else None,
         "holdout_seed": res.holdout["seed"].score,
@@ -100,8 +116,8 @@ def _fmt(values: List[float]) -> str:
 def summarize(rows: List[Dict[str, Any]]) -> str:
     lines = [
         "| task | strategy | runs | search best | held-out seed | held-out best "
-        "| best generation | evals used |",
-        "|---|---|---|---|---|---|---|---|",
+        "| best generation | evals used | duplicates | cells |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     keys = sorted({(r["task"], r["strategy"]) for r in rows})
     for task, strategy in keys:
@@ -112,7 +128,9 @@ def summarize(rows: List[Dict[str, Any]]) -> str:
             f"| {_fmt([r['holdout_seed'] for r in group])} "
             f"| {_fmt([r['holdout_best'] for r in group])} "
             f"| {_fmt([r['best_generation'] for r in group])} "
-            f"| {_fmt([r['evaluations'] for r in group])} |"
+            f"| {_fmt([r['evaluations'] for r in group])} "
+            f"| {_fmt([r['duplicates'] for r in group])} "
+            f"| {_fmt([r['cells'] for r in group])} |"
         )
     lines.append("")
     lines.append("Mean [min, max] over runs.")
@@ -138,7 +156,10 @@ def main() -> None:
     parser.add_argument("--model")
     parser.add_argument("--tasks", nargs="+", default=sorted(TASKS), choices=TASKS)
     parser.add_argument(
-        "--strategies", nargs="+", default=["pareto", "best", "resample"]
+        "--strategies",
+        nargs="+",
+        default=["pareto", "best", "resample"],
+        choices=sorted(STRATEGIES),
     )
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--budget", type=int, default=12, help="evaluations per run")
@@ -150,6 +171,9 @@ def main() -> None:
         return check(args.tasks)
     if not (args.provider and args.model):
         parser.error("--provider and --model are required (or pass --check)")
+    for task in args.tasks:
+        if "map_elites" in args.strategies and TASKS[task].descriptor is None:
+            parser.error(f"task {task!r} has no descriptor for map_elites")
     args.out.mkdir(parents=True, exist_ok=True)
 
     jobs = [

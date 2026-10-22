@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, Optional
+import statistics
+from typing import Any, Dict, List, Optional, Tuple
 
-__all__ = ["Evaluation", "Candidate", "to_evaluation"]
+__all__ = ["Evaluation", "Candidate", "combine", "to_evaluation"]
 
 
 @dataclass
@@ -65,12 +66,47 @@ def to_evaluation(value: Any) -> Evaluation:
     )
 
 
+def combine(samples: List[Evaluation]) -> Evaluation:
+    """Averages repeated evaluations of one candidate (for noisy evaluators).
+
+    Failed samples are left out of the means; the feedback and other metrics are the
+    latest sample's. ``metrics`` gets ``samples`` (scored samples) and, with two or
+    more, ``score_sd``.
+    """
+    if not samples:
+        raise ValueError("no samples to combine")
+    if len(samples) == 1:
+        return samples[0]
+    ok = [s for s in samples if s.ok]
+    latest = samples[-1]
+    if not ok:
+        return latest
+    keys = sorted({k for s in ok for k in s.instance_scores})
+    instances = {}
+    for key in keys:
+        values = [s.instance_scores[key] for s in ok if key in s.instance_scores]
+        instances[key] = statistics.mean(values)
+    scores = [s.score for s in ok]
+    metrics = dict(latest.metrics)
+    metrics["samples"] = len(ok)
+    if len(scores) > 1:
+        metrics["score_sd"] = statistics.stdev(scores)
+    return Evaluation(
+        score=statistics.mean(scores),
+        instance_scores=instances,
+        feedback=latest.feedback if latest.ok else ok[-1].feedback,
+        metrics=metrics,
+    )
+
+
 @dataclass
 class Candidate:
     """One artifact in the archive.
 
     ``rationale`` is written by the proposer before the candidate is evaluated, so a
-    log of rationales never carries outcome annotations.
+    log of rationales never carries outcome annotations. ``evaluation`` is the mean
+    of ``samples`` when a candidate was evaluated more than once. ``island`` and
+    ``cell`` place it for island and MAP-Elites selection.
     """
 
     id: str
@@ -81,6 +117,19 @@ class Candidate:
     origin: str = "seed"
     rationale: str = ""
     evaluation: Optional[Evaluation] = None
+    samples: List[Evaluation] = field(default_factory=list)
+    island: int = 0
+    cell: Optional[Tuple[Any, ...]] = None
+
+    def add_sample(self, evaluation: Evaluation) -> None:
+        self.samples.append(evaluation)
+        self.evaluation = combine(self.samples)
+
+    @property
+    def n_samples(self) -> int:
+        if self.samples:
+            return len(self.samples)
+        return 1 if self.evaluation is not None else 0
 
     @property
     def ok(self) -> bool:

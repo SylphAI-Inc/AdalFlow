@@ -6,7 +6,13 @@ are scored in a separate process (``PythonEvaluator``), in the spirit of OpenEvo
 Independent implementation.
 """
 
-from adalflow.optim.evolution.archive import BEST, PARETO, RESAMPLE, Archive
+from adalflow.optim.evolution.archive import (
+    BEST,
+    MAP_ELITES,
+    PARETO,
+    RESAMPLE,
+    Archive,
+)
 from adalflow.optim.evolution.loop import EvolutionResult, evolve
 from adalflow.optim.evolution.proposer import (
     PROPOSE_TEMPLATE,
@@ -18,13 +24,19 @@ from adalflow.optim.evolution.proposer import (
     render_feedback,
 )
 from adalflow.optim.evolution.sandbox import PythonEvaluator, SandboxResult, run_python
-from adalflow.optim.evolution.types import Candidate, Evaluation, to_evaluation
+from adalflow.optim.evolution.types import (
+    Candidate,
+    Evaluation,
+    combine,
+    to_evaluation,
+)
 
 __all__ = [
     "Archive",
     "BEST",
     "PARETO",
     "RESAMPLE",
+    "MAP_ELITES",
     "EvolutionResult",
     "evolve",
     "PROPOSE_TEMPLATE",
@@ -39,5 +51,6 @@ __all__ = [
     "run_python",
     "Candidate",
     "Evaluation",
+    "combine",
     "to_evaluation",
 ]

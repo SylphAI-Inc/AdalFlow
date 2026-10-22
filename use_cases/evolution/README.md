@@ -61,5 +61,6 @@ Notes:
   filesystem and network. Run LLM-written code in a container when that matters.
 - The evaluation script runs in the candidate's process, so a candidate can tamper
   with its own score. Read the best candidates before trusting their scores.
-- Scores here are single measurements. With noisy evaluators (LLM judges, sampled
-  benchmarks), re-evaluate the best candidates before relying on the ranking.
+- With noisy evaluators (LLM judges, sampled benchmarks), pass `confirm=2` (or more)
+  so the reported best is a mean over several evaluations rather than one lucky
+  score. It costs budget: with a deterministic evaluator leave it at 0.
