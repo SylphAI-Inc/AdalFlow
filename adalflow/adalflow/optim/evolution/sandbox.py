@@ -26,7 +26,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 from adalflow.optim.evolution.types import Evaluation, to_evaluation
 
@@ -193,6 +193,11 @@ class PythonEvaluator:
         self.memory_mb = memory_mb
         self.env = env
         self.feedback_chars = feedback_chars
+
+    @classmethod
+    def from_file(cls, path: Union[str, Path], **kwargs: Any) -> "PythonEvaluator":
+        """Reads the evaluation script from a ``.py`` file (with ``evaluate``)."""
+        return cls(Path(path).read_text(encoding="utf-8"), **kwargs)
 
     def __call__(self, text: str) -> Evaluation:
         mark = f"__ADALFLOW_EVAL_{secrets.token_hex(8)}__"

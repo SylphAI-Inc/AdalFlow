@@ -35,6 +35,10 @@ Evolves programs, prompts or configs with an LLM that reads each candidate's
 evaluation feedback (failing cases, tracebacks, stderr) and rewrites it, after GEPA
 and OpenEvolve; independent implementation.
 
+- `optimize_code` / `optimize_prompt` (`evolution/presets.py`): one call for test
+  cases or labeled examples, with held-out checks; `cases_evaluator` and
+  `prompt_evaluator` build the evaluators. Models can be `"provider/model"` strings
+  (`adalflow.components.model_client.resolve_model`).
 - `evolve` (`evolution/loop.py`): select parent -> propose -> evaluate -> archive,
   under a budget of evaluator calls; JSONL event log; stops on score, budget or stalls.
 - `Archive` (`evolution/archive.py`): per-instance Pareto parent selection (keeps

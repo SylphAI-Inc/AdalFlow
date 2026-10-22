@@ -23,6 +23,13 @@ from adalflow.optim.evolution.proposer import (
     extract_candidate,
     render_feedback,
 )
+from adalflow.optim.evolution.presets import (
+    cases_evaluator,
+    exact_match,
+    optimize_code,
+    optimize_prompt,
+    prompt_evaluator,
+)
 from adalflow.optim.evolution.sandbox import PythonEvaluator, SandboxResult, run_python
 from adalflow.optim.evolution.types import (
     Candidate,
@@ -32,6 +39,11 @@ from adalflow.optim.evolution.types import (
 )
 
 __all__ = [
+    "optimize_code",
+    "optimize_prompt",
+    "cases_evaluator",
+    "prompt_evaluator",
+    "exact_match",
     "Archive",
     "BEST",
     "PARETO",
