@@ -15,6 +15,18 @@ With the default `--provider scripted`, a stand-in model fixes exactly what the
 feedback reports, so the run shows the mechanics only: feedback reaching the proposer,
 lineage, the stop rule and the event log. The sandbox and the tests are real.
 
+`evolve_prompt.py` evolves a prompt instead of a program: the instruction of a
+support-ticket router, scored on labeled tickets with held-out tickets for the final
+check. One `claude-haiku-5-5` run went from 0.69 to 1.0 on the training tickets in
+three rewrites, and from 0.50 to 0.92 on the held-out ones.
+
+```bash
+python use_cases/evolution/evolve_prompt.py --provider openai --model gpt-4o-mini
+```
+
+Tutorial: `docs/source/new_tutorials/evolution.md`. Strategy and noise benchmarks:
+`benchmarks/evolution/`.
+
 Your own task:
 
 ```python
