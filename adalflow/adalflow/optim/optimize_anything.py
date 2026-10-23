@@ -1,4 +1,12 @@
-"""GEPA-style optimize_anything API for arbitrary text artifacts."""
+"""optimize_anything: evolutionary search over arbitrary text artifacts.
+
+The API shape follows GEPA's ``optimize_anything``, but the search is heuristic: no
+LLM is called. Mutations are fixed string operations (append or prepend a hint line,
+swap two lines, collapse whitespace), crossover splices lines from two parents, and
+the Pareto front is over (score, token_cost, latency_ms), not per-instance scores.
+For LLM-guided, feedback-driven evolution with a per-instance Pareto front, see
+``adalflow.optim.evolution``.
+"""
 
 from __future__ import annotations
 
@@ -154,7 +162,7 @@ def optimize_anything(
     objective: str,
     config: GEPAConfig,
 ) -> OptimizeAnythingResult:
-    """Optimize any text artifact (prompt/code/config/svg) with evolutionary Pareto search."""
+    """Optimize any text artifact with heuristic (non-LLM) mutations and Pareto search."""
     if not isinstance(seed_candidate, str):
         raise TypeError("seed_candidate must be a string")
     if config.engine.max_metric_calls <= 0:

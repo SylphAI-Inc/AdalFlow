@@ -29,6 +29,7 @@ Tutorials
    :caption: Self-Improvement
 
    Optimizing Agent Harnesses <harness_optimization>
+   Evolving Programs and Prompts <evolution>
 
 .. toctree::
    :maxdepth: 1
