@@ -91,7 +91,7 @@ Supported providers:
 - `groq`
 - `anthropic`
 
-The executor and evaluator remain deterministic in this phase so that smoke benchmark metrics stay reproducible and safe.
+The executor and evaluator remain deterministic in this phase so that smoke benchmark metrics stay reproducible and safe. The executor is a mock and `eval_accuracy` is computed as `0.65 + 0.04 * generation` plus a hash-based term, so scores rise with generation by construction, with or without `--use-llm`; the metrics check control flow, not search quality.
 
 ## Metrics
 

@@ -9,6 +9,10 @@ structure of an evolutionary research agent:
 Phase 1 also supports optional LLM-backed seed/mutation/reflection/report writing.
 The executor and evaluator stay deterministic/safe so benchmark runs remain
 reproducible unless explicitly switched to LLM mode.
+
+Note: the executor is a mock. ``eval_accuracy`` is ``0.65 + 0.04 * generation`` plus a
+hash-based term, so scores rise with generation by construction, even in LLM mode.
+For real execution of candidates, see ``adalflow.optim.evolution``.
 """
 
 from __future__ import annotations

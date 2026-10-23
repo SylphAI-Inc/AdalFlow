@@ -6,8 +6,9 @@ Contributors are encouraged to write benchmarks for their code, in addition to u
 
 ## Available benchmark areas
 
-- `optimize_anything/` — GEPA / optimize-anything style benchmark scaffolds.
+- `optimize_anything/` — scaffolds for the `optimize_anything` API (heuristic string mutations, no LLM).
 - `harness_optimization/` — label-free harness refinement on a tool-using domain, scored with labels on held-out tasks against prompt-only rewriting (real model).
+- `evolution/` — `adalflow.optim.evolution` search strategies vs. a best-of-N baseline at equal budget, scored on held-out instances (real model).
 - `arc_bench/` — ARC-Bench-style smoke benchmark harness for autonomous research-agent prototypes.
 - `itinerary_roi_bench/` — Coordinator + worker itinerary planning smoke benchmark for `ModelROILedger` and `FrozenPrefixMemorySnapshot`.
 
@@ -17,6 +18,12 @@ The `arc_bench/` benchmark is a lightweight, local smoke benchmark for testing A
 
 1. A simple linear autonomous-research demo.
 2. An OpenEvolve-style evolutionary research loop demo.
+
+Both demos test orchestration only. In the evolution demo the executor is a mock and
+`eval_accuracy` is a formula that grows with the generation number
+(`0.65 + 0.04 * generation + noise`), so rising scores are built in and do not show
+that evolution works. For real candidate execution and LLM-guided proposals, see
+`adalflow.optim.evolution` and `use_cases/evolution/`.
 
 The evolutionary loop models:
 
