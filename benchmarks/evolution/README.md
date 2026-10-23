@@ -27,6 +27,40 @@ numbers (`summary.json`, `summary.md`) to `--out`.
   bound / bins used on 300-item instances. 5 search instances, 10 held-out ones.
   There is no perfect score.
 
+## Reproducing the results
+
+From the repo root, with `adalflow` installed (`pip install -e adalflow` or
+`poetry install` in `adalflow/`) and `ANTHROPIC_API_KEY` set:
+
+```bash
+python benchmarks/evolution/run.py --check     # no model: seed scores, search / held-out (duration 0.458 / 0.417, binpack 0.946 / 0.943)
+
+# duration rows: 3 strategies x 3 runs, budget 12 (about 3 min with the default 4 workers)
+python benchmarks/evolution/run.py --provider anthropic --model claude-haiku-5-5 \
+    --tasks duration --strategies pareto best resample --repeats 3 --budget 12 \
+    --out runs/evolution_bench/duration
+
+# binpack rows: 2 strategies x 3 runs, budget 30 (about 12 min)
+python benchmarks/evolution/run.py --provider anthropic --model claude-haiku-5-5 \
+    --tasks binpack --strategies pareto resample --repeats 3 --budget 30 \
+    --out runs/evolution_bench/binpack
+```
+
+Each command prints and writes the aggregate table (`summary.md`), the per-run
+numbers (`summary.json`) and one event log per run. Model sampling is not seeded, so
+individual numbers vary between reruns; a rerun on 2026-10-23 gave the same picture:
+
+| task | strategy | held-out best (this rerun) | held-out best (table below) |
+|---|---|---|---|
+| duration | pareto | 1.000 [1.000, 1.000] | 1.000 [1.000, 1.000] |
+| duration | best | 1.000 [1.000, 1.000] | 0.986 [0.958, 1.000] |
+| duration | resample | 0.847 [0.833, 0.875] | 0.889 [0.792, 0.958] |
+| binpack | pareto | 0.950 [0.947, 0.953] | 0.950 [0.949, 0.951] |
+| binpack | resample | 0.947 [0.947, 0.947] | 0.947 [0.947, 0.947] |
+
+`--provider openai --model gpt-4o-mini` (with `OPENAI_API_KEY`) runs the same
+benchmark on OpenAI; the numbers below are only for `claude-haiku-5-5`.
+
 ## Results (2026-10-21, claude-haiku-5-5, 3 runs per cell)
 
 One set of runs on small tasks; mean [min, max] over the 3 runs.
