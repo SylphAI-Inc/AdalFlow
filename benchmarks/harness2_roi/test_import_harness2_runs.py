@@ -43,7 +43,7 @@ def _codex_stream(path: Path, turns) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def _make_runs(tmp_path: Path, score=(3, 4)) -> Path:
+def _make_runs(tmp_path: Path, score=(3, 4), executor="gpt-5-codex") -> Path:
     runs, execs = tmp_path / "runs", tmp_path / "executions"
     ns_dir = runs / NS
     task = "t1"
@@ -58,7 +58,7 @@ def _make_runs(tmp_path: Path, score=(3, 4)) -> Path:
 
     (ns_dir / task).mkdir(parents=True)
     (ns_dir / "config.json").write_text(
-        json.dumps({"executor": "gpt-5-codex", "improver": "vertex/gemini-3.5-flash"})
+        json.dumps({"executor": executor, "improver": "vertex/gemini-3.5-flash"})
     )
     (ns_dir / task / "summary.json").write_text(
         json.dumps(
@@ -160,6 +160,20 @@ def test_report_skips_ungraded_tasks_and_reflection_only_namespaces(tmp_path):
     assert ns["tokens"]["cached_input"] == 3900
     assert ns["usd_by_mode"] == {"agg": 0.5, "seq": 0.25}
     assert report["roi_by_task"] == {}
+
+
+def test_report_ranks_executor_models_across_runs_roots(tmp_path):
+    gpt = _make_runs(tmp_path / "gpt", score=(3, 4))
+    gemini = _make_runs(tmp_path / "gemini", score=(4, 4), executor="gemini-3.5-flash")
+    report = build_report([gpt, gemini])
+    assert [ns["runs_root"] for ns in report["namespaces"]] == [str(gpt), str(gemini)]
+    ranked = report["roi_by_task"]["harness2/lab/agg"]
+    assert {r["model"]: r["mean_constraint_score"] for r in ranked} == {
+        "gpt-5-codex": 0.75,
+        "gemini-3.5-flash": 1.0,
+    }
+    # Same tokens, higher score: the gemini runs rank first.
+    assert ranked[0]["model"] == "gemini-3.5-flash"
 
 
 def test_jobbench_flattened_layout_reads_model_traj(tmp_path):

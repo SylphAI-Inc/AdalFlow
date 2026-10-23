@@ -23,6 +23,9 @@ Usage::
 
     python benchmarks/harness2_roi/import_harness2_runs.py \
         --runs /path/to/harness2/runs --output artifacts/harness2_roi/report.json
+
+Pass several runs roots (one per executor model) to rank the models against each
+other in one ledger.
 """
 
 from __future__ import annotations
@@ -33,7 +36,7 @@ import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ADALFLOW_PKG = PROJECT_ROOT / "adalflow"
@@ -282,19 +285,26 @@ def to_ledger(
     return ledger
 
 
-def build_report(runs_root: Path) -> Dict[str, Any]:
+def build_report(runs_roots: Union[Path, Iterable[Path]]) -> Dict[str, Any]:
+    """Report over one or more runs roots, e.g. one per executor model.
+
+    All namespaces go into one ledger, so ``roi_by_task`` ranks the executor models
+    against each other on each benchmark and mode.
+    """
+    roots = [runs_roots] if isinstance(runs_roots, Path) else list(runs_roots)
     # Only namespaces that hold task summaries; a mode namespace may hold just
     # reflection notes, with its summary living under the shared namespace.
-    ns_dirs = sorted(
+    ns_dirs = [
         p
-        for p in runs_root.iterdir()
+        for root in roots
+        for p in sorted(root.iterdir())
         if p.is_dir() and _MODE_IN_NS.search(p.name) and any(p.glob("**/summary.json"))
-    )
+    ]
     reports = [load_namespace(d) for d in ns_dirs]
     ledger = to_ledger(reports)
 
     namespaces = []
-    for rep in reports:
+    for ns_dir, rep in zip(ns_dirs, reports):
         total = TokenUsage()
         by_stage: Dict[str, TokenUsage] = {}
         seen = set()
@@ -310,6 +320,7 @@ def build_report(runs_root: Path) -> Dict[str, Any]:
         namespaces.append(
             {
                 "namespace": rep.namespace,
+                "runs_root": str(ns_dir.parent),
                 "executor_model": rep.executor_model,
                 "improver_model": rep.improver_model,
                 "rollouts": len(rep.rollouts),
@@ -335,7 +346,7 @@ def build_report(runs_root: Path) -> Dict[str, Any]:
 
     return {
         "source": "harness2",
-        "runs_root": str(runs_root),
+        "runs_roots": [str(r) for r in roots],
         "namespaces": namespaces,
         "roi_by_task": {
             k: [s.to_dict() for s in v] for k, v in ledger.summarize_by_task().items()
@@ -345,13 +356,19 @@ def build_report(runs_root: Path) -> Dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--runs", type=Path, required=True, help="Harness² runs root.")
+    parser.add_argument(
+        "--runs",
+        type=Path,
+        nargs="+",
+        required=True,
+        help="Harness² runs root(s); pass one per executor model to compare them.",
+    )
     parser.add_argument(
         "--output", type=Path, help="Optional path for the JSON report."
     )
     args = parser.parse_args()
 
-    report = build_report(args.runs.expanduser().resolve())
+    report = build_report([p.expanduser().resolve() for p in args.runs])
     text = json.dumps(report, indent=2, ensure_ascii=False)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
