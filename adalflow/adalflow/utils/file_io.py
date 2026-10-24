@@ -2,12 +2,17 @@ import json
 import os
 import pickle
 import logging
+import threading
 from typing import Mapping, Any, Optional, List, Dict
 
 
 from adalflow.utils.serialization import to_dict, serialize, _deserialize_object_hook
 
 log = logging.getLogger(__name__)
+
+# Serializes appends so that threads (e.g. trainer workers) cannot interleave
+# partial lines in the same jsonl file.
+_JSONL_APPEND_LOCK = threading.Lock()
 
 
 def save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:
@@ -216,6 +221,8 @@ def append_to_jsonl(f: str, data: Dict[str, Any]) -> None:
     r"""Append data to a jsonl file.
 
     Used by the trace_generator_call decorator to log the generator calls.
+    Appends from multiple threads in one process are serialized; concurrent
+    writers in separate processes are not coordinated.
 
     Args:
         f (str): The file name.
@@ -227,11 +234,11 @@ def append_to_jsonl(f: str, data: Dict[str, Any]) -> None:
         raise ImportError("Please install jsonlines to use this function.")
     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
     try:
-        with jsonlines.open(f, mode="a") as writer:
-            # call serialize to serialize the object
-            serialized_data = to_dict(data)
-            writer.write(serialized_data)
-            # writer.write(data)
+        # call serialize to serialize the object
+        serialized_data = to_dict(data)
+        with _JSONL_APPEND_LOCK:
+            with jsonlines.open(f, mode="a") as writer:
+                writer.write(serialized_data)
     except Exception as e:
         log.error(f"Error appending data to jsonl file {f}: {e}")
 
