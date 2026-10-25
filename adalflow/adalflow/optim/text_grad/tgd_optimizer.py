@@ -47,12 +47,16 @@ TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
 <END_OF_SYSTEM_PROMPT>
 <START_OF_USER_MESSAGE>
-You are {{steps}} steps since your last improvement.
-Update the value more rapidly when steps are larger than 3.
+
+<OPTIMIZATION_CONTEXT>
+Current optimization iteration: {{steps}} steps since your last improvement.
+Optimization strategy: Use more aggressive updates after 3 iterations without improvement.
+</OPTIMIZATION_CONTEXT>
+
+<TARGET_CONTENT_TO_OPTIMIZE>
 {# Variable and peers info #}
-<START_OF_VARIABLE_AND_PEERS_INFO>
 {{variable_and_peers_info}}
-<END_OF_VARIABLE_AND_PEERS_INFO>
+</TARGET_CONTENT_TO_OPTIMIZE>
 {# system trainable variables #}
 {% if system_variables %}
 <START_OF_SYSTEM_VARIABLES>
@@ -105,6 +109,13 @@ You must follow the following constraints:
 You must base on the following examples when modifying the {{variable_desc}}:
 <EXAMPLES>{{in_context_examples}}</EXAMPLES>
 {% endif %}
+
+<CRITICAL_INSTRUCTION>
+IMPORTANT: Optimize ONLY the content in the TARGET_CONTENT_TO_OPTIMIZE section above.
+Do NOT include any references to optimization steps, iterations, or meta-instructions in your response.
+Do NOT mention phrases like "when steps exceed", "steps are larger than", "rapid updates", or "step size".
+Your output should contain ONLY the improved version of the target content, without any optimization metadata.
+</CRITICAL_INSTRUCTION>
 <END_OF_USER_MESSAGE>
 """
 # NO OPRO history
@@ -269,11 +280,11 @@ class TGDOptimizerTrace(DataClass):
 
 class CustomizedXMLParser(DataComponent):
     """Custom XML parser for TGD optimizer output with reasoning, method, and proposed_variable fields."""
-    
+
     def __init__(self):
         super().__init__()
         pass
-    
+
     def get_output_format_str(self) -> str:
         return """Please provide your response in the following XML format:
 
@@ -284,58 +295,64 @@ class CustomizedXMLParser(DataComponent):
 </response>
 
 Make sure to include all three fields and properly close all XML tags."""
-    
+
     def call(self, input: str) -> TGDData:
         """Parse the XML response and extract the three fields, returning TGDData directly."""
         try:
             # Clean the input and extract XML content
             input = input.strip()
-            
+
             # Try to find the response tags
             start_tag = "<response>"
             end_tag = "</response>"
-            
+
             start_idx = input.find(start_tag)
             end_idx = input.find(end_tag)
-            
+
             if start_idx == -1 or end_idx == -1:
                 # Fallback: try to parse the entire input as XML
                 xml_content = input
             else:
-                xml_content = input[start_idx:end_idx + len(end_tag)]
-            
+                xml_content = input[start_idx : end_idx + len(end_tag)]
+
             # Parse XML
             root = ET.fromstring(xml_content)
-            
+
             # Extract fields
-            reasoning_elem = root.find('reasoning')
-            method_elem = root.find('method')
-            proposed_variable_elem = root.find('proposed_variable')
-            
-            reasoning = reasoning_elem.text.strip() if reasoning_elem is not None and reasoning_elem.text else ""
-            method = method_elem.text.strip() if method_elem is not None and method_elem.text else ""
-            proposed_variable = proposed_variable_elem.text.strip() if proposed_variable_elem is not None and proposed_variable_elem.text else ""
-            
+            reasoning_elem = root.find("reasoning")
+            method_elem = root.find("method")
+            proposed_variable_elem = root.find("proposed_variable")
+
+            reasoning = (
+                reasoning_elem.text.strip()
+                if reasoning_elem is not None and reasoning_elem.text
+                else ""
+            )
+            method = (
+                method_elem.text.strip()
+                if method_elem is not None and method_elem.text
+                else ""
+            )
+            proposed_variable = (
+                proposed_variable_elem.text.strip()
+                if proposed_variable_elem is not None and proposed_variable_elem.text
+                else ""
+            )
+
             # Create and return TGDData object directly
             return TGDData(
-                reasoning=reasoning,
-                method=method,
-                proposed_variable=proposed_variable
+                reasoning=reasoning, method=method, proposed_variable=proposed_variable
             )
-            
+
         except ET.ParseError as e:
             log.error(f"XML parsing error: {e}")
             return TGDData(
-                reasoning="XML parsing failed",
-                method="Error",
-                proposed_variable=input
+                reasoning="XML parsing failed", method="Error", proposed_variable=input
             )
         except Exception as e:
             log.error(f"Error parsing XML output: {e}")
             return TGDData(
-                reasoning="Parsing failed", 
-                method="Error",
-                proposed_variable=input
+                reasoning="Parsing failed", method="Error", proposed_variable=input
             )
 
 
