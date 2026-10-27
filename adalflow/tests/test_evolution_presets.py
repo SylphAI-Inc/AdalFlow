@@ -103,6 +103,33 @@ def test_cases_evaluator_diverse_order_spreads_shown_failures():
         cases_evaluator("parse", cases, show_order="random")
 
 
+def test_prompt_evaluator_show_order():
+    from adalflow.core.generator import Generator
+    from adalflow.optim.evolution import prompt_evaluator
+    from adalflow.optim.evolution.presets import PROMPT_TEMPLATE
+
+    examples = [
+        ("2024-03-15", "iso_date"),
+        ("1999-12-31", "iso_date"),
+        ("2001-01-01", "iso_date"),
+        ("192.168.1.10", "ipv4"),
+        ("#FFF", "hex_color"),
+    ]
+    generator = Generator(
+        model_client=ScriptedClient(lambda p: "date"), template=PROMPT_TEMPLATE
+    )
+    first = prompt_evaluator(
+        generator, examples, show_failures=2, show_order="first", workers=1
+    )("x")
+    diverse = prompt_evaluator(generator, examples, show_failures=2, workers=1)("x")
+    assert "'1999-12-31'" in first["feedback"] and "'#FFF'" not in first["feedback"]
+    assert "'2024-03-15'" in diverse["feedback"] and "'#FFF'" in diverse["feedback"]
+    assert "... 3 more wrong answers" in diverse["feedback"]
+    assert diverse["instance_scores"] == first["instance_scores"]
+    with pytest.raises(ValueError, match="show_order"):
+        prompt_evaluator(generator, examples, show_order="random")
+
+
 def test_cases_evaluator_checks_its_inputs(tmp_path):
     listed = to_evaluation(cases_evaluator("median", [(([5],), 5)])(FIXED))
     assert list(listed.instance_scores) == ["case-00"]

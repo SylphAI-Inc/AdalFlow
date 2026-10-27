@@ -15,6 +15,7 @@ Both return the ``EvolutionResult`` of ``evolve``; every ``evolve`` keyword argu
 from __future__ import annotations
 
 import ast
+import inspect
 import re
 from concurrent.futures import ThreadPoolExecutor
 from random import Random
@@ -34,6 +35,43 @@ __all__ = [
 
 Case = Tuple[Any, Any]  # (args, expected)
 Cases = Union[Dict[str, Case], Sequence[Case]]
+
+
+# Diverse failure sample. These run in the parent process (prompt_evaluator) and,
+# pasted in as source, inside the cases_evaluator sandbox script.
+def _shape(text):
+    text = re.sub(r"\d+(?:\.\d+)?", "9", text)
+    return re.sub(r"[a-z]+", "a", re.sub(r"[A-Z]+", "A", text))
+
+
+def _distance(a, b):
+    row = list(range(len(b) + 1))
+    for i, x in enumerate(a, 1):
+        prev, row[0] = row[0], i
+        for j, y in enumerate(b, 1):
+            prev, row[j] = row[j], min(row[j] + 1, row[j - 1] + 1, prev + (x != y))
+    return row[-1]
+
+
+def _diverse(inputs, k):
+    # first failure, then the one least like those picked (farthest-point)
+    shapes = [_shape(t) for t in inputs]
+    picked = [0] if inputs else []
+    while len(picked) < min(k, len(inputs)):
+        rest = [i for i in range(len(inputs)) if i not in picked]
+        picked.append(
+            max(
+                rest,
+                key=lambda i: (
+                    min(_distance(shapes[i], shapes[j]) for j in picked),
+                    -i,
+                ),
+            )
+        )
+    return sorted(picked)
+
+
+_HELPERS = "\n\n".join(inspect.getsource(f) for f in (_shape, _distance, _diverse))
 
 _CASES_SCRIPT = r"""
 import math
@@ -63,30 +101,7 @@ def _call_text(kind, args):
     return f"{FUNCTION}({inner})"
 
 
-def _shape(text):
-    text = re.sub(r"\d+(?:\.\d+)?", "9", text)
-    return re.sub(r"[a-z]+", "a", re.sub(r"[A-Z]+", "A", text))
-
-
-def _distance(a, b):
-    row = list(range(len(b) + 1))
-    for i, x in enumerate(a, 1):
-        prev, row[0] = row[0], i
-        for j, y in enumerate(b, 1):
-            prev, row[j] = row[j], min(row[j] + 1, row[j - 1] + 1, prev + (x != y))
-    return row[-1]
-
-
-def _diverse(inputs, k):
-    # first failure, then the one least like those picked (farthest-point)
-    shapes = [_shape(t) for t in inputs]
-    picked = [0] if inputs else []
-    while len(picked) < min(k, len(inputs)):
-        rest = [i for i in range(len(inputs)) if i not in picked]
-        picked.append(
-            max(rest, key=lambda i: (min(_distance(shapes[i], shapes[j]) for j in picked), -i))
-        )
-    return sorted(picked)
+__HELPERS__
 
 
 def evaluate(candidate):
@@ -188,7 +203,9 @@ def cases_evaluator(
             distance after mapping digits to ``9`` and letter runs to ``a``/``A``);
             ``"first"`` takes them in case order. Shown failures act as a spec:
             a weaker proposer shown four failures from one input family dropped
-            formats it handled with no feedback at all; a diverse sample avoids it.
+            formats it handled with no feedback at all. A diverse sample did better
+            in most of our runs but can still leave formats out; with many input
+            families, raise ``show_failures``.
         kwargs: ``timeout``, ``memory_mb``... forwarded to ``PythonEvaluator``.
     """
     if not re.fullmatch(r"[A-Za-z_]\w*", function):
@@ -200,6 +217,7 @@ def cases_evaluator(
         .replace("__CASES__", repr(_encode_cases(cases)))
         .replace("__SHOW__", repr(int(show_failures)))
         .replace("__ORDER__", repr(show_order))
+        .replace("__HELPERS__", _HELPERS)
         .replace("__TOLS__", f"{float(rel_tol)!r}, {float(abs_tol)!r}")
     )
     return PythonEvaluator(source, **kwargs)
@@ -292,13 +310,19 @@ def prompt_evaluator(
     output_format: str = "",
     workers: int = 8,
     show_failures: int = 12,
+    show_order: str = "diverse",
 ) -> Callable[[str], Dict[str, Any]]:
     """``instruction -> {"instance_scores", "feedback"}`` on labeled ``examples``.
 
     ``generator`` must accept ``instruction``, ``input`` and ``output_format`` prompt
     kwargs (``PROMPT_TEMPLATE`` does). The feedback lists the examples the
-    instruction got wrong, which is what the proposer learns the task from.
+    instruction got wrong, which is what the proposer learns the task from:
+    ``show_failures`` of them, picked to differ from each other as in
+    ``cases_evaluator`` (``show_order="diverse"``, default) or in example order
+    (``"first"``).
     """
+    if show_order not in ("first", "diverse"):
+        raise ValueError(f"show_order must be 'first' or 'diverse', got {show_order!r}")
     examples = list(examples)
     if not examples:
         raise ValueError("examples is empty")
@@ -318,7 +342,7 @@ def prompt_evaluator(
     def evaluate(instruction: str) -> Dict[str, Any]:
         with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
             answers = list(pool.map(lambda ex: answer(instruction, ex[0]), examples))
-        scores, misses = {}, []
+        scores, misses, inputs = {}, [], []
         for i, ((item, want), got) in enumerate(zip(examples, answers)):
             value = float(metric(got, want))
             scores[f"example-{i:02d}"] = value
@@ -327,7 +351,11 @@ def prompt_evaluator(
                     f"input {str(item)[:300]!r}: answered {got.strip()[:300]!r}, "
                     f"expected {str(want)[:300]!r}"
                 )
-        feedback = misses[:show_failures]
+                inputs.append(str(item)[:300])
+        if show_order == "diverse":
+            feedback = [misses[i] for i in _diverse(inputs, show_failures)]
+        else:
+            feedback = misses[:show_failures]
         if len(misses) > len(feedback):
             feedback.append(f"... {len(misses) - len(feedback)} more wrong answers")
         return {"instance_scores": scores, "feedback": "\n".join(feedback)}

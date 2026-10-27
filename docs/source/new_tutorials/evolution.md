@@ -155,6 +155,8 @@ It spells out up to `show_failures=8` failing calls, chosen to differ from each
 other (`show_order="diverse"`): a proposer shown failures from one family tends to
 treat them as the whole spec and drop formats it would otherwise handle, so when you
 write your own evaluator, show a varied sample of failures rather than the first few.
+`prompt_evaluator`, which `optimize_prompt` uses, picks the wrong answers it shows
+the same way.
 
 An evaluator may return:
 
