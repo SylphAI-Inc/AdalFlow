@@ -151,6 +151,10 @@ repeated an earlier candidate.
 `cases_evaluator(function, cases)` builds the test-case evaluator used by
 `optimize_code`, and `PythonEvaluator.from_file("eval.py")` loads a script you keep
 as a normal file (with an `evaluate(candidate)` function) instead of a string.
+It spells out up to `show_failures=8` failing calls, chosen to differ from each
+other (`show_order="diverse"`): a proposer shown failures from one family tends to
+treat them as the whole spec and drop formats it would otherwise handle, so when you
+write your own evaluator, show a varied sample of failures rather than the first few.
 
 An evaluator may return:
 

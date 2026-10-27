@@ -37,10 +37,12 @@ Cases = Union[Dict[str, Case], Sequence[Case]]
 
 _CASES_SCRIPT = r"""
 import math
+import re
 
 FUNCTION = __FUNCTION__
 CASES = __CASES__
 SHOW = __SHOW__
+ORDER = __ORDER__
 REL_TOL, ABS_TOL = __TOLS__
 
 
@@ -61,11 +63,37 @@ def _call_text(kind, args):
     return f"{FUNCTION}({inner})"
 
 
+def _shape(text):
+    text = re.sub(r"\d+(?:\.\d+)?", "9", text)
+    return re.sub(r"[a-z]+", "a", re.sub(r"[A-Z]+", "A", text))
+
+
+def _distance(a, b):
+    row = list(range(len(b) + 1))
+    for i, x in enumerate(a, 1):
+        prev, row[0] = row[0], i
+        for j, y in enumerate(b, 1):
+            prev, row[j] = row[j], min(row[j] + 1, row[j - 1] + 1, prev + (x != y))
+    return row[-1]
+
+
+def _diverse(inputs, k):
+    # first failure, then the one least like those picked (farthest-point)
+    shapes = [_shape(t) for t in inputs]
+    picked = [0] if inputs else []
+    while len(picked) < min(k, len(inputs)):
+        rest = [i for i in range(len(inputs)) if i not in picked]
+        picked.append(
+            max(rest, key=lambda i: (min(_distance(shapes[i], shapes[j]) for j in picked), -i))
+        )
+    return sorted(picked)
+
+
 def evaluate(candidate):
     fn = getattr(candidate, FUNCTION, None)
     if not callable(fn):
         raise AttributeError(f"the candidate does not define {FUNCTION}()")
-    scores, failures = {}, []
+    scores, failures, inputs = {}, [], []
     for name, kind, args, expect, want in CASES:
         call = _call_text(kind, args)
         try:
@@ -84,7 +112,11 @@ def evaluate(candidate):
         scores[name] = float(ok)
         if not ok:
             failures.append(f"{name}: {call} {what}")
-    shown = failures[:SHOW]
+            inputs.append(call)
+    if ORDER == "diverse":
+        shown = [failures[i] for i in _diverse(inputs, SHOW)]
+    else:
+        shown = failures[:SHOW]
     if len(failures) > len(shown):
         shown.append(f"... {len(failures) - len(shown)} more failing cases")
     return {"instance_scores": scores, "feedback": "\n".join(shown)}
@@ -136,6 +168,7 @@ def cases_evaluator(
     cases: Cases,
     *,
     show_failures: int = 8,
+    show_order: str = "diverse",
     rel_tol: float = 1e-9,
     abs_tol: float = 1e-9,
     **kwargs: Any,
@@ -150,14 +183,23 @@ def cases_evaluator(
             (floats compare with ``math.isclose``) or an exception class the call
             must raise (``ValueError``). Values must be Python literals.
         show_failures: how many failing calls the feedback spells out.
+        show_order: which of them. ``"diverse"`` (default) takes the first, then
+            each time the failing call least like those already taken (edit
+            distance after mapping digits to ``9`` and letter runs to ``a``/``A``);
+            ``"first"`` takes them in case order. Shown failures act as a spec:
+            a weaker proposer shown four failures from one input family dropped
+            formats it handled with no feedback at all; a diverse sample avoids it.
         kwargs: ``timeout``, ``memory_mb``... forwarded to ``PythonEvaluator``.
     """
     if not re.fullmatch(r"[A-Za-z_]\w*", function):
         raise ValueError(f"function must be a Python identifier, got {function!r}")
+    if show_order not in ("first", "diverse"):
+        raise ValueError(f"show_order must be 'first' or 'diverse', got {show_order!r}")
     source = (
         _CASES_SCRIPT.replace("__FUNCTION__", repr(function))
         .replace("__CASES__", repr(_encode_cases(cases)))
         .replace("__SHOW__", repr(int(show_failures)))
+        .replace("__ORDER__", repr(show_order))
         .replace("__TOLS__", f"{float(rel_tol)!r}, {float(abs_tol)!r}")
     )
     return PythonEvaluator(source, **kwargs)

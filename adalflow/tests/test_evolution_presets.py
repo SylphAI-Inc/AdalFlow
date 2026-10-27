@@ -87,6 +87,22 @@ def test_cases_evaluator_scores_values_kwargs_and_exceptions():
     assert not missing.ok and "does not define median()" in missing.feedback
 
 
+def test_cases_evaluator_diverse_order_spreads_shown_failures():
+    cases = [("1", 1), ("2", 2), ("3", 3), ("4", 4), ("PT1H", 1), ("1:30", 1)]
+    seed = "def parse(text):\n    return None\n"
+    ev = cases_evaluator("parse", cases, show_failures=3, show_order="first")
+    first = to_evaluation(ev(seed))
+    assert "'PT1H'" not in first.feedback and "'1:30'" not in first.feedback
+    ev = cases_evaluator("parse", cases, show_failures=3)  # diverse by default
+    diverse = to_evaluation(ev(seed))
+    assert "parse('1')" in diverse.feedback  # the first failure is always kept
+    assert "'PT1H'" in diverse.feedback and "'1:30'" in diverse.feedback
+    assert "... 3 more failing cases" in diverse.feedback
+    assert diverse.instance_scores == first.instance_scores
+    with pytest.raises(ValueError, match="show_order"):
+        cases_evaluator("parse", cases, show_order="random")
+
+
 def test_cases_evaluator_checks_its_inputs(tmp_path):
     listed = to_evaluation(cases_evaluator("median", [(([5],), 5)])(FIXED))
     assert list(listed.instance_scores) == ["case-00"]
