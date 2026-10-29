@@ -16,7 +16,7 @@ instruction is scored on held-out), which is what ``evolve`` does with
 ``stop_score=1.0``. ``trace`` lists every task-model batch
 (``full`` search set or ``minibatch``, tokens, prompt length) and reflection call.
 
-    pip install gepa
+    pip install gepa==0.0.7  # the version the results use
     python benchmarks/evolution/gepa_baseline.py --provider openai --model gpt-4.1-mini \
         --out runs/factorial/gepa_openai
 """
