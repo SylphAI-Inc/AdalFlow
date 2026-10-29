@@ -1,4 +1,9 @@
-# optimize_anything benchmark (GEPA-style scaffold)
+# optimize_anything benchmark (GEPA-style API scaffold)
+
+`optimize_anything` mirrors GEPA's API, but its mutations are fixed string operations
+and no LLM is called, so these results do not measure GEPA-style reflective
+optimization. For LLM-guided evolution see `adalflow.optim.evolution` and
+`use_cases/evolution/`.
 
 This benchmark provides a reproducible scaffold for `adalflow.optim.optimize_anything` across
 three artifact categories:
