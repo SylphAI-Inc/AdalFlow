@@ -7,6 +7,8 @@ scripts, so candidates run in a separate process.
 - ``duration``: parse duration strings. The objective names the goal but not the
   formats; the evaluator reports at most 4 failing inputs per run under opaque case
   names, so the full spec has to be recovered over several rounds of feedback.
+- ``size``: parse data-size strings (bytes, SI and IEC units, words), built like
+  ``duration``: same evaluator, at most 4 failing inputs shown per run.
 - ``binpack``: an online bin-packing heuristic (the classic FunSearch task), scored
   as lower bound / bins used on random instances. There is no perfect score; the
   held-out instances use other random seeds from the same distribution.
@@ -145,6 +147,86 @@ DURATION = Task(
     stop_score=1.0,
 )
 
+# ------------------------------------------------------------------ size
+# Conventions: a single-letter unit (K, M, G, T, any case) is binary (1024), a unit
+# ending in B (KB, MB, ...) is decimal, KiB/Ki style is binary, and words follow the
+# same split (kilobyte = 1000, kibibyte = 1024).
+SIZE_SEARCH: List[DurationCase] = [
+    ("512", 512),
+    ("100B", 100),
+    ("4K", 4096),
+    ("512M", 536870912),
+    ("2G", 2147483648),
+    ("10KB", 10000),
+    ("1.5MB", 1500000),
+    ("3 GB", 3000000000),
+    ("1kB", 1000),
+    ("1KiB", 1024),
+    ("4MiB", 4194304),
+    ("2Gi", 2147483648),
+    ("256Mi", 268435456),
+    ("1.5K", 1536),
+    ("512m", 536870912),
+    ("10 kilobytes", 10000),
+    ("1 byte", 1),
+    ("2 gibibytes", 2147483648),
+    ("1,024", 1024),
+    ("", None),
+    ("MB", None),
+    ("-1KB", None),
+    ("10XB", None),
+    ("5 MB MB", None),
+]
+
+SIZE_HOLDOUT: List[DurationCase] = [
+    ("2048", 2048),
+    ("7B", 7),
+    ("8K", 8192),
+    ("1M", 1048576),
+    ("1T", 1099511627776),
+    ("500KB", 500000),
+    ("2.5GB", 2500000000),
+    ("20 MB", 20000000),
+    ("1mb", 1000000),
+    ("8KiB", 8192),
+    ("1.5GiB", 1610612736),
+    ("64Ki", 65536),
+    ("1Ti", 1099511627776),
+    ("0.5M", 524288),
+    ("2g", 2147483648),
+    ("3 megabytes", 3000000),
+    ("5 bytes", 5),
+    ("1 kibibyte", 1024),
+    ("10,000", 10000),
+    ("GB", None),
+    ("1..5MB", None),
+    ("-2G", None),
+    ("12 parsecs", None),
+    ("KB10", None),
+]
+
+
+def _size_evaluator(cases: List[DurationCase]) -> str:
+    return _duration_evaluator(cases).replace("parse_duration", "parse_size")
+
+
+SIZE = Task(
+    name="size",
+    objective=(
+        "parse_size(text) returns the number of bytes in a data-size string, for the "
+        "formats people and systems commonly write sizes in, and raises ValueError for "
+        "strings that are not valid sizes."
+    ),
+    seed="""def parse_size(text):
+    units = {"B": 1, "K": 1024, "M": 1024**2, "G": 1024**3}
+    text = text.strip()
+    return int(text[:-1]) * units[text[-1]]
+""",
+    search_evaluator=_size_evaluator(SIZE_SEARCH),
+    holdout_evaluator=_size_evaluator(SIZE_HOLDOUT),
+    stop_score=1.0,
+)
+
 # ------------------------------------------------------------------ binpack
 _BINPACK_EVALUATOR = r"""
 import math
@@ -230,4 +312,4 @@ BINPACK = Task(
     descriptor=binpack_cell,
 )
 
-TASKS: Dict[str, Task] = {t.name: t for t in (DURATION, BINPACK)}
+TASKS: Dict[str, Task] = {t.name: t for t in (DURATION, SIZE, BINPACK)}
