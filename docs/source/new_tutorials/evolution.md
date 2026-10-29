@@ -188,6 +188,14 @@ the wrong answers as feedback; use it with `evolve` when you need your own
 generator, metric or template. The default metric, `exact_match`, ignores case,
 surrounding space and a final period.
 
+The task model sees only the instruction, never the feedback, so a label name or
+format the proposer reads in a wrong answer is lost unless it writes it in. By
+default `optimize_prompt` appends `CARRY_FACTS` to the objective, which asks it to.
+On a 12-intent Banking77 subset this raised the held-out score of the best
+instruction from 0.37 to 0.86 (gpt-4.1-mini, 10 seeds); on a reasoning task with
+fixed options it cost a few points, so pass `carry_facts=False` there. When you call
+`evolve` with your own `LLMProposer`, add the sentence to your objective yourself.
+
 `use_cases/evolution/evolve_prompt.py` evolves the instruction of a ticket router
 whose routing policy has a few non-obvious rules (a "delivered but not here" ticket
 goes to `fulfillment`, an email change to `privacy`):

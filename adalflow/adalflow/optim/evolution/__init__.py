@@ -24,6 +24,7 @@ from adalflow.optim.evolution.proposer import (
     render_feedback,
 )
 from adalflow.optim.evolution.presets import (
+    CARRY_FACTS,
     cases_evaluator,
     exact_match,
     optimize_code,
@@ -41,6 +42,7 @@ from adalflow.optim.evolution.types import (
 __all__ = [
     "optimize_code",
     "optimize_prompt",
+    "CARRY_FACTS",
     "cases_evaluator",
     "prompt_evaluator",
     "exact_match",

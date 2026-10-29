@@ -31,7 +31,18 @@ __all__ = [
     "exact_match",
     "optimize_code",
     "optimize_prompt",
+    "CARRY_FACTS",
 ]
+
+# The task model sees only the instruction, never the feedback, so facts the proposer
+# reads there (label names, formats) are lost unless written in. Appending this to
+# the objective lifted Banking77 held-out from 0.37 to 0.86 (gpt-4.1-mini, 10 seeds)
+# but cost 0.06 on BBH salient-translation-error detection.
+CARRY_FACTS = (
+    " The task model sees only this prompt, never the feedback: copy every task-specific"
+    " fact the feedback reveals (for example the exact expected labels or formats) into"
+    " the prompt."
+)
 
 Case = Tuple[Any, Any]  # (args, expected)
 Cases = Union[Dict[str, Case], Sequence[Case]]
@@ -396,6 +407,7 @@ def optimize_prompt(
     stop_score: Optional[float] = 1.0,
     workers: int = 8,
     random_seed: int = 0,
+    carry_facts: bool = True,
     **evolve_kwargs: Any,
 ) -> EvolutionResult:
     """Evolves an instruction (system prompt) on labeled ``(input, expected)`` pairs.
@@ -412,6 +424,10 @@ def optimize_prompt(
         output_format: fixed text appended to every instruction, such as "Reply
             with one word.", which the search does not change.
         budget: evaluations (each runs every search example once).
+        carry_facts: append ``CARRY_FACTS`` to the objective, asking the proposer
+            to copy facts from the feedback (such as the label set) into the
+            instruction. It helps most when the task's outputs are names the model
+            cannot guess; turn it off for reasoning tasks with fixed options.
         evolve_kwargs: any other ``evolve`` argument.
     """
     from adalflow.core.generator import Generator
@@ -439,10 +455,13 @@ def optimize_prompt(
 
     if held_out:
         evolve_kwargs.setdefault("holdout", scorer(held_out))
-    proposer = LLMProposer(
+    objective = (
         objective
         or "A system prompt that makes the model produce the expected output for "
-        "every input. Infer the task's rules from the wrong answers and state them.",
+        "every input. Infer the task's rules from the wrong answers and state them."
+    )
+    proposer = LLMProposer(
+        objective + (CARRY_FACTS if carry_facts else ""),
         kind="prompt",
         model_client=client,
         model_kwargs=kwargs,

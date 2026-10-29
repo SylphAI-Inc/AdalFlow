@@ -6,6 +6,7 @@ from adalflow.components.model_client import resolve_model
 from adalflow.core.model_client import ModelClient
 from adalflow.core.types import GeneratorOutput
 from adalflow.optim.evolution import (
+    CARRY_FACTS,
     PythonEvaluator,
     cases_evaluator,
     exact_match,
@@ -193,3 +194,14 @@ def test_optimize_prompt_splits_examples_and_learns_from_wrong_answers():
     assert exact_match(" Billing. ", "billing") == 1.0 and exact_match("a", "b") == 0.0
     with pytest.raises(ValueError, match="holdout"):
         optimize_prompt("x", examples[:1], model=client)
+
+
+def test_optimize_prompt_asks_to_carry_feedback_facts_unless_turned_off():
+    examples = [(w, w[::-1]) for w in ["alpha", "beta", "gamma", "delta"]]
+    for carry in (True, False):
+        client = ScriptedClient(_reversing_model)
+        optimize_prompt(
+            "Repeat.", examples, model=client, budget=2, holdout=None, carry_facts=carry
+        )
+        proposer = [p for p in client.prompts if "You improve a candidate" in p]
+        assert proposer and all((CARRY_FACTS.strip() in p) == carry for p in proposer)
