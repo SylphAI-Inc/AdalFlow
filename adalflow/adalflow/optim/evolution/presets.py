@@ -55,19 +55,18 @@ def _distance(a, b):
 
 def _diverse(inputs, k):
     # first failure, then the one least like those picked (farthest-point)
+    if k >= len(inputs):
+        return list(range(len(inputs)))
     shapes = [_shape(t) for t in inputs]
-    picked = [0] if inputs else []
-    while len(picked) < min(k, len(inputs)):
-        rest = [i for i in range(len(inputs)) if i not in picked]
-        picked.append(
-            max(
-                rest,
-                key=lambda i: (
-                    min(_distance(shapes[i], shapes[j]) for j in picked),
-                    -i,
-                ),
-            )
-        )
+    picked = [0]
+    # distance from each unpicked input to its nearest picked one
+    near = {i: _distance(shapes[i], shapes[0]) for i in range(1, len(inputs))}
+    while len(picked) < k:
+        best = max(near, key=lambda i: (near[i], -i))
+        picked.append(best)
+        del near[best]
+        for i in near:
+            near[i] = min(near[i], _distance(shapes[i], shapes[best]))
     return sorted(picked)
 
 
