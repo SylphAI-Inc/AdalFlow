@@ -1,14 +1,14 @@
 """
 Evolve a prompt, not a program: a support-ticket routing instruction.
 
-The artifact is the instruction text given to a ``Generator``. The evaluator runs it
+The artifact is the instruction text given to the model. ``optimize_prompt`` runs it
 on labeled tickets and reports accuracy plus the misrouted tickets, which the
 proposer reads to work out the routing policy (e.g. "delivered but not here" goes to
 ``fulfillment``, not ``logistics``). The final instruction is scored on held-out
 tickets.
 
-    python use_cases/evolution/evolve_prompt.py --provider openai --model gpt-4o-mini
-    python use_cases/evolution/evolve_prompt.py --provider anthropic --model claude-haiku-5-5
+    python use_cases/evolution/evolve_prompt.py --model openai/gpt-4o-mini
+    python use_cases/evolution/evolve_prompt.py --model anthropic/claude-haiku-5-5
 
 Requires an API key for the chosen provider.
 """
@@ -17,16 +17,14 @@ from __future__ import annotations
 
 import argparse
 import sys
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT / "adalflow") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "adalflow"))
 
-from adalflow.core.generator import Generator  # noqa: E402
-from adalflow.optim.evolution import LLMProposer, evolve  # noqa: E402
+from adalflow.optim.evolution import optimize_prompt  # noqa: E402
 
 LABELS = ["payments", "fulfillment", "logistics", "trust_safety", "privacy", "care"]
 
@@ -68,86 +66,24 @@ HOLDOUT: List[Tuple[str, str]] = [
 
 SEED = "Route the support ticket to a queue."
 
-TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
-{{ instruction }}
-Reply with exactly one label from: {{ labels }}.
-<END_OF_SYSTEM_PROMPT>
-<START_OF_USER_PROMPT>
-{{ ticket }}
-<END_OF_USER_PROMPT>"""
-
-
-def make_client(provider: str):
-    if provider == "anthropic":
-        from adalflow.components.model_client import AnthropicAPIClient
-
-        return AnthropicAPIClient()
-    from adalflow.components.model_client import OpenAIClient
-
-    return OpenAIClient()
-
-
-def make_evaluator(generator: Generator, examples: List[Tuple[str, str]]):
-    """instruction text -> {"instance_scores", "feedback"} on ``examples``."""
-
-    def classify(instruction: str, ticket: str) -> str:
-        out = generator.call(
-            prompt_kwargs={
-                "instruction": instruction,
-                "labels": ", ".join(LABELS),
-                "ticket": ticket,
-            }
-        )
-        return str(out.data or "").strip().strip(".").lower()
-
-    def evaluate(instruction: str) -> Dict:
-        with ThreadPoolExecutor(max_workers=8) as pool:
-            answers = list(pool.map(lambda ex: classify(instruction, ex[0]), examples))
-        scores, misses = {}, []
-        for i, ((ticket, want), got) in enumerate(zip(examples, answers)):
-            scores[f"ticket-{i:02d}"] = float(got == want)
-            if got != want:
-                misses.append(f"{ticket!r}: answered {got!r}, expected {want!r}")
-        return {"instance_scores": scores, "feedback": "\n".join(misses)}
-
-    return evaluate
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
-    parser.add_argument("--provider", choices=["openai", "anthropic"], default="openai")
-    parser.add_argument("--model", default="gpt-4o-mini")
+    parser.add_argument("--model", default="openai/gpt-4o-mini")
     parser.add_argument("--budget", type=int, default=8)
     args = parser.parse_args()
 
-    # The task model: classifies tickets with the candidate instruction.
-    task_model = Generator(
-        model_client=make_client(args.provider),
-        model_kwargs={"model": args.model},
-        template=TEMPLATE,
-        use_cache=False,
-    )
-    proposer = LLMProposer(
-        "An instruction for a support-ticket router. Make the routing policy "
-        "explicit so the router sends every ticket to the right queue.",
-        kind="prompt",
-        model_client=make_client(args.provider),
-        model_kwargs={"model": args.model},
-    )
-    result = evolve(
+    result = optimize_prompt(
         SEED,
-        make_evaluator(task_model, TRAIN),
-        proposer,
-        max_evaluations=args.budget,
-        stop_score=1.0,
-        holdout=make_evaluator(task_model, HOLDOUT),
+        TRAIN,
+        holdout=HOLDOUT,  # or a fraction, e.g. 0.25, to split TRAIN
+        model=args.model,
+        output_format=f"Reply with exactly one queue name from: {', '.join(LABELS)}.",
+        objective="An instruction for a support-ticket router. Make the routing "
+        "policy explicit so the router sends every ticket to the right queue.",
+        budget=args.budget,
     )
-
-    print(f"stopped: {result.stopped} after {result.evaluations} evaluations")
-    for c in result.archive.candidates:
-        print(f"  {c.id} (parent {c.parent_id}): train accuracy {c.score:.2f}")
-    seed, best = result.holdout["seed"], result.holdout.get("best")
-    print(f"held-out accuracy: seed {seed.score:.2f} -> best {best.score:.2f}")
+    print(result.report())
     print("\nbest instruction:\n" + result.best.text)
 
 

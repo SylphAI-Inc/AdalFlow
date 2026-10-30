@@ -132,3 +132,6 @@ __all__ = [
 
 for name in __all__:
     EntityMapping.register(name, globals()[name])
+
+# Not registered above: a helper, not a client.
+from adalflow.components.model_client.spec import resolve_model  # noqa: E402,F401
