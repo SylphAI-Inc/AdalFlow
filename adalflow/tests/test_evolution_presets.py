@@ -205,3 +205,136 @@ def test_optimize_prompt_asks_to_carry_feedback_facts_unless_turned_off():
         )
         proposer = [p for p in client.prompts if "You improve a candidate" in p]
         assert proposer and all((CARRY_FACTS.strip() in p) == carry for p in proposer)
+
+
+def test_optimize_prompt_accumulates_hidden_labels_across_generations():
+    """Realistic Banking77-style case: labels appear only in feedback across rounds."""
+    import re
+
+    intents = {
+        "card": "card_arrival",
+        "pin": "pin_blocked",
+        "top-up": "top_up_failed",
+        "stolen": "lost_or_stolen_card",
+        "exchange": "exchange_rate",
+        "refund": "Refund_not_showing_up",
+    }
+    examples = [
+        (f"Customer query #{i} about {kw}", label)
+        for kw, label in intents.items()
+        for i in range(3)
+    ]  # 18 examples -> 14 search (>8 shown per round), 4 holdout
+
+    def banking_model(prompt):
+        if "You improve a candidate" in prompt:
+            parent = prompt.split("## Current candidate\n```\n")[1].split("\n```")[0]
+            known = set(re.findall(r"\b[A-Za-z]+_[a-z_]+\b", parent))
+            if CARRY_FACTS.strip() in prompt:
+                known.update(re.findall(r"expected '([A-Za-z_]+)'", prompt))
+            labels_str = ", ".join(sorted(known))
+            return (
+                "Carry discovered intent names into the prompt.\n"
+                f"```candidate\nClassify the banking query. Valid labels: {labels_str}\n```"
+            )
+        sys_part, user_part = prompt.split("<START_OF_USER_PROMPT>")
+        query = user_part.split("<END_OF_USER_PROMPT>")[0].lower()
+        for kw, label in intents.items():
+            if kw in query and label in sys_part:
+                return label
+        return "unknown"
+
+    with_carry = optimize_prompt(
+        "Classify the banking query.",
+        examples,
+        model=ScriptedClient(banking_model),
+        budget=4,
+        carry_facts=True,
+    )
+    without_carry = optimize_prompt(
+        "Classify the banking query.",
+        examples,
+        model=ScriptedClient(banking_model),
+        budget=4,
+        carry_facts=False,
+    )
+    assert with_carry.seed.score == 0.0
+    assert with_carry.best.score == 1.0 and with_carry.holdout["best"].score == 1.0
+    for label in intents.values():
+        assert label in with_carry.best.text
+    assert without_carry.best.score == 0.0 and without_carry.holdout["best"].score == 0.0
+
+
+def test_optimize_code_multi_format_duration_parser_diverse_vs_first():
+    """Real subprocess sandbox: default diverse failure sampling exposes all input families."""
+    seed_code = "def parse_seconds(s):\n    return -1\n"
+    cases = {f"int_{i}": ((str(i * 10),), i * 10) for i in range(1, 10)}
+    cases.update(
+        {
+            "unit_m": (("5m",), 300),
+            "iso_hm": (("PT1H30M",), 5400),
+            "clock": (("01:02:03",), 3723),
+            "empty": (("",), ValueError),
+        }
+    )
+    holdout = {
+        "int_h": (("42",), 42),
+        "unit_h": (("2h",), 7200),
+        "iso_m": (("PT15M",), 900),
+        "clock_2": (("00:05:00",), 300),
+        "bad": (("abc",), ValueError),
+    }
+
+    def proposer_from_shown_failures(prompt):
+        fb = prompt.split("## Its evaluation")[1]
+        lines = [
+            "import re",
+            "def parse_seconds(s):",
+            "    s = s.strip()",
+            "    if not s:",
+            "        raise ValueError('empty')",
+        ]
+        if "PT1H30M" in fb:
+            lines += [
+                "    m = re.fullmatch(r'PT(?:(\\d+)H)?(?:(\\d+)M)?', s)",
+                "    if m and any(m.groups()):",
+                "        return int(m.group(1) or 0) * 3600 + int(m.group(2) or 0) * 60",
+            ]
+        if "01:02:03" in fb:
+            lines += [
+                "    if ':' in s:",
+                "        h, m, sec = (int(x) for x in s.split(':'))",
+                "        return h * 3600 + m * 60 + sec",
+            ]
+        if "5m" in fb or "PT1H30M" in fb:
+            lines += [
+                "    m = re.fullmatch(r'(\\d+)([smh])', s)",
+                "    if m:",
+                "        return int(m.group(1)) * {'s': 1, 'm': 60, 'h': 3600}[m.group(2)]",
+            ]
+        lines += [
+            "    return int(s)",
+        ]
+        body = "\n".join(lines) + "\n"
+        return f"Handle the shown duration formats.\n```candidate\n{body}```"
+
+    res_diverse = optimize_code(
+        seed_code,
+        "Parse duration strings into integer seconds; raise ValueError on invalid input.",
+        function="parse_seconds",
+        cases=cases,
+        holdout_cases=holdout,
+        model=ScriptedClient(proposer_from_shown_failures),
+        budget=2,
+    )
+    res_first = optimize_code(
+        seed_code,
+        "Parse duration strings into integer seconds; raise ValueError on invalid input.",
+        evaluator=cases_evaluator("parse_seconds", cases, show_order="first"),
+        holdout_cases=holdout,
+        function="parse_seconds",
+        model=ScriptedClient(proposer_from_shown_failures),
+        budget=2,
+    )
+    assert res_diverse.best.score == 1.0 and res_diverse.holdout["best"].score == 1.0
+    assert res_first.best.score < 0.8 and res_first.holdout["best"].score == 0.4
+
