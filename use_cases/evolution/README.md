@@ -15,6 +15,18 @@ With the default `--provider scripted`, a stand-in model fixes exactly what the
 feedback reports, so the run shows the mechanics only: feedback reaching the proposer,
 lineage, the stop rule and the event log. The sandbox and the tests are real.
 
+`evolve_prompt.py` evolves a prompt instead of a program: the instruction of a
+support-ticket router, scored on labeled tickets with held-out tickets for the final
+check. One `claude-haiku-5-5` run went from 0.69 to 1.0 on the training tickets in
+three rewrites, and from 0.50 to 0.92 on the held-out ones.
+
+```bash
+python use_cases/evolution/evolve_prompt.py --provider openai --model gpt-4o-mini
+```
+
+Tutorial: `docs/source/new_tutorials/evolution.md`. Strategy and noise benchmarks:
+`benchmarks/evolution/`.
+
 Your own task:
 
 ```python
@@ -61,5 +73,6 @@ Notes:
   filesystem and network. Run LLM-written code in a container when that matters.
 - The evaluation script runs in the candidate's process, so a candidate can tamper
   with its own score. Read the best candidates before trusting their scores.
-- Scores here are single measurements. With noisy evaluators (LLM judges, sampled
-  benchmarks), re-evaluate the best candidates before relying on the ranking.
+- With noisy evaluators (LLM judges, sampled benchmarks), pass `confirm=2` (or more)
+  so the reported best is a mean over several evaluations rather than one lucky
+  score. It costs budget: with a deterministic evaluator leave it at 0.

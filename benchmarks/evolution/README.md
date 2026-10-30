@@ -6,9 +6,12 @@ best on held-out instances the search never sees (`evolve(..., holdout=...)`).
 
 - `pareto` / `best`: build on earlier candidates (per-instance Pareto or greedy).
 - `resample`: every proposal is an independent sample from the seed (best-of-N).
+- `map_elites`: one elite per behavior cell (tasks with a descriptor); `islands`:
+  `pareto` on 3 islands with migration.
 
 ```bash
 python benchmarks/evolution/run.py --check        # seed scores, no model calls
+python benchmarks/evolution/noise_sim.py          # confirm= under simulated noise, no model
 python benchmarks/evolution/run.py --provider anthropic --model claude-haiku-5-5 \
     --repeats 3 --budget 12 --out runs/evolution_bench
 ```
@@ -89,3 +92,45 @@ What they show:
 - Proposals are not very diverse: `resample` produced 100+ duplicate candidates per
   `binpack` run, nearly always best fit. Islands or quality-diversity archives
   (MAP-Elites) are the natural next step for open-ended tasks like this one.
+
+## Diversity: MAP-Elites and islands (2026-10-21, claude-haiku-5-5, 3 runs, budget 30)
+
+`map_elites` uses the `binpack` descriptor `binpack_cell`: how often a candidate's
+decisions agree with best fit (5 bands) x code length (4 buckets). `islands` is
+`pareto` on 3 islands, migrating every 4 proposals.
+
+| strategy | search best | held-out best | duplicates | cells reached |
+|---|---|---|---|---|
+| pareto | 0.954 [0.952, 0.959] | 0.948 [0.947, 0.949] | 0 | 4.3 |
+| map_elites | 0.953 [0.951, 0.955] | 0.950 [0.947, 0.953] | 3.7 | 5.0 |
+| islands | 0.952 [0.952, 0.952] | 0.950 [0.949, 0.951] | 1.7 | 4.3 |
+
+The differences are within run-to-run spread. The best single held-out result so
+far came from `map_elites` (0.953), and `pareto` again overfit the most (its highest
+search score, 0.9585, had its lowest held-out score). The 30 candidates of a run
+fill only 4-6 of 20 cells, so the proposer's narrow output, not parent selection,
+limits diversity here; more varied proposals (temperature, prompts that ask for a
+different approach) are the next lever.
+
+## Noise: `confirm` in simulation
+
+`noise_sim.py` (no model) evolves a scalar "true quality" with mutations
+N(-0.01, 0.03) and an evaluator that adds Gaussian noise; budget 60, greedy
+selection, 200 runs per cell (± is the standard error).
+
+| noise sd | confirm | true quality of returned best | reported minus true |
+|---|---|---|---|
+| 0 | 0 | 0.953 ± 0.008 | +0.000 |
+| 0 | 2 | 0.749 ± 0.004 | +0.000 |
+| 0.02 | 0 | 0.742 ± 0.008 | +0.028 |
+| 0.02 | 2 | 0.692 ± 0.005 | +0.009 |
+| 0.05 | 0 | 0.557 ± 0.005 | +0.107 |
+| 0.05 | 1 | 0.578 ± 0.005 | +0.066 |
+| 0.1 | 0 | 0.511 ± 0.004 | +0.228 |
+| 0.1 | 4 | 0.526 ± 0.003 | +0.078 |
+
+`confirm` always shrinks the winner's curse (the reported best overstates less), but
+it spends budget on re-evaluation, so the true quality found goes down when noise is
+small relative to the mutation steps and goes up only a little when noise is large.
+Use it when an honest score for the returned candidate matters, not as a way to
+search better. Full grid: `python benchmarks/evolution/noise_sim.py`.

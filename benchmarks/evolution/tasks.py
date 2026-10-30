@@ -15,9 +15,9 @@ scripts, so candidates run in a separate process.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
-__all__ = ["Task", "TASKS"]
+__all__ = ["Task", "TASKS", "binpack_cell"]
 
 
 @dataclass
@@ -27,7 +27,9 @@ class Task:
     seed: str
     search_evaluator: str
     holdout_evaluator: str
-    stop_score: float = None  # type: ignore[assignment]
+    stop_score: Optional[float] = None
+    # candidate -> behavior cell, for selection="map_elites"
+    descriptor: Optional[Callable[[Any], Tuple]] = None
 
 
 # ------------------------------------------------------------------ duration
@@ -152,10 +154,16 @@ SEEDS = __SEEDS__
 N_ITEMS, CAPACITY, LOW, HIGH = 300, 150, 20, 100
 
 
-def pack(choose_bin, items):
+def best_fit(item, bins):
+    fits = [(r, i) for i, r in enumerate(bins) if r >= item]
+    return min(fits)[1] if fits else -1
+
+
+def pack(choose_bin, items, agree):
     bins = []  # remaining capacity of each open bin
     for item in items:
         i = choose_bin(item, list(bins), CAPACITY)
+        agree.append(i == best_fit(item, bins))
         if i == -1:
             bins.append(CAPACITY - item)
             continue
@@ -168,21 +176,35 @@ def pack(choose_bin, items):
 
 
 def evaluate(candidate):
-    scores, notes = {}, []
+    scores, notes, agree = {}, [], []
     for seed in SEEDS:
         rng = random.Random(seed)
         items = [rng.randint(LOW, HIGH) for _ in range(N_ITEMS)]
         bound = math.ceil(sum(items) / CAPACITY)
         name = f"instance-{seed}"
         try:
-            used = pack(candidate.choose_bin, items)
+            used = pack(candidate.choose_bin, items, agree)
             scores[name] = bound / used
             notes.append(f"{name}: {used} bins, lower bound {bound}")
         except Exception as exc:
             scores[name] = 0.0
             notes.append(f"{name}: invalid packing: {type(exc).__name__}: {exc}")
-    return {"instance_scores": scores, "feedback": "\n".join(notes)}
+    return {
+        "instance_scores": scores,
+        "feedback": "\n".join(notes),
+        # Behavior, not quality: how often a decision matches best fit.
+        "bestfit_agreement": sum(agree) / len(agree) if agree else 0.0,
+    }
 """
+
+
+def binpack_cell(candidate) -> Tuple[int, int]:
+    """(agreement-with-best-fit bucket, code length bucket)."""
+    agreement = candidate.evaluation.metrics.get("bestfit_agreement", 0.0)
+    band = sum(agreement >= edge for edge in (0.6, 0.8, 0.9, 0.97))
+    lines = len([ln for ln in candidate.text.splitlines() if ln.strip()])
+    length = 0 if lines <= 8 else 1 if lines <= 20 else 2 if lines <= 40 else 3
+    return (band, length)
 
 
 def _binpack_evaluator(seeds: List[int]) -> str:
@@ -205,6 +227,7 @@ BINPACK = Task(
 """,
     search_evaluator=_binpack_evaluator([0, 1, 2, 3, 4]),
     holdout_evaluator=_binpack_evaluator(list(range(100, 110))),
+    descriptor=binpack_cell,
 )
 
 TASKS: Dict[str, Task] = {t.name: t for t in (DURATION, BINPACK)}
