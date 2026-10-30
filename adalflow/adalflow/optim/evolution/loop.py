@@ -48,6 +48,42 @@ class EvolutionResult:
     def pareto_front(self) -> List[Candidate]:
         return self.archive.pareto_front()
 
+    def report(self, max_rows: int = 30) -> str:
+        """A plain-text summary: how the run ended, each candidate, held-out scores."""
+
+        def fmt(value: Optional[float]) -> str:
+            return "-" if value is None else f"{value:.3f}"
+
+        lines = [
+            f"stopped: {self.stopped} after {self.evaluations} evaluations "
+            f"({self.proposal_failures} proposal failures, "
+            f"{self.duplicates} duplicates)",
+            f"{'id':<6}{'parent':<8}{'gen':>4}{'score':>8}{'samples':>9}  note",
+        ]
+        rows = self.archive.candidates
+        for c in rows[:max_rows]:
+            note = "best" if self.best is not None and c.id == self.best.id else ""
+            if not c.ok and c.evaluation is not None:
+                note = f"failed: {c.evaluation.error}"[:60]
+            lines.append(
+                f"{c.id:<6}{c.parent_id or '-':<8}{c.generation:>4}"
+                f"{fmt(c.score):>8}{c.n_samples:>9}  {note}"
+            )
+        if len(rows) > max_rows:
+            lines.append(f"... {len(rows) - max_rows} more candidates")
+        if self.best is not None:
+            lines.append(
+                f"best: {self.best.id} {fmt(self.best.score)} (seed {fmt(self.seed.score)})"
+            )
+        if self.holdout:
+            seed = self.holdout.get("seed")
+            best = self.holdout.get("best")
+            lines.append(
+                f"held-out: seed {fmt(seed.score if seed else None)} -> "
+                f"best {fmt(best.score if best else None)}"
+            )
+        return "\n".join(lines)
+
 
 def _evaluate(evaluate: Callable[[str], Any], text: str) -> Evaluation:
     try:
