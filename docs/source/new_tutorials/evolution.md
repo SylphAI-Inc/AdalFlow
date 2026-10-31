@@ -23,7 +23,73 @@ You provide three things:
 | evaluator | `text -> score`, or a dict with per-instance scores and feedback |
 | proposer | `LLMProposer(objective, model_client=..., model_kwargs=...)` |
 
-## Minimal example: fix a function
+## Quick start
+
+For the two most common jobs there is one call. Models are given as
+`"provider/model"` strings (`"openai/gpt-4o-mini"`, `"anthropic/claude-haiku-5-5"`,
+`"ollama/llama3"`...) or as a `ModelClient` you configured yourself.
+
+**Fix or improve a function against test cases.** Each case is `(args, expected)`;
+`expected` can be an exception class the call must raise. `holdout_cases` are only
+checked after the search.
+
+```python
+from adalflow.optim.evolution import optimize_code
+
+SEED = """
+def median(xs):
+    return sorted(xs)[len(xs) // 2]
+"""
+
+result = optimize_code(
+    SEED,
+    "median(xs) returns the median of a list of numbers; raises ValueError if empty.",
+    function="median",
+    cases={
+        "odd": (([3, 1, 2],), 2),
+        "even": (([4, 1, 3, 2],), 2.5),
+        "empty": (([],), ValueError),
+    },
+    holdout_cases={"pair": (([10, 20],), 15.0), "one": (([7],), 7)},
+    model="openai/gpt-4o-mini",
+)
+print(result.report())
+print(result.best.text)
+```
+
+With `anthropic/claude-haiku-5-5` (2026-10-21):
+
+```
+stopped: stop_score after 2 evaluations (0 proposal failures, 0 duplicates)
+id    parent   gen   score  samples  note
+c0    -          0   0.333        1
+c1    c0         1   1.000        1  best
+best: c1 1.000 (seed 0.333)
+held-out: seed 0.500 -> best 1.000
+```
+
+**Improve a prompt on labeled examples.** A quarter of the examples is held out by
+default; the search sees only the rest.
+
+```python
+from adalflow.optim.evolution import optimize_prompt
+
+result = optimize_prompt(
+    "Route the support ticket to a queue.",
+    examples,  # [(ticket_text, queue_name), ...]
+    model="openai/gpt-4o-mini",
+    output_format="Reply with exactly one queue name from: payments, fulfillment, ...",
+)
+print(result.report())
+```
+
+Both return the `EvolutionResult` of `evolve` and accept all of its options
+(`selection=`, `confirm=`, `log_path=`...), which the rest of this page explains.
+
+## Under the hood: `evolve`
+
+`optimize_code` builds an evaluator and an `LLMProposer` and calls `evolve`. Use
+`evolve` directly when your evaluator is not a list of test cases.
 
 The evaluator is a Python script with an `evaluate(candidate)` function, where
 `candidate` is the candidate imported as a module. `PythonEvaluator` runs it in a
@@ -82,6 +148,16 @@ repeated an earlier candidate.
 
 ## Writing the evaluator
 
+`cases_evaluator(function, cases)` builds the test-case evaluator used by
+`optimize_code`, and `PythonEvaluator.from_file("eval.py")` loads a script you keep
+as a normal file (with an `evaluate(candidate)` function) instead of a string.
+It spells out up to `show_failures=8` failing calls, chosen to differ from each
+other (`show_order="diverse"`): a proposer shown failures from one family tends to
+treat them as the whole spec and drop formats it would otherwise handle, so when you
+write your own evaluator, show a varied sample of failures rather than the first few.
+`prompt_evaluator`, which `optimize_prompt` uses, picks the wrong answers it shows
+the same way.
+
 An evaluator may return:
 
 - a number: the score;
@@ -106,51 +182,44 @@ them, and use a container for untrusted code.
 ## Evolving a prompt
 
 Any `text -> score` callable is an evaluator, so the artifact does not have to be
-code. `use_cases/evolution/evolve_prompt.py` evolves the instruction of a ticket
-router: the evaluator runs a `Generator` with the candidate instruction on labeled
-tickets and reports the misrouted ones (excerpt; see the file for the full code):
+code. `optimize_prompt` uses `prompt_evaluator(generator, examples, metric=...)`,
+which runs a `Generator` with the candidate instruction on each example and lists
+the wrong answers as feedback; use it with `evolve` when you need your own
+generator, metric or template. The default metric, `exact_match`, ignores case,
+surrounding space and a final period.
 
-```python
-def make_evaluator(generator, examples):
-    def evaluate(instruction):
-        scores, misses = {}, []
-        for i, (ticket, want) in enumerate(examples):
-            out = generator.call(prompt_kwargs={"instruction": instruction, "ticket": ticket, ...})
-            got = str(out.data or "").strip().lower()
-            scores[f"ticket-{i:02d}"] = float(got == want)
-            if got != want:
-                misses.append(f"{ticket!r}: answered {got!r}, expected {want!r}")
-        return {"instance_scores": scores, "feedback": "\n".join(misses)}
-    return evaluate
+The task model sees only the instruction, never the feedback, so a label name or
+format the proposer reads in a wrong answer is lost unless it writes it in. By
+default `optimize_prompt` appends `CARRY_FACTS` to the objective, which asks it to.
+On a 12-intent Banking77 subset this raised the held-out score of the best
+instruction from 0.37 to 0.86 (gpt-4.1-mini, 10 seeds); on a reasoning task with
+fixed options it cost a few points, so pass `carry_facts=False` there. When you call
+`evolve` with your own `LLMProposer`, add the sentence to your objective yourself.
 
-result = evolve(
-    "Route the support ticket to a queue.",
-    make_evaluator(task_model, TRAIN),
-    LLMProposer("An instruction for a support-ticket router ...", kind="prompt",
-                model_client=client, model_kwargs={"model": model}),
-    max_evaluations=8,
-    stop_score=1.0,
-    holdout=make_evaluator(task_model, HOLDOUT),
-)
-```
+`use_cases/evolution/evolve_prompt.py` evolves the instruction of a ticket router
+whose routing policy has a few non-obvious rules (a "delivered but not here" ticket
+goes to `fulfillment`, an email change to `privacy`):
 
 ```bash
-python use_cases/evolution/evolve_prompt.py --provider openai --model gpt-4o-mini
+python use_cases/evolution/evolve_prompt.py --model openai/gpt-4o-mini
 ```
 
-One run with `claude-haiku-5-5` (2026-10-21):
+One run with `anthropic/claude-haiku-5-5` (2026-10-21), 16 search tickets and 12
+held-out ones:
 
 ```
-stopped: stop_score after 4 evaluations
-  c0 (parent None): train accuracy 0.69
-  c1 (parent c0): train accuracy 0.62
-  c2 (parent c1): train accuracy 0.94
-  c3 (parent c2): train accuracy 1.00
-held-out accuracy: seed 0.50 -> best 0.92
+stopped: stop_score after 3 evaluations (0 proposal failures, 0 duplicates)
+id    parent   gen   score  samples  note
+c0    -          0   0.625        1
+c1    c0         1   0.875        1
+c2    c1         2   1.000        1  best
+best: c2 1.000 (seed 0.625)
+held-out: seed 0.500 -> best 0.917
 ```
 
-c1 was worse on average but fixed some tickets the seed got wrong; Pareto selection
-kept it as a parent, and its child was the first to reach 0.94.
+In an earlier run the first rewrite was worse on average (0.62 vs 0.69) but fixed
+tickets the seed got wrong; Pareto selection kept it as a parent, and the final
+instruction descended from it.
 
 ## Choosing a search strategy
 
@@ -226,7 +295,8 @@ returned score.
   `parent_id`, `rationale` (written before evaluation);
 - `archive`: every candidate, with `pareto_front()` and `elites()`;
 - `evaluations`, `proposal_failures`, `duplicates`, `stopped`;
-- `holdout`: held-out evaluations when `holdout=` was given.
+- `holdout`: held-out evaluations when `holdout=` was given;
+- `report()`: the plain-text summary shown in the quick start.
 
 Pass `log_path="runs/x.jsonl"` to write one JSON line per event (`candidate`,
 `sample`, `proposal_failure`, `duplicate`, `migration`, `holdout`).
