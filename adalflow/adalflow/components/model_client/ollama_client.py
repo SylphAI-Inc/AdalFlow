@@ -402,10 +402,10 @@ class OllamaClient(ModelClient):
                     # if the input is a string, we create a message with role "user"
                     if isinstance(input, str):
                         input = [{"role": "user", "content": input}]
-                        final_model_kwargs["messages"] = input
                     elif not isinstance(input, list):
                         raise ValueError("Input must be a string or a list of messages")
-                # if the input is a list of messages, we use it as is
+                    # if the input is a list of messages, we use it as is
+                    final_model_kwargs["messages"] = input
                 return final_model_kwargs
             else:
                 raise ValueError("Input must be text")
