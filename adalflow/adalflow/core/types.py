@@ -402,6 +402,15 @@ class Function(DataClass):
         metadata={"desc": "The final answer if this is the final output."},
     )
 
+    def __post_init__(self):
+        super().__post_init__()
+        # LLM parsers may deserialize omitted or null fields as None.
+        # Normalise to empty containers so *args/**kwargs unpacking never fails.
+        if self.args is None:
+            self.args = []
+        if self.kwargs is None:
+            self.kwargs = {}
+
     @classmethod
     def from_function(
         cls,
