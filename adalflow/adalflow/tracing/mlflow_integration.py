@@ -12,12 +12,21 @@ log = logging.getLogger(__name__)
 try:
     # Do NOT set ADALFLOW_DISABLE_TRACING here - it should be set before imports
     import mlflow
-    # BUG: This import is not working for mlflow 3.7.0
-    from mlflow.openai._agent_tracer import MlflowOpenAgentTracingProcessor
-
     MLFLOW_AVAILABLE = True
+    
+    # Try importing the agent tracer (may not exist in newer MLflow versions)
+    try:
+        from mlflow.openai._agent_tracer import MlflowOpenAgentTracingProcessor
+        MLFLOW_AGENT_TRACER_AVAILABLE = True
+    except (ImportError, AttributeError):
+        MLFLOW_AGENT_TRACER_AVAILABLE = False
+        log.debug("MLflow agent tracer not available in this MLflow version")
+        MlflowOpenAgentTracingProcessor = None
+        
 except ImportError:
     MLFLOW_AVAILABLE = False
+    MLFLOW_AGENT_TRACER_AVAILABLE = False
+    MlflowOpenAgentTracingProcessor = None
     log.warning("MLflow not available. Install with: pip install mlflow")
 
 
@@ -68,6 +77,14 @@ def enable_mlflow_local(
 
     if not MLFLOW_AVAILABLE:
         log.error("MLflow is not installed. Cannot enable MLflow tracing.")
+        return False
+    
+    if not MLFLOW_AGENT_TRACER_AVAILABLE:
+        log.error(
+            "MLflow agent tracer is not available in this MLflow version. "
+            "This feature requires MLflow < 3.7.0. Please downgrade MLflow or "
+            "use an alternative tracing method."
+        )
         return False
 
     try:
@@ -147,6 +164,14 @@ def enable_mlflow_local_with_server(
 
     if not MLFLOW_AVAILABLE:
         log.error("MLflow is not installed. Cannot enable MLflow tracing.")
+        return False
+    
+    if not MLFLOW_AGENT_TRACER_AVAILABLE:
+        log.error(
+            "MLflow agent tracer is not available in this MLflow version. "
+            "This feature requires MLflow < 3.7.0. Please downgrade MLflow or "
+            "use an alternative tracing method."
+        )
         return False
 
     try:
