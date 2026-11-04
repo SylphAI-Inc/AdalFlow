@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from openai import AzureOpenAI
 from adalflow.components.model_client.azureai_client import AzureAIClient
 
@@ -33,6 +33,31 @@ class TestAzureAIClient(unittest.TestCase):
         )
         self.assertIsInstance(client.sync_client, AzureOpenAI)
 
+    @patch("adalflow.components.model_client.azureai_client.get_bearer_token_provider")
+    @patch("adalflow.components.model_client.azureai_client.AzureOpenAI")
+    def test_uses_provided_credential_for_token_provider(self, MockAzureOpenAI, MockTokenProvider):
+        # ensure provided credential is passed into token provider
+        mock_token_provider = MagicMock()
+        MockTokenProvider.return_value = mock_token_provider
+
+        client = AzureAIClient(
+            api_version="v1",
+            azure_endpoint="https://test.endpoint",
+            credential=self.mock_credential,
+        )
+
+        MockTokenProvider.assert_called_once()
+        # First arg should be the provided credential
+        called_args, called_kwargs = MockTokenProvider.call_args
+        self.assertIs(called_args[0], self.mock_credential)
+        self.assertIn("https://cognitiveservices.azure.com/.default", called_args)
+
+        # And AzureOpenAI should be initialized with azure_ad_token_provider
+        MockAzureOpenAI.assert_called_once()
+        _, kwargs = MockAzureOpenAI.call_args
+        self.assertIn("azure_ad_token_provider", kwargs)
+        self.assertIs(kwargs["azure_ad_token_provider"], mock_token_provider)
+
     # @patch("adalflow.components.model_client.azureai_client.AzureOpenAI")
     # def test_call_embeddings(self, MockAzureOpenAI):
     #     mock_embeddings = MagicMock()
@@ -55,17 +80,25 @@ class TestAzureAIClient(unittest.TestCase):
     #         **api_kwargs
     #     )
 
-    # @patch("adalflow.components.model_client.azureai_client.AzureOpenAI")
-    # def test_parse_chat_completion(self, MockAzureOpenAI):
-    #     mock_chat_completion = MagicMock(spec=ChatCompletion)
-    #     mock_chat_completion.choices = [
-    #         MagicMock(message=MagicMock(content="test_content"))
-    #     ]
-    #     self.client.chat_completion_parser = lambda completion: completion.choices[
-    #         0
-    #     ].message.content
-    #     result = self.client.parse_chat_completion(mock_chat_completion)
-    #     self.assertEqual(result, "test_content")
+    def test_parse_chat_completion_returns_data(self):
+        # Arrange a minimal ChatCompletion-like object
+        mock_choice = MagicMock()
+        mock_choice.message.content = "hello world"
+        mock_completion = MagicMock()
+        mock_completion.choices = [mock_choice]
+        mock_completion.usage.completion_tokens = 1
+        mock_completion.usage.prompt_tokens = 1
+        mock_completion.usage.total_tokens = 2
+
+        # Ensure parser returns the message content
+        self.client.chat_completion_parser = lambda completion: completion.choices[0].message.content
+
+        # Act
+        out = self.client.parse_chat_completion(mock_completion)
+
+        # Assert: data contains parsed text
+        self.assertEqual(out.data, "hello world")
+        self.assertIsNone(out.error)
 
     # @patch("adalflow.components.model_client.azureai_client.AzureOpenAI")
     # def test_track_completion_usage(self, MockAzureOpenAI):
