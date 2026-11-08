@@ -6,6 +6,9 @@ import inspect
 import asyncio
 import uuid
 import json
+import json as _json
+import time as _time
+import hashlib as _hashlib
 from datetime import datetime
 
 from typing import (
@@ -20,11 +23,9 @@ from typing import (
     AsyncIterable,
 )
 from typing_extensions import TypeAlias
-import sys
 
 
 from adalflow.optim.parameter import Parameter
-from adalflow.utils import printc
 from adalflow.core.component import Component
 from adalflow.components.agent.agent import Agent
 
@@ -46,6 +47,7 @@ from adalflow.core.types import (
     ToolCallActivityRunItem,
     UserQuery,
     AssistantResponse,
+    ReliabilityRunItem,
 )
 from adalflow.apps.permission_manager import PermissionManager
 from adalflow.components.memory.memory import ConversationMemory
@@ -55,6 +57,18 @@ from adalflow.tracing import (
     tool_span,
     response_span,
     step_span,
+)
+from adalflow.components.agent.reliability import (
+    CheckpointStore,
+    ReliabilityConfig,
+    ReliableExecutor,
+    RunCheckpoint,
+    RunFingerprint,
+    ToolLedgerEntry,
+)
+from adalflow.components.agent.reliability.errors import (
+    ResumeMismatchError,
+    ToolReplayRefusedError,
 )
 
 
@@ -140,6 +154,8 @@ class Runner(Component):
         max_steps: Optional[int] = None, # this will overwrite the agent's max_steps
         permission_manager: Optional[PermissionManager] = None,
         conversation_memory: Optional[ConversationMemory] = None,
+        reliability: Optional[ReliabilityConfig] = None,
+        checkpoint_store: Optional[CheckpointStore] = None,
         **kwargs,
     ) -> None:
         """Initialize runner with an agent and configuration.
@@ -151,6 +167,11 @@ class Runner(Component):
             max_steps: Maximum number of steps to execute
             permission_manager: Optional permission manager for tool approval
             conversation_memory: Optional conversation memory
+            reliability: Optional :class:`ReliabilityConfig` enabling retry +
+                timeout policies.  When ``None`` (default) the Runner behaves
+                exactly as before.
+            checkpoint_store: Optional :class:`CheckpointStore` for durable run
+                checkpoints and resume.  Required for ``resume`` / ``aresume``.
         """
         super().__init__(**kwargs)
         self.agent = agent
@@ -199,6 +220,428 @@ class Runner(Component):
             'last_total_tokens': 0  # Track last total to calculate step difference
         }
 
+        # Reliability layer (opt-in).  When reliability is None the Runner
+        # behaves byte-for-byte as before.
+        self._reliability: Optional[ReliabilityConfig] = reliability
+        self._checkpoint_store: Optional[CheckpointStore] = checkpoint_store
+        self._executor: Optional[ReliableExecutor] = None
+        self._tool_ledger: Dict[str, ToolLedgerEntry] = {}
+        self._run_id: Optional[str] = None
+        self._fingerprint: Optional[RunFingerprint] = None
+        self._resumed_from_step: int = 0
+        self._reliability_events: List[Any] = []
+        # The Function of the step whose tool execution is currently in
+        # progress; persisted in the checkpoint so resume can replay / rerun
+        # it without re-invoking the planner.
+        self._pending_function: Optional[Function] = None
+        # When set, the next loop iteration uses this Function directly
+        # instead of calling the planner (used by the resume "rerun" policy
+        # for an in-progress step whose tool was started but never completed).
+        self._resume_pending: Optional[Function] = None
+        # Test-only hook invoked right after the completed ledger entry has
+        # been durably checkpointed but before the step is appended to
+        # step_history.  Raising from it simulates a crash "after the tool
+        # completed but before the step was appended" so resume can be
+        # exercised end-to-end.  ``None`` in production.
+        self._after_tool_complete_hook: Optional[callable] = None
+        if reliability is not None:
+            self._executor = ReliableExecutor(
+                config=reliability,
+                on_event=self._record_reliability_event,
+            )
+
+    def _record_reliability_event(self, event: Any) -> None:
+        """Buffer reliability events for streaming / span attributes."""
+        self._reliability_events.append(event)
+
+    def _emit_reliability_events(
+        self, streaming_result: Optional[RunnerStreamingResult]
+    ) -> None:
+        """Flush buffered reliability events as ``runner.reliability`` stream events."""
+        if streaming_result is None:
+            # Still drain into the buffer for span attributes; nothing to emit.
+            return
+        while self._reliability_events:
+            event = self._reliability_events.pop(0)
+            try:
+                streaming_result.put_nowait(
+                    RunItemStreamEvent(
+                        name="runner.reliability",
+                        item=ReliabilityRunItem(data=event),
+                    )
+                )
+            except Exception:  # pragma: no cover
+                log.exception("failed to emit reliability event")
+
+    def _compute_fingerprint(
+        self, prompt_kwargs: Dict[str, Any]
+    ) -> RunFingerprint:
+        """Compute a :class:`RunFingerprint` for the current run."""
+        agent_name = getattr(self.agent, "name", None)
+        planner_model = None
+        planner = getattr(self.agent, "planner", None)
+        if planner is not None:
+            model_kwargs = getattr(planner, "model_kwargs", None) or {}
+            if isinstance(model_kwargs, dict):
+                planner_model = model_kwargs.get("model")
+        tool_names: List[str] = []
+        tool_signature_parts: List[str] = []
+        for tool in getattr(self.tool_manager, "tools", []) or []:
+            definition = getattr(tool, "definition", None)
+            if definition is not None:
+                tool_names.append(definition.func_name)
+                tool_signature_parts.append(
+                    f"{definition.func_name}:{definition.func_desc or ''}"
+                )
+        tool_names_sorted = sorted(tool_names)
+        tool_signature_hash = _hashlib.sha256(
+            "|".join(tool_signature_parts).encode("utf-8")
+        ).hexdigest()
+        input_str = prompt_kwargs.get("input_str") or ""
+        input_hash = _hashlib.sha256(str(input_str).encode("utf-8")).hexdigest()
+        return RunFingerprint(
+            agent_name=agent_name,
+            planner_model=planner_model,
+            tool_names_sorted=tool_names_sorted,
+            tool_signature_hash=tool_signature_hash,
+            max_steps=self.max_steps,
+            input_hash=input_hash,
+        )
+
+    def _checkpoint_kwargs(
+        self,
+        run_id: str,
+        status: str,
+        step_count: int,
+        prompt_kwargs: Dict[str, Any],
+        answer: Any = None,
+        error: Optional[str] = None,
+    ) -> RunCheckpoint:
+        """Build a :class:`RunCheckpoint` from the current runner state."""
+        now = _time.time()
+        # JSON-safe subset of prompt_kwargs: drop step_history (already in
+        # checkpoint) and chat_history_str (reconstructable from memory).
+        safe_prompt = {
+            k: v
+            for k, v in prompt_kwargs.items()
+            if k not in ("step_history", "chat_history_str")
+        }
+        # Best-effort JSON-safe coercion.
+        try:
+            _json.dumps(safe_prompt, default=str)
+        except Exception:
+            safe_prompt = {k: str(v) for k, v in safe_prompt.items()}
+        step_history_dicts = []
+        for s in self.step_history:
+            try:
+                step_history_dicts.append(s.to_dict())
+            except Exception:
+                step_history_dicts.append({"step": s.step, "observation": str(getattr(s, "observation", None))})
+        return RunCheckpoint(
+            run_id=run_id,
+            status=status,
+            created_at=now,
+            updated_at=now,
+            step_count=step_count,
+            step_history=step_history_dicts,
+            tool_ledger={cid: e.to_dict() for cid, e in self._tool_ledger.items()},
+            fingerprint=self._fingerprint.to_dict() if self._fingerprint else None,
+            token_consumption=self._token_consumption.copy(),
+            answer=answer,
+            error=error,
+            prompt_kwargs=safe_prompt,
+            pending_function=(
+                self._pending_function.to_dict()
+                if self._pending_function is not None
+                else None
+            ),
+            metadata={"resumed_from_step": self._resumed_from_step},
+        )
+
+    def _checkpoint(
+        self,
+        run_id: str,
+        status: str,
+        step_count: int,
+        prompt_kwargs: Dict[str, Any],
+        answer: Any = None,
+        error: Optional[str] = None,
+    ) -> None:
+        """Persist a checkpoint if a store is configured."""
+        if self._checkpoint_store is None or run_id is None:
+            return
+        try:
+            cp = self._checkpoint_kwargs(
+                run_id, status, step_count, prompt_kwargs, answer, error
+            )
+            self._checkpoint_store.save(cp)
+        except Exception:  # pragma: no cover - never let checkpointing crash the run
+            log.exception("failed to save checkpoint for run %s", run_id)
+
+    def _ledger_key(self, function: Function, step: int) -> str:
+        # Keyed by step index + tool name + args hash so a run that legitimately
+        # calls the same tool with the same args at two different steps does
+        # not replay the earlier step's result at the later step.  The step
+        # index is deterministic on resume because step_history is restored
+        # from the checkpoint and step_count continues from there.
+        return f"{step}:{function.name}:{self._args_hash(function)}"
+
+    def _args_hash(self, function: Function) -> str:
+        payload = {"name": function.name, "args": list(function.args or []), "kwargs": dict(function.kwargs or {})}
+        return _hashlib.sha256(
+            _json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest()
+
+    def _tool_output_from_ledger(
+        self, entry: ToolLedgerEntry, function: Function
+    ) -> FunctionOutput:
+        """Rebuild a :class:`FunctionOutput` from a completed ledger entry."""
+        try:
+            obs = _json.loads(entry.observation_json or "{}")
+            tool_output = ToolOutput(
+                output=obs.get("output"),
+                observation=obs.get("observation"),
+                display=obs.get("display"),
+                status=obs.get("status", "success"),
+            )
+        except Exception:
+            tool_output = ToolOutput(
+                output=entry.observation_json,
+                observation=entry.observation_json,
+                status="success",
+            )
+        return FunctionOutput(
+            name=function.name, input=function, output=tool_output
+        )
+
+    def _execute_tool_reliably(
+        self,
+        function: Function,
+        step: int,
+        run_id: Optional[str],
+        prompt_kwargs: Dict[str, Any],
+        streaming_result: Optional[RunnerStreamingResult] = None,
+    ) -> Any:
+        """Execute a tool with write-ahead ledger + executor (sync path).
+
+        Returns the same shape as the existing ``_tool_execute_sync`` path
+        (a :class:`FunctionOutput`).
+
+        Durable write-ahead: the ``started`` ledger entry is persisted to the
+        checkpoint store *before* the tool runs, so a crash mid-tool leaves a
+        durable ``started`` entry that resume can refuse / rerun / skip.  If
+        the tool raises, the entry is marked ``failed`` (with the error as the
+        observation) and checkpointed before the exception propagates.
+        """
+        call_id = self._ledger_key(function, step)
+        # Replay from ledger if we already completed this exact call.  This
+        # only happens on a resumed run for the in-progress step (the
+        # completed steps are not re-executed because step_count continues
+        # from the checkpoint).
+        existing = self._tool_ledger.get(call_id)
+        if existing is not None and existing.state == "completed" and existing.observation_json is not None:
+            return self._tool_output_from_ledger(existing, function)
+
+        # Write-ahead "started": persist before the tool runs.
+        entry = ToolLedgerEntry(
+            call_id=call_id,
+            name=function.name,
+            args_hash=self._args_hash(function),
+            state="started",
+            started_at=_time.time(),
+        )
+        self._tool_ledger[call_id] = entry
+        self._pending_function = function
+        self._checkpoint(run_id, "running", step, prompt_kwargs)
+
+        try:
+            if self._executor is not None:
+                result = self._executor.run_tool_sync(
+                    fn=lambda: self._tool_execute_sync(function),
+                    function=function,
+                    step=step,
+                )
+            else:
+                result = self._tool_execute_sync(function)
+        except BaseException as exc:
+            # The tool body raised (or was killed).  For a regular Exception
+            # we observed and can record a durable ``failed`` entry so resume
+            # does not silently re-run a non-idempotent tool.  For a
+            # SystemExit-like BaseException (the process is going down and we
+            # cannot trust our own cleanup) we leave the durable ``started``
+            # entry in place so resume applies the on_incomplete_tool policy
+            # (refuse / rerun / skip).  Either way we re-raise so the caller's
+            # existing exception handling applies.
+            if isinstance(exc, Exception):
+                entry.state = "failed"
+                entry.observation_json = _json.dumps(
+                    {"observation": f"failed: {exc}", "status": "error"},
+                    default=str,
+                )
+                entry.finished_at = _time.time()
+                self._pending_function = None
+            self._checkpoint(run_id, "running", step, prompt_kwargs)
+            raise
+        # Success: the ledger completion is recorded by the caller via
+        # ``_complete_ledger_entry`` once the (possibly generator/coroutine)
+        # output has been resolved.
+        return result
+
+    async def _execute_tool_reliably_async(
+        self,
+        function: Function,
+        step: int,
+        run_id: Optional[str],
+        prompt_kwargs: Dict[str, Any],
+        streaming_result: Optional[RunnerStreamingResult] = None,
+    ) -> Any:
+        """Async counterpart of :meth:`_execute_tool_reliably`."""
+        call_id = self._ledger_key(function, step)
+        existing = self._tool_ledger.get(call_id)
+        if existing is not None and existing.state == "completed" and existing.observation_json is not None:
+            return self._tool_output_from_ledger(existing, function)
+
+        entry = ToolLedgerEntry(
+            call_id=call_id,
+            name=function.name,
+            args_hash=self._args_hash(function),
+            state="started",
+            started_at=_time.time(),
+        )
+        self._tool_ledger[call_id] = entry
+        self._pending_function = function
+        self._checkpoint(run_id, "running", step, prompt_kwargs)
+
+        try:
+            if self._executor is not None:
+                result = await self._executor.run_tool(
+                    fn=lambda: self._tool_execute_async(function, streaming_result),
+                    function=function,
+                    step=step,
+                )
+            else:
+                result = await self._tool_execute_async(function, streaming_result)
+        except BaseException as exc:
+            # See _execute_tool_reliably for the rationale: a regular
+            # Exception is recorded as ``failed``; a SystemExit-like
+            # BaseException leaves the durable ``started`` entry in place so
+            # resume can apply the on_incomplete_tool policy.
+            if isinstance(exc, Exception):
+                entry.state = "failed"
+                entry.observation_json = _json.dumps(
+                    {"observation": f"failed: {exc}", "status": "error"},
+                    default=str,
+                )
+                entry.finished_at = _time.time()
+                self._pending_function = None
+            self._checkpoint(run_id, "running", step, prompt_kwargs)
+            raise
+        return result
+
+    def _complete_ledger_entry(
+        self, function: Function, step: int, resolved_output: Any
+    ) -> None:
+        """Mark the ledger entry for ``function``/``step`` as completed.
+
+        Called by the runner loops *after* generator/coroutine outputs have
+        been resolved, so the ledger stores the final value rather than a
+        ``<generator object ...>`` repr.  Does NOT clear ``_pending_function``:
+        the caller clears it once the step has been appended to step_history
+        and the post-step checkpoint has been written.
+        """
+        call_id = self._ledger_key(function, step)
+        entry = self._tool_ledger.get(call_id)
+        if entry is None:
+            return
+        entry.state = "completed"
+        entry.observation_json = self._serialize_tool_output(resolved_output)
+        entry.finished_at = _time.time()
+
+    def _persist_completed_ledger(
+        self,
+        function: Function,
+        step: int,
+        run_id: Optional[str],
+        prompt_kwargs: Dict[str, Any],
+    ) -> None:
+        """Durably persist the just-completed ledger entry.
+
+        Called by the runner loops immediately after
+        :meth:`_complete_ledger_entry` so a crash between tool completion and
+        step append still leaves a durable ``completed`` entry on disk that
+        resume can replay without re-running the tool.  Then invokes the
+        test-only ``_after_tool_complete_hook`` (if set) so a crash in that
+        narrow window can be simulated end-to-end.
+        """
+        self._checkpoint(run_id, "running", step, prompt_kwargs)
+        if self._after_tool_complete_hook is not None:
+            self._after_tool_complete_hook()
+
+    @staticmethod
+    def _serialize_tool_output(output: Any) -> str:
+        """Serialize a resolved tool output to JSON for the ledger."""
+        try:
+            if hasattr(output, "to_dict"):
+                payload = output.to_dict()
+            else:
+                payload = {"output": output, "observation": str(output), "status": "success"}
+            return _json.dumps(payload, default=str)
+        except Exception:
+            return _json.dumps({"observation": repr(output), "status": "success"})
+
+
+    def _planner_call(
+        self,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]],
+        use_cache: Optional[bool],
+        id: Optional[str],
+        step: int,
+    ) -> GeneratorOutput:
+        """Sync planner call routed through the executor when configured."""
+        if self._executor is None:
+            return self.agent.planner.call(
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+                use_cache=use_cache,
+                id=id,
+            )
+        return self._executor.run_planner_sync(
+            fn=lambda: self.agent.planner.call(
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+                use_cache=use_cache,
+                id=id,
+            ),
+            step=step,
+        )
+
+    async def _planner_acall(
+        self,
+        prompt_kwargs: Dict[str, Any],
+        model_kwargs: Optional[Dict[str, Any]],
+        use_cache: Optional[bool],
+        id: Optional[str],
+        step: int,
+    ) -> GeneratorOutput:
+        """Async planner call routed through the executor when configured."""
+        if self._executor is None:
+            return await self.agent.planner.acall(
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+                use_cache=use_cache,
+                id=id,
+            )
+        return await self._executor.run_planner(
+            fn=lambda: self.agent.planner.acall(
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+                use_cache=use_cache,
+                id=id,
+            ),
+            step=step,
+        )
+
     def _init_permission_manager(self):
         """Initialize the permission manager and register tools that require approval."""
         if self.permission_manager and hasattr(self.agent, "tool_manager"):
@@ -226,7 +669,18 @@ class Runner(Component):
         if permission_manager is not None:
             permission_manager.set_tool_manager(self.tool_manager)
 
+    def close(self) -> None:
+        """Release resources held by the reliability layer.
 
+        Shuts down the :class:`ReliableExecutor`'s internal thread pool (used
+        for sync planner / tool timeouts).  Idempotent and safe to call even
+        when no reliability config is configured.  The Runner does not
+        register an ``atexit`` handler - callers are expected to invoke this
+        explicitly (e.g. via a ``finally`` block or context manager) once they
+        are done with the instance.
+        """
+        if self._executor is not None:
+            self._executor.close()
 
     def is_cancelled(self) -> bool:
         """Check if execution has been cancelled."""
@@ -532,6 +986,11 @@ class Runner(Component):
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,  # global run id
+        *,
+        run_id: Optional[str] = None,
+        resume: bool = False,
+        on_incomplete_tool: Literal["error", "rerun", "skip"] = "error",
+        allow_fingerprint_mismatch: bool = False,
     ) -> RunnerResult:
         """Execute the planner synchronously for multiple steps with function calling support.
 
@@ -542,6 +1001,13 @@ class Runner(Component):
             model_kwargs: Optional model parameters to override defaults
             use_cache: Whether to use cached results if available
             id: Optional unique identifier for the request
+            run_id: Optional explicit run id used for checkpointing.
+            resume: If True, resume from a previously stored checkpoint for
+                ``run_id`` (requires ``checkpoint_store``).
+            on_incomplete_tool: Policy for "started" ledger entries of
+                non-idempotent tools on resume.
+            allow_fingerprint_mismatch: If True, allow resuming a run whose
+                fingerprint differs from the current agent/tools.
 
         Returns:
             RunnerResult containing step history and final processed output
@@ -554,6 +1020,49 @@ class Runner(Component):
         ) as runner_span_instance:
             # reset the step history
             self.step_history = []
+            self._tool_ledger = {}
+            self._reliability_events = []
+            self._pending_function = None
+            self._resume_pending = None
+            self._resumed_from_step = 0
+            effective_run_id = run_id or id
+
+            # Resume support.
+            if resume and self._checkpoint_store is not None and effective_run_id:
+                cp = self._checkpoint_store.load(effective_run_id)
+                if cp is not None:
+                    if cp.status == "completed":
+                        return RunnerResult(
+                            answer=cp.answer,
+                            step_history=[
+                                StepOutput.from_dict(s) for s in cp.step_history
+                            ],
+                            error=cp.error,
+                        )
+                    self._restore_from_checkpoint(
+                        cp,
+                        prompt_kwargs,
+                        on_incomplete_tool=on_incomplete_tool,
+                        allow_mismatch=allow_fingerprint_mismatch,
+                    )
+                    step_count = cp.step_count
+                    self._resumed_from_step = step_count
+                    if self._executor is not None:
+                        self._executor.start_run()
+                    # Replay / rerun / skip the in-progress step if any.
+                    advanced = self._resume_pending_step(
+                        cp, prompt_kwargs, on_incomplete_tool=on_incomplete_tool
+                    )
+                    step_count += advanced
+                    self._resumed_from_step = step_count
+                else:
+                    step_count = 0
+                    if self._executor is not None:
+                        self._executor.start_run()
+            else:
+                step_count = 0
+                if self._executor is not None:
+                    self._executor.start_run()
 
             # take in the query in prompt_kwargs
             prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
@@ -582,9 +1091,11 @@ class Runner(Component):
 
             model_kwargs = model_kwargs.copy() if model_kwargs else {}
 
-            step_count = 0
             last_output = None
             current_error = None
+
+            self._fingerprint = self._compute_fingerprint(prompt_kwargs)
+            self._run_id = effective_run_id
 
             while step_count < self.max_steps:
                 try:
@@ -594,13 +1105,21 @@ class Runner(Component):
                         step_number=step_count, action_type="planning"
                     ) as step_span_instance:       
 
-                        # Call the planner first to get the output
-                        output = self.agent.planner.call(
-                            prompt_kwargs=prompt_kwargs,
-                            model_kwargs=model_kwargs,
-                            use_cache=use_cache,
-                            id=id,
-                        )
+                        # Call the planner first to get the output, unless we
+                        # are resuming an in-progress step whose Function was
+                        # already produced by the planner before the crash.
+                        if self._resume_pending is not None:
+                            function = self._resume_pending
+                            self._resume_pending = None
+                            output = GeneratorOutput(data=function)
+                        else:
+                            output = self._planner_call(
+                                prompt_kwargs=prompt_kwargs,
+                                model_kwargs=model_kwargs,
+                                use_cache=use_cache,
+                                id=id,
+                                step=step_count,
+                            )
                         
                         # Track token usage
                         step_tokens = self._update_token_consumption()
@@ -632,7 +1151,7 @@ class Runner(Component):
                             error_msg = f"Run into error: {output.error}, raw response: {output.raw_response}"
                             # Handle recoverable vs unrecoverable errors
                             if output.error is not None:
-                                if _is_unrecoverable_error(output.error):
+                                if self._is_unrecoverable(output.error):
                                     # Unrecoverable errors: context too long, rate limit, model not found
                                     current_error = output.error
                                     step_output = StepOutput(
@@ -642,6 +1161,10 @@ class Runner(Component):
                                         observation=f"Unrecoverable error: {output.error}",
                                     )
                                     self.step_history.append(step_output)
+                                    self._checkpoint(
+                                        effective_run_id, "failed", step_count,
+                                        prompt_kwargs, error=current_error,
+                                    )
                                     break  # Stop execution for unrecoverable errors
                             # Recoverable errors: JSON format errors, parsing errors, etc.
                             current_error = output.error
@@ -652,6 +1175,9 @@ class Runner(Component):
                                 observation=current_error,
                             )
                             self.step_history.append(step_output)
+                            self._checkpoint(
+                                effective_run_id, "running", step_count, prompt_kwargs
+                            )
                             step_count += 1
                             continue  # Continue to next step for recoverable errors
                         
@@ -694,7 +1220,9 @@ class Runner(Component):
                             function_args=function.args,
                             function_kwargs=function.kwargs,
                         ) as tool_span_instance:
-                            function_results = self._tool_execute_sync(function)
+                            function_results = self._execute_tool_reliably(
+                                function, step_count, effective_run_id, prompt_kwargs
+                            )
                             # Update span attributes using update_attributes for MLflow compatibility
                             tool_span_instance.span_data.update_attributes(
                                 {"output_result": function_results.output}
@@ -734,6 +1262,15 @@ class Runner(Component):
                         
                         # Use the processed output
                         function_output = real_function_output
+                        # Record the ledger completion from the *resolved*
+                        # output so we never store a "<generator object>" repr.
+                        self._complete_ledger_entry(function, step_count, function_output)
+                        # Durably persist the completed ledger entry before
+                        # appending the step so a crash in this window can be
+                        # replayed on resume without re-running the tool.
+                        self._persist_completed_ledger(
+                            function, step_count, effective_run_id, prompt_kwargs
+                        )
                         function_output_observation = function_output
                         if isinstance(function_output, ToolOutput) and hasattr(
                             function_output, "observation"
@@ -764,11 +1301,33 @@ class Runner(Component):
                             )
                         )
                         self.step_history.append(step_output)
+                        self._pending_function = None
+                        self._checkpoint(
+                            effective_run_id, "running", step_count + 1, prompt_kwargs
+                        )
                         step_count += 1
 
                 except Exception as e:
                     error_msg = f"Error in step {step_count}: {str(e)}"
                     log.error(error_msg)
+
+                    # When a policy is configured, a tool exception becomes an
+                    # error observation step instead of breaking the whole run.
+                    if self._executor is not None:
+                        classified = self._executor.config.classifier.classify(e)
+                        step_output = StepOutput(
+                            step=step_count,
+                            action=None,
+                            function=None,
+                            observation=f"Tool error ({classified.category.value}): {e}",
+                        )
+                        self.step_history.append(step_output)
+                        self._checkpoint(
+                            effective_run_id, "running", step_count + 1, prompt_kwargs
+                        )
+                        current_error = error_msg
+                        step_count += 1
+                        continue
 
                     # Create response span for error tracking
                     with response_span(
@@ -786,7 +1345,36 @@ class Runner(Component):
                     # Continue to next step instead of returning
                     step_count += 1
                     current_error = error_msg
+                    self._checkpoint(
+                        effective_run_id, "failed", step_count, prompt_kwargs,
+                        error=current_error,
+                    )
                     break
+
+            # Deadline check: if run_timeout exceeded, finish with an error.
+            if (
+                self._executor is not None
+                and self._executor.config.timeouts.run_timeout is not None
+                and self._executor._run_started is not None
+            ):
+                remaining = self._executor._remaining_run()
+                if remaining is not None and remaining <= 0 and last_output is None:
+                    current_error = (
+                        f"Run deadline exceeded after {step_count} steps "
+                        f"(max_steps: {self.max_steps})"
+                    )
+                    self._checkpoint(
+                        effective_run_id, "failed", step_count, prompt_kwargs,
+                        error=current_error,
+                    )
+
+            # Aggregate reliability stats for span attributes.
+            _retry_count = 0
+            _timeout_count = 0
+            if self._executor is not None:
+                for _op_stats in self._executor.stats().values():
+                    _retry_count += _op_stats.get("retries", 0)
+                    _timeout_count += _op_stats.get("timeouts", 0)
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -795,6 +1383,9 @@ class Runner(Component):
                     "steps_executed": step_count,
                     "final_answer": last_output.answer if last_output else None,
                     "workflow_status": "completed",
+                    "retry_count": _retry_count,
+                    "timeout_count": _timeout_count,
+                    "resumed_from_step": self._resumed_from_step,
                 }
             )
 
@@ -818,11 +1409,178 @@ class Runner(Component):
                 pass
 
             # Always return a RunnerResult, even if no successful completion
-            return last_output or RunnerResult(
+            final_result = last_output or RunnerResult(
                 answer=current_error or f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
                 step_history=self.step_history.copy(),
                 error=current_error,
             )
+            if last_output is not None:
+                self._checkpoint(
+                    effective_run_id, "completed", step_count, prompt_kwargs,
+                    answer=last_output.answer,
+                )
+            return final_result
+
+    def _is_unrecoverable(self, error: Optional[str]) -> bool:
+        """Decide whether an error string should stop the run.
+
+        When a reliability policy is configured, delegate to the structured
+        classifier.  Otherwise keep the legacy substring-matching behaviour
+        byte-for-byte.
+        """
+        if self._executor is not None:
+            from .reliability import is_unrecoverable as _is_unc
+            classified = self._executor.config.classifier.classify(error)
+            return _is_unc(classified)
+        return _is_unrecoverable_error(error)
+
+    def _restore_from_checkpoint(
+        self,
+        cp: RunCheckpoint,
+        prompt_kwargs: Dict[str, Any],
+        on_incomplete_tool: Literal["error", "rerun", "skip"] = "error",
+        allow_mismatch: bool = False,
+    ) -> None:
+        """Restore runner state from a checkpoint for resume."""
+        if cp.fingerprint is not None:
+            stored_fp = RunFingerprint.from_dict(cp.fingerprint)
+            current_fp = self._compute_fingerprint(prompt_kwargs)
+            diffs = stored_fp.diff(current_fp)
+            if diffs and not allow_mismatch:
+                field, expected, actual = diffs[0]
+                raise ResumeMismatchError(cp.run_id, field, expected, actual)
+        self.step_history = [StepOutput.from_dict(s) for s in cp.step_history]
+        self._token_consumption = dict(cp.token_consumption) or {
+            'total_prompt_tokens': 0,
+            'current_step_tokens': 0,
+            'steps_token_history': [],
+            'last_total_tokens': 0,
+        }
+        self._tool_ledger = {
+            cid: ToolLedgerEntry.from_dict(row)
+            for cid, row in cp.tool_ledger.items()
+        }
+        # The in-progress step (if any) is handled by ``_resume_pending_step``
+        # which uses ``pending_function`` + the ledger entry to replay / rerun
+        # / skip the tool without re-invoking the planner.
+
+    def _resume_pending_step(
+        self,
+        cp: RunCheckpoint,
+        prompt_kwargs: Dict[str, Any],
+        on_incomplete_tool: Literal["error", "rerun", "skip"] = "error",
+        streaming_result: Optional[RunnerStreamingResult] = None,
+    ) -> int:
+        """Handle the in-progress step recorded in the checkpoint.
+
+        Returns the number of steps advanced (0 or 1).  When the checkpoint
+        has no ``pending_function`` this is a no-op and returns 0.
+
+        * ``completed`` ledger entry  -> append the replayed StepOutput from
+          the ledger; the tool is NOT called again and the planner is NOT
+          invoked for this step.
+        * ``started`` ledger entry   -> apply ``on_incomplete_tool``:
+          ``error`` raises :class:`ToolReplayRefusedError`, ``skip`` appends
+          an error observation step, ``rerun`` schedules the stored Function
+          to be executed by the next loop iteration (planner skipped).
+        """
+        pf = cp.pending_function
+        if pf is None:
+            return 0
+        function = Function.from_dict(pf)
+        step = cp.step_count
+        call_id = self._ledger_key(function, step)
+        entry = self._tool_ledger.get(call_id)
+
+        if entry is not None and entry.state == "completed" and entry.observation_json:
+            # Tool completed but the step was never appended: replay it.
+            replayed = self._tool_output_from_ledger(entry, function)
+            observation = replayed.output
+            if isinstance(observation, ToolOutput) and hasattr(observation, "observation"):
+                observation = observation.observation
+            step_output = StepOutput(
+                step=step,
+                action=function,
+                function=function,
+                observation=observation,
+            )
+            self.step_history.append(step_output)
+            self._pending_function = None
+            self._checkpoint(cp.run_id, "running", step + 1, prompt_kwargs)
+            return 1
+
+        if entry is not None and entry.state == "started":
+            if on_incomplete_tool == "error":
+                raise ToolReplayRefusedError(entry.name, entry.call_id)
+            if on_incomplete_tool == "skip":
+                entry.state = "failed"
+                entry.observation_json = _json.dumps(
+                    {"observation": "skipped on resume", "status": "error"}
+                )
+                step_output = StepOutput(
+                    step=step,
+                    action=None,
+                    function=None,
+                    observation="skipped on resume",
+                )
+                self.step_history.append(step_output)
+                self._pending_function = None
+                self._checkpoint(cp.run_id, "running", step + 1, prompt_kwargs)
+                return 1
+            # "rerun": drop the stale "started" entry so the reliability helper
+            # re-executes the tool, and hand the stored Function to the loop
+            # so the planner is skipped for this step.
+            del self._tool_ledger[call_id]
+            self._resume_pending = function
+            return 0
+
+        # pending_function set but no ledger entry: the crash happened before
+        # the write-ahead entry was persisted.  Treat as "rerun" - safest.
+        self._resume_pending = function
+        return 0
+
+
+    def resume(
+        self,
+        run_id: str,
+        prompt_kwargs: Optional[Dict[str, Any]] = None,
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        use_cache: Optional[bool] = None,
+        on_incomplete_tool: Literal["error", "rerun", "skip"] = "error",
+        allow_fingerprint_mismatch: bool = False,
+    ) -> RunnerResult:
+        """Resume a previously checkpointed run synchronously."""
+        merged_prompt = dict(prompt_kwargs or {})
+        return self.call(
+            merged_prompt,
+            model_kwargs=model_kwargs,
+            use_cache=use_cache,
+            run_id=run_id,
+            resume=True,
+            on_incomplete_tool=on_incomplete_tool,
+            allow_fingerprint_mismatch=allow_fingerprint_mismatch,
+        )
+
+    async def aresume(
+        self,
+        run_id: str,
+        prompt_kwargs: Optional[Dict[str, Any]] = None,
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        use_cache: Optional[bool] = None,
+        on_incomplete_tool: Literal["error", "rerun", "skip"] = "error",
+        allow_fingerprint_mismatch: bool = False,
+    ) -> Optional[RunnerResult]:
+        """Resume a previously checkpointed run asynchronously."""
+        merged_prompt = dict(prompt_kwargs or {})
+        return await self.acall(
+            merged_prompt,
+            model_kwargs=model_kwargs,
+            use_cache=use_cache,
+            run_id=run_id,
+            resume=True,
+            on_incomplete_tool=on_incomplete_tool,
+            allow_fingerprint_mismatch=allow_fingerprint_mismatch,
+        )
 
     def _tool_execute_sync(
         self,
@@ -880,6 +1638,11 @@ class Runner(Component):
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
+        *,
+        run_id: Optional[str] = None,
+        resume: bool = False,
+        on_incomplete_tool: Literal["error", "rerun", "skip"] = "error",
+        allow_fingerprint_mismatch: bool = False,
     ) -> Optional[RunnerResult]:
         """Execute the planner asynchronously for multiple steps with function calling support.
 
@@ -890,6 +1653,12 @@ class Runner(Component):
             model_kwargs: Optional model parameters to override defaults
             use_cache: Whether to use cached results if available
             id: Optional unique identifier for the request
+            run_id: Optional explicit run id used for checkpointing.
+            resume: If True, resume from a previously stored checkpoint.
+            on_incomplete_tool: Policy for "started" ledger entries of
+                non-idempotent tools on resume.
+            allow_fingerprint_mismatch: If True, allow resuming a run whose
+                fingerprint differs from the current agent/tools.
 
         Returns:
             RunnerResponse containing step history and final processed output
@@ -898,8 +1667,6 @@ class Runner(Component):
 
         workflow_status = "starting"
         runner_id = id or f"async_runner_{hash(str(prompt_kwargs))}"
-
-        
 
         # Create runner span for tracing
         with runner_span(
@@ -911,6 +1678,49 @@ class Runner(Component):
             self.reset_cancellation()
 
             self.step_history = []
+            self._tool_ledger = {}
+            self._reliability_events = []
+            self._pending_function = None
+            self._resume_pending = None
+            self._resumed_from_step = 0
+            effective_run_id = run_id or id
+
+            # Resume support.
+            if resume and self._checkpoint_store is not None and effective_run_id:
+                cp = self._checkpoint_store.load(effective_run_id)
+                if cp is not None:
+                    if cp.status == "completed":
+                        return RunnerResult(
+                            answer=cp.answer,
+                            step_history=[
+                                StepOutput.from_dict(s) for s in cp.step_history
+                            ],
+                            error=cp.error,
+                        )
+                    self._restore_from_checkpoint(
+                        cp,
+                        prompt_kwargs or {},
+                        on_incomplete_tool=on_incomplete_tool,
+                        allow_mismatch=allow_fingerprint_mismatch,
+                    )
+                    step_count = cp.step_count
+                    self._resumed_from_step = step_count
+                    if self._executor is not None:
+                        self._executor.start_run()
+                    advanced = self._resume_pending_step(
+                        cp, prompt_kwargs or {}, on_incomplete_tool=on_incomplete_tool
+                    )
+                    step_count += advanced
+                    self._resumed_from_step = step_count
+                else:
+                    step_count = 0
+                    if self._executor is not None:
+                        self._executor.start_run()
+            else:
+                step_count = 0
+                if self._executor is not None:
+                    self._executor.start_run()
+
             prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
 
             prompt_kwargs["step_history"] = (
@@ -956,13 +1766,20 @@ class Runner(Component):
                         if self.is_cancelled():
                             raise asyncio.CancelledError("Execution cancelled by user")
 
-                        # Call the planner first to get the output
-                        output: GeneratorOutput = await self.agent.planner.acall(
-                            prompt_kwargs=prompt_kwargs,
-                            model_kwargs=model_kwargs,
-                            use_cache=use_cache,
-                            id=id,
-                        )
+                        # Call the planner first to get the output, unless
+                        # we are resuming an in-progress step.
+                        if self._resume_pending is not None:
+                            function = self._resume_pending
+                            self._resume_pending = None
+                            output: GeneratorOutput = GeneratorOutput(data=function)
+                        else:
+                            output = await self._planner_acall(
+                                prompt_kwargs=prompt_kwargs,
+                                model_kwargs=model_kwargs,
+                                use_cache=use_cache,
+                                id=id,
+                                step=step_count,
+                            )
                         
                         # Track token usage
                         step_tokens = self._update_token_consumption()
@@ -984,6 +1801,10 @@ class Runner(Component):
                                 observation=current_error,
                             )
                             self.step_history.append(step_output)
+                            self._checkpoint(
+                                effective_run_id, "failed", step_count,
+                                prompt_kwargs, error=current_error,
+                            )
                             step_count += 1
                             break
  
@@ -996,7 +1817,7 @@ class Runner(Component):
                             error_msg = f"Run into error: {output.error}, raw response: {output.raw_response}"
                             # Handle recoverable vs unrecoverable errors
                             if output.error is not None:
-                                if _is_unrecoverable_error(output.error):
+                                if self._is_unrecoverable(output.error):
                                     # Unrecoverable errors: context too long, rate limit, model not found
                                     current_error = output.error
                                     step_output = StepOutput(
@@ -1006,6 +1827,10 @@ class Runner(Component):
                                         observation=f"Unrecoverable error: {output.error}",
                                     )
                                     self.step_history.append(step_output)
+                                    self._checkpoint(
+                                        effective_run_id, "failed", step_count,
+                                        prompt_kwargs, error=current_error,
+                                    )
                                     step_count += 1
                                     break  # Stop execution for unrecoverable errors
                             # Recoverable errors: JSON format errors, parsing errors, etc.
@@ -1017,6 +1842,10 @@ class Runner(Component):
                                 observation=current_error,
                             )
                             self.step_history.append(step_output)
+                            self._checkpoint(
+                                effective_run_id, "running", step_count + 1,
+                                prompt_kwargs,
+                            )
                             step_count += 1
 
                             continue  # Continue to next step for recoverable errors`
@@ -1066,8 +1895,8 @@ class Runner(Component):
                         function_args=function.args,
                         function_kwargs=function.kwargs,
                     ) as tool_span_instance:
-                        function_results = await self._tool_execute_async(
-                            func=function
+                        function_results = await self._execute_tool_reliably_async(
+                            function, step_count, effective_run_id, prompt_kwargs
                         )
                         function_output = function_results.output
                         # add the process of the generator and async generator
@@ -1103,6 +1932,15 @@ class Runner(Component):
                         
                         # Use the processed output
                         function_output = real_function_output
+                        # Record the ledger completion from the *resolved*
+                        # output so we never store a "<generator object>" repr.
+                        self._complete_ledger_entry(function, step_count, function_output)
+                        # Durably persist the completed ledger entry before
+                        # appending the step so a crash in this window can be
+                        # replayed on resume without re-running the tool.
+                        self._persist_completed_ledger(
+                            function, step_count, effective_run_id, prompt_kwargs
+                        )
                         function_output_observation = function_output
 
                         if isinstance(function_output, ToolOutput) and hasattr(
@@ -1124,6 +1962,7 @@ class Runner(Component):
                             observation=function_output_observation,
                         )
                         self.step_history.append(step_output)
+                        self._pending_function = None
 
                         # Update step span with results
                         step_span_instance.span_data.update_attributes(
@@ -1141,11 +1980,37 @@ class Runner(Component):
                             )
                         )
 
+                        self._checkpoint(
+                            effective_run_id, "running", step_count + 1, prompt_kwargs
+                        )
                         step_count += 1
 
+                except asyncio.CancelledError:
+                    # Save a cancelled checkpoint and re-raise.
+                    self._checkpoint(
+                        effective_run_id, "cancelled", step_count, prompt_kwargs,
+                    )
+                    raise
                 except Exception as e:
                     error_msg = f"Error in step {step_count}: {str(e)}"
                     log.error(error_msg)
+
+                    if self._executor is not None:
+                        classified = self._executor.config.classifier.classify(e)
+                        step_output = StepOutput(
+                            step=step_count,
+                            action=None,
+                            function=None,
+                            observation=f"Tool error ({classified.category.value}): {e}",
+                        )
+                        self.step_history.append(step_output)
+                        self._checkpoint(
+                            effective_run_id, "running", step_count + 1,
+                            prompt_kwargs,
+                        )
+                        current_error = error_msg
+                        step_count += 1
+                        continue
 
                     # Create response span for error tracking
                     with response_span(
@@ -1163,7 +2028,35 @@ class Runner(Component):
                     # Continue to next step instead of returning
                     step_count += 1
                     current_error = error_msg
+                    self._checkpoint(
+                        effective_run_id, "failed", step_count, prompt_kwargs,
+                        error=current_error,
+                    )
                     break
+
+            # Deadline check.
+            if (
+                self._executor is not None
+                and self._executor.config.timeouts.run_timeout is not None
+                and self._executor._run_started is not None
+            ):
+                remaining = self._executor._remaining_run()
+                if remaining is not None and remaining <= 0 and last_output is None:
+                    current_error = (
+                        f"Run deadline exceeded after {step_count} steps "
+                        f"(max_steps: {self.max_steps})"
+                    )
+                    self._checkpoint(
+                        effective_run_id, "failed", step_count, prompt_kwargs,
+                        error=current_error,
+                    )
+
+            _retry_count = 0
+            _timeout_count = 0
+            if self._executor is not None:
+                for _op_stats in self._executor.stats().values():
+                    _retry_count += _op_stats.get("retries", 0)
+                    _timeout_count += _op_stats.get("timeouts", 0)
 
             # Update runner span with final results
             # Update runner span with completion info using update_attributes
@@ -1172,6 +2065,9 @@ class Runner(Component):
                     "steps_executed": step_count,
                     "final_answer": last_output.answer if last_output else None,
                     "workflow_status": "completed",
+                    "retry_count": _retry_count,
+                    "timeout_count": _timeout_count,
+                    "resumed_from_step": self._resumed_from_step,
                 }
             )
 
@@ -1195,19 +2091,30 @@ class Runner(Component):
                 pass
 
             # Always return a RunnerResult, even if no successful completion
-            return last_output or RunnerResult(
+            final_result = last_output or RunnerResult(
                 answer=current_error or f"No output generated after {step_count} steps (max_steps: {self.max_steps})",
                 step_history=self.step_history.copy(),
                 error=current_error,
             )
-        
-    
+            if last_output is not None:
+                self._checkpoint(
+                    effective_run_id, "completed", step_count, prompt_kwargs,
+                    answer=last_output.answer,
+                )
+            return final_result
+
+
     def astream(
         self,
         prompt_kwargs: Dict[str, Any],
         model_kwargs: Optional[Dict[str, Any]] = None,
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
+        *,
+        run_id: Optional[str] = None,
+        resume: bool = False,
+        on_incomplete_tool: Literal["error", "rerun", "skip"] = "error",
+        allow_fingerprint_mismatch: bool = False,
     ) -> RunnerStreamingResult:
         """
         Execute the runner asynchronously with streaming support.
@@ -1234,7 +2141,13 @@ class Runner(Component):
 
         # Store the task so we can cancel it if needed
         self._current_task = asyncio.get_event_loop().create_task(
-            self.impl_astream(prompt_kwargs, model_kwargs, use_cache, id, result)
+            self.impl_astream(
+                prompt_kwargs, model_kwargs, use_cache, id, result,
+                run_id=run_id,
+                resume=resume,
+                on_incomplete_tool=on_incomplete_tool,
+                allow_fingerprint_mismatch=allow_fingerprint_mismatch,
+            )
         )
         result._run_task = self._current_task
         return result
@@ -1246,6 +2159,11 @@ class Runner(Component):
         use_cache: Optional[bool] = None,
         id: Optional[str] = None,
         streaming_result: Optional[RunnerStreamingResult] = None,
+        *,
+        run_id: Optional[str] = None,
+        resume: bool = False,
+        on_incomplete_tool: Literal["error", "rerun", "skip"] = "error",
+        allow_fingerprint_mismatch: bool = False,
     ) -> None:
         """
         Behave exactly the same as `acall` but with streaming support.
@@ -1276,6 +2194,55 @@ class Runner(Component):
             
             # Reset cancellation flag at start of new execution
             self.step_history = []
+            self._tool_ledger = {}
+            self._reliability_events = []
+            self._pending_function = None
+            self._resume_pending = None
+            self._resumed_from_step = 0
+            effective_run_id = run_id or id
+
+            if resume and self._checkpoint_store is not None and effective_run_id:
+                cp = self._checkpoint_store.load(effective_run_id)
+                if cp is not None and cp.status == "completed":
+                    runner_result = RunnerResult(
+                        answer=cp.answer,
+                        step_history=[
+                            StepOutput.from_dict(s) for s in cp.step_history
+                        ],
+                        error=cp.error,
+                    )
+                    final_output_item = FinalOutputItem(data=runner_result)
+                    self._create_execution_complete_stream_event(
+                        streaming_result=streaming_result,
+                        final_output_item=final_output_item,
+                    )
+                    streaming_result.put_nowait(QueueCompleteSentinel())
+                    return
+                if cp is not None:
+                    self._restore_from_checkpoint(
+                        cp,
+                        prompt_kwargs or {},
+                        on_incomplete_tool=on_incomplete_tool,
+                        allow_mismatch=allow_fingerprint_mismatch,
+                    )
+                    step_count = cp.step_count
+                    self._resumed_from_step = step_count
+                    if self._executor is not None:
+                        self._executor.start_run()
+                    advanced = self._resume_pending_step(
+                        cp, prompt_kwargs or {}, on_incomplete_tool=on_incomplete_tool
+                    )
+                    step_count += advanced
+                    self._resumed_from_step = step_count
+                else:
+                    step_count = 0
+                    if self._executor is not None:
+                        self._executor.start_run()
+            else:
+                step_count = 0
+                if self._executor is not None:
+                    self._executor.start_run()
+
             prompt_kwargs = prompt_kwargs.copy() if prompt_kwargs else {}
 
             prompt_kwargs["step_history"] = self.step_history
@@ -1299,9 +2266,15 @@ class Runner(Component):
             prompt_kwargs["max_steps"] = self.max_steps
 
             model_kwargs = model_kwargs.copy() if model_kwargs else {}
-            step_count = 0
             final_output_item = None
             current_error = None
+
+            self._fingerprint = self._compute_fingerprint(prompt_kwargs)
+            self._run_id = effective_run_id
+            # Tracks whether the run was cancelled mid-flight so the post-loop
+            # checkpoint logic does not overwrite the ``cancelled`` checkpoint
+            # saved by the CancelledError handler with a ``failed`` one.
+            was_cancelled = False
 
             # whenever we have the final output, we break the loop, this includes
             # (1) final_answer (check final step)
@@ -1334,13 +2307,23 @@ class Runner(Component):
                         if self.is_cancelled():
                             raise asyncio.CancelledError("Execution cancelled by user")
 
-                        # when it's streaming, the output will be an async generator
-                        output: GeneratorOutput = await self.agent.planner.acall(
-                            prompt_kwargs=prompt_kwargs,
-                            model_kwargs=model_kwargs,
-                            use_cache=use_cache,
-                            id=id,
-                        )
+                        # when it's streaming, the output will be an async
+                        # generator, unless we are resuming an in-progress step
+                        # whose Function was already produced before the crash.
+                        if self._resume_pending is not None:
+                            function = self._resume_pending
+                            self._resume_pending = None
+                            output: GeneratorOutput = GeneratorOutput(data=function)
+                        else:
+                            output = await self._planner_acall(
+                                prompt_kwargs=prompt_kwargs,
+                                model_kwargs=model_kwargs,
+                                use_cache=use_cache,
+                                id=id,
+                                step=step_count,
+                            )
+                        # Flush any reliability events emitted by the executor.
+                        self._emit_reliability_events(streaming_result)
                         
                         # Track token usage
                         step_tokens = self._update_token_consumption()
@@ -1365,6 +2348,10 @@ class Runner(Component):
                                 observation=current_error,
                             )
                             self.step_history.append(step_output)
+                            self._checkpoint(
+                                effective_run_id, "failed", step_count,
+                                prompt_kwargs, error=current_error,
+                            )
                             step_count += 1
                             break
 
@@ -1415,7 +2402,7 @@ class Runner(Component):
 
                                 if output.error is not None:
   
-                                    if _is_unrecoverable_error(output.error): # context too long or rate limite, not recoverable
+                                    if self._is_unrecoverable(output.error): # context too long or rate limite, not recoverable
                                         # 404 model not exist
                                         # create a final output item with error and stop the loop
                                         final_output_item = FinalOutputItem(
@@ -1430,8 +2417,16 @@ class Runner(Component):
                                             observation=f"Unrecoverable error: {output.error}",
                                         )
                                         self.step_history.append(step_output)
+                                        self._checkpoint(
+                                            effective_run_id, "failed", step_count,
+                                            prompt_kwargs, error=current_error,
+                                        )
                                         step_count += 1
                                         break
+                                self._checkpoint(
+                                    effective_run_id, "running", step_count + 1,
+                                    prompt_kwargs,
+                                )
                                 step_count += 1
                                 continue  # continue to next step
                                     
@@ -1523,13 +2518,22 @@ class Runner(Component):
                                 )
                                 streaming_result.put_nowait(permission_stream_event)
                         if not complete_step:
-                            # Execute the tool with streaming support
+                            # Execute the tool with streaming support, routed
+                            # through the reliability helper so tool timeouts /
+                            # ledger / write-ahead apply on the streaming path
+                            # too.
                             function_result, function_output, function_output_observation = await self.stream_tool_execution(
                                 function=function,
                                 tool_call_id=tool_call_id,
                                 tool_call_name=tool_call_name,
                                 streaming_result=streaming_result,
+                                step=step_count,
+                                run_id=effective_run_id,
+                                prompt_kwargs=prompt_kwargs,
                             )
+                        # Flush reliability events emitted by the executor
+                        # (timeouts / retries) for this tool call.
+                        self._emit_reliability_events(streaming_result)
 
                         # Add step to history for approved tools (same as non-permission branch)
                         step_output: StepOutput = StepOutput(
@@ -1539,6 +2543,7 @@ class Runner(Component):
                             observation=function_output_observation,
                         )
                         self.step_history.append(step_output)
+                        self._pending_function = None
 
                         # Update step span with results (for both recoverable errors and normal function execution)
                         step_span_instance.span_data.update_attributes(
@@ -1556,12 +2561,21 @@ class Runner(Component):
                             name="agent.step_complete", item=step_item
                         )
                         streaming_result.put_nowait(step_event)
+                        self._checkpoint(
+                            effective_run_id, "running", step_count + 1, prompt_kwargs
+                        )
                         step_count += 1
 
                 except asyncio.CancelledError:
                     # Handle cancellation gracefully
                     cancel_msg = "Execution cancelled by user"
                     log.info(cancel_msg)
+                    was_cancelled = True
+
+                    # Save a cancelled checkpoint before re-raising/continuing.
+                    self._checkpoint(
+                        effective_run_id, "cancelled", step_count, prompt_kwargs,
+                    )
 
                     # Emit cancellation event so frontend/logs can see it
                     cancel_event = RunItemStreamEvent(
@@ -1633,6 +2647,15 @@ class Runner(Component):
                     "steps_executed": step_count,
                     "final_answer": final_output_item.data.answer if final_output_item.data else None,
                     "workflow_status": workflow_status,
+                    "retry_count": sum(
+                        s.get("retries", 0)
+                        for s in (self._executor.stats().values() if self._executor else [])
+                    ),
+                    "timeout_count": sum(
+                        s.get("timeouts", 0)
+                        for s in (self._executor.stats().values() if self._executor else [])
+                    ),
+                    "resumed_from_step": self._resumed_from_step,
                 }
             )
 
@@ -1643,6 +2666,23 @@ class Runner(Component):
                 step_history=self.step_history.copy(),
                 error=current_error,
             )
+
+            # Final checkpoint: completed if we have an answer, failed otherwise.
+            # Skip this when the run was cancelled: the CancelledError handler
+            # already persisted a ``cancelled`` checkpoint and we must not
+            # overwrite it with ``failed``.
+            if was_cancelled:
+                pass
+            elif runner_result.answer is not None and workflow_status == "stream_completed":
+                self._checkpoint(
+                    effective_run_id, "completed", step_count, prompt_kwargs,
+                    answer=runner_result.answer,
+                )
+            elif workflow_status in ("stream_failed", "stream_incomplete"):
+                self._checkpoint(
+                    effective_run_id, "failed", step_count, prompt_kwargs,
+                    error=current_error,
+                )
 
             self._create_execution_complete_stream_event(
                 streaming_result=streaming_result,
@@ -1721,6 +2761,9 @@ class Runner(Component):
         tool_call_id: str,
         tool_call_name: str,
         streaming_result: RunnerStreamingResult,
+        step: int = 0,
+        run_id: Optional[str] = None,
+        prompt_kwargs: Optional[Dict[str, Any]] = None,
     ) -> tuple[Any, Any, Any]:
         """
         Execute a tool/function call with streaming support and proper event handling.
@@ -1732,14 +2775,24 @@ class Runner(Component):
         - Tool completion events
         - Error handling and observation extraction
 
+        When a reliability config is present the inner tool call is routed
+        through ``_execute_tool_reliably_async`` so tool timeouts, the
+        write-ahead ledger and resume replay apply on the streaming path too.
+        All existing streaming events (``tool_call_start`` / ``activity`` /
+        ``complete``) are preserved.
+
         Args:
             function: The Function object to execute
             tool_call_id: Unique identifier for this tool call
             tool_call_name: Name of the tool being called
             streaming_result: Queue for streaming events
+            step: Current step index (used for the ledger key)
+            run_id: Active run id (used for write-ahead checkpoints)
+            prompt_kwargs: Current prompt kwargs (used for write-ahead
+                checkpoints)
 
         Returns:
-            tuple: (function_output, function_output_observation)
+            tuple: (function_result, function_output, function_output_observation)
         """
         # Create tool span for streaming function execution
         with tool_span(
@@ -1753,9 +2806,18 @@ class Runner(Component):
             # to be either ToolCallActivityRunItem or ToolOutput(maybe)
             # Call activity might be better designed
 
-            function_result = await self._tool_execute_async(
-                func=function, streaming_result=streaming_result
-            )  # everything must be wrapped in FunctionOutput
+            if self._executor is not None and run_id is not None:
+                function_result = await self._execute_tool_reliably_async(
+                    function,
+                    step,
+                    run_id,
+                    prompt_kwargs or {},
+                    streaming_result,
+                )
+            else:
+                function_result = await self._tool_execute_async(
+                    func=function, streaming_result=streaming_result
+                )  # everything must be wrapped in FunctionOutput
 
             if not isinstance(function_result, FunctionOutput):
                 raise ValueError(
@@ -1794,6 +2856,17 @@ class Runner(Component):
                         real_function_output = item
             else:
                 real_function_output = function_output
+
+            # Record the ledger completion from the *resolved* output so we
+            # never store a "<generator object ...>" repr.
+            if self._executor is not None:
+                self._complete_ledger_entry(function, step, real_function_output)
+                # Durably persist the completed ledger entry before the
+                # step is appended so a crash in this window can be replayed
+                # on resume without re-running the tool.
+                self._persist_completed_ledger(
+                    function, step, run_id, prompt_kwargs or {}
+                )
 
             # create call complete
             call_complete_event = RunItemStreamEvent(
