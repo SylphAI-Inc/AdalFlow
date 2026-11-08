@@ -59,6 +59,11 @@ XAIClient = LazyImport(
     "adalflow.components.model_client.xai_client.XAIClient", OptionalPackages.OPENAI
 )
 
+RuncrateClient = LazyImport(
+    "adalflow.components.model_client.runcrate_client.RuncrateClient",
+    OptionalPackages.OPENAI,
+)
+
 FireworksClient = LazyImport(
     "adalflow.components.model_client.fireworks_client.FireworksClient",
     OptionalPackages.FIREWORKS,
@@ -121,6 +126,7 @@ __all__ = [
     "DeepSeekClient",
     "MistralClient",
     "XAIClient",
+    "RuncrateClient",
     "FireworksClient",
     "SambaNovaClient",
     "AzureAIClient",
