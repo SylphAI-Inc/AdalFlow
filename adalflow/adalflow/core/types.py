@@ -826,7 +826,7 @@ class ToolOutput(DataClass):
     metadata: Optional[Dict[str, Any]] = field(
         default=None, metadata={"description": "Additional metadata"}
     )
-    status: Literal["success", "cancelled", "error"] = field(
+    status: Literal["success", "cancelled", "error", "timeout"] = field(
         default="success", metadata={"description": "The status of a completed tool call"}
     )
 
@@ -1412,6 +1412,24 @@ class StepRunItem(RunItem):
         },
     )
 
+
+@dataclass
+class ReliabilityRunItem(RunItem):
+    """Event emitted by the reliability layer (retry, timeout, checkpoint, ...).
+
+    Carries a :class:`ReliabilityEvent` payload so consumers can react to
+    retries, timeouts, deadline-exceeded, checkpoint saves and resume events
+    in the same streaming pipeline as the other RunItems.
+    """
+
+    type: str = field(
+        default="runner.reliability", metadata={"desc": "Type of run item"}
+    )
+    data: Optional[Any] = field(
+        default=None,
+        metadata={"desc": "ReliabilityEvent payload (dict-serializable)"},
+    )
+
 """
 Used to wrap the final response from the runner which holds key information about the execution such
 as the answer, step history, and error.
@@ -1511,6 +1529,7 @@ class RunItemStreamEvent(DataClass):
         "agent.final_output",  # Final processed output available
         "agent.execution_complete",  # Entire Runner execution completed
         "agent.tool_permission_request",  # Tool permission request before execution
+        "runner.reliability",  # Reliability-layer event (retry, timeout, checkpoint, ...)
     ] = field(
         metadata={
             "desc": "The name identifying the specific type of execution event that occurred"

@@ -1,4 +1,24 @@
 
+## [Unreleased]
+
+### Added
+
+#### Runner Reliability Layer (`adalflow/components/agent/reliability/`)
+- Opt-in retry + timeout + structured error classification + durable run
+  checkpoints + resume that never re-executes a completed tool call.
+- Default behaviour (no `ReliabilityConfig` passed) is byte-for-byte the
+  previous Runner behaviour; the 44 existing runner tests pass unchanged.
+- New modules: `errors`, `classification`, `policy`, `executor`,
+  `checkpoint`, `store`, exported from `adalflow.components.agent`.
+- `Runner.__init__` accepts `reliability` and `checkpoint_store`; `call` /
+  `acall` / `astream` gain keyword-only `run_id`, `resume`,
+  `on_incomplete_tool`, `allow_fingerprint_mismatch`.
+- New `Runner.resume` / `Runner.aresume` convenience methods.
+- `ToolOutput.status` extended with `"timeout"`; new `ReliabilityRunItem`
+  streamed as `RunItemStreamEvent(name="runner.reliability", ...)`.
+- `InMemoryCheckpointStore` and `FileCheckpointStore` (atomic writes,
+  path-traversal-safe ids, optional history rotation, sha-256 integrity).
+
 ## [1.1.3] - 2025-01-21
 
 ### Added
