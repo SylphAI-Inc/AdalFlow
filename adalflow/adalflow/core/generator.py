@@ -364,17 +364,29 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # Now adding the data field to the output
         data = output.raw_response
 
-        # TODO implement support for synchronous iterator in the future
-        if self.output_processors:
-            if data:
-                try:
-                    data = self.output_processors(data)
-                    output.data = data
-                except Exception as e:
-                    log.error(f"Error processing the output processors: {e}")
-                    output.error = str(e)
+        # Check if this is a streaming response (generator/iterator)
+        from typing import Generator as GeneratorType
+        from collections.abc import AsyncGenerator as AsyncGeneratorABC
+        
+        is_streaming = isinstance(data, (GeneratorType, AsyncGeneratorABC)) or hasattr(data, '__iter__') and not isinstance(data, str)
+        
+        if is_streaming:
+            # For streaming responses, don't process with output_processors immediately
+            # The streaming data should be consumed by the caller
+            log.debug("Streaming response detected, skipping output processors")
+            output.data = None  # Will be populated when stream is consumed
         else:
-            output.data = data
+            # Non-streaming response processing
+            if self.output_processors:
+                if data:
+                    try:
+                        data = self.output_processors(data)
+                        output.data = data
+                    except Exception as e:
+                        log.error(f"Error processing the output processors: {e}")
+                        output.error = str(e)
+            else:
+                output.data = data
 
         return output
 
