@@ -18,6 +18,8 @@ from adalflow.core.generator import Generator
 from adalflow.core.tool_manager import ToolManager
 from adalflow.core.prompt_builder import Prompt
 from adalflow.core.types import GeneratorOutput, ModelType, Function
+from adalflow.core.base_data_class import DataClass, DataClassFormatType
+
 from adalflow.optim.parameter import Parameter, ParameterType
 from adalflow.components.output_parsers import JsonOutputParser
 from adalflow.utils import printc
@@ -54,7 +56,7 @@ DEFAULT_ROLE_DESC = """You are an excellent task planner."""
 
 #   '
 
-
+# TODO: replace the agent to pydantic Function Model. But it cant control the fields
 # the context will wrap the whole component
 def create_default_tool_manager(
     # Tool manager parameters
@@ -154,9 +156,17 @@ def create_default_planner(
         include_fields = ["name", "kwargs", "_is_answer_final", "_answer"]
     else:
         include_fields = ["thought", "name", "kwargs", "_is_answer_final", "_answer"]
+
+    examples = [
+        Function(
+            name="example_function",
+            kwargs={"param1": "value1", "param2": "value2"},
+            _is_answer_final=False,
+            _answer=None,)
+    ]
     output_parser = JsonOutputParser(
         data_class=ouput_data_class,
-        examples=None,
+        examples=examples,
         # examples=self._examples, # TODO: add examples
         return_data_class=True,
         include_fields=include_fields,
@@ -169,7 +179,7 @@ def create_default_planner(
 
     prompt_kwargs = {
         "tools": tool_manager.yaml_definitions,
-        "output_format_str": output_parser.format_instructions(),
+        "output_format_str": output_parser.format_instructions(format_type=DataClassFormatType.SIGNATURE_JSON),
         "task_desc": Parameter(
             name="react_agent_task_desc",
             data=task_desc,
