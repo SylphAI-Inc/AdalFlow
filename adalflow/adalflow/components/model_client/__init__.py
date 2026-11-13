@@ -85,6 +85,10 @@ AzureAIClient = LazyImport(
     "adalflow.components.model_client.azureai_client.AzureAIClient",
     OptionalPackages.AZURE,
 )
+MiniMaxClient = LazyImport(
+    "adalflow.components.model_client.minimax_client.MiniMaxClient",
+    OptionalPackages.OPENAI,
+)
 get_first_message_content = LazyImport(
     "adalflow.components.model_client.openai_client.get_first_message_content",
     OptionalPackages.OPENAI,
@@ -124,6 +128,7 @@ __all__ = [
     "FireworksClient",
     "SambaNovaClient",
     "AzureAIClient",
+    "MiniMaxClient",
     # Utils functions
     "process_images_for_response_api",
     "format_content_for_response_api",
