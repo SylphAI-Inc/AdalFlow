@@ -974,6 +974,27 @@ class OpenAIClient(ModelClient):
             else:
                 # Text-only input
                 final_model_kwargs["input"] = input
+
+            # Reasoning models (o1, o3-mini, etc.) do not support certain
+            # Chat Completion parameters in the Responses API.
+            # Strip them to avoid BadRequestError / unexpected keyword argument.
+            if model_type == ModelType.LLM_REASONING:
+                _REASONING_UNSUPPORTED_PARAMS = {
+                    "frequency_penalty",
+                    "presence_penalty",
+                    "temperature",
+                    "top_p",
+                }
+                removed = {
+                    k: final_model_kwargs.pop(k)
+                    for k in _REASONING_UNSUPPORTED_PARAMS
+                    if k in final_model_kwargs
+                }
+                if removed:
+                    log.warning(
+                        f"Reasoning model does not support {sorted(removed.keys())}; "
+                        f"removed from api_kwargs. Model: {final_model_kwargs.get('model', 'unknown')}"
+                    )
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
