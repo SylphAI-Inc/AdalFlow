@@ -377,6 +377,62 @@ To contribute, please read our [Contributor Guide](https://adalflow.sylph.ai/con
 
 [![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/AdalFlow&max=2000)](https://github.com/SylphAI-Inc/AdalFlow/graphs/contributors)
 
+
+## FAQ
+
+### What is AdalFlow?
+
+AdalFlow is a PyTorch-like library to build and auto-optimize any LM workflows, from Chatbots, RAG, to Agents. It provides a unified framework for LLM task pipelines with automatic prompt optimization.
+
+### How does AdalFlow differ from LangChain?
+
+- **AdalFlow**: PyTorch-like design, auto-differentiative framework, built-in prompt optimization, model-agnostic building blocks
+- **LangChain**: Chain-based orchestration, manual prompt engineering, more granular control
+
+### Why PyTorch-like design?
+
+AdalFlow uses a PyTorch-like architecture because:
+- Familiar API for AI researchers and engineers
+- Easy to compose and debug task pipelines
+- Natural integration with gradient-based optimization concepts
+- Supports both zero-shot and few-shot prompt optimization
+
+### How do I install AdalFlow?
+
+```bash
+pip install adalflow
+```
+
+### What LLM providers are supported?
+
+AdalFlow is model-agnostic and supports:
+- OpenAI (GPT-4, GPT-3.5)
+- Anthropic (Claude)
+- Google (Gemini)
+- Azure OpenAI
+- Local models via various inference frameworks
+- Switch models via simple config change
+
+### What is auto-optimization?
+
+AdalFlow provides automatic prompt optimization:
+- **Zero-shot optimization**: Automatic prompt refinement without examples
+- **Few-shot optimization**: Learn-to-Reason Few-shot In Context Learning
+- **LLM-AutoDiff**: Research-backed optimization achieving highest accuracy among auto-prompt libraries
+
+### What is the Agents SDK?
+
+AdalFlow provides a 100% open-source Agents SDK:
+- Lightweight implementation
+- Built-in Human-in-the-Loop support
+- Tracing functionality without additional API
+- Seamless integration with optimization framework
+
+### How do I get help?
+
+- **Documentation**: https://adalflow.sylph.ai/
+- **GitHub Issues**: https://github.com/SylphAI-Inc/AdalFlow/issues
+- **Discord**: https://discord.gg/ezzszrRZvT
 # Acknowledgements
 
 Many existing works greatly inspired AdalFlow library! Here is a non-exhaustive list:
