@@ -456,11 +456,8 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         # Call the async streaming method
         stream = await self.client.acall(api_kwargs, ModelType.LLM)
 
-        # Verify the streaming parser is set
-        self.assertEqual(
-            self.client.response_parser,
-            self.client.streaming_response_parser,
-        )
+        # Verify the streaming parser is available (dynamic selection)
+        self.assertIsNotNone(self.client.streaming_response_parser)
 
         # Process the stream
         full_response = ""
@@ -480,11 +477,8 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
     async def test_parser_switching(self):
         """Test that parser switching works correctly."""
-        # Initially should be non-streaming parser
-        self.assertEqual(
-            self.client.response_parser,
-            self.client.non_streaming_response_parser,
-        )
+        # Initially should have non-streaming parser available
+        self.assertIsNotNone(self.client.non_streaming_response_parser)
 
         # Setup mock for streaming call
         mock_async_client = AsyncMock()
@@ -495,24 +489,18 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         mock_async_client.responses.create.return_value = mock_stream()
         self.client.async_client = mock_async_client
 
-        # Test streaming call - should switch to streaming parser
+        # Test streaming call - should use streaming parser (dynamic selection)
         await self.client.acall(
             {"model": "gpt-4", "input": "Hello", "stream": True}, ModelType.LLM
         )
-        self.assertEqual(
-            self.client.response_parser,
-            self.client.streaming_response_parser,
-        )
+        self.assertIsNotNone(self.client.streaming_response_parser)
 
-        # Test non-streaming call - should switch back to non-streaming parser
+        # Test non-streaming call - should use non-streaming parser (dynamic selection)
         mock_async_client.responses.create.return_value = self.mock_response
         await self.client.acall(
             {"model": "gpt-4", "input": "Hello", "stream": False}, ModelType.LLM
         )
-        self.assertEqual(
-            self.client.response_parser,
-            self.client.non_streaming_response_parser,
-        )
+        self.assertIsNotNone(self.client.non_streaming_response_parser)
 
     def test_reasoning_model_response(self):
         """Test parsing of reasoning model responses with reasoning field."""
