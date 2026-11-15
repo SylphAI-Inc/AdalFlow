@@ -297,12 +297,12 @@ class FunctionTool(Component):
         if self.function_type == FunctionType.SYNC:
             return fn(*args, **kwargs)
         elif self.function_type == FunctionType.ASYNC:
-            if is_running_in_event_loop():
-                loop = asyncio.get_running_loop()
-                task = loop.create_task(fn(*args, **kwargs))
-                return asyncio.run_coroutine_threadsafe(task, loop).result()
-            else:
-                return asyncio.run(fn(*args, **kwargs))
+            # nest_asyncio is applied in __init__, so asyncio.run works both inside
+            # and outside a running event loop. The previous inside-the-loop branch
+            # passed an already-scheduled Task (not a coroutine) to
+            # run_coroutine_threadsafe, which raised "A coroutine object is required"
+            # and returned an errored FunctionOutput instead of running the tool.
+            return asyncio.run(fn(*args, **kwargs))
         elif self.function_type == FunctionType.SYNC_GENERATOR:
             return fn(*args, **kwargs)
             # output = []
