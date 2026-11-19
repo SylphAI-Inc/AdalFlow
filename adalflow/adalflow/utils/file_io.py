@@ -83,7 +83,7 @@ def save_pickle(obj: Mapping[str, Any], f: str = "task.pickle") -> None:
         with open(f, "wb") as file:
             pickle.dump(obj, file)
     except Exception as e:
-        raise Exception(f"Error saving object to pickle file {f}: {e}")
+        raise IOError(f"Error saving object to pickle file {f}: {e}")
 
 
 def save(obj: Mapping[str, Any], f: str = "task") -> None:
@@ -98,7 +98,7 @@ def save(obj: Mapping[str, Any], f: str = "task") -> None:
         save_json(obj, f=f"{f}.json")
         save_pickle(obj, f=f"{f}.pickle")
     except Exception as e:
-        raise Exception(f"Error saving object to json and pickle files: {e}")
+        raise IOError(f"Error saving object to json and pickle files: {e}")
 
 
 # def load_json(f: str = "task.json") -> Optional[Mapping[str, Any]]:
@@ -173,7 +173,7 @@ def load_pickle(f: str = "task.pickle") -> Optional[Mapping[str, Any]]:
         with open(f, "rb") as file:
             return pickle.load(file)
     except Exception as e:
-        raise Exception(f"Error loading object from pickle file {f}: {e}")
+        raise IOError(f"Error loading object from pickle file {f}: {e}")
 
 
 def load(f: str = "task") -> Optional[Mapping[str, Any]]:
@@ -187,7 +187,7 @@ def load(f: str = "task") -> Optional[Mapping[str, Any]]:
         obj = load_pickle(f=f"{f}.pickle")
         return json_obj, obj
     except Exception as e:
-        raise Exception(f"Error loading object from json and pickle files: {e}")
+        raise IOError(f"Error loading object from json and pickle files: {e}")
 
 
 def load_jsonl(f: str = None) -> List[Dict[str, Any]]:
