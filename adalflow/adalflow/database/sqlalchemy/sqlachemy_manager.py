@@ -29,7 +29,7 @@ class DatabaseManager:
                 self._engine.url.database
             )  # Directly return the database file for SQLite
         else:
-            raise Exception("Unsupported database type")
+            raise ValueError("Unsupported database type")
 
         with self._engine.connect() as connection:
             result = connection.execute(text(query))
