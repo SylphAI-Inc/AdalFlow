@@ -1348,7 +1348,7 @@ def encode_image(image_path: str) -> str:
     except PermissionError:
         raise PermissionError(f"Permission denied when reading image file: {image_path}")
     except Exception as e:
-        raise Exception(f"Error encoding image {image_path}: {str(e)}")
+        raise RuntimeError(f"Error encoding image {image_path}: {str(e)}")
 
 
 ########################################################################################
