@@ -108,7 +108,7 @@ class GeneratorStateLogger:
                     self._trace_map[name].append(new_prompt_record)
                     self.save(self.filepath)
         except Exception as e:
-            raise Exception(f"Error logging prompt states for {name}") from e
+            raise RuntimeError(f"Error logging prompt states for {name}") from e
 
     def save(self, filepath: str):
         with open(filepath, "w") as f:
